@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>♠️♦️ACP♥️♣️ | Cardápio Digital</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="index.css">
+
+
+    <meta name="description" content="Seu jogo em outro nível">
+
+
+    <meta property="og:image"
+        content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a7a63065-8cdf-4076-a471-587cd9645c59/id-preview-07d9cd74--6599f10e-6caf-4058-b3b8-91e40902b01d.lovable.app-1775566307476.png">
+    <meta name="twitter:image"
+        content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a7a63065-8cdf-4076-a471-587cd9645c59/id-preview-07d9cd74--6599f10e-6caf-4058-b3b8-91e40902b01d.lovable.app-1775566307476.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:type" content="website">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <meta property="og:title" content="♠️♦️ACP♥️♣️ | Cardápio Digital">
+    <meta name="twitter:title" content="♠️♦️ACP♥️♣️ | Cardápio Digital">
+    <meta property="og:description" content="Seu jogo em outro nível">
+    <meta name="twitter:description" content="Seu jogo em outro nível">
+</head>
+
+<body>
+
+    <!-- Hero Banner -->
+    <div class="banner-desktop" role="img" aria-label="Banner ♠️♦️ACP♥️♣️"></div>
+
+    <!-- Sticky Store Header (Logo, Search, Categories) -->
+    <div class="sticky-store-topbar">
+        <header class="header">
+            <div class="top-nav">
+                <div class="brand-container">
+                    <div class="logo-main" role="img" aria-label="♠️♦️ACP♥️♣️ Logo"></div>
+
+                    <div class="brand-text">
+                        <h1 class="brand-name">♠️♦️ACP♥️♣️</h1>
+                        <h3 class="brand-subtitle">Seu jogo em outro nível</h3>
+                    </div>
+                </div>
+                <div class="nav-actions">
+                    <button class="cart-toggle" id="btnCart" aria-label="Ver carrinho">
+                        <span class="cart-icon">🛒</span>
+                        <span class="cart-label">Carrinho</span>
+                        <span class="cart-count" id="contador">0</span>
+                    </button>
+                </div>
+            </div>
+            <div class="search-bar-container">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="busca" placeholder="O que você deseja comer hoje?"
+                        aria-label="Buscar pratos">
+                </div>
+        </header>
+
+        <!-- Categories Navigation -->
+        <nav class="categories-nav" aria-label="Categorias de produtos">
+            <div class="categories-list" id="categoriesList">
+                <button class="cat-btn active" data-cat="todos">Todos</button>
+                <!-- Categorias dinâmicas via Supabase -->
+            </div>
+        </nav>
+    </div>
+
+    <main class="main-content">
+        <!-- Menu Grid -->
+        <section class="menu-section">
+            <h1 class="section-title">Nosso Cardápio</h1>
+            <div class="menu-grid" id="menu">
+                <!-- Produtos serão renderizados via JS -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Shopping Cart Sidebar (Wizard 2 Etapas) -->
+    <aside class="cart-sidebar" id="cart" aria-hidden="true">
+
+        <!-- Header + Step Indicator -->
+        <div class="cart-header">
+            <div class="cart-header-top">
+                <h2>Seu Pedido</h2>
+                <button class="close-cart" id="closeCart">&times;</button>
+            </div>
+            <div class="step-indicator">
+                <div class="step-item" id="btnVoltarEtapa" style="cursor: pointer;" title="Voltar para a Revisão">
+                    <div class="step-dot active" id="stepDot1">1</div>
+                    <span class="step-label">Revisão / Voltar</span>
+                </div>
+                <div class="step-line" id="stepLine"></div>
+                <div class="step-item">
+                    <div class="step-dot" id="stepDot2">2</div>
+                    <span class="step-label">Entrega</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ETAPA 1: Revisão do Pedido ===== -->
+        <div class="wizard-step active" id="wizardStep1">
+            <div class="step-body" id="cartItems">
+                <div class="empty-cart-msg">Seu carrinho está vazio.</div>
+            </div>
+            <div class="step-footer">
+                <!-- 
+                <div class="coupon-section">
+                    <input type="text" id="cupom" placeholder="Tem um cupom?">
+                    <button id="btnCupom">Aplicar</button>
+                </div>
+                <div id="couponBreakdown" class="coupon-breakdown" style="display:none;">
+                    <div class="cb-row">
+                        <span>Total da compra</span>
+                        <span id="cbTotal"></span>
+                    </div>
+                    <div class="cb-row cb-desc">
+                        <span>🎟️ Desconto do cupom</span>
+                        <span id="cbDesconto"></span>
+                    </div>
+                    <div class="cb-row cb-final">
+                        <span>Subtotal final</span>
+                        <strong id="cbSubfinal"></strong>
+                    </div>
+                </div>
+                -->
+                <div class="subtotal-line">
+                    <span>Subtotal</span>
+                    <span class="subtotal-value">R$ <span id="total">0,00</span></span>
+                </div>
+                <button class="btn-continue-step" id="btnProximaEtapa" disabled>
+                    Continuar <span class="btn-arrow">→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== ETAPA 2: Entrega ===== -->
+        <div class="wizard-step" id="wizardStep2">
+            <div class="step-body" id="step2Body">
+
+                <!-- 1. Dados do Cliente (Agora no topo) -->
+                <div class="form-section">
+                    <p class="form-section-title">Seus Dados</p>
+                    <div class="form-group">
+                        <label for="clienteNome">Nome completo *</label>
+                        <input type="text" id="clienteNome" placeholder="Ex: Maria Silva">
+                    </div>
+                    <div class="form-group">
+                        <label for="clienteTelefone">Telefone / WhatsApp *</label>
+                        <input type="tel" id="clienteTelefone" placeholder="(31) 99999-9999" maxlength="15">
+                    </div>
+                </div>
+
+                <!-- 2. Como prefere receber -->
+                <div class="form-section" id="secaoTipoRecebimento" style="display:none;">
+                    <p class="form-section-title">Como prefere receber?</p>
+                    <div class="delivery-options">
+                        <label class="delivery-option" for="optRetirada">
+                            <input type="radio" name="tipoEntrega" value="retirada" id="optRetirada" checked>
+                            <span class="delivery-option-label">
+                                <span class="delivery-option-icon">🏠</span>
+                                <span>Retirada no local</span>
+                            </span>
+                        </label>
+                        <label class="delivery-option" for="optEntrega">
+                            <input type="radio" name="tipoEntrega" value="entrega" id="optEntrega">
+                            <span class="delivery-option-label">
+                                <span class="delivery-option-icon">🚚</span>
+                                <span>Entrega em casa</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4. Mesa (Só aparece se "mesa") -->
+                <div class="form-section" id="secaoMesa">
+                    <p class="form-section-title">Onde você está?</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="clienteMesa">MESA *</label>
+                            <input type="text" id="clienteMesa" placeholder="Ex: 05">
+                        </div>
+                        <div class="form-group">
+                            <label for="clientePosicao">POSIÇÃO *</label>
+                            <input type="text" id="clientePosicao" placeholder="Ex: 02">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2.1 Forma de Pagamento -->
+                <div class="form-section">
+                    <p class="form-section-title">Forma de Pagamento</p>
+                    <div class="delivery-options payment-options">
+                        <label class="delivery-option" for="payPix">
+                            <input type="radio" name="formaPagamento" value="pix" id="payPix">
+                            <span class="delivery-option-label">
+                                <span class="delivery-option-icon">📱</span>
+                                <span>PIX</span>
+                            </span>
+                        </label>
+                        <label class="delivery-option" for="payDinheiro">
+                            <input type="radio" name="formaPagamento" value="dinheiro" id="payDinheiro" checked>
+                            <span class="delivery-option-label">
+                                <span class="delivery-option-icon">💵</span>
+                                <span>Dinheiro</span>
+                            </span>
+                        </label>
+                        <label class="delivery-option" for="payCartao">
+                            <input type="radio" name="formaPagamento" value="cartao" id="payCartao">
+                            <span class="delivery-option-label">
+                                <span class="delivery-option-icon">💳</span>
+                                <span>Cartão</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. Endereço de Entrega (Smart Flow) -->
+                <div class="form-section" id="secaoEndereco" style="display:none;">
+                    <p class="form-section-title">Endereço de Entrega</p>
+                    <div class="form-group">
+                        <label for="cep">CEP *</label>
+                        <div style="position:relative;">
+                            <input type="text" id="cep" placeholder="00000-000" maxlength="9" style="width:100%;">
+                            <div id="cepLoading" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:0.8rem;color:var(--primary);">
+                                ⏳ Buscando...
+                            </div>
+                        </div>
+                        <small id="cepStatus" style="display:block;margin-top:6px;font-size:0.8rem;"></small>
+                    </div>
+
+                    <!-- Campos que aparecem após o CEP -->
+                    <div id="camposEnderecoAuto" style="display:none;">
+                        <div class="form-row">
+                            <div class="form-group" style="flex:2">
+                                <label for="endLogradouro">Logradouro</label>
+                                <input type="text" id="endLogradouro" placeholder="Rua, Avenida..." readonly>
+                            </div>
+                            <div class="form-group" style="flex:0.6">
+                                <label for="endNumero">Número *</label>
+                                <input type="text" id="endNumero" placeholder="123">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="endBairro">Bairro</label>
+                            <input type="text" id="endBairro" placeholder="Bairro" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="endComplemento">Complemento</label>
+                            <input type="text" id="endComplemento" placeholder="Apto, bloco, referência...">
+                        </div>
+                    </div>
+                </div>
+
+
+
+            <!-- Footer Etapa 2 -->
+            <div class="step-footer">
+                <div class="total-breakdown">
+                    <div class="breakdown-row">
+                        <span>Subtotal</span>
+                        <span id="breakdownSubtotal">R$ 0,00</span>
+                    </div>
+                    <div class="breakdown-row" id="rowDesconto" style="display:none;">
+                        <span>Desconto</span>
+                        <span id="breakdownDesconto" class="discount-value">—</span>
+                    </div>
+                    <div class="breakdown-row" id="rowFrete" style="display:none;">
+                        <span>Frete</span>
+                        <span id="breakdownFrete">—</span>
+                    </div>
+                    <div class="breakdown-row total-row">
+                        <span>Total</span>
+                        <strong id="breakdownTotal">R$ 0,00</strong>
+                    </div>
+                </div>
+                <button class="btn-checkout" id="btnEnviar">
+                    <span>Enviar pedido para o atendente</span>
+                    <span class="atendente-icon">🛎️</span>
+                </button>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- Backdrop for Modals/Sidebar -->
+    <div class="backdrop" id="backdrop"></div>
+
+    <!-- Product Detail Popup -->
+    <section class="modal" id="popup" aria-modal="true" role="dialog">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <div class="modal-body">
+                <div class="modal-image-wrapper">
+                    <img id="pimg" src="" alt="">
+                </div>
+                <div class="modal-info">
+                    <h3 id="pnome">Nome do Produto</h3>
+                    <p id="pdesc" class="product-description">Descrição detalhada do produto.</p>
+
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <button class="qty-btn" id="menos" aria-label="Diminuir quantidade">−</button>
+                            <span id="qnt" class="qty-value">1</span>
+                            <button class="qty-btn" id="mais" aria-label="Aumentar quantidade">+</button>
+                        </div>
+                        <div class="price-display"
+                            style="display:flex; flex-direction:column; align-items:flex-end; min-width: 120px;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight:600;">
+                                Unitário: R$ <span id="ppreco">0,00</span>
+                            </div>
+                            <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">
+                                R$ <span id="psubtotal">0,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="observation-wrapper">
+                        <label for="obs">Alguma observação?</label>
+                        <textarea id="obs" placeholder="Ex: Sem cebola, ponto da carne, etc."></textarea>
+                    </div>
+
+                    <div class="modal-actions-container">
+                        <button class="btn-add-confirm" id="confirmar">
+                            Adicionar ao Carrinho
+                        </button>
+                        <div class="post-add-actions" id="postAddActions" style="display: none;">
+                            <button class="btn-continue" id="btnContinuar">Comprar Mais</button>
+                            <button class="btn-go-cart" id="btnIrCarrinho">Ir para o Carrinho</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PIX Payment Modal -->
+    <div class="modal" id="modalPix" aria-modal="true" role="dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="pixModalBody">
+                <h3>Pague com PIX</h3>
+                <p>Escaneie o QR Code ou copie o código abaixo para pagar.</p>
+
+                <div id="pixQrContainer">
+                    <div id="pixLoading">⏳ Gerando QR Code...</div>
+                    <img id="pixQrImage" src="" alt="QR Code PIX" style="display:none;">
+                </div>
+
+                <div class="form-group">
+                    <button class="btn-checkout" id="btnCopiarPix" style="display:none;">
+                        Copiar Código PIX 📋
+                    </button>
+                    <small id="copyPixFeedback" style="display:none;">Código copiado! ✅</small>
+                </div>
+
+                <div id="pixStatusMessage">Aguardando pagamento...</div>
+
+                <button class="close-modal" id="closeModalPix">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+    <script src="index.js"></script>
+</body>
+
+</html>

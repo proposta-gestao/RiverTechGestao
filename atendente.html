@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Atendente — ♠️♦️ACP♥️♣️</title>
+
+    <!-- PWA: Manifest e meta tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c9a84c">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ACP Pedidos">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="atendente.css">
+</head>
+<body>
+
+    <!-- Barra de Ativação de Som -->
+    <div id="soundAlertBar" onclick="unlockAudio()">
+        🔔 Alertas sonoros desativados. Clique aqui para ativar!
+    </div>
+
+    <!-- Overlay de Permissão de Áudio -->
+    <div id="audioOverlay" class="audio-permission-overlay">
+        <div class="login-card">
+            <h2>Bem-vindo de volta!</h2>
+            <p style="color: #888; margin-bottom: 2rem;">Para ouvirmos a campainha dos novos pedidos, precisamos da sua permissão.</p>
+            <button class="btn-login" id="btnAudioEnable">Ativar Sons e Iniciar Painel</button>
+        </div>
+    </div>
+
+    <!-- Tela de Login -->
+    <section id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo"></div>
+            <h2>Painel do Atendente</h2>
+            <div class="form-group">
+                <label>CPF</label>
+                <input type="text" id="loginCpf" placeholder="000.000.000-00" maxlength="14">
+            </div>
+            <div class="form-group">
+                <label>SENHA</label>
+                <input type="password" id="loginSenha" placeholder="••••••">
+            </div>
+            <p id="errorMsg" style="color: #ff4757; font-size: 0.85rem; display: none; margin-bottom: 1rem;"></p>
+            <button class="btn-login" id="btnLogin">Entrar</button>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboardScreen">
+        <header class="dash-header">
+            <div class="dash-info">
+                <h1>♠️ATENDIMENTO♦️ </h1>
+                <p>ATENDENTE: <strong id="waiterName">...</strong></p>
+            </div>
+            <button class="btn-logout" id="btnLogout">SAIR</button>
+        </header>
+
+        <!-- Navegação por Abas (Mobile) -->
+        <nav class="tabs-nav">
+            <div class="tab-item active" data-tab="pendente" onclick="switchTab('pendente')">
+                <span>NOVOS</span>
+                <span class="tab-badge" id="badgeTabPendente">0</span>
+            </div>
+            <div class="tab-item" data-tab="cozinha" onclick="switchTab('cozinha')">
+                <span>COZINHA</span>
+                <span class="tab-badge" id="badgeTabCozinha">0</span>
+            </div>
+        </nav>
+
+        <main class="board-grid">
+            <!-- Novos Pedidos -->
+            <div class="board-column active" id="colPendente">
+                <div class="column-header">
+                    <span class="column-title" style="color: var(--status-pendente)">🔔 Novos Pedidos</span>
+                    <span class="badge-count" id="countPendente">0</span>
+                </div>
+                <div id="listPendente"></div>
+            </div>
+
+            <!-- Na Cozinha -->
+            <div class="board-column" id="colCozinha">
+                <div class="column-header">
+                    <span class="column-title" style="color: var(--status-cozinha)">🍳 Cozinha / Bar</span>
+                    <span class="badge-count" id="countCozinha">0</span>
+                </div>
+                <div id="listCozinha"></div>
+            </div>
+        </main>
+    </section>
+
+    <!-- Modal de Detalhes do Pedido -->
+    <div id="modalConfirmacao" class="modal-backdrop">
+        <div class="modal-card">
+            <div class="modal-header" style="position: relative;">
+                <button onclick="fecharModalConfirmacao()" style="position: absolute; right: 15px; top: 15px; background: transparent; border: none; color: #555; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                <h2>📝 Detalhes do Pedido</h2>
+                <p id="modalOrderInfo" style="margin: 5px 0 0; font-size: 0.85rem; color: #888;"></p>
+            </div>
+            <div class="modal-body" id="modalOrderItems">
+                <!-- Itens populados via JS -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal-kitchen" id="btnModalEnviarCozinha">
+                    CONFIRMAR PAGAMENTO E ENVIAR 🍳
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup de Confirmação Personalizado -->
+    <div id="modalAviso" class="modal-backdrop" style="z-index: 3000;">
+        <div class="modal-aviso-card">
+            <span class="modal-aviso-icon">💰</span>
+            <h3 class="modal-aviso-title" id="avisoTitle">Confirmar Pagamento?</h3>
+            <p class="modal-aviso-text" id="avisoText">Você está prestes a marcar este pedido como PAGO e enviá-lo para a cozinha.</p>
+            <div class="modal-aviso-footer">
+                <button class="btn-confirm-pop" id="btnAvisoConfirm">SIM, CONFIRMAR ✅</button>
+                <button class="btn-cancel-pop" onclick="fecharAviso()">Não, voltar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="atendente.js"></script>
+
+    <!-- PWA: Registro do Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((reg) => console.log('[PWA] Service Worker registrado. Scope:', reg.scope))
+                    .catch((err) => console.warn('[PWA] Falha ao registrar Service Worker:', err));
+            });
+        }
+    </script>
+</body>
+</html>
