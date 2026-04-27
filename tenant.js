@@ -211,7 +211,7 @@ async function initTenantAdmin(supabaseClient, userId) {
 
     const { data, error } = await supabaseClient
         .from('usuarios')
-        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url)')
+        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status)')
         .eq('id', userId)
         .single();
 
@@ -221,6 +221,12 @@ async function initTenantAdmin(supabaseClient, userId) {
     }
 
     const emp = data.empresas || {};
+
+    // Bloquear acesso se a empresa estiver inativa
+    if (emp.status === 'inativo') {
+        console.warn('[Tenant] Empresa inativa. Acesso bloqueado.');
+        return null;
+    }
 
     // PASSO 3 — Armazenar globalmente
     window.TENANT.empresa_id   = data.empresa_id;

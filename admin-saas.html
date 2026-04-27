@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Super Admin | SaaS</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="admin-saas.css">
+</head>
+
+<body>
+
+    <!-- Toast de Notificações -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Login Screen (Super Admin) -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <h1>SaaS Admin</h1>
+            <p>Painel Global de Gestão</p>
+            <div class="form-group">
+                <label for="loginEmail">E-mail Super Admin</label>
+                <input type="email" id="loginEmail" placeholder="super@admin.com">
+            </div>
+            <div class="form-group">
+                <label for="loginSenha">Senha</label>
+                <input type="password" id="loginSenha" placeholder="••••••••">
+            </div>
+            <button class="btn-login" id="btnLogin">Entrar no Sistema</button>
+            <p class="login-error" id="loginError"></p>
+        </div>
+    </div>
+
+    <!-- Admin SaaS Layout -->
+    <div class="admin-layout" id="adminLayout" style="display: none;">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SaaS Admin</h2>
+                <span class="badge-super">Global</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard">Dashboard</a>
+                <a href="#" class="nav-item" data-target="empresas">Empresas (Tenants)</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btnSair" class="btn-outline">Sair da Conta</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view-section active">
+                <header class="section-header">
+                    <h1>Visão Geral da Plataforma</h1>
+                </header>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Total de Lojas</h3>
+                        <div class="metric-value" id="metricTotal">--</div>
+                    </div>
+                    <div class="metric-card success">
+                        <h3>Lojas Ativas</h3>
+                        <div class="metric-value" id="metricAtivas">--</div>
+                    </div>
+                    <div class="metric-card danger">
+                        <h3>Lojas Inativas</h3>
+                        <div class="metric-value" id="metricInativas">--</div>
+                    </div>
+                    <div class="metric-card premium">
+                        <h3>Planos Premium</h3>
+                        <div class="metric-value" id="metricPremium">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empresas View -->
+            <div id="view-empresas" class="view-section">
+                <header class="section-header">
+                    <h1>Gestão de Empresas</h1>
+                    <button class="btn-primary" id="btnNovaEmpresa">+ Nova Empresa</button>
+                </header>
+
+                <div class="table-container">
+                    <table class="saas-table">
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>Slug</th>
+                                <th>Plano</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaEmpresas">
+                            <tr><td colspan="5" style="text-align: center;">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Nova Empresa -->
+    <div class="modal" id="modalNovaEmpresa">
+        <div class="modal-content">
+            <span class="modal-close" onclick="fecharModal('modalNovaEmpresa')">&times;</span>
+            <h2>Nova Empresa</h2>
+            <p class="modal-subtitle">Isso criará a loja e o usuário administrador.</p>
+
+            <div class="form-group">
+                <label>Nome da Empresa (ex: Hamburgueria do Jão)</label>
+                <input type="text" id="empNome" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Slug (URL) (ex: jao)</label>
+                <input type="text" id="empSlug" required>
+                <small>A loja ficará acessível em: subdominio.com.br ou ?loja=slug</small>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Plano</label>
+                    <select id="empPlano">
+                        <option value="basico">Básico</option>
+                        <option value="pro">Pro</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cor Primária</label>
+                    <input type="color" id="empCor" value="#FF5733">
+                </div>
+            </div>
+
+            <hr class="modal-divider">
+            <h3>Usuário Administrador</h3>
+
+            <div class="form-group">
+                <label>E-mail do Dono da Loja</label>
+                <input type="email" id="empAdminEmail" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Senha Provisória</label>
+                <input type="text" id="empAdminSenha" required value="Mudar123!">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-outline" onclick="fecharModal('modalNovaEmpresa')">Cancelar</button>
+                <button class="btn-primary" id="btnSalvarNovaEmpresa">Criar e Provisionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Empresa -->
+    <div class="modal" id="modalEditarEmpresa">
+        <div class="modal-content">
+            <span class="modal-close" onclick="fecharModal('modalEditarEmpresa')">&times;</span>
+            <h2>Editar Empresa</h2>
+            
+            <input type="hidden" id="editEmpId">
+
+            <div class="form-group">
+                <label>Nome da Empresa</label>
+                <input type="text" id="editEmpNome" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Plano</label>
+                    <select id="editEmpPlano">
+                        <option value="basico">Básico</option>
+                        <option value="pro">Pro</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editEmpStatus">
+                        <option value="ativo">Ativo (Acesso Liberado)</option>
+                        <option value="inativo">Inativo (Acesso Bloqueado)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Cor Primária</label>
+                <input type="color" id="editEmpCor">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-outline" onclick="fecharModal('modalEditarEmpresa')">Cancelar</button>
+                <button class="btn-primary" id="btnSalvarEdicaoEmpresa">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    
+    <!-- Script Específico do SaaS Admin -->
+    <script src="admin-saas.js"></script>
+</body>
+
+</html>
