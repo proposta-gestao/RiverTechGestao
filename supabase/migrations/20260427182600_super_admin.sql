@@ -44,7 +44,7 @@ CREATE OR REPLACE FUNCTION public.create_tenant_with_admin(
 ) RETURNS uuid
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, auth
+SET search_path = public, auth, extensions
 AS $$
 DECLARE
     v_empresa_id uuid;
@@ -62,8 +62,9 @@ BEGIN
     RETURNING id INTO v_empresa_id;
 
     -- Inserir store_settings inicial (crucial para o painel admin funcionar)
-    INSERT INTO public.store_settings (empresa_id, store_name)
-    VALUES (v_empresa_id, p_nome);
+    -- Contorno para bancos onde o id ficou como inteiro sem auto-incremento
+    INSERT INTO public.store_settings (id, empresa_id, store_name)
+    VALUES (COALESCE((SELECT MAX(id) FROM public.store_settings), 0) + 1, v_empresa_id, p_nome);
 
     -- Criar o Usuário no Auth do Supabase
     v_new_user_id := gen_random_uuid();
