@@ -210,7 +210,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
             p_slug,
             p_plano,
             p_cor_primaria,
-            p_logo_url: null,
+            p_logo_url: "",
             p_admin_email,
             p_admin_password
         });
