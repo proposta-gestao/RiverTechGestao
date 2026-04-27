@@ -83,6 +83,14 @@ async function inicializar() {
     dom.menu.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:3rem;">Carregando cardápio...</p>';
     try {
         carregarDadosSalvos();
+
+        // --- Multi-Tenant: resolver empresa_id pelo slug da URL ---
+        const empresaId = await initTenantPublico(sb);
+        if (!empresaId) {
+            dom.menu.innerHTML = '<p style="text-align:center;color:#FF4757;padding:3rem;">Loja não encontrada. Verifique o link e tente novamente.</p>';
+            return;
+        }
+
         await Promise.all([
             carregarCategorias(),
             carregarProdutos(),
@@ -91,6 +99,7 @@ async function inicializar() {
         ]);
         vincularRadiosEntrega();
     } catch (e) {
+        console.error(e);
         dom.menu.innerHTML = '<p style="text-align:center;color:#FF4757;padding:3rem;">Erro ao carregar o cardápio. Tente recarregar a página.</p>';
     }
 }
@@ -99,6 +108,7 @@ async function carregarCategorias() {
     const { data, error } = await sb
         .from('categories')
         .select('*')
+        .eq('empresa_id', getTenantId())
         .order('order_position');
     if (error) throw error;
     CATEGORIAS = data || [];
@@ -109,6 +119,7 @@ async function carregarProdutos() {
     const { data, error } = await sb
         .from('products')
         .select('*, categories(name, slug)')
+        .eq('empresa_id', getTenantId())
         .eq('active', true)
         .or('archived.is.null,archived.eq.false')
         .order('sort_order', { ascending: true });
@@ -131,15 +142,17 @@ async function carregarCupons() {
     const { data, error } = await sb
         .from('coupons')
         .select('code, discount_percent')
+        .eq('empresa_id', getTenantId())
         .eq('active', true);
     if (error) throw error;
     CUPONS = data || [];
 }
 
 async function carregarConfiguracoesPublicas() {
+    const empresaId = getTenantId();
     const [settingsRes, zonesRes] = await Promise.all([
-        sb.from('store_settings').select('*').single(),
-        sb.from('shipping_zones').select('*').eq('active', true)
+        sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
+        sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).eq('active', true)
     ]);
 
     if (!settingsRes.error && settingsRes.data) {
@@ -773,6 +786,7 @@ document.getElementById("btnEnviar").onclick = async () => {
 
         const orderPayload = {
             id: orderId,
+            empresa_id: getTenantId(), // ← Multi-Tenant: isola o pedido à empresa
             customer_name: nomeCliente,
             customer_phone: telefoneCliente,
             customer_address: camposEndereco,
@@ -791,6 +805,7 @@ document.getElementById("btnEnviar").onclick = async () => {
 
         const itemsPayload = state.carrinho.map(p => ({
             order_id: orderId,
+            empresa_id: getTenantId(), // ← Multi-Tenant
             product_id: p.id,
             product_name: p.nome,
             quantity: p.qnt,

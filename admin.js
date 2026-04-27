@@ -244,6 +244,17 @@ document.getElementById('btnLogin').onclick = async () => {
             return;
         }
 
+        // --- Multi-Tenant: carregar empresa_id do usuário logado ---
+        const empresaId = await initTenantAdmin(sb, data.user.id);
+        if (!empresaId) {
+            errEl.textContent = 'Usuário não está vinculado a nenhuma empresa. Contate o suporte.';
+            errEl.style.display = 'block';
+            await sb.auth.signOut();
+            btn.disabled = false;
+            btn.textContent = 'Entrar';
+            return;
+        }
+
         await showAdmin();
 
         // Reiniciar o botão visualmente caso deslogue depois
@@ -271,7 +282,11 @@ async function checkSession() {
     if (session) {
         const { data: adminData } = await sb.from('admin_users').select('id').eq('user_id', session.user.id).single();
         if (adminData) {
-            showAdmin();
+            // --- Multi-Tenant: restaurar empresa_id da sessão ---
+            const empresaId = await initTenantAdmin(sb, session.user.id);
+            if (empresaId) {
+                showAdmin();
+            }
         }
     }
 }
@@ -597,7 +612,11 @@ async function carregarAtendentes() {
 }
 
 async function carregarDashboard() {
-    const { data, error } = await sb.from('orders').select('*, order_items(*)').order('created_at', { ascending: false });
+    const { data, error } = await sb
+        .from('orders')
+        .select('*, order_items(*)')
+        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
+        .order('created_at', { ascending: false });
     if (error) { showToast('Erro ao carregar pedidos', 'error'); return; }
     pedidos = data || [];
 
@@ -834,6 +853,7 @@ async function carregarProdutos() {
     const { data, error } = await sb
         .from('products')
         .select('*, categories(name)')
+        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
         .order('archived', { ascending: true })
         .order('active', { ascending: false })
         .order('sort_order', { ascending: true });
@@ -861,7 +881,9 @@ async function carregarProdutos() {
 }
 
 async function carregarCategorias() {
-    const { data, error } = await sb.from('categories').select('*').order('order_position');
+    const { data, error } = await sb.from('categories').select('*')
+        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
+        .order('order_position');
     if (error) { showToast('Erro ao carregar categorias', 'error'); return; }
     categorias = data || [];
     renderCategorias();
@@ -869,7 +891,9 @@ async function carregarCategorias() {
 }
 
 async function carregarCupons() {
-    const { data, error } = await sb.from('coupons').select('*').order('created_at', { ascending: false });
+    const { data, error } = await sb.from('coupons').select('*')
+        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
+        .order('created_at', { ascending: false });
     if (error) { showToast('Erro ao carregar cupons', 'error'); return; }
     cupons = data || [];
     renderCupons();
@@ -1367,6 +1391,8 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
     if (id) {
         ({ error: dbError } = await sb.from('products').update(payload).eq('id', id));
     } else {
+        // ← Multi-Tenant: injeta empresa_id no INSERT
+        payload.empresa_id = getTenantId();
         const { data, error } = await sb.from('products').insert(payload).select().single();
         dbError = error;
         if (data) savedProductId = data.id;
@@ -1379,9 +1405,10 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
         if (stockInput > 0 || !id) {
             await sb.from('stock_movements').insert({
                 product_id: savedProductId,
+                empresa_id: getTenantId(), // ← Multi-Tenant
                 type: (!id) ? 'entrada' : tipoMov,
                 quantity: stockInput,
-                reason: (!id) ? 'Estoque inicial' : null, // Se for ajuste, usamos o ID do motivo
+                reason: (!id) ? 'Estoque inicial' : null,
                 reason_id: (id && tipoMov === 'saida') ? motivoId : null,
                 notes: obs || null
             });
@@ -1470,7 +1497,8 @@ document.getElementById('btnSalvarCategoria').onclick = async () => {
     if (id) {
         ({ error } = await sb.from('categories').update(payload).eq('id', id));
     } else {
-        ({ error } = await sb.from('categories').insert(payload));
+        // ← Multi-Tenant: injeta empresa_id no INSERT
+        ({ error } = await sb.from('categories').insert({ ...payload, empresa_id: getTenantId() }));
     }
 
     if (error) {
@@ -1533,7 +1561,8 @@ document.getElementById('btnSalvarCupom').onclick = async () => {
     if (id) {
         ({ error } = await sb.from('coupons').update(payload).eq('id', id));
     } else {
-        ({ error } = await sb.from('coupons').insert(payload));
+        // ← Multi-Tenant: injeta empresa_id no INSERT
+        ({ error } = await sb.from('coupons').insert({ ...payload, empresa_id: getTenantId() }));
     }
 
     if (error) {
@@ -1675,9 +1704,10 @@ window.toggleUrlInput = (containerId) => {
 };
 
 async function carregarConfiguracoes() {
+    const empresaId = getTenantId();
     const [settingsRes, zonasRes] = await Promise.all([
-        sb.from('store_settings').select('*').single(),
-        sb.from('shipping_zones').select('*').order('created_at')
+        sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
+        sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at')
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
@@ -1812,7 +1842,7 @@ document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
     btn.textContent = 'Salvando...';
 
     const payload = {
-        id: 1,
+        empresa_id:     getTenantId(), // ← Multi-Tenant (upsert por empresa_id)
         brand_name:     document.getElementById('confBrandName').value.trim(),
         brand_subtitle: document.getElementById('confBrandSubtitle').value.trim(),
         banner_url:     document.getElementById('confBannerUrl').value.trim(),
@@ -1820,7 +1850,7 @@ document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
         updated_at:     new Date().toISOString()
     };
 
-    const { error } = await sb.from('store_settings').upsert(payload);
+    const { error } = await sb.from('store_settings').upsert(payload, { onConflict: 'empresa_id' });
     if (error) {
         showToast('Erro ao salvar visual: ' + error.message, 'error');
     } else {
@@ -1836,10 +1866,10 @@ document.getElementById('confFreteAtivo').onchange = async function () {
     document.getElementById('freteZonasContainer').style.display = ativo ? 'block' : 'none';
 
     const { error } = await sb.from('store_settings').upsert({
-        id: 1,
+        empresa_id: getTenantId(), // ← Multi-Tenant
         frete_ativo: ativo,
         updated_at: new Date().toISOString()
-    });
+    }, { onConflict: 'empresa_id' });
     if (error) {
         showToast('Erro ao salvar configuração de frete: ' + error.message, 'error');
     } else {
@@ -1958,7 +1988,8 @@ document.getElementById('btnSalvarZona').onclick = async () => {
     if (id) {
         ({ error } = await sb.from('shipping_zones').update(payload).eq('id', id));
     } else {
-        ({ error } = await sb.from('shipping_zones').insert(payload));
+        // ← Multi-Tenant: injeta empresa_id no INSERT
+        ({ error } = await sb.from('shipping_zones').insert({ ...payload, empresa_id: getTenantId() }));
     }
 
     if (error) {
@@ -1966,7 +1997,9 @@ document.getElementById('btnSalvarZona').onclick = async () => {
     } else {
         showToast(id ? 'Bairro atualizado!' : 'Bairro criado!', 'success');
         fecharModal('modalZona');
-        const { data } = await sb.from('shipping_zones').select('*').order('name');
+        const { data } = await sb.from('shipping_zones').select('*')
+            .eq('empresa_id', getTenantId())
+            .order('name');
         zonasEntrega = data || [];
         renderZonasFrete();
     }
@@ -2001,7 +2034,7 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
     btn.textContent = 'Salvando...';
 
     const payload = {
-        id: 1,
+        empresa_id:           getTenantId(), // ← Multi-Tenant (upsert por empresa_id)
         store_name:           document.getElementById('confNomeLoja').value.trim(),
         address_zip:          document.getElementById('confCep').value.trim(),
         address_street:       document.getElementById('confLogradouro').value.trim(),
@@ -2016,7 +2049,7 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
         updated_at:           new Date().toISOString()
     };
 
-    const { error } = await sb.from('store_settings').upsert(payload);
+    const { error } = await sb.from('store_settings').upsert(payload, { onConflict: 'empresa_id' });
     if (error) {
         showToast('Erro ao salvar: ' + error.message, 'error');
     } else {
@@ -2104,7 +2137,9 @@ function initSortableJustificativas() {
 // =================== GESTÃO DE MOTIVOS DE ESTOQUE ===================
 
 async function carregarMotivosEstoque() {
-    const { data, error } = await sb.from('stock_reasons').select('*').order('name');
+    const { data, error } = await sb.from('stock_reasons').select('*')
+        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
+        .order('name');
     if (!error) {
         motivosEstoque = data;
         renderizarMotivosEstoque();
@@ -2142,7 +2177,8 @@ function renderizarMotivosEstoque() {
 document.getElementById('btnNovoMotivoEstoque').onclick = async () => {
     const name = await customPrompt('Novo Motivo de Estoque', 'Digite o nome do motivo:');
     if (name && name.trim()) {
-        const { error } = await sb.from('stock_reasons').insert({ name: name.trim() });
+        // ← Multi-Tenant: injeta empresa_id no INSERT
+        const { error } = await sb.from('stock_reasons').insert({ name: name.trim(), empresa_id: getTenantId() });
         if (error) showToast('Erro ao criar: ' + error.message, 'error');
         else {
             showToast('Motivo criado!', 'success');
@@ -2184,7 +2220,7 @@ async function salvarJustificativasNoBanco() {
     const { error } = await sb.from('store_settings').update({
         cancellation_reasons: cancellationReasons,
         updated_at: new Date().toISOString()
-    }).eq('id', 1);
+    }).eq('empresa_id', getTenantId()); // ← Multi-Tenant
 
     if (error) {
         showToast('Erro ao salvar justificativas: ' + error.message, 'error');
