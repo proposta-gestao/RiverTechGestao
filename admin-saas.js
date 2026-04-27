@@ -159,7 +159,7 @@ function renderizarEmpresas() {
             <td><span class="badge ${badgeStatus}">${emp.status}</span></td>
             <td class="action-links">
                 <button onclick="abrirModalEdicao('${emp.id}')">Editar</button>
-                <a href="/index.html?loja=${emp.slug}" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.9rem">Ver Loja ↗</a>
+                <a href="/${emp.slug}/cardapio" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.9rem">Ver Loja ↗</a>
             </td>
         `;
         tbody.appendChild(tr);

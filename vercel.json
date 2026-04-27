@@ -1,16 +1,24 @@
 {
   "rewrites": [
     {
-      "source": "/admin",
-      "destination": "/admin.html"
-    },
-    {
-      "source": "/superadmin",
+      "source": "/master-saas",
       "destination": "/admin-saas.html"
     },
     {
+      "source": "/:loja/painel-gestao",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/:loja/atendente",
+      "destination": "/atendente.html"
+    },
+    {
+      "source": "/:loja/cardapio",
+      "destination": "/cardapio.html"
+    },
+    {
       "source": "/:loja",
-      "destination": "/index.html"
+      "destination": "/cardapio.html"
     }
   ]
 }
