@@ -30,26 +30,30 @@ function _resolverSlug() {
     // Ambiente local: usar slug fixo ou querystring
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
     if (isLocal) {
-        // Permite override via ?loja=slug no dev
-        const paramSlug = new URLSearchParams(window.location.search).get('loja');
-        if (paramSlug) return paramSlug;
+    // 1. Tentar pegar da Rota (Pathname) - Ex: meudominio.com/slug
+    const pathSegments = window.location.pathname.split('/').filter(p => p);
+    // Ignora admin.html, index.html ou admin-saas.html
+    if (pathSegments.length > 0 && !pathSegments[0].includes('.html')) {
+        return pathSegments[0];
+    }
+
+    // 2. Tentar da Querystring - Ex: ?loja=slug (Ótimo para testes locais)
+    const paramSlug = new URLSearchParams(window.location.search).get('loja');
+    if (paramSlug) return paramSlug;
+
+    // 3. Tentar Subdomínio - Ex: slug.meudominio.com
+    const partes = hostname.split('.');
+    if (partes.length >= 3 && hostname !== '127.0.0.1') {
+        return partes[0];
+    }
+
+    // Fallback para dev local
+    if (isLocal) {
         console.warn('[Tenant] Ambiente local — usando slug de desenvolvimento: "teste"');
         return 'teste';
     }
 
-    // Extrair subdomínio: pega o primeiro segmento antes do primeiro ponto
-    // Ex: "cliente1.meusistema.com" → ["cliente1", "meusistema", "com"]
-    const partes = hostname.split('.');
-    if (partes.length >= 3) {
-        return partes[0]; // subdomínio
-    }
-
-    // Fallback: domínio sem subdomínio (ex: meusistema.com)
-    // Tenta querystring como último recurso
-    const paramSlug = new URLSearchParams(window.location.search).get('loja');
-    if (paramSlug) return paramSlug;
-
-    console.error('[Tenant] Não foi possível determinar o slug a partir de:', hostname);
+    console.error('[Tenant] Não foi possível determinar o slug a partir de:', hostname, window.location.pathname);
     return null;
 }
 

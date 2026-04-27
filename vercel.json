@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/superadmin",
+      "destination": "/admin-saas.html"
+    },
+    {
+      "source": "/:loja",
+      "destination": "/index.html"
+    }
+  ]
+}
