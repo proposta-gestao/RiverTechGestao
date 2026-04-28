@@ -565,6 +565,14 @@ document.getElementById('loginCpf').oninput = (e) => {
     e.target.value = formatCpf(e.target.value);
 };
 
+// Suporte à tecla Enter no Login (Atendente)
+document.getElementById('loginSenha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') login();
+});
+document.getElementById('loginCpf').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') login();
+});
+
 // Iniciar
 checkSession();
 

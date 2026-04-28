@@ -75,6 +75,14 @@ document.getElementById('btnLogin').addEventListener('click', async () => {
     }
 });
 
+// Suporte à tecla Enter no Login
+document.getElementById('loginSenha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
+document.getElementById('loginEmail').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
+
 document.getElementById('btnSair').addEventListener('click', async () => {
     await sb.auth.signOut();
     window.location.reload();
@@ -154,7 +162,7 @@ function renderizarEmpresas() {
                 <strong>${emp.nome}</strong><br>
                 <small style="color:var(--text-secondary)">ID: ${emp.id.split('-')[0]}...</small>
             </td>
-            <td><code style="background:#27272a;padding:2px 6px;border-radius:4px">${emp.slug}</code></td>
+            <td><code style="background:#27272a;padding:2px 6px;border-radius:4px">https://river-tech-gestao.vercel.app/${emp.slug}</code></td>
             <td><span class="badge badge-plano ${badgePlano}">${emp.plano}</span></td>
             <td><span class="badge ${badgeStatus}">${emp.status}</span></td>
             <td class="action-links">
@@ -178,7 +186,7 @@ function fecharModal(id) {
 // ==========================================
 document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     document.getElementById('empNome').value = '';
-    document.getElementById('empSlug').value = '';
+    document.getElementById('empSlug').value = 'https://river-tech-gestao.vercel.app/';
     document.getElementById('empPlano').value = 'basico';
     document.getElementById('empCor').value = '#FF5733';
     document.getElementById('empAdminEmail').value = '';
@@ -190,7 +198,13 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
     const btn = document.getElementById('btnSalvarNovaEmpresa');
     
     const p_nome = document.getElementById('empNome').value;
-    const p_slug = document.getElementById('empSlug').value;
+    let p_slug = document.getElementById('empSlug').value;
+    
+    // Extrai apenas o final se o usuário manteve a URL base
+    if (p_slug.includes('river-tech-gestao.vercel.app/')) {
+        p_slug = p_slug.split('/').filter(p => p).pop();
+    }
+    
     const p_plano = document.getElementById('empPlano').value;
     const p_cor_primaria = document.getElementById('empCor').value;
     const p_admin_email = document.getElementById('empAdminEmail').value;

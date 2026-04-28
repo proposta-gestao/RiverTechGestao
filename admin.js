@@ -265,9 +265,17 @@ document.getElementById('btnLogin').onclick = async () => {
         errEl.textContent = 'Erro inesperado: ' + err.message;
         errEl.style.display = 'block';
         btn.disabled = false;
-        btn.textContent = 'Entrar';
+        btn.textContent = 'Entrar no Sistema';
     }
 };
+
+// Suporte à tecla Enter no Login
+document.getElementById('loginSenha').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
+document.getElementById('loginEmail').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('btnLogin').click();
+});
 
 document.getElementById('btnLogout').onclick = async () => {
     await sb.auth.signOut();
