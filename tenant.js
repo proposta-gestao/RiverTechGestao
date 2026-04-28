@@ -291,7 +291,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     // Tentamos primeiro com o tema completo
     let { data, error } = await supabaseClient
         .from('usuarios')
-        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda)')
+        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda)')
         .eq('id', userId)
         .single();
 
@@ -299,7 +299,7 @@ async function initTenantAdmin(supabaseClient, userId) {
         console.warn('[Tenant-Admin] Falha ao carregar colunas de tema, tentando busca básica...');
         const retry = await supabaseClient
             .from('usuarios')
-            .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status)')
+            .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos)')
             .eq('id', userId)
             .single();
         data = retry.data;
@@ -326,6 +326,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     window.TENANT.cor_primaria       = emp.cor_primaria || null;
     window.TENANT.logo_url           = emp.logo_url || null;
     window.TENANT.role               = data.role;
+    window.TENANT.modulos             = emp.modulos || {};
     window.TENANT.tema_cor_primaria   = emp.tema_cor_primaria  || null;
     window.TENANT.tema_cor_secundaria = emp.tema_cor_secundaria || null;
     window.TENANT.tema_cor_botao      = emp.tema_cor_botao     || null;
@@ -356,6 +357,45 @@ async function initTenantAdmin(supabaseClient, userId) {
     return data.empresa_id;
 }
 
+/**
+ * Inicializa o tenant diretamente pelo ID da empresa.
+ * Útil para o painel do atendente que usa um sistema de login customizado.
+ */
+async function initTenantById(supabaseClient, empresaId) {
+    if (window.TENANT.pronto && window.TENANT.empresa_id === empresaId) return empresaId;
+
+    const { data, error } = await supabaseClient
+        .from('empresas')
+        .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
+        .eq('id', empresaId)
+        .single();
+
+    if (error || !data) {
+        console.error('[Tenant] Erro ao carregar empresa por ID:', empresaId, error?.message);
+        return null;
+    }
+
+    // PASSO 3 — Armazenar globalmente (incluindo tema)
+    window.TENANT.empresa_id         = data.id;
+    window.TENANT.slug               = data.slug;
+    window.TENANT.nome               = data.nome;
+    window.TENANT.cor_primaria       = data.cor_primaria;
+    window.TENANT.logo_url           = data.logo_url;
+    window.TENANT.modulos            = data.modulos || {};
+    window.TENANT.tema_cor_primaria   = data.tema_cor_primaria;
+    window.TENANT.tema_cor_secundaria = data.tema_cor_secundaria;
+    window.TENANT.tema_cor_botao      = data.tema_cor_botao;
+    window.TENANT.tema_cor_bg         = data.tema_cor_bg;
+    window.TENANT.tema_cor_surface    = data.tema_cor_surface;
+    window.TENANT.tema_cor_borda      = data.tema_cor_borda;
+    window.TENANT.pronto             = true;
+
+    _aplicarWhiteLabel(data);
+
+    console.info('[Tenant] ✅ Empresa carregada por ID:', data.nome);
+    return data.id;
+}
+
 // ================================================================
 // PASSO 4 + 7: getTenantId() — RETORNA empresa_id CACHEADO
 // Use em TODOS os INSERTs, UPDATEs e SELECTs do frontend.
@@ -378,11 +418,15 @@ function isModuloAtivo(modulo) {
     // Se ainda não carregou o tenant, assumimos falso para segurança
     if (!window.TENANT || !window.TENANT.pronto) return false;
     
-    const mods = window.TENANT.modulos;
+    const mods = window.TENANT.modulos || {};
     
     // Se o módulo não estiver definido no JSON, consideramos ATIVO por padrão (backwards compatibility)
-    // A menos que queiramos um sistema restritivo (opt-in), então mudaríamos para false.
-    if (mods[modulo] === undefined) return true;
+    if (mods[modulo] === undefined) {
+        // console.log(`[Modules] ${modulo} não definido. Ativando por padrão.`);
+        return true;
+    }
     
-    return mods[modulo] === true;
+    const ativo = mods[modulo] === true;
+    // console.log(`[Modules] Check: ${modulo} = ${ativo}`);
+    return ativo;
 }

@@ -631,58 +631,115 @@ async function carregarTudo() {
  * Filtra a interface do lojista escondendo o que não está no plano/módulo ativo.
  */
 function aplicarFiltrosDeModulos() {
-    console.log('[Modules] Aplicando filtros de funcionalidades...');
+    if (!window.TENANT || !window.TENANT.pronto) {
+        console.warn('[Modules] Tenant não pronto. Abortando filtros.');
+        return;
+    }
+    console.log('[Modules] Aplicando filtros granulares. Módulos:', window.TENANT.modulos);
 
-    // 1. Dashboard
-    if (!isModuloAtivo('dashboard')) {
-        const navDash = document.getElementById('nav-dashboard');
-        if (navDash) navDash.style.display = 'none';
-        
-        // Se estiver na aba dashboard, pula para a de produtos
-        if (document.querySelector('.tab-btn.active')?.dataset.tab === 'dashboard') {
-            const btnProd = document.getElementById('nav-produtos');
-            if (btnProd) btnProd.click();
+    const toggleElement = (el, ativo, displayType = 'block') => {
+        if (!el) return;
+        if (!ativo) {
+            el.style.setProperty('display', 'none', 'important');
+        } else {
+            el.style.removeProperty('display');
         }
+    };
+
+    const mods = window.TENANT.modulos || {};
+
+    // 1. PRODUTOS
+    const mProdGerenciar = isModuloAtivo('produtos_gerenciar');
+    const mProdCategorias = isModuloAtivo('produtos_categorias');
+    const mProdEstoque = isModuloAtivo('produtos_estoque');
+    
+    toggleElement(document.querySelector('[data-subtab="lista-produtos"]'), mProdGerenciar);
+    toggleElement(document.querySelector('[data-subtab="lista-categorias"]'), mProdCategorias);
+    toggleElement(document.getElementById('nav-sub-estoque'), mProdEstoque);
+    
+    // Alerta de estoque e colunas na tabela dependem de produtos_estoque
+    toggleElement(document.getElementById('stockAlertPanel'), mProdEstoque);
+    toggleElement(document.getElementById('groupEstoqueCard'), mProdEstoque);
+    document.querySelectorAll('.col-estoque').forEach(el => toggleElement(el, mProdEstoque));
+    toggleElement(document.getElementById('prodEstoqueMin')?.closest('.form-group'), mProdEstoque);
+
+    // Aba principal de Produtos (Esconde se nenhum sub-módulo de produto estiver ativo)
+    const mQualquerProduto = mProdGerenciar || mProdCategorias || mProdEstoque;
+    toggleElement(document.getElementById('nav-produtos'), mQualquerProduto, 'flex');
+
+    // 2. VENDAS (Operacional)
+    const mVendasHoje = isModuloAtivo('vendas_hoje_op');
+    const mVendasOntem = isModuloAtivo('vendas_ontem_op');
+    const mVendasGeral = isModuloAtivo('vendas_visao_geral');
+    
+    toggleElement(document.getElementById('btnModoHojeOp'), mVendasHoje);
+    toggleElement(document.getElementById('btnModoOntemOp'), mVendasOntem);
+    toggleElement(document.getElementById('btnModoGeral'), mVendasGeral);
+
+    // 3. MÉTRICAS (Analítico)
+    const mMetricasDash = isModuloAtivo('metricas_dashboard');
+    const mMetricasTempo = isModuloAtivo('metricas_analise_tempo');
+    const mMetricasPerf = isModuloAtivo('metricas_performance_vendas');
+    const mMetricasDestaques = isModuloAtivo('metricas_destaques');
+
+    toggleElement(document.getElementById('chartMetricas')?.parentElement, mMetricasDash);
+    toggleElement(document.getElementById('insightFraseWrapper'), mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques);
+    toggleElement(document.getElementById('section-metricas-tempo'), mMetricasTempo);
+    toggleElement(document.getElementById('section-metricas-performance'), mMetricasPerf);
+    toggleElement(document.getElementById('section-metricas-destaques'), mMetricasDestaques);
+
+    // Sub-aba inteira de Métricas e Performance
+    const mQualquerMetrica = mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques;
+    const subNavMetricas = document.querySelector('[data-subtab="dashboard-metricas"]');
+    toggleElement(subNavMetricas, mQualquerMetrica, 'inline-block');
+
+    // Aba principal de Vendas & Performance
+    const mQualquerDashboard = mVendasHoje || mVendasOntem || mVendasGeral || mQualquerMetrica;
+    toggleElement(document.getElementById('nav-dashboard'), mQualquerDashboard, 'flex');
+
+    // 4. CONFIGURAÇÕES
+    const mConfigEnd = isModuloAtivo('config_endereco');
+    const mConfigVis = isModuloAtivo('config_personalizacao');
+    const mConfigFrete = isModuloAtivo('config_frete');
+    const mConfigCanc = isModuloAtivo('config_cancelamentos');
+
+    toggleElement(document.querySelector('[data-subtab="config-endereco"]'), mConfigEnd);
+    toggleElement(document.querySelector('[data-subtab="config-visual"]'), mConfigVis);
+    toggleElement(document.getElementById('nav-sub-frete'), mConfigFrete);
+    toggleElement(document.querySelector('[data-subtab="config-cancelamento"]'), mConfigCanc);
+
+    // Aba principal de Configurações
+    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc;
+    toggleElement(document.getElementById('nav-configuracoes'), mQualquerConfig, 'flex');
+
+    // 5. CUPONS
+    const mCupons = isModuloAtivo('cupons');
+    toggleElement(document.getElementById('nav-cupons'), mCupons, 'flex');
+
+    // 6. ACESSO EXTERNO E PAGAMENTO
+    const mCardapio = isModuloAtivo('cardapio');
+    const mPagamento = isModuloAtivo('pagamento');
+    toggleElement(document.querySelector('.btn-link-cardapio'), mCardapio);
+    // Pagamento (Será usado no menu público principalmente)
+
+    // Redirecionamento Automático de Segurança (UX)
+    const abaAtiva = document.querySelector('.tab-btn.active')?.dataset.tab;
+    if (abaAtiva === 'dashboard' && !mQualquerDashboard) document.getElementById('nav-produtos')?.click();
+    if (abaAtiva === 'produtos' && !mQualquerProduto) document.getElementById('nav-dashboard')?.click();
+    if (abaAtiva === 'cupons' && !mCupons) document.getElementById('nav-produtos')?.click();
+    if (abaAtiva === 'configuracoes' && !mQualquerConfig) document.getElementById('nav-produtos')?.click();
+}
+
+/**
+ * Valida se um módulo está ativo antes de permitir uma ação.
+ * Bloqueio funcional além do visual.
+ */
+function validarAcessoModulo(modulo) {
+    if (!isModuloAtivo(modulo)) {
+        showToast('Módulo desativado. Contrate para liberar acesso.', 'error');
+        return false;
     }
-
-    // 2. Relatórios (Sub-aba dentro do Dashboard)
-    if (!isModuloAtivo('relatorios')) {
-        const subNavMetricas = document.querySelector('[data-subtab="dashboard-metricas"]');
-        if (subNavMetricas) subNavMetricas.style.display = 'none';
-    }
-
-    // 3. Estoque
-    if (!isModuloAtivo('estoque')) {
-        // Esconde sub-aba de ajustes de estoque
-        const navSubEstoque = document.getElementById('nav-sub-estoque');
-        if (navSubEstoque) navSubEstoque.style.display = 'none';
-
-        // Esconde painel de alertas de estoque
-        const alertPanel = document.getElementById('stockAlertPanel');
-        if (alertPanel) alertPanel.style.display = 'none';
-
-        // Esconde cabeçalho da coluna de estoque na tabela
-        document.querySelectorAll('.col-estoque').forEach(el => el.style.display = 'none');
-
-        // Esconde card de estoque no modal de produto
-        const groupEstoqueCard = document.getElementById('groupEstoqueCard');
-        if (groupEstoqueCard) groupEstoqueCard.style.display = 'none';
-
-        // Esconde campo de estoque mínimo
-        const inputEstoqueMin = document.getElementById('prodEstoqueMin')?.closest('.form-group');
-        if (inputEstoqueMin) inputEstoqueMin.style.display = 'none';
-    }
-
-    // 4. Frete
-    if (!isModuloAtivo('frete')) {
-        const navSubFrete = document.getElementById('nav-sub-frete');
-        if (navSubFrete) navSubFrete.style.display = 'none';
-    }
-
-    // 5. Pagamento (Placeholder para quando implementarmos o UI de pagamento)
-    if (!isModuloAtivo('pagamento')) {
-        // Ex: document.getElementById('config-pagamento-section').style.display = 'none';
-    }
+    return true;
 }
 
 async function carregarAtendentes() {
@@ -933,6 +990,23 @@ function setupAdminRealtime() {
             } else if (payload.eventType === 'DELETE') {
                 pedidos = pedidos.filter(p => p.id !== payload.old.id);
                 atualizarMétricasDashboard();
+            }
+        })
+        .subscribe();
+
+    // Realtime para mudanças na própria empresa (ex: módulos, tema)
+    sb.channel('admin-company-realtime')
+        .on('postgres_changes', { 
+            event: 'UPDATE', 
+            schema: 'public', 
+            table: 'empresas',
+            filter: `id=eq.${getTenantId()}`
+        }, payload => {
+            console.log('[Realtime] Dados da empresa atualizados:', payload.new);
+            if (payload.new.modulos) {
+                window.TENANT.modulos = payload.new.modulos;
+                aplicarFiltrosDeModulos();
+                renderProdutos(); // Garante que colunas de estoque sejam atualizadas
             }
         })
         .subscribe();
@@ -1327,6 +1401,7 @@ async function handleImageUpload(file, forceUpsert = false, customName = null) {
 }
 
 document.getElementById('btnNovoProduto').onclick = () => {
+    if (!validarAcessoModulo('produtos_gerenciar')) return;
     document.getElementById('modalProdutoTitle').textContent = 'Novo Produto';
     document.getElementById('produtoId').value = '';
     document.getElementById('prodNome').value = '';
@@ -1403,6 +1478,7 @@ window.editarProduto = (id) => {
 };
 
 document.getElementById('btnSalvarProduto').onclick = async () => {
+    if (!validarAcessoModulo('produtos_gerenciar')) return;
     const btn = document.getElementById('btnSalvarProduto');
     const id = document.getElementById('produtoId').value;
     const currentStock = parseInt(document.getElementById('prodEstoque').value) || 0;
@@ -1574,6 +1650,7 @@ window.editarCategoria = (id) => {
 };
 
 document.getElementById('btnSalvarCategoria').onclick = async () => {
+    if (!validarAcessoModulo('produtos_categorias')) return;
     const id = document.getElementById('catId').value;
     const nome = document.getElementById('catNome').value.trim();
     const slug = document.getElementById('catSlug').value.trim();
@@ -1618,6 +1695,7 @@ window.excluirCategoria = async (id, nome) => {
 // =================== COUPONS CRUD ===================
 
 document.getElementById('btnNovoCupom').onclick = () => {
+    if (!validarAcessoModulo('cupons')) return;
     document.getElementById('modalCupomTitle').textContent = 'Novo Cupom';
     document.getElementById('cupomId').value = '';
     document.getElementById('cupomCodigo').value = '';
@@ -1638,6 +1716,7 @@ window.editarCupom = (id) => {
 };
 
 document.getElementById('btnSalvarCupom').onclick = async () => {
+    if (!validarAcessoModulo('cupons')) return;
     const id = document.getElementById('cupomId').value;
     const codigo = document.getElementById('cupomCodigo').value.trim().toUpperCase();
     const desconto = parseFloat(document.getElementById('cupomDesconto').value);
@@ -1899,6 +1978,7 @@ window.previewTemaEmpresa = () => {
 
 // Salvar Tema (Empresa)
 document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async () => {
+    if (!validarAcessoModulo('config_personalizacao')) return;
     const btn = document.getElementById('btnSalvarTemaEmpresa');
     const empresaId = getTenantId();
     
@@ -2029,6 +2109,7 @@ document.getElementById('btnAplicarUrlLogo').onclick = () => {
 
 // --- Salvar Personalização Visual ---
 document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
+    if (!validarAcessoModulo('config_personalizacao')) return;
     const btn = document.getElementById('btnSalvarPersonalizacao');
     btn.disabled = true;
     btn.textContent = 'Salvando...';
@@ -2154,6 +2235,7 @@ window.editarZona = (id) => {
 };
 
 document.getElementById('btnSalvarZona').onclick = async () => {
+    if (!validarAcessoModulo('config_frete')) return;
     const btn = document.getElementById('btnSalvarZona');
     const id = document.getElementById('zonaId').value;
     const nome = document.getElementById('zonaNome').value.trim();
@@ -2221,6 +2303,7 @@ async function getCoordinates(address) {
 }
 
 document.getElementById('btnSalvarConfig').onclick = async () => {
+    if (!validarAcessoModulo('config_endereco')) return;
     const btn = document.getElementById('btnSalvarConfig');
     btn.disabled = true;
     btn.textContent = 'Salvando...';
@@ -2367,6 +2450,7 @@ function renderizarMotivosEstoque() {
 }
 
 document.getElementById('btnNovoMotivoEstoque').onclick = async () => {
+    if (!validarAcessoModulo('produtos_estoque')) return;
     const name = await customPrompt('Novo Motivo de Estoque', 'Digite o nome do motivo:');
     if (name && name.trim()) {
         // ← Multi-Tenant: injeta empresa_id no INSERT
@@ -2420,6 +2504,7 @@ async function salvarJustificativasNoBanco() {
 }
 
 document.getElementById('btnAdicionarJustificativa').onclick = async () => {
+    if (!validarAcessoModulo('config_cancelamentos')) return;
     const input = document.getElementById('inputNovaJustificativa');
     const val = input.value.trim();
     if (!val) return;

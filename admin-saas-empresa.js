@@ -57,6 +57,15 @@ async function carregarDadosEmpresa() {
     await carregarAdmins();
 }
 
+// Lista completa de chaves de módulos para sincronização
+const LISTA_MODULOS = [
+    'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque',
+    'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
+    'metricas_dashboard', 'metricas_analise_tempo', 'metricas_performance_vendas', 'metricas_destaques',
+    'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',
+    'cupons', 'cardapio', 'pagamento'
+];
+
 function renderDadosBasicos(emp) {
     document.getElementById('empresaNome').textContent = emp.nome;
     document.getElementById('editEmpPlano').value = emp.plano;
@@ -68,51 +77,49 @@ function renderDadosBasicos(emp) {
     const dCriacao = new Date(emp.created_at);
     const dataFormatada = isNaN(dCriacao) ? '—' : dCriacao.toLocaleDateString('pt-BR');
     document.getElementById('infoCriacao').textContent = dataFormatada;
-
-    // Módulos (Feature Flags)
+ 
+    // Módulos (Feature Flags) - Popula todos os checkboxes dinamicamente
     const mods = emp.modulos || {};
-    document.getElementById('mod_cardapio').checked = mods.cardapio !== false;
-    document.getElementById('mod_frete').checked = mods.frete !== false;
-    document.getElementById('mod_dashboard').checked = mods.dashboard !== false;
-    document.getElementById('mod_pagamento').checked = mods.pagamento !== false;
-    document.getElementById('mod_estoque').checked = mods.estoque !== false;
-    document.getElementById('mod_relatorios').checked = mods.relatorios !== false;
-
+    LISTA_MODULOS.forEach(key => {
+        const el = document.getElementById(`mod_${key}`);
+        if (el) el.checked = mods[key] !== false;
+    });
+ 
     // Tema
     document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
     document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
     document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
     document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
     previewTema();
-
+ 
     // URLs
     const baseUrl = window.location.origin;
     const urlMenu = `${baseUrl}/${emp.slug}`;
     const urlAdmin = `${baseUrl}/admin.html?tenant=${emp.slug}`;
     const urlAten = `${baseUrl}/atendente.html?tenant=${emp.slug}`;
-
+ 
     document.getElementById('urlMenu').textContent = urlMenu;
     document.getElementById('urlAdmin').textContent = urlAdmin;
     document.getElementById('urlAtendente').textContent = urlAten;
-
+ 
     // Badge Status
     const badge = document.getElementById('empresaStatusBadge');
     badge.innerHTML = `<span class="status-badge status-${emp.status}">${emp.status}</span>`;
 }
-
+ 
 async function carregarMetricas() {
     // Buscar todos os pedidos da empresa
     const { data: orders, error } = await sb
         .from('orders')
         .select('total, created_at')
         .eq('empresa_id', EMPRESA_ID);
-
+ 
     if (error) return;
-
+ 
     const totalFaturamento = orders.reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
     const totalPedidos = orders.length;
     const ticketMedio = totalPedidos > 0 ? totalFaturamento / totalPedidos : 0;
-
+ 
     // Faturamento do mês atual
     const agora = new Date();
     const mesAtual = agora.getMonth();
@@ -121,14 +128,14 @@ async function carregarMetricas() {
         const d = new Date(o.created_at);
         return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
     }).reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
-
+ 
     // Último pedido
     let ultimoPedidoStr = 'Nenhum pedido';
     if (orders.length > 0) {
         const sorted = [...orders].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
         ultimoPedidoStr = new Date(sorted[0].created_at).toLocaleDateString('pt-BR') + ' ' + new Date(sorted[0].created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
     }
-
+ 
     // Renderizar
     document.getElementById('faturamentoTotal').textContent = formatCurrency(totalFaturamento);
     document.getElementById('faturamentoMes').textContent = formatCurrency(fatMes);
@@ -137,16 +144,16 @@ async function carregarMetricas() {
     document.getElementById('infoUltimoPedido').textContent = ultimoPedidoStr;
     document.getElementById('infoTicketGeral').textContent = formatCurrency(ticketMedio);
 }
-
+ 
 async function carregarAdmins() {
     const { data: admins, error } = await sb
         .from('usuarios')
         .select('*')
         .eq('empresa_id', EMPRESA_ID)
         .eq('role', 'admin');
-
+ 
     if (error) return;
-
+ 
     const list = document.getElementById('adminList');
     document.getElementById('countAdmins').textContent = admins.length;
     
@@ -160,37 +167,35 @@ async function carregarAdmins() {
         </li>
     `).join('') || '<p style="font-size:0.8rem; color:var(--text-secondary); padding:1rem 0;">Nenhum administrador vinculado.</p>';
 }
-
+ 
 // ==========================================
 // 3. Ações e Funcionalidades
 // ==========================================
-
+ 
 // Salvar Configurações (Plano e Status)
 document.getElementById('btnSalvarConfig').addEventListener('click', async () => {
     const btn = document.getElementById('btnSalvarConfig');
     const plano = document.getElementById('editEmpPlano').value;
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
-
-    // Módulos
-    const modulos = {
-        cardapio: document.getElementById('mod_cardapio').checked,
-        frete: document.getElementById('mod_frete').checked,
-        dashboard: document.getElementById('mod_dashboard').checked,
-        pagamento: document.getElementById('mod_pagamento').checked,
-        estoque: document.getElementById('mod_estoque').checked,
-        relatorios: document.getElementById('mod_relatorios').checked
-    };
-
+ 
+    // Módulos - Coleta todos os estados atuais
+    const modulos = {};
+    LISTA_MODULOS.forEach(key => {
+        const el = document.getElementById(`mod_${key}`);
+        if (el) modulos[key] = el.checked;
+    });
+ 
     const tema_cor_primaria = document.getElementById('editTemaCorPrimaria').value;
     const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
     const tema_cor_botao = document.getElementById('editTemaCorBotao').value;
     const tema_cor_bg = document.getElementById('editTemaCorBg').value;
-
+ 
     try {
         btn.disabled = true;
         btn.textContent = 'Salvando...';
-
+ 
+        console.log('[SaaS Admin] Salvando configurações...', { plano, status, modulos });
         const { error } = await sb
             .from('empresas')
             .update({ 
@@ -205,9 +210,9 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 cor_primaria: tema_cor_primaria // Legado
             })
             .eq('id', EMPRESA_ID);
-
+ 
         if (error) throw error;
-
+ 
         showToast('Configurações atualizadas!');
         carregarDadosEmpresa();
     } catch (err) {
@@ -217,31 +222,32 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         btn.textContent = 'Atualizar Configurações';
     }
 });
-
+ 
 // Salvamento automático de módulos
 window.atualizarModulo = async (modulo, checked) => {
     if (!EMPRESA_ID || !EMPRESA_DATA) return;
-
+ 
     // Atualiza o objeto local para manter sincronia
     if (!EMPRESA_DATA.modulos) EMPRESA_DATA.modulos = {};
     EMPRESA_DATA.modulos[modulo] = checked;
-
+ 
     try {
         const { error } = await sb
             .from('empresas')
             .update({ modulos: EMPRESA_DATA.modulos })
             .eq('id', EMPRESA_ID);
-
+ 
         if (error) throw error;
         
         // Feedback visual discreto
-        showToast(`Módulo ${modulo} ${checked ? 'ativado' : 'desativado'}!`);
+        console.log(`[Modules] ${modulo} atualizado para ${checked}`);
     } catch (err) {
         console.error('Erro ao atualizar módulo:', err);
         showToast('Erro ao salvar alteração: ' + err.message, 'error');
         
         // Reverte o switch visualmente em caso de falha
-        document.getElementById(`mod_${modulo}`).checked = !checked;
+        const el = document.getElementById(`mod_${modulo}`);
+        if (el) el.checked = !checked;
         EMPRESA_DATA.modulos[modulo] = !checked;
     }
 };

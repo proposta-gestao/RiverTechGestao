@@ -158,6 +158,12 @@ function showAudioOverlay() {
 }
 
 async function startDashboard() {
+    if (!waiter || !waiter.empresa_id) return;
+
+    // Inicializa o contexto do tenant para white-label e feature flags
+    await initTenantById(sb, waiter.empresa_id);
+    aplicarFiltrosDeModulosAtendente();
+
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('audioOverlay').style.display = 'none';
     document.getElementById('dashboardScreen').style.display = 'block';
@@ -572,6 +578,22 @@ document.getElementById('loginSenha').addEventListener('keydown', (e) => {
 document.getElementById('loginCpf').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') login();
 });
+
+/**
+ * Filtra a interface do atendente com base nos módulos ativos da empresa.
+ */
+function aplicarFiltrosDeModulosAtendente() {
+    console.log('[Modules] Aplicando filtros no painel do atendente...');
+    
+    // 1. Pagamento Online
+    if (!isModuloAtivo('pagamento')) {
+        // Se o pagamento online estiver desativado, talvez queiramos mudar o texto do botão
+        const btnCozinha = document.getElementById('btnModalEnviarCozinha');
+        if (btnCozinha) {
+            btnCozinha.innerText = 'CONFIRMAR PEDIDO E ENVIAR 🍳';
+        }
+    }
+}
 
 // Iniciar
 checkSession();

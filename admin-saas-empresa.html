@@ -348,31 +348,58 @@
                 <h3>📦 Gestão de Módulos</h3>
                 <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Ative ou desative funcionalidades para este cliente.</p>
                 
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <label class="module-toggle">
-                        <input type="checkbox" id="mod_cardapio" onchange="atualizarModulo('cardapio', this.checked)">
-                        <span>Cardápio Digital</span>
-                    </label>
-                    <label class="module-toggle">
-                        <input type="checkbox" id="mod_frete" onchange="atualizarModulo('frete', this.checked)">
-                        <span>Cálculo de Frete / Entrega</span>
-                    </label>
-                    <label class="module-toggle">
-                        <input type="checkbox" id="mod_dashboard" onchange="atualizarModulo('dashboard', this.checked)">
-                        <span>Dashboard de Métricas</span>
-                    </label>
-                    <label class="module-toggle">
-                        <input type="checkbox" id="mod_pagamento" onchange="atualizarModulo('pagamento', this.checked)">
-                        <span>Pagamento Online (Pix/Cartão)</span>
-                    </label>
-                    <label class="module-toggle">
-                        <input type="checkbox" id="mod_estoque" onchange="atualizarModulo('estoque', this.checked)">
-                        <span>Gestão de Estoque</span>
-                    </label>
-                    <label class="module-toggle">
-                        <input type="checkbox" id="mod_relatorios" onchange="atualizarModulo('relatorios', this.checked)">
-                        <span>Relatórios Avançados</span>
-                    </label>
+                    <!-- PRODUTOS -->
+                    <div class="module-group">
+                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">📦 Produtos</h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                            <label class="module-toggle"><input type="checkbox" id="mod_produtos_gerenciar" onchange="atualizarModulo('produtos_gerenciar', this.checked)"><span>Gerenciar Produtos</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_produtos_categorias" onchange="atualizarModulo('produtos_categorias', this.checked)"><span>Gerenciar Categorias</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_produtos_estoque" onchange="atualizarModulo('produtos_estoque', this.checked)"><span>Controle de Estoque</span></label>
+                        </div>
+                    </div>
+
+                    <!-- VENDAS -->
+                    <div class="module-group">
+                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">📊 Vendas (Operacional)</h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                            <label class="module-toggle"><input type="checkbox" id="mod_vendas_hoje_op" onchange="atualizarModulo('vendas_hoje_op', this.checked)"><span>Vendas de Hoje (Op)</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_vendas_ontem_op" onchange="atualizarModulo('vendas_ontem_op', this.checked)"><span>Vendas de Ontem (Op)</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_vendas_visao_geral" onchange="atualizarModulo('vendas_visao_geral', this.checked)"><span>Visão Geral (Histórico)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- MÉTRICAS -->
+                    <div class="module-group">
+                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">📈 Métricas (Analítico)</h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                            <label class="module-toggle"><input type="checkbox" id="mod_metricas_dashboard" onchange="atualizarModulo('metricas_dashboard', this.checked)"><span>Gráfico de Performance</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_metricas_analise_tempo" onchange="atualizarModulo('metricas_analise_tempo', this.checked)"><span>Análise de Tempo (Picos)</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_metricas_performance_vendas" onchange="atualizarModulo('metricas_performance_vendas', this.checked)"><span>Performance de Vendas</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_metricas_destaques" onchange="atualizarModulo('metricas_destaques', this.checked)"><span>Destaques (Top Prod/Dias)</span></label>
+                        </div>
+                    </div>
+
+                    <!-- CONFIGURAÇÕES -->
+                    <div class="module-group">
+                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">⚙️ Configurações</h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                            <label class="module-toggle"><input type="checkbox" id="mod_config_endereco" onchange="atualizarModulo('config_endereco', this.checked)"><span>Endereço e Horários</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_config_personalizacao" onchange="atualizarModulo('config_personalizacao', this.checked)"><span>Personalização Visual</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_config_frete" onchange="atualizarModulo('config_frete', this.checked)"><span>Configuração de Frete</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_config_cancelamentos" onchange="atualizarModulo('config_cancelamentos', this.checked)"><span>Motivos de Cancelamento</span></label>
+                        </div>
+                    </div>
+
+                    <!-- ACESSO E EXTRAS -->
+                    <div class="module-group">
+                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">🎟️ Acesso e Extras</h4>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                            <label class="module-toggle"><input type="checkbox" id="mod_cupons" onchange="atualizarModulo('cupons', this.checked)"><span>Cupons de Desconto</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_cardapio" onchange="atualizarModulo('cardapio', this.checked)"><span>Cardápio Digital Ativo</span></label>
+                            <label class="module-toggle"><input type="checkbox" id="mod_pagamento" onchange="atualizarModulo('pagamento', this.checked)"><span>Pagamento Online</span></label>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

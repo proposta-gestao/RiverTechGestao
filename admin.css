@@ -2356,3 +2356,8 @@ input[type=number] {
     margin-top: 4px;
     font-weight: 600;
 }
+
+.module-hidden {
+    display: none !important;
+}
+}

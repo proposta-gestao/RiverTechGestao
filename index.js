@@ -203,6 +203,18 @@ function aplicarFiltrosDeModulosPublico() {
         const optDin = document.getElementById('payDinheiro');
         if (optDin) optDin.checked = true;
     }
+
+    // 3. Cardápio Digital (Site Público)
+    if (!isModuloAtivo('cardapio')) {
+        document.body.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#0d0d0d; color:#fff; font-family:Inter, sans-serif; text-align:center; padding:2rem;">
+                <div style="font-size:4rem; margin-bottom:1.5rem;">🏗️</div>
+                <h1 style="font-size:1.8rem; margin-bottom:1rem;">Cardápio Temporariamente Indisponível</h1>
+                <p style="color:#888; max-width:400px; line-height:1.6;">Esta loja desativou o cardápio digital no momento. Entre em contato diretamente com o estabelecimento para fazer seu pedido.</p>
+                <button onclick="window.location.reload()" style="margin-top:2rem; padding:12px 24px; background:#e5b25d; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Tentar Novamente</button>
+            </div>
+        `;
+    }
 }
 
 function aplicarPersonalizacaoVisual(config) {
