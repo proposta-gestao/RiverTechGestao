@@ -408,9 +408,9 @@ body {
 }
 
 .subtab-btn.active {
-    background: var(--primary);
-    color: #000;
-    box-shadow: 0 4px 15px rgba(229, 178, 93, 0.3);
+    background: var(--color-button);
+    color: var(--color-button-text, #000);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .subtab-btn:hover:not(.active) {

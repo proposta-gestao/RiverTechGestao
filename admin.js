@@ -2093,6 +2093,12 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
             tema_cor_primaria,
             tema_cor_botao,
             tema_cor_texto,
+            // Resetamos os fundos caso o usuário tenha clicado em restaurar (que preencheu os campos internos mas eles não aparecem no DOM)
+            // Se o valor no DOM for o padrão, salvamos o padrão. 
+            // Como removemos os campos do DOM, vamos enviar os valores padrão caso o usuário salve após restaurar.
+            // Mas melhor: se o usuário restaurar, vamos garantir que esses campos sejam incluídos no update.
+            tema_cor_bg:      tema_cor_primaria === '#E5B25D' ? '#0d0d0d' : undefined,
+            tema_cor_surface: tema_cor_primaria === '#E5B25D' ? '#1a1a1a' : undefined,
             cor_primaria: tema_cor_primaria // Sincroniza legado
         }).eq('id', empresaId);
 
@@ -2123,12 +2129,23 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
 document.getElementById('btnRestaurarTemaEmpresa').addEventListener('click', () => {
     if (!validarAcessoModulo('config_personalizacao')) return;
     
-    _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   '#E5B25D');
-    _setThemeField('confTemaBotao',      'confTemaBotaoHex',      '#E5B25D');
-    _setThemeField('confTemaTexto',      'confTemaTextoHex',      '#ffffff');
+    // Valores padrão do sistema
+    const defaults = {
+        primaria: '#E5B25D',
+        botao:    '#E5B25D',
+        texto:    '#ffffff',
+        bg:       '#0d0d0d',
+        surface:  '#1a1a1a'
+    };
+
+    _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   defaults.primaria);
+    _setThemeField('confTemaBotao',      'confTemaBotaoHex',      defaults.botao);
+    _setThemeField('confTemaTexto',      'confTemaTextoHex',      defaults.texto);
     
+    // Atualiza preview local
     previewTemaEmpresa();
-    showToast('Visual restaurado para o padrão do sistema!');
+    
+    showToast('Visual restaurado (Clique em Salvar para confirmar)', 'info');
 });
 
 // --- Preview de imagem ---

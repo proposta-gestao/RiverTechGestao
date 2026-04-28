@@ -98,8 +98,8 @@ body {
 
 .btn-login {
     width: 100%;
-    background: var(--accent-waiter);
-    color: #000;
+    background: var(--btn-waiter-bg);
+    color: var(--btn-waiter-text, #000);
     border: none;
     padding: 15px;
     border-radius: 10px;
@@ -319,7 +319,7 @@ body {
     transition: all 0.2s;
 }
 
-.btn-assume { background: var(--accent-waiter); color: #000; }
+.btn-assume { background: var(--btn-waiter-bg); color: var(--btn-waiter-text, #000); }
 .btn-view { background: #333; color: #fff; }
 .btn-done { background: var(--status-concluido); color: #fff; }
 .btn-cancel { background: transparent; color: #ff4757; border: 1px solid #ff4757; }

@@ -125,27 +125,28 @@ function _aplicarWhiteLabel(data) {
     set('--color-text',           texto);
     set('--text-main',            texto);
     
-    // Variáveis do botão
+    // Variáveis de Botão (Isoladas)
+    set('--color-button',         botao);
+    set('--color-button-bg',      botao);
     set('--btn-bg',               botao);
-    set('--color-button-text',    texto); // Opcional: usar a cor de texto definida
+    set('--color-button-text',    texto);
     set('--btn-text',             texto);
+    set('--color-button-hover',   _darkenHex(botao, 8));
 
-    // Aliases legados (mantém compatibilidade)
+    // Aliases legados (compatibilidade com Admin e Cardápio)
     set('--primary',       primaria);
     set('--primary-hover', _darkenHex(primaria, 8));
     set('--bg-body',       bg);
     set('--bg-card',       surface);
     set('--border-color',  borda);
 
-    // Aliases do atendente
-    set('--accent-waiter', primaria);
+    // Aliases do Atendente
+    set('--accent-waiter', primaria); // Títulos e destaques
     set('--bg-waiter',     bg);
     set('--card-waiter',   surface);
-
-    // Variável de botão (pode ser diferente da primária)
-    set('--color-button',        botao);
-    set('--color-button-hover',  _darkenHex(botao, 8));
-    set('--color-button-text',   texto);
+    // Botões do Atendente agora usam a cor de botão isolada
+    set('--btn-waiter-bg',   botao);
+    set('--btn-waiter-text', texto);
 
     // --- Logo ---
     if (data.logo_url) {
