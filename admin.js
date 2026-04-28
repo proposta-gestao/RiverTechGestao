@@ -1954,6 +1954,18 @@ async function carregarConfiguracoes() {
         _setThemeField('confTemaSecundaria', 'confTemaSecundariaHex', e.tema_cor_secundaria || '#1E90FF');
         _setThemeField('confTemaBotao',      'confTemaBotaoHex',      e.tema_cor_botao      || '#E5B25D');
         previewTemaEmpresa();
+
+        // Atualizar títulos dinâmicos
+        const nomeEmpresa = e.nome || 'RiverTech';
+        document.title = `Admin | ${nomeEmpresa}`;
+        const headerTitle = document.querySelector('.admin-header h1');
+        if (headerTitle) {
+            headerTitle.innerHTML = `${nomeEmpresa} <span class="admin-header-label">Admin</span>`;
+        }
+        const loginTitle = document.querySelector('.login-card h1');
+        if (loginTitle) {
+            loginTitle.textContent = nomeEmpresa;
+        }
     }
 
     if (settingsRes.data) {
@@ -1971,8 +1983,9 @@ async function carregarConfiguracoes() {
         document.getElementById('confReferencia').value      = d.address_reference || '';
 
         // Personalização Visual
-        document.getElementById('confBrandName').value = d.brand_name || '';
-        document.getElementById('confBrandSubtitle').value = d.brand_subtitle || '';
+        // Preenche com o nome da empresa se o nome da marca estiver vazio
+        document.getElementById('confBrandName').value = d.brand_name || window.TENANT.nome || '';
+        document.getElementById('confBrandSubtitle').value = d.brand_subtitle || 'Seu subtítulo aqui';
         
         // Horários operacionais
         document.getElementById('confOpeningTime').value = d.opening_time || '18:00';
@@ -2422,11 +2435,20 @@ document.getElementById('btnBuscarCepConfig').onclick = async () => {
         } else {
             showToast('CEP não encontrado.', 'error');
         }
-    } catch { showToast('Erro ao buscar CEP.', 'error'); }
+    } catch (err) {
+        console.error('Erro ao buscar CEP:', err);
+    }
 };
 
+// Formatação e Auto-fetch CEP
 document.getElementById('confCep').oninput = (e) => {
     let v = e.target.value.replace(/\D/g, '');
+    
+    // Auto-fetch ao atingir 8 dígitos
+    if (v.length === 8) {
+        document.getElementById('btnBuscarCepConfig').click();
+    }
+
     if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);
     e.target.value = v;
 };
