@@ -28,6 +28,7 @@ let filtrosPedidos = {
 let currentModoDashboard = 'hoje-op'; // Inicia com o operacional de hoje
 let openingTime = '18:00';
 let closingTime = '02:00';
+let currentSettingsId = null;
 
 // --- Utils ---
 function formatNumber(val) {
@@ -1957,6 +1958,7 @@ async function carregarConfiguracoes() {
 
     if (settingsRes.data) {
         const d = settingsRes.data;
+        currentSettingsId = d.id;
         // Dados da Empresa
         document.getElementById('confNomeLoja').value        = d.store_name || '';
         document.getElementById('confCep').value             = d.address_zip || '';
@@ -2183,6 +2185,10 @@ document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
         updated_at:     new Date().toISOString()
     };
 
+    if (currentSettingsId) {
+        payload.id = currentSettingsId;
+    }
+
     const { error } = await sb.from('store_settings').upsert(payload, { onConflict: 'empresa_id' });
     if (error) {
         showToast('Erro ao salvar visual: ' + error.message, 'error');
@@ -2198,11 +2204,14 @@ document.getElementById('confFreteAtivo').onchange = async function () {
     const ativo = this.checked;
     document.getElementById('freteZonasContainer').style.display = ativo ? 'block' : 'none';
 
-    const { error } = await sb.from('store_settings').upsert({
+    const payload = {
         empresa_id: getTenantId(), // ← Multi-Tenant
         frete_ativo: ativo,
         updated_at: new Date().toISOString()
-    }, { onConflict: 'empresa_id' });
+    };
+    if (currentSettingsId) payload.id = currentSettingsId;
+
+    const { error } = await sb.from('store_settings').upsert(payload, { onConflict: 'empresa_id' });
     if (error) {
         showToast('Erro ao salvar configuração de frete: ' + error.message, 'error');
     } else {
@@ -2383,6 +2392,10 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
         closing_time:         document.getElementById('confClosingTime').value,
         updated_at:           new Date().toISOString()
     };
+    
+    if (currentSettingsId) {
+        payload.id = currentSettingsId;
+    }
 
     const { error } = await sb.from('store_settings').upsert(payload, { onConflict: 'empresa_id' });
     if (error) {
