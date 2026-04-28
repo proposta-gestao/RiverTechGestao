@@ -2418,6 +2418,15 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
         showToast('Erro ao salvar: ' + error.message, 'error');
     } else {
         showToast('Configurações salvas!', 'success');
+        
+        // Atualiza variáveis globais de horário para refletir no Dashboard imediatamente
+        openingTime = payload.opening_time;
+        closingTime = payload.closing_time;
+
+        // Se o Dashboard estiver em modo operacional, atualiza a mensagem do período
+        if (currentModoDashboard === 'hoje-op' || currentModoDashboard === 'ontem-op') {
+            setModoDashboard(currentModoDashboard);
+        }
     }
     btn.disabled = false;
     btn.textContent = 'Salvar Configurações';
