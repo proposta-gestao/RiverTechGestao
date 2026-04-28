@@ -112,6 +112,7 @@ function _aplicarWhiteLabel(data) {
     const botao      = data.tema_cor_botao       || primaria;
     const bg         = data.tema_cor_bg          || '#0d0d0d';
     const surface    = data.tema_cor_surface      || '#1a1a1a';
+    const texto      = data.tema_cor_texto        || '#ffffff';
     const borda      = data.tema_cor_borda        || _hexToRgba(primaria, 0.2);
 
     // Variáveis do sistema de temas
@@ -125,6 +126,8 @@ function _aplicarWhiteLabel(data) {
     set('--color-surface',        surface);
     set('--color-surface-hover',  _darkenHex(surface, 3));
     set('--color-border',         borda);
+    set('--color-text',           texto);
+    set('--text-main',            texto);
 
     // Aliases legados (mantém compatibilidade)
     set('--primary',       primaria);
