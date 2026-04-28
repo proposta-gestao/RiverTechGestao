@@ -646,14 +646,17 @@ function gerarInsightInteligente(melhorHora, melhorDiaSem, piorDiaSem, ticketMed
 
 // --- Data Loading ---
 async function carregarTudo() {
+    // 1. Primeiro as configurações (pois o dashboard depende dos horários)
+    await carregarConfiguracoes();
+
+    // 2. Depois o restante em paralelo
     await Promise.all([
         carregarProdutos(),
         carregarCategorias(),
         carregarCupons(),
         carregarMotivosEstoque(),
         carregarAtendentes(),
-        carregarDashboard(),
-        carregarConfiguracoes()
+        carregarDashboard()
     ]);
     renderStats();
     aplicarFiltrosDeModulos(); // Novo: Filtra funcionalidades por empresa
