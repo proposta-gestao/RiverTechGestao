@@ -363,7 +363,10 @@ async function showAdmin() {
     // Atualizar link do cardápio com o slug do tenant
     const btnCardapio = document.querySelector('.btn-link-cardapio');
     if (btnCardapio && window.TENANT?.slug) {
-        btnCardapio.href = `/${window.TENANT.slug}`;
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        btnCardapio.href = isLocal 
+            ? `/cardapio.html?loja=${window.TENANT.slug}` 
+            : `/${window.TENANT.slug}`;
     }
 
     await carregarTudo();

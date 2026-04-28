@@ -186,6 +186,7 @@ function fecharModal(id) {
 // ==========================================
 document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     document.getElementById('empNome').value = '';
+    document.getElementById('empBrandName').value = ''; // Novo campo
     document.getElementById('empSlug').value = 'https://river-tech-gestao.vercel.app/';
     atualizarPreviewsURL(); 
     document.getElementById('empPlano').value = 'basico';
@@ -252,7 +253,8 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
             p_cor_primaria,
             p_logo_url: "",
             p_admin_email,
-            p_admin_password
+            p_admin_password,
+            p_brand_name: document.getElementById('empBrandName').value.trim()
         });
 
         if (error) {

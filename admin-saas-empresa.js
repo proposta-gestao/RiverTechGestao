@@ -55,6 +55,19 @@ async function carregarDadosEmpresa() {
 
     // 3. Administradores
     await carregarAdmins();
+
+    // 4. Configurações da Loja (Branding)
+    await carregarConfiguracoesLoja();
+}
+
+async function carregarConfiguracoesLoja() {
+    const { data: settings, error } = await sb.from('store_settings').select('*').eq('empresa_id', EMPRESA_ID).single();
+    if (error && error.code !== 'PGRST116') return;
+
+    if (settings) {
+        document.getElementById('editBrandName').value = settings.brand_name || '';
+        document.getElementById('editBrandSubtitle').value = settings.brand_subtitle || '';
+    }
 }
 
 // Lista completa de chaves de módulos para sincronização
@@ -194,9 +207,12 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     try {
         btn.disabled = true;
         btn.textContent = 'Salvando...';
- 
-        console.log('[SaaS Admin] Salvando configurações...', { plano, status, modulos });
-        const { error, data } = await sb
+
+        const brand_name = document.getElementById('editBrandName').value.trim();
+        const brand_subtitle = document.getElementById('editBrandSubtitle').value.trim();
+
+        // 1. Atualizar Empresas
+        const { error: errEmp } = await sb
             .from('empresas')
             .update({ 
                 plano, 
@@ -209,19 +225,23 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 tema_cor_bg,
                 cor_primaria: tema_cor_primaria // Legado
             })
-            .eq('id', EMPRESA_ID)
-            .select();
+            .eq('id', EMPRESA_ID);
 
-        if (error) {
-            console.error('[SaaS Admin] Erro de banco ao salvar:', error);
-            throw error;
-        }
+        if (errEmp) throw errEmp;
 
-        if (!data || data.length === 0) {
-            throw new Error('Acesso negado ou registro não encontrado (RLS). Verifique se você é Super Admin.');
-        }
+        // 2. Atualizar Store Settings (Branding)
+        const { error: errSet } = await sb
+            .from('store_settings')
+            .upsert({
+                empresa_id: EMPRESA_ID,
+                brand_name,
+                brand_subtitle,
+                updated_at: new Date().toISOString()
+            }, { onConflict: 'empresa_id' });
+
+        if (errSet) throw errSet;
  
-        showToast('Configurações atualizadas!');
+        showToast('Configurações e Branding atualizados! ✅');
         carregarDadosEmpresa();
     } catch (err) {
         showToast(err.message, 'error');

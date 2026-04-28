@@ -28,8 +28,9 @@ function _resolverSlug() {
     const hostname = window.location.hostname;
     const pathname = window.location.pathname;
 
-    // 1. Tentar da Querystring - Ex: ?loja=slug (Útil para debug)
-    const paramSlug = new URLSearchParams(window.location.search).get('loja');
+    // 1. Tentar da Querystring - Ex: ?loja=slug ou ?tenant=slug (Útil para debug)
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramSlug = urlParams.get('loja') || urlParams.get('tenant');
     if (paramSlug) return paramSlug;
 
     // 2. Tentar pegar da Rota (Pathname) - Ex: meusite.com/slug/cardapio

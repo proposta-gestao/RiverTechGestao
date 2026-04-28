@@ -311,11 +311,21 @@
                 <small id="adminFeedback" style="color: var(--accent-gold); display: none; margin-top: 8px; font-weight: 600;"></small>
             </div>
 
-            <!-- Identidade Visual (White-Label) -->
+            <!-- Identidade Visual & Branding -->
             <div class="section-card">
-                <h3>🎨 Identidade Visual</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Personalize as cores globais desta empresa.</p>
+                <h3>🎨 Identidade Visual & Branding</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Personalize as cores e textos públicos da marca.</p>
                 
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase;">Nome da Marca (Público)</label>
+                    <input type="text" id="editBrandName" style="width: 100%; padding: 10px; background: #000; border: 1px solid var(--border-color); border-radius: 6px; color: #fff; margin-top: 5px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700; text-transform: uppercase;">Subtítulo da Marca</label>
+                    <input type="text" id="editBrandSubtitle" style="width: 100%; padding: 10px; background: #000; border: 1px solid var(--border-color); border-radius: 6px; color: #fff; margin-top: 5px;">
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem;">
                     <div class="theme-color-field">
                         <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700;">COR PRIMÁRIA</label>
