@@ -81,13 +81,14 @@ const LISTA_MODULOS = [
 
 function renderDadosBasicos(emp) {
     document.getElementById('empresaNome').textContent = emp.nome;
+    document.getElementById('editEmpNome').value = emp.nome;
     document.getElementById('editEmpPlano').value = emp.plano;
     document.getElementById('editEmpStatus').value = emp.status;
     document.getElementById('editPlanoVencimento').value = emp.plano_vencimento || '';
     document.getElementById('infoId').textContent = emp.id;
     
     // Formatação de data brasileira segura
-    const dCriacao = new Date(emp.created_at);
+    const dCriacao = new Date(emp.criado_em);
     const dataFormatada = isNaN(dCriacao) ? '—' : dCriacao.toLocaleDateString('pt-BR');
     document.getElementById('infoCriacao').textContent = dataFormatada;
  
@@ -112,8 +113,13 @@ function renderDadosBasicos(emp) {
     const urlAten = `${baseUrl}/atendente.html?tenant=${emp.slug}`;
  
     document.getElementById('urlMenu').textContent = urlMenu;
+    document.getElementById('urlMenu').href = urlMenu;
+    
     document.getElementById('urlAdmin').textContent = urlAdmin;
+    document.getElementById('urlAdmin').href = urlAdmin;
+    
     document.getElementById('urlAtendente').textContent = urlAten;
+    document.getElementById('urlAtendente').href = urlAten;
  
     // Badge Status
     const badge = document.getElementById('empresaStatusBadge');
@@ -188,6 +194,7 @@ async function carregarAdmins() {
 // Salvar Configurações (Plano e Status)
 document.getElementById('btnSalvarConfig').addEventListener('click', async () => {
     const btn = document.getElementById('btnSalvarConfig');
+    const nomeEmpresa = document.getElementById('editEmpNome').value.trim();
     const plano = document.getElementById('editEmpPlano').value;
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
@@ -215,6 +222,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         const { error: errEmp } = await sb
             .from('empresas')
             .update({ 
+                nome: nomeEmpresa,
                 plano, 
                 status,
                 plano_vencimento,

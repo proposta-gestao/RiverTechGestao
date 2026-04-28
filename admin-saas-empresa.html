@@ -274,7 +274,7 @@
                 <div class="url-box">
                     <label>📍 Cardápio Digital</label>
                     <div class="url-content">
-                        <span class="url-text" id="urlMenu">...</span>
+                        <a href="#" target="_blank" class="url-text" id="urlMenu">...</a>
                         <button class="btn-icon-copy" onclick="copyToClipboard('urlMenu')" title="Copiar Link">📋</button>
                     </div>
                 </div>
@@ -282,7 +282,7 @@
                 <div class="url-box">
                     <label>⚙️ Painel Admin</label>
                     <div class="url-content">
-                        <span class="url-text" id="urlAdmin">...</span>
+                        <a href="#" target="_blank" class="url-text" id="urlAdmin">...</a>
                         <button class="btn-icon-copy" onclick="copyToClipboard('urlAdmin')" title="Copiar Link">📋</button>
                     </div>
                 </div>
@@ -290,7 +290,7 @@
                 <div class="url-box">
                     <label>🎧 Painel Atendente</label>
                     <div class="url-content">
-                        <span class="url-text" id="urlAtendente">...</span>
+                        <a href="#" target="_blank" class="url-text" id="urlAtendente">...</a>
                         <button class="btn-icon-copy" onclick="copyToClipboard('urlAtendente')" title="Copiar Link">📋</button>
                     </div>
                 </div>
@@ -416,6 +416,10 @@
             <!-- Configurações e Status -->
             <div class="section-card">
                 <h3>⚙️ Configurações</h3>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label>Nome da Empresa (Interno)</label>
+                    <input type="text" id="editEmpNome" style="width: 100%; margin-top: 5px; padding: 8px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                </div>
                 <div class="form-group">
                     <label>Plano Atual</label>
                     <select id="editEmpPlano" style="width: 100%; margin-top: 5px;">
