@@ -224,7 +224,7 @@ async function initTenantPublico(supabaseClient) {
         // tentamos uma busca simplificada para não quebrar o acesso à loja.
         let { data, error } = await supabaseClient
             .from('empresas')
-            .select('id, nome, slug, cor_primaria, logo_url, status, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
+            .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
             .eq('slug', slug)
             .eq('status', 'ativo')
             .single();

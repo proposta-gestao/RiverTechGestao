@@ -97,6 +97,7 @@ async function inicializar() {
             carregarCupons(),
             carregarConfiguracoesPublicas()
         ]);
+        aplicarFiltrosDeModulosPublico(); // Novo: Filtra funcionalidades no cardápio
         vincularRadiosEntrega();
     } catch (e) {
         console.error(e);
@@ -169,6 +170,38 @@ async function carregarConfiguracoesPublicas() {
     if (!zonesRes.error) {
         // Ordenar por nome para facilitar visualização
         ZONAS_FRETE = (zonesRes.data || []).sort((a, b) => a.name.localeCompare(b.name));
+    }
+}
+
+/**
+ * Filtra as opções do cardápio para o cliente final conforme módulos ativos.
+ */
+function aplicarFiltrosDeModulosPublico() {
+    console.log('[Modules] Filtrando funcionalidades públicas...');
+
+    // 1. Frete
+    if (!isModuloAtivo('frete')) {
+        state.freteHabilitado = false;
+        const optE = document.getElementById('optEntrega')?.closest('.delivery-option');
+        if (optE) optE.style.display = 'none';
+        
+        const secEnd = document.getElementById('secaoEndereco');
+        if (secEnd) secEnd.style.display = 'none';
+
+        // Garante que a opção ativa seja 'mesa' ou 'retirada'
+        const optR = document.getElementById('optRetirada');
+        if (optR) optR.checked = true;
+        toggleTipoEntrega('mesa');
+    }
+
+    // 2. Pagamento Online
+    if (!isModuloAtivo('pagamento')) {
+        const optPix = document.getElementById('payPix')?.closest('.delivery-option');
+        if (optPix) optPix.style.display = 'none';
+        
+        // Garante que selecione 'dinheiro' ou 'cartao' (presencial)
+        const optDin = document.getElementById('payDinheiro');
+        if (optDin) optDin.checked = true;
     }
 }
 
