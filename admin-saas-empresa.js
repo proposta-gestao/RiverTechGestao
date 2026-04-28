@@ -209,9 +209,13 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 tema_cor_bg,
                 cor_primaria: tema_cor_primaria // Legado
             })
-            .eq('id', EMPRESA_ID);
+            .eq('id', EMPRESA_ID)
+            .select();
  
         if (error) throw error;
+        if (!data || data.length === 0) {
+            throw new Error('Acesso negado: Você não tem permissão para atualizar esta empresa no banco de dados (RLS).');
+        }
  
         showToast('Configurações atualizadas!');
         carregarDadosEmpresa();
@@ -232,12 +236,16 @@ window.atualizarModulo = async (modulo, checked) => {
     EMPRESA_DATA.modulos[modulo] = checked;
  
     try {
-        const { error } = await sb
+        const { error, data } = await sb
             .from('empresas')
             .update({ modulos: EMPRESA_DATA.modulos })
-            .eq('id', EMPRESA_ID);
+            .eq('id', EMPRESA_ID)
+            .select();
  
         if (error) throw error;
+        if (!data || data.length === 0) {
+            throw new Error('Permissão negada no banco de dados (RLS bloqueou a atualização).');
+        }
         
         // Feedback visual discreto
         console.log(`[Modules] ${modulo} atualizado para ${checked}`);

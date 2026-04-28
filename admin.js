@@ -637,25 +637,15 @@ function aplicarFiltrosDeModulos() {
     }
     console.log('[Modules] Aplicando filtros granulares e corrigindo sub-abas. Módulos:', window.TENANT.modulos);
 
-    const toggleElement = (el, ativo, displayType = 'block') => {
-        if (!el) return;
-        if (!ativo) {
-            el.classList.add('module-hidden');
-            el.style.setProperty('display', 'none', 'important');
-        } else {
-            el.classList.remove('module-hidden');
-            el.style.removeProperty('display');
-        }
-    };
-
+    let dynamicCss = '';
     const toggleSubtab = (subId, ativo) => {
+        if (!ativo) {
+            dynamicCss += `[data-subtab="${subId}"], #subtab-${subId} { display: none !important; }\n`;
+        }
+        
         const buttons = document.querySelectorAll(`[data-subtab="${subId}"]`);
         const contents = document.querySelectorAll(`#subtab-${subId}`);
-        
-        console.log(`[Modules Debug] Subtab "${subId}" -> ${ativo ? 'VISÍVEL' : 'ESCONDIDA'} (${buttons.length} botões, ${contents.length} conteúdos)`);
-        
-        buttons.forEach(btn => toggleElement(btn, ativo));
-        contents.forEach(content => toggleElement(content, ativo));
+        console.log(`[Modules Debug] Subtab "${subId}" -> ${ativo ? 'VISÍVEL' : 'ESCONDIDA CSS'} (${buttons.length} botões, ${contents.length} conteúdos)`);
     };
 
     const mods = window.TENANT.modulos || {};
@@ -754,6 +744,15 @@ function aplicarFiltrosDeModulos() {
             }
         }
     }
+    
+    // Injeção de CSS Dinâmico (Opção Nuclear)
+    let styleEl = document.getElementById('dynamic-module-filters');
+    if (!styleEl) {
+        styleEl = document.createElement('style');
+        styleEl.id = 'dynamic-module-filters';
+        document.head.appendChild(styleEl);
+    }
+    styleEl.innerHTML = dynamicCss;
 }
 
 /**
