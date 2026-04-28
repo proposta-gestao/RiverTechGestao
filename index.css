@@ -16,7 +16,7 @@
     --color-text-muted:     #a0a0a0;
 
     /* === BOTÕES === */
-    --color-button-bg:      var(--color-primary);
+    --color-button-bg:      #E5B25D;
     --color-button-text:    #000000;
 
     /* === BORDAS === */
@@ -368,10 +368,10 @@
         }
 
         .cat-btn.active {
-            background: var(--primary);
-            color: #000;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(229, 178, 93, 0.2);
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border-color: var(--btn-bg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         /* Main Content */
@@ -519,7 +519,8 @@
         }
 
         .btn-add:hover {
-            background: var(--primary-hover);
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .btn-add:disabled {
@@ -798,8 +799,8 @@
 
         .btn-checkout {
             width: 100%;
-            background: var(--primary);
-            color: #000;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             border: none;
             padding: 18px;
             border-radius: 16px;
@@ -957,7 +958,7 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: var(--primary);
+            color: var(--btn-bg);
             font-weight: 800;
         }
 

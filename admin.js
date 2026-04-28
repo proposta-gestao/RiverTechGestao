@@ -1950,6 +1950,9 @@ async function carregarConfiguracoes() {
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
         showToast('Erro ao carregar configurações', 'error');
     }
+    if (empresaRes.error) {
+        console.error('Erro ao carregar tema:', empresaRes.error);
+    }
 
     if (empresaRes.data) {
         const e = empresaRes.data;
@@ -2030,6 +2033,18 @@ function _setThemeField(pickerId, hexId, value) {
     const hex = document.getElementById(hexId);
     if (picker) picker.value = value;
     if (hex) hex.value = value;
+
+    // Adiciona listener para o campo HEX atualizar o picker
+    if (hex && !hex.dataset.hasListener) {
+        hex.dataset.hasListener = "true";
+        hex.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                if (picker) picker.value = val;
+                previewTemaEmpresa();
+            }
+        });
+    }
 }
 
 // Atualiza o preview de tema no painel da empresa

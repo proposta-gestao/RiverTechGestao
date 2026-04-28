@@ -125,8 +125,7 @@ function _aplicarWhiteLabel(data) {
     set('--color-text',           texto);
     set('--text-main',            texto);
     
-    // Novas variáveis isoladas para botões
-    set('--color-button-bg',      botao);
+    // Variáveis do botão
     set('--btn-bg',               botao);
     set('--color-button-text',    texto); // Opcional: usar a cor de texto definida
     set('--btn-text',             texto);
@@ -146,6 +145,7 @@ function _aplicarWhiteLabel(data) {
     // Variável de botão (pode ser diferente da primária)
     set('--color-button',        botao);
     set('--color-button-hover',  _darkenHex(botao, 8));
+    set('--color-button-text',   texto);
 
     // --- Logo ---
     if (data.logo_url) {
@@ -229,7 +229,7 @@ async function initTenantPublico(supabaseClient) {
         // tentamos uma busca simplificada para não quebrar o acesso à loja.
         let { data, error } = await supabaseClient
             .from('empresas')
-            .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
+            .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto')
             .eq('slug', slug)
             .eq('status', 'ativo')
             .single();
@@ -266,6 +266,7 @@ async function initTenantPublico(supabaseClient) {
         window.TENANT.tema_cor_bg         = data.tema_cor_bg;
         window.TENANT.tema_cor_surface    = data.tema_cor_surface;
         window.TENANT.tema_cor_borda      = data.tema_cor_borda;
+        window.TENANT.tema_cor_texto      = data.tema_cor_texto;
         window.TENANT.pronto           = true;
 
         // Alias window.empresa para compatibilidade
@@ -296,7 +297,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     // Tentamos primeiro com o tema completo
     let { data, error } = await supabaseClient
         .from('usuarios')
-        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda)')
+        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto)')
         .eq('id', userId)
         .single();
 
