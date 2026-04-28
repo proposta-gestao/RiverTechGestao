@@ -198,46 +198,52 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     }
 });
 
+// --- MODAIS ---
+window.abrirModal = (id) => {
+    document.getElementById(id).style.display = 'flex';
+};
+
+window.fecharModal = (id) => {
+    document.getElementById(id).style.display = 'none';
+};
+
 // Adicionar Admin
-document.getElementById('btnAddAdmin').addEventListener('click', async () => {
+document.getElementById('btnConfirmarNovoAdmin').addEventListener('click', async () => {
     const email = document.getElementById('newAdminEmail').value.trim();
-    const feedback = document.getElementById('adminFeedback');
-    if (!email) return;
+    const password = document.getElementById('newAdminPassword').value.trim();
+    const btn = document.getElementById('btnConfirmarNovoAdmin');
+
+    if (!email || !password) {
+        showToast('Preencha e-mail e senha.', 'error');
+        return;
+    }
 
     try {
-        feedback.style.display = 'block';
-        feedback.style.color = 'var(--text-secondary)';
-        feedback.textContent = 'Buscando usuário...';
+        btn.disabled = true;
+        btn.textContent = 'Criando...';
 
-        // Buscar se o usuário existe
-        const { data: user, error: errUser } = await sb
-            .from('usuarios')
-            .select('id')
-            .eq('email', email)
-            .single();
+        // Chama a RPC para criar o usuário no auth e no public
+        const { data, error } = await sb.rpc('create_new_admin_user', {
+            p_email: email,
+            p_password: password,
+            p_empresa_id: EMPRESA_ID
+        });
 
-        if (errUser || !user) throw new Error('Usuário não encontrado no sistema.');
+        if (error) throw error;
 
-        feedback.textContent = 'Vinculando acesso...';
-
-        // Vincular usuário à empresa como admin
-        const { error: errUpdate } = await sb
-            .from('usuarios')
-            .update({ empresa_id: EMPRESA_ID, role: 'admin' })
-            .eq('id', user.id);
-
-        if (errUpdate) throw errUpdate;
-
-        feedback.style.color = 'var(--accent-green)';
-        feedback.textContent = 'Sucesso! Administrador vinculado. ✅';
-        document.getElementById('newAdminEmail').value = '';
+        showToast('Conta criada e vinculada com sucesso!');
+        fecharModal('modalNovoAdmin');
         
-        setTimeout(() => { feedback.style.display = 'none'; }, 3000);
+        // Limpa campos
+        document.getElementById('newAdminEmail').value = '';
+        document.getElementById('newAdminPassword').value = '';
+
         carregarAdmins();
     } catch (err) {
-        feedback.style.color = 'var(--accent-red)';
-        feedback.textContent = `Erro: ${err.message}`;
-        showToast(err.message, 'error');
+        showToast('Erro ao criar conta: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar Conta';
     }
 });
 
