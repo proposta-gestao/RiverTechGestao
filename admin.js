@@ -2048,6 +2048,7 @@ function _setThemeField(pickerId, hexId, value) {
 }
 
 // Atualiza o preview de tema no painel da empresa
+// Atualiza o preview de tema no painel da empresa
 window.previewTemaEmpresa = () => {
     const primaria = document.getElementById('confTemaPrimaria').value;
     const botao    = document.getElementById('confTemaBotao').value;
@@ -2058,20 +2059,40 @@ window.previewTemaEmpresa = () => {
     document.getElementById('confTemaBotaoHex').value    = botao;
     document.getElementById('confTemaTextoHex').value    = texto;
 
-    // Aplica no preview local
-    const previewArea = document.getElementById('empLivePreview');
-    const previewBtn  = document.getElementById('empLiveBtn');
+    // Aplica no preview local (Mockup Premium)
+    const previewArea  = document.getElementById('empLivePreview');
+    const previewBtn   = document.getElementById('empLiveBtn');
     const previewPrice = document.getElementById('empLivePrice');
+    const previewBadge = document.getElementById('empLiveBadge');
+    const previewTitle = document.getElementById('empLiveTitle');
+    const previewDesc  = document.getElementById('empLiveDesc');
 
     if (previewArea) {
-        previewArea.style.color = texto; 
+        previewArea.style.backgroundColor = '#0d0d0d'; // Fundo fixo para o mockup
     }
+    
+    if (previewTitle) previewTitle.style.color = texto;
+    if (previewDesc) previewDesc.style.color = texto + '99'; // Transparência suave
+
     if (previewBtn) {
         previewBtn.style.backgroundColor = botao;
-        previewBtn.style.color = texto;
+        // Calcula contraste básico para o texto do botão
+        const isLight = (hex) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return (r * 0.299 + g * 0.587 + b * 0.114) > 186;
+        };
+        previewBtn.style.color = isLight(botao) ? '#000' : '#fff';
     }
+
     if (previewPrice) {
         previewPrice.style.color = primaria;
+    }
+
+    if (previewBadge) {
+        previewBadge.style.backgroundColor = primaria;
+        previewBadge.style.color = '#000'; // Geralmente preto em badges de destaque
     }
 };
 

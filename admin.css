@@ -3,6 +3,275 @@
     display: none !important;
 }
 
+/* =============================================
+   PREMIUM THEME EDITOR
+============================================= */
+.premium-theme-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-header-premium {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+}
+
+.theme-title-wrap h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+.theme-title-wrap p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.theme-actions-top {
+    display: flex;
+    gap: 12px;
+}
+
+.theme-editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+.theme-inputs-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.color-card-premium {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 18px;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.color-card-premium:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary);
+    transform: translateX(5px);
+}
+
+.color-card-info {
+    flex: 1;
+}
+
+.color-tag {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    background: rgba(229, 178, 93, 0.1);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.color-card-info h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.color-card-info p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.color-card-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-card-input input[type="color"] {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: none;
+    padding: 0;
+}
+
+.color-card-input input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-card-input input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 8px;
+}
+
+.color-card-input input[type="text"] {
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    font-family: 'monospace';
+    font-size: 0.9rem;
+    width: 80px;
+    outline: none;
+    padding: 0 !important;
+}
+
+/* Preview Column */
+.theme-preview-column {
+    position: sticky;
+    top: 2rem;
+}
+
+.preview-device-frame {
+    background: #000;
+    border: 8px solid #1a1a1a;
+    border-radius: 32px;
+    padding: 0;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+.preview-header {
+    background: #1a1a1a;
+    color: #555;
+    font-size: 0.6rem;
+    font-weight: 900;
+    text-align: center;
+    padding: 8px;
+    letter-spacing: 2px;
+}
+
+.preview-content-premium {
+    padding: 20px;
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0d0d0d 100%);
+    position: relative;
+}
+
+.preview-content-premium::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.preview-card-mockup {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    z-index: 1;
+}
+
+.preview-card-mockup:hover {
+    transform: translateY(-5px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.mockup-image {
+    position: relative;
+    height: 140px;
+}
+
+.mockup-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+.mockup-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: white;
+}
+
+.mockup-details {
+    padding: 15px;
+}
+
+.mockup-details h5 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: white;
+}
+
+.mockup-details p {
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.mockup-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mockup-price {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.mockup-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: default;
+}
+
+@media (max-width: 900px) {
+    .theme-editor-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .theme-preview-column {
+        position: static;
+        order: -1;
+        margin-bottom: 2rem;
+    }
+}
+
 /* Time Picker Custom */
 .time-picker-container {
     display: flex;
@@ -1192,6 +1461,28 @@ body {
 .btn-cancel:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: #777;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border-color: white;
+}
+
+.btn-sm {
+    padding: 8px 16px !important;
+    font-size: 0.8rem !important;
 }
 
 .btn-save:disabled {

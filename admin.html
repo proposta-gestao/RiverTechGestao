@@ -555,43 +555,81 @@
 
                         <hr class="modal-divider" style="margin: 2rem 0;">
 
-                        <!-- Cores da Loja (Novo) -->
-                        <div class="theme-simple-panel">
-                            <h3>🎨 Cores da Loja</h3>
-                            <p>Personalize as cores principais do seu cardápio e painéis.</p>
-                            
-                            <div class="theme-simple-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                                <div class="theme-simple-field">
-                                    <label style="font-size: 0.75rem;">Primária (Preços)</label>
-                                    <div class="color-input-wrap" style="display: flex; gap: 6px;">
-                                        <input type="color" id="confTemaPrimaria" oninput="previewTemaEmpresa()" style="width: 35px; height: 35px; padding: 0; border: none; cursor: pointer;">
-                                        <input type="text" id="confTemaPrimariaHex" placeholder="#000000" maxlength="7" style="font-size: 0.8rem; padding: 6px; flex:1;">
-                                    </div>
+                        <!-- Cores da Loja (Premium) -->
+                        <div class="premium-theme-container">
+                            <div class="theme-header-premium">
+                                <div class="theme-title-wrap">
+                                    <h3>🎨 Identidade Visual</h3>
+                                    <p>Configure a paleta de cores que define a alma da sua marca.</p>
                                 </div>
-                                <div class="theme-simple-field">
-                                    <label style="font-size: 0.75rem;">Cor dos Botões</label>
-                                    <div class="color-input-wrap" style="display: flex; gap: 6px;">
-                                        <input type="color" id="confTemaBotao" oninput="previewTemaEmpresa()" style="width: 35px; height: 35px; padding: 0; border: none; cursor: pointer;">
-                                        <input type="text" id="confTemaBotaoHex" placeholder="#000000" maxlength="7" style="font-size: 0.8rem; padding: 6px; flex:1;">
-                                    </div>
-                                </div>
-                                <div class="theme-simple-field">
-                                    <label style="font-size: 0.75rem;">Cor das Letras</label>
-                                    <div class="color-input-wrap" style="display: flex; gap: 6px;">
-                                        <input type="color" id="confTemaTexto" oninput="previewTemaEmpresa()" style="width: 35px; height: 35px; padding: 0; border: none; cursor: pointer;">
-                                        <input type="text" id="confTemaTextoHex" placeholder="#000000" maxlength="7" style="font-size: 0.8rem; padding: 6px; flex:1;">
-                                    </div>
+                                <div class="theme-actions-top">
+                                    <button class="btn-sm btn-outline" id="btnRestaurarTemaEmpresa">Restaurar Padrão</button>
+                                    <button class="btn-sm btn-primary" id="btnSalvarTemaEmpresa">Salvar Cores</button>
                                 </div>
                             </div>
 
-                            <div class="theme-live-preview" id="empLivePreview" style="background: var(--color-surface, #1a1a1a); border: 1px solid var(--color-border, #333);">
-                                <button class="theme-live-btn" id="empLiveBtn">Botão de Exemplo</button>
-                                <span class="theme-live-price" id="empLivePrice">R$ 49,90</span>
-                            </div>
+                            <div class="theme-editor-layout">
+                                <!-- Inputs Column -->
+                                <div class="theme-inputs-column">
+                                    <div class="color-card-premium">
+                                        <div class="color-card-info">
+                                            <span class="color-tag">Sotaque</span>
+                                            <h4>Cor Primária</h4>
+                                            <p>Destaques, preços e badges importantes.</p>
+                                        </div>
+                                        <div class="color-card-input">
+                                            <input type="color" id="confTemaPrimaria" oninput="previewTemaEmpresa()">
+                                            <input type="text" id="confTemaPrimariaHex" placeholder="#000000" maxlength="7">
+                                        </div>
+                                    </div>
 
-                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem;">
-                                <button class="btn-sm btn-outline" id="btnRestaurarTemaEmpresa">Restaurar Padrão</button>
-                                <button class="btn-sm btn-primary" id="btnSalvarTemaEmpresa">Salvar Cores</button>
+                                    <div class="color-card-premium">
+                                        <div class="color-card-info">
+                                            <span class="color-tag">Ação</span>
+                                            <h4>Cor dos Botões</h4>
+                                            <p>Botões de compra, adicionar e ações principais.</p>
+                                        </div>
+                                        <div class="color-card-input">
+                                            <input type="color" id="confTemaBotao" oninput="previewTemaEmpresa()">
+                                            <input type="text" id="confTemaBotaoHex" placeholder="#000000" maxlength="7">
+                                        </div>
+                                    </div>
+
+                                    <div class="color-card-premium">
+                                        <div class="color-card-info">
+                                            <span class="color-tag">Texto</span>
+                                            <h4>Cor das Letras</h4>
+                                            <p>Títulos, descrições e informações gerais.</p>
+                                        </div>
+                                        <div class="color-card-input">
+                                            <input type="color" id="confTemaTexto" oninput="previewTemaEmpresa()">
+                                            <input type="text" id="confTemaTextoHex" placeholder="#000000" maxlength="7">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview Column -->
+                                <div class="theme-preview-column">
+                                    <div class="preview-device-frame">
+                                        <div class="preview-header">PRÉVIA EM TEMPO REAL</div>
+                                        <div class="preview-content-premium" id="empLivePreview">
+                                            <div class="preview-card-mockup">
+                                                <div class="mockup-image">
+                                                    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" alt="Mockup">
+                                                    <span class="mockup-badge" id="empLiveBadge">PROMOÇÃO</span>
+                                                </div>
+                                                <div class="mockup-details">
+                                                    <h5 id="empLiveTitle">Produto Premium</h5>
+                                                    <p id="empLiveDesc">Descrição curta e elegante do seu melhor produto.</p>
+                                                    <div class="mockup-footer">
+                                                        <span class="mockup-price" id="empLivePrice">R$ 89,90</span>
+                                                        <button class="mockup-btn" id="empLiveBtn">Adicionar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
