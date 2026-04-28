@@ -232,8 +232,23 @@ document.getElementById('btnLogin').onclick = async () => {
             return;
         }
 
-        // Check if admin
-        const { data: adminData, error: adminError } = await sb.from('admin_users').select('id').eq('user_id', data.user.id).single();
+        // Check if admin (SaaS aware)
+        let { data: adminData, error: adminError } = await sb.from('admin_users').select('id').eq('user_id', data.user.id).single();
+
+        // Fallback: Verificar na tabela de usuários do SaaS caso a tabela legada não tenha o registro
+        if (adminError || !adminData) {
+            const { data: saasUser, error: saasError } = await sb
+                .from('usuarios')
+                .select('id, role')
+                .eq('id', data.user.id)
+                .eq('role', 'admin')
+                .single();
+            
+            if (!saasError && saasUser) {
+                adminData = saasUser;
+                adminError = null;
+            }
+        }
 
         if (adminError || !adminData) {
             errEl.textContent = 'Você não tem permissão de administrador.';
@@ -294,6 +309,13 @@ async function checkSession() {
             const empresaId = await initTenantAdmin(sb, session.user.id);
             if (empresaId) {
                 showAdmin();
+            }
+        } else {
+            // Fallback para usuários novos do SaaS que ainda não estão na tabela legada
+            const { data: saasUser } = await sb.from('usuarios').select('id').eq('id', session.user.id).eq('role', 'admin').single();
+            if (saasUser) {
+                const empresaId = await initTenantAdmin(sb, session.user.id);
+                if (empresaId) showAdmin();
             }
         }
     }

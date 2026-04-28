@@ -85,6 +85,10 @@ BEGIN
     INSERT INTO public.usuarios (id, email, empresa_id, role)
     VALUES (v_new_user_id, p_admin_email, v_empresa_id, 'admin');
 
+    -- Vincular o usuário à tabela legada admin_users para compatibilidade com o painel e RLS
+    INSERT INTO public.admin_users (user_id, empresa_id)
+    VALUES (v_new_user_id, v_empresa_id);
+
     RETURN v_empresa_id;
 END;
 $$;
