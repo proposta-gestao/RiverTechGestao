@@ -1944,7 +1944,7 @@ async function carregarConfiguracoes() {
     const [settingsRes, zonasRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at'),
-        sb.from('empresas').select('tema_cor_primaria, tema_cor_secundaria, tema_cor_botao').eq('id', empresaId).single()
+        sb.from('empresas').select('tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_texto').eq('id', empresaId).single()
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
@@ -1956,6 +1956,7 @@ async function carregarConfiguracoes() {
         _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   e.tema_cor_primaria   || '#E5B25D');
         _setThemeField('confTemaSecundaria', 'confTemaSecundariaHex', e.tema_cor_secundaria || '#1E90FF');
         _setThemeField('confTemaBotao',      'confTemaBotaoHex',      e.tema_cor_botao      || '#E5B25D');
+        _setThemeField('confTemaTexto',      'confTemaTextoHex',      e.tema_cor_texto      || '#ffffff');
         previewTemaEmpresa();
 
         // Atualizar títulos dinâmicos
@@ -2037,20 +2038,26 @@ window.previewTemaEmpresa = () => {
     const primaria   = document.getElementById('confTemaPrimaria').value;
     const secundaria = document.getElementById('confTemaSecundaria').value;
     const botao      = document.getElementById('confTemaBotao').value;
+    const texto      = document.getElementById('confTemaTexto').value;
 
     // Sincroniza campos hex
     document.getElementById('confTemaPrimariaHex').value   = primaria;
     document.getElementById('confTemaSecundariaHex').value = secundaria;
     document.getElementById('confTemaBotaoHex').value      = botao;
+    document.getElementById('confTemaTextoHex').value      = texto;
 
     // Aplica no preview local
     const previewArea = document.getElementById('empLivePreview');
     const previewBtn  = document.getElementById('empLiveBtn');
     const previewPrice = document.getElementById('empLivePrice');
 
+    if (previewArea) {
+        previewArea.style.backgroundColor = secundaria; // Usa secundária no fundo do preview
+        previewArea.style.color = texto; // Usa cor do texto
+    }
     if (previewBtn) {
         previewBtn.style.backgroundColor = botao;
-        previewBtn.style.color = '#000';
+        previewBtn.style.color = texto; // Texto do botão também segue a cor definida
     }
     if (previewPrice) {
         previewPrice.style.color = primaria;
@@ -2066,6 +2073,7 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
     const tema_cor_primaria   = document.getElementById('confTemaPrimaria').value;
     const tema_cor_secundaria = document.getElementById('confTemaSecundaria').value;
     const tema_cor_botao      = document.getElementById('confTemaBotao').value;
+    const tema_cor_texto      = document.getElementById('confTemaTexto').value;
 
     try {
         btn.disabled = true;
@@ -2075,6 +2083,7 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
             tema_cor_primaria,
             tema_cor_secundaria,
             tema_cor_botao,
+            tema_cor_texto,
             cor_primaria: tema_cor_primaria // Sincroniza legado
         }).eq('id', empresaId);
 

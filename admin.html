@@ -560,26 +560,33 @@
                             <h3>🎨 Cores da Loja</h3>
                             <p>Personalize as cores principais do seu cardápio e painéis.</p>
                             
-                            <div class="theme-simple-grid">
+                            <div class="theme-simple-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
                                 <div class="theme-simple-field">
-                                    <label>Cor Primária</label>
-                                    <div class="color-input-wrap">
-                                        <input type="color" id="confTemaPrimaria" oninput="previewTemaEmpresa()">
-                                        <input type="text" id="confTemaPrimariaHex" placeholder="#000000" maxlength="7">
+                                    <label style="font-size: 0.75rem;">Primária</label>
+                                    <div class="color-input-wrap" style="display: flex; gap: 4px;">
+                                        <input type="color" id="confTemaPrimaria" oninput="previewTemaEmpresa()" style="width: 30px; height: 30px; padding: 0; border: none; cursor: pointer;">
+                                        <input type="text" id="confTemaPrimariaHex" placeholder="#000000" maxlength="7" style="font-size: 0.7rem; padding: 4px;">
                                     </div>
                                 </div>
                                 <div class="theme-simple-field">
-                                    <label>Cor Secundária</label>
-                                    <div class="color-input-wrap">
-                                        <input type="color" id="confTemaSecundaria" oninput="previewTemaEmpresa()">
-                                        <input type="text" id="confTemaSecundariaHex" placeholder="#000000" maxlength="7">
+                                    <label style="font-size: 0.75rem;">Secundária</label>
+                                    <div class="color-input-wrap" style="display: flex; gap: 4px;">
+                                        <input type="color" id="confTemaSecundaria" oninput="previewTemaEmpresa()" style="width: 30px; height: 30px; padding: 0; border: none; cursor: pointer;">
+                                        <input type="text" id="confTemaSecundariaHex" placeholder="#000000" maxlength="7" style="font-size: 0.7rem; padding: 4px;">
                                     </div>
                                 </div>
                                 <div class="theme-simple-field">
-                                    <label>Cor dos Botões</label>
-                                    <div class="color-input-wrap">
-                                        <input type="color" id="confTemaBotao" oninput="previewTemaEmpresa()">
-                                        <input type="text" id="confTemaBotaoHex" placeholder="#000000" maxlength="7">
+                                    <label style="font-size: 0.75rem;">Botões</label>
+                                    <div class="color-input-wrap" style="display: flex; gap: 4px;">
+                                        <input type="color" id="confTemaBotao" oninput="previewTemaEmpresa()" style="width: 30px; height: 30px; padding: 0; border: none; cursor: pointer;">
+                                        <input type="text" id="confTemaBotaoHex" placeholder="#000000" maxlength="7" style="font-size: 0.7rem; padding: 4px;">
+                                    </div>
+                                </div>
+                                <div class="theme-simple-field">
+                                    <label style="font-size: 0.75rem;">Letras</label>
+                                    <div class="color-input-wrap" style="display: flex; gap: 4px;">
+                                        <input type="color" id="confTemaTexto" oninput="previewTemaEmpresa()" style="width: 30px; height: 30px; padding: 0; border: none; cursor: pointer;">
+                                        <input type="text" id="confTemaTextoHex" placeholder="#000000" maxlength="7" style="font-size: 0.7rem; padding: 4px;">
                                     </div>
                                 </div>
                             </div>
