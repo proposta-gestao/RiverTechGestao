@@ -653,8 +653,9 @@ function aplicarFiltrosDeModulos() {
         console.warn('[Modules] Tenant não pronto. Abortando filtros.');
         return;
     }
-    console.log('[Modules] Aplicando filtros granulares. Módulos:', window.TENANT.modulos);
-
+    const mods = window.TENANT.modulos || {};
+    console.log('[Modules] Aplicando filtros. Módulos ativos:', Object.keys(mods).filter(k => mods[k]));
+    
     let dynamicCss = '';
     const toggleSubtab = (subId, ativo) => {
         if (!ativo) {
@@ -664,8 +665,11 @@ function aplicarFiltrosDeModulos() {
         const buttons = document.querySelectorAll(`[data-subtab="${subId}"]`);
         const contents = document.querySelectorAll(`#subtab-${subId}`);
         
+        // Botões: Forçamos display se ativo (geralmente inline-block)
         buttons.forEach(b => toggleElement(b, ativo, 'inline-block'));
-        contents.forEach(c => toggleElement(c, ativo));
+        
+        // Conteúdos: Nunca forçamos display se ativo, deixamos o CSS .active controlar
+        contents.forEach(c => toggleElement(c, ativo, null));
     };
 
     const mods = window.TENANT.modulos || {};

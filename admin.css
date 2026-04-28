@@ -1,3 +1,8 @@
+/* Esconde elementos cujos módulos estão desativados */
+.module-hidden {
+    display: none !important;
+}
+
 :root {
     /* === IDENTIDADE (personalizável pelo Admin Master) === */
     --color-primary:        #E5B25D;
