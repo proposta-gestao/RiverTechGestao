@@ -25,35 +25,34 @@
 // PASSO 1: CAPTURAR O SLUG DA EMPRESA A PARTIR DA URL
 // ================================================================
 function _resolverSlug() {
-    const hostname = window.location.hostname; // ex: cliente1.meusistema.com
+    const hostname = window.location.hostname;
+    const pathname = window.location.pathname;
 
-    // Ambiente local: usar slug fixo ou querystring
-    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
-    if (isLocal) {
-    // 1. Tentar pegar da Rota (Pathname) - Ex: meudominio.com/slug
-    const pathSegments = window.location.pathname.split('/').filter(p => p);
-    // Ignora admin.html, index.html ou admin-saas.html
+    // 1. Tentar da Querystring - Ex: ?loja=slug (Útil para debug)
+    const paramSlug = new URLSearchParams(window.location.search).get('loja');
+    if (paramSlug) return paramSlug;
+
+    // 2. Tentar pegar da Rota (Pathname) - Ex: meusite.com/slug/cardapio
+    const pathSegments = pathname.split('/').filter(p => p);
+    // Ignora arquivos estáticos
     if (pathSegments.length > 0 && !pathSegments[0].includes('.html')) {
         return pathSegments[0];
     }
 
-    // 2. Tentar da Querystring - Ex: ?loja=slug (Ótimo para testes locais)
-    const paramSlug = new URLSearchParams(window.location.search).get('loja');
-    if (paramSlug) return paramSlug;
-
-    // 3. Tentar Subdomínio - Ex: slug.meudominio.com
+    // 3. Tentar Subdomínio - Ex: slug.meusistema.com
     const partes = hostname.split('.');
     if (partes.length >= 3 && hostname !== '127.0.0.1') {
         return partes[0];
     }
 
-    // Fallback para dev local
+    // Fallback para ambiente local
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
     if (isLocal) {
         console.warn('[Tenant] Ambiente local — usando slug de desenvolvimento: "teste"');
         return 'teste';
     }
 
-    console.error('[Tenant] Não foi possível determinar o slug a partir de:', hostname, window.location.pathname);
+    console.error('[Tenant] Não foi possível determinar o slug a partir de:', hostname, pathname);
     return null;
 }
 
