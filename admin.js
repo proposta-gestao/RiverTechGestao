@@ -739,7 +739,7 @@ function aplicarFiltrosDeModulos() {
     const mConfigFrete = isModuloAtivo('config_frete');
     const mConfigCanc = isModuloAtivo('config_cancelamentos');
 
-    toggleSubtab('config-endereco', mConfigEnd);
+    toggleSubtab('config-dados-empresa', mConfigEnd);
     toggleSubtab('config-visual', mConfigVis);
     toggleSubtab('config-frete', mConfigFrete);
     toggleSubtab('config-cancelamento', mConfigCanc);
@@ -1957,7 +1957,7 @@ async function carregarConfiguracoes() {
 
     if (settingsRes.data) {
         const d = settingsRes.data;
-        // Endereço
+        // Dados da Empresa
         document.getElementById('confNomeLoja').value        = d.store_name || '';
         document.getElementById('confCep').value             = d.address_zip || '';
         document.getElementById('confLogradouro').value      = d.address_street || '';
