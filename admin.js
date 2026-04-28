@@ -679,8 +679,6 @@ function aplicarFiltrosDeModulos() {
         contents.forEach(c => toggleElement(c, ativo, null));
     };
 
-    const mods = window.TENANT.modulos || {};
-
     // 1. PRODUTOS
     const mProdGerenciar = isModuloAtivo('produtos_gerenciar');
     const mProdCategorias = isModuloAtivo('produtos_categorias');
