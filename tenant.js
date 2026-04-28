@@ -218,17 +218,31 @@ async function initTenantPublico(supabaseClient) {
 
         console.info('[Tenant] Buscando empresa para slug:', slug);
 
-        // PASSO 2 — Buscar no Supabase (incluindo colunas de tema)
-        const { data, error } = await supabaseClient
+        // PASSO 2 — Buscar no Supabase
+        // Tentamos primeiro com todas as colunas de tema. Se falhar (ex: colunas ainda não criadas),
+        // tentamos uma busca simplificada para não quebrar o acesso à loja.
+        let { data, error } = await supabaseClient
             .from('empresas')
             .select('id, nome, slug, cor_primaria, logo_url, status, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
             .eq('slug', slug)
             .eq('status', 'ativo')
             .single();
 
+        if (error && error.code === 'PGRST204') { // Colunas faltando ou erro de estrutura
+            console.warn('[Tenant] Erro ao buscar colunas de tema, tentando busca simplificada...');
+            const retry = await supabaseClient
+                .from('empresas')
+                .select('id, nome, slug, cor_primaria, logo_url, status')
+                .eq('slug', slug)
+                .eq('status', 'ativo')
+                .single();
+            data = retry.data;
+            error = retry.error;
+        }
+
         // PASSO 6 — Tratar empresa não encontrada
         if (error || !data) {
-            console.error('[Tenant] Empresa não encontrada:', slug, error?.message);
+            console.error('[Tenant] Erro fatal: Empresa não encontrada ou erro no banco:', slug, error?.message);
             _mostrarTelaNaoEncontrada(slug);
             return null;
         }
@@ -272,14 +286,26 @@ async function initTenantAdmin(supabaseClient, userId) {
     // Cache: se já carregado pelo subdomínio, enriquece apenas
     if (window.TENANT.pronto) return window.TENANT.empresa_id;
 
-    const { data, error } = await supabaseClient
+    // Tentamos primeiro com o tema completo
+    let { data, error } = await supabaseClient
         .from('usuarios')
         .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda)')
         .eq('id', userId)
         .single();
 
+    if (error && error.code === 'PGRST204') {
+        console.warn('[Tenant-Admin] Falha ao carregar colunas de tema, tentando busca básica...');
+        const retry = await supabaseClient
+            .from('usuarios')
+            .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status)')
+            .eq('id', userId)
+            .single();
+        data = retry.data;
+        error = retry.error;
+    }
+
     if (error || !data) {
-        console.error('[Tenant] Usuário sem empresa vinculada:', userId, error?.message);
+        console.error('[Tenant-Admin] Erro fatal ao buscar empresa do usuário:', userId, error?.message);
         return null;
     }
 
