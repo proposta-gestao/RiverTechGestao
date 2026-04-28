@@ -189,7 +189,7 @@ document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     document.getElementById('empSlug').value = 'https://river-tech-gestao.vercel.app/';
     atualizarPreviewsURL(); 
     document.getElementById('empPlano').value = 'basico';
-    document.getElementById('empCor').value = '#FF5733';
+    document.getElementById('empCor').value = '#E5B25D';
     document.getElementById('empAdminEmail').value = '';
     document.getElementById('empAdminSenha').value = 'Mudar123!';
     document.getElementById('modalNovaEmpresa').classList.add('show');
