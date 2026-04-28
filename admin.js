@@ -635,7 +635,7 @@ function aplicarFiltrosDeModulos() {
         console.warn('[Modules] Tenant não pronto. Abortando filtros.');
         return;
     }
-    console.log('[Modules] Aplicando filtros granulares. Módulos:', window.TENANT.modulos);
+    console.log('[Modules] Aplicando filtros granulares e corrigindo sub-abas. Módulos:', window.TENANT.modulos);
 
     const toggleElement = (el, ativo, displayType = 'block') => {
         if (!el) return;
@@ -646,6 +646,13 @@ function aplicarFiltrosDeModulos() {
         }
     };
 
+    const toggleSubtab = (subId, ativo) => {
+        // Esconde o botão da sub-aba
+        toggleElement(document.querySelector(`[data-subtab="${subId}"]`), ativo);
+        // Esconde o container de conteúdo da sub-aba
+        toggleElement(document.getElementById(`subtab-${subId}`), ativo);
+    };
+
     const mods = window.TENANT.modulos || {};
 
     // 1. PRODUTOS
@@ -653,17 +660,15 @@ function aplicarFiltrosDeModulos() {
     const mProdCategorias = isModuloAtivo('produtos_categorias');
     const mProdEstoque = isModuloAtivo('produtos_estoque');
     
-    toggleElement(document.querySelector('[data-subtab="lista-produtos"]'), mProdGerenciar);
-    toggleElement(document.querySelector('[data-subtab="lista-categorias"]'), mProdCategorias);
-    toggleElement(document.getElementById('nav-sub-estoque'), mProdEstoque);
+    toggleSubtab('lista-produtos', mProdGerenciar);
+    toggleSubtab('lista-categorias', mProdCategorias);
+    toggleSubtab('lista-estoque', mProdEstoque);
     
-    // Alerta de estoque e colunas na tabela dependem de produtos_estoque
     toggleElement(document.getElementById('stockAlertPanel'), mProdEstoque);
     toggleElement(document.getElementById('groupEstoqueCard'), mProdEstoque);
     document.querySelectorAll('.col-estoque').forEach(el => toggleElement(el, mProdEstoque));
     toggleElement(document.getElementById('prodEstoqueMin')?.closest('.form-group'), mProdEstoque);
 
-    // Aba principal de Produtos (Esconde se nenhum sub-módulo de produto estiver ativo)
     const mQualquerProduto = mProdGerenciar || mProdCategorias || mProdEstoque;
     toggleElement(document.getElementById('nav-produtos'), mQualquerProduto, 'flex');
 
@@ -675,6 +680,9 @@ function aplicarFiltrosDeModulos() {
     toggleElement(document.getElementById('btnModoHojeOp'), mVendasHoje);
     toggleElement(document.getElementById('btnModoOntemOp'), mVendasOntem);
     toggleElement(document.getElementById('btnModoGeral'), mVendasGeral);
+    
+    const mQualquerVendaOp = mVendasHoje || mVendasOntem || mVendasGeral;
+    toggleSubtab('dashboard-operacional', mQualquerVendaOp);
 
     // 3. MÉTRICAS (Analítico)
     const mMetricasDash = isModuloAtivo('metricas_dashboard');
@@ -688,13 +696,10 @@ function aplicarFiltrosDeModulos() {
     toggleElement(document.getElementById('section-metricas-performance'), mMetricasPerf);
     toggleElement(document.getElementById('section-metricas-destaques'), mMetricasDestaques);
 
-    // Sub-aba inteira de Métricas e Performance
     const mQualquerMetrica = mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques;
-    const subNavMetricas = document.querySelector('[data-subtab="dashboard-metricas"]');
-    toggleElement(subNavMetricas, mQualquerMetrica, 'inline-block');
+    toggleSubtab('dashboard-metricas', mQualquerMetrica);
 
-    // Aba principal de Vendas & Performance
-    const mQualquerDashboard = mVendasHoje || mVendasOntem || mVendasGeral || mQualquerMetrica;
+    const mQualquerDashboard = mQualquerVendaOp || mQualquerMetrica;
     toggleElement(document.getElementById('nav-dashboard'), mQualquerDashboard, 'flex');
 
     // 4. CONFIGURAÇÕES
@@ -703,12 +708,11 @@ function aplicarFiltrosDeModulos() {
     const mConfigFrete = isModuloAtivo('config_frete');
     const mConfigCanc = isModuloAtivo('config_cancelamentos');
 
-    toggleElement(document.querySelector('[data-subtab="config-endereco"]'), mConfigEnd);
-    toggleElement(document.querySelector('[data-subtab="config-visual"]'), mConfigVis);
-    toggleElement(document.getElementById('nav-sub-frete'), mConfigFrete);
-    toggleElement(document.querySelector('[data-subtab="config-cancelamento"]'), mConfigCanc);
+    toggleSubtab('config-endereco', mConfigEnd);
+    toggleSubtab('config-visual', mConfigVis);
+    toggleSubtab('config-frete', mConfigFrete);
+    toggleSubtab('config-cancelamento', mConfigCanc);
 
-    // Aba principal de Configurações
     const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc;
     toggleElement(document.getElementById('nav-configuracoes'), mQualquerConfig, 'flex');
 
@@ -716,18 +720,32 @@ function aplicarFiltrosDeModulos() {
     const mCupons = isModuloAtivo('cupons');
     toggleElement(document.getElementById('nav-cupons'), mCupons, 'flex');
 
-    // 6. ACESSO EXTERNO E PAGAMENTO
+    // 6. EXTRAS
     const mCardapio = isModuloAtivo('cardapio');
-    const mPagamento = isModuloAtivo('pagamento');
     toggleElement(document.querySelector('.btn-link-cardapio'), mCardapio);
-    // Pagamento (Será usado no menu público principalmente)
 
-    // Redirecionamento Automático de Segurança (UX)
+    // --- Redirecionamento Automático (Segurança e UX) ---
+    
+    // 1. Redirecionamento de Abas Principais
     const abaAtiva = document.querySelector('.tab-btn.active')?.dataset.tab;
     if (abaAtiva === 'dashboard' && !mQualquerDashboard) document.getElementById('nav-produtos')?.click();
-    if (abaAtiva === 'produtos' && !mQualquerProduto) document.getElementById('nav-dashboard')?.click();
-    if (abaAtiva === 'cupons' && !mCupons) document.getElementById('nav-produtos')?.click();
-    if (abaAtiva === 'configuracoes' && !mQualquerConfig) document.getElementById('nav-produtos')?.click();
+    else if (abaAtiva === 'produtos' && !mQualquerProduto) document.getElementById('nav-dashboard')?.click();
+    else if (abaAtiva === 'cupons' && !mCupons) document.getElementById('nav-produtos')?.click();
+    else if (abaAtiva === 'configuracoes' && !mQualquerConfig) document.getElementById('nav-produtos')?.click();
+
+    // 2. Redirecionamento de Sub-Abas (dentro da aba atual)
+    const activeTabContent = document.querySelector('.tab-content.active');
+    if (activeTabContent) {
+        const activeSubContent = activeTabContent.querySelector('.subtab-content.active');
+        // Se a sub-aba ativa está oculta (display: none via style inline !important)
+        if (activeSubContent && activeSubContent.style.display === 'none') {
+            console.log('[Modules] Sub-aba ativa está desativada. Redirecionando...');
+            const primeiroBotaoVisivel = activeTabContent.querySelector('.subtab-btn:not([style*="display: none"])');
+            if (primeiroBotaoVisivel) {
+                primeiroBotaoVisivel.click();
+            }
+        }
+    }
 }
 
 /**
