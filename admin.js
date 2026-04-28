@@ -1988,10 +1988,13 @@ async function carregarConfiguracoes() {
         document.getElementById('confBrandSubtitle').value = d.brand_subtitle || 'Seu subtítulo aqui';
         
         // Horários operacionais
-        document.getElementById('confOpeningTime').value = d.opening_time || '18:00';
-        document.getElementById('confClosingTime').value = d.closing_time || '02:00';
-        openingTime = d.opening_time || '18:00';
-        closingTime = d.closing_time || '02:00';
+        const openTime = (d.opening_time || '18:00').slice(0, 5);
+        const closeTime = (d.closing_time || '02:00').slice(0, 5);
+        
+        document.getElementById('confOpeningTime').value = openTime;
+        document.getElementById('confClosingTime').value = closeTime;
+        openingTime = openTime;
+        closingTime = closeTime;
         document.getElementById('confBannerUrl').value       = d.banner_url || '';
         document.getElementById('confLogoUrl').value         = d.logo_url || '';
         atualizarPreviewBanner(d.banner_url || '');
