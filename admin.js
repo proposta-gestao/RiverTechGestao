@@ -253,8 +253,15 @@ document.getElementById('btnLogin').onclick = async () => {
         // Check if admin (SaaS aware)
         let { data: adminData, error: adminError } = await sb.from('admin_users').select('id').eq('user_id', data.user.id).single();
 
-        // Fallback: Verificar na tabela de usuários do SaaS caso a tabela legada não tenha o registro
-        if (adminError || !adminData) {
+        // Fallback 1: Verificar se é Super Admin
+        const { data: isSuper } = await sb.rpc('is_super_admin', { _user_id: data.user.id });
+        
+        if (isSuper) {
+            console.info('[Admin] Super Admin detectado. Ignorando verificações de permissão local.');
+            adminData = { id: 'super-admin', role: 'super' };
+            adminError = null;
+        } else if (adminError || !adminData) {
+            // Fallback 2: Verificar na tabela de usuários do SaaS caso a tabela legada não tenha o registro
             const { data: saasUser, error: saasError } = await sb
                 .from('usuarios')
                 .select('id, role')

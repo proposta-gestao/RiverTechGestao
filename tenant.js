@@ -307,6 +307,19 @@ async function initTenantAdmin(supabaseClient, userId) {
     }
 
     if (error || !data) {
+        console.warn('[Tenant-Admin] Usuário não encontrado em usuarios. Verificando Super Admin...');
+        
+        // Se não encontrou no usuarios, pode ser um Super Admin tentando acessar
+        const { data: isSuper } = await supabaseClient.rpc('is_super_admin', { _user_id: userId });
+        
+        if (isSuper) {
+            console.info('[Tenant-Admin] Super Admin detectado. Tentando carregar empresa via URL...');
+            const slug = _resolverSlug();
+            if (slug) {
+                return await initTenantPublico(supabaseClient);
+            }
+        }
+        
         console.error('[Tenant-Admin] Erro fatal ao buscar empresa do usuário:', userId, error?.message);
         return null;
     }
