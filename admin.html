@@ -997,13 +997,13 @@
             <div class="time-picker-container">
                 <div class="time-picker-column">
                     <button class="time-nav-btn" onclick="adjustTime('hour', 1)">▲</button>
-                    <div class="time-display" id="displayHour">18</div>
+                    <input type="text" class="time-display" id="displayHour" value="18" maxlength="2">
                     <button class="time-nav-btn" onclick="adjustTime('hour', -1)">▼</button>
                 </div>
                 <div class="time-separator">:</div>
                 <div class="time-picker-column">
                     <button class="time-nav-btn" onclick="adjustTime('min', 5)">▲</button>
-                    <div class="time-display" id="displayMin">00</div>
+                    <input type="text" class="time-display" id="displayMin" value="00" maxlength="2">
                     <button class="time-nav-btn" onclick="adjustTime('min', -5)">▼</button>
                 </div>
             </div>

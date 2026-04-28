@@ -2485,9 +2485,30 @@ window.adjustTime = (type, amount) => {
 };
 
 function updateTimeDisplay() {
-    document.getElementById('displayHour').textContent = currentHour.toString().padStart(2, '0');
-    document.getElementById('displayMin').textContent = currentMin.toString().padStart(2, '0');
+    document.getElementById('displayHour').value = currentHour.toString().padStart(2, '0');
+    document.getElementById('displayMin').value = currentMin.toString().padStart(2, '0');
 }
+
+// Lógica para digitação manual no picker
+document.getElementById('displayHour').oninput = function() {
+    let val = parseInt(this.value);
+    if (!isNaN(val)) {
+        if (val > 23) val = 23;
+        if (val < 0) val = 0;
+        currentHour = val;
+    }
+};
+document.getElementById('displayHour').onblur = updateTimeDisplay;
+
+document.getElementById('displayMin').oninput = function() {
+    let val = parseInt(this.value);
+    if (!isNaN(val)) {
+        if (val > 59) val = 59;
+        if (val < 0) val = 0;
+        currentMin = val;
+    }
+};
+document.getElementById('displayMin').onblur = updateTimeDisplay;
 
 window.closeTimePicker = () => {
     document.getElementById('modalTimePicker').classList.remove('active');

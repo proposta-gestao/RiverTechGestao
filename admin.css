@@ -28,10 +28,20 @@
     font-weight: 800;
     color: var(--color-primary);
     font-family: 'Inter', sans-serif;
-    min-width: 80px;
+    min-width: 90px;
     background: rgba(0,0,0,0.2);
     border-radius: 12px;
     padding: 10px;
+    border: 1px solid transparent;
+    text-align: center;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.time-display:focus {
+    background: rgba(229, 178, 93, 0.05);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 15px rgba(229, 178, 93, 0.1);
 }
 
 .time-separator {
