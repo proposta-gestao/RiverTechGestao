@@ -991,9 +991,9 @@
     </div>
 
     <!-- Time Picker Modal -->
-    <div class="modal" id="modalTimePicker">
-        <div class="modal-content" style="max-width: 320px; text-align: center; padding: 2rem;">
-            <h3 id="timePickerTitle" style="margin-bottom: 1.5rem; color: var(--primary);">Selecionar Horário</h3>
+    <div class="admin-modal-backdrop" id="modalTimePicker">
+        <div class="admin-modal" style="max-width: 340px; text-align: center; padding: 2.5rem;">
+            <h3 id="timePickerTitle" style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1.4rem;">Selecionar Horário</h3>
             <div class="time-picker-container">
                 <div class="time-picker-column">
                     <button class="time-nav-btn" onclick="adjustTime('hour', 1)">▲</button>
@@ -1007,8 +1007,8 @@
                     <button class="time-nav-btn" onclick="adjustTime('min', -5)">▼</button>
                 </div>
             </div>
-            <div style="margin-top: 2rem; display: flex; gap: 10px;">
-                <button class="btn-secondary" onclick="closeTimePicker()" style="flex:1">Cancelar</button>
+            <div style="margin-top: 2.5rem; display: flex; gap: 12px;">
+                <button class="btn-cancel" onclick="closeTimePicker()" style="flex:1">Cancelar</button>
                 <button class="btn-primary" onclick="confirmTimePicker()" style="flex:1">Confirmar</button>
             </div>
         </div>
