@@ -2089,8 +2089,8 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
         if (typeof _aplicarWhiteLabel === 'function') {
             _aplicarWhiteLabel({
                 tema_cor_primaria,
-                tema_cor_secundaria,
                 tema_cor_botao,
+                tema_cor_texto,
                 nome: window.TENANT.nome,
                 logo_url: window.TENANT.logo_url
             });
@@ -2106,9 +2106,12 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
 
 // Restaurar Tema Padrão (Empresa)
 document.getElementById('btnRestaurarTemaEmpresa').addEventListener('click', () => {
+    if (!validarAcessoModulo('config_personalizacao')) return;
+    
     _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   '#E5B25D');
-    _setThemeField('confTemaSecundaria', 'confTemaSecundariaHex', '#1E90FF');
     _setThemeField('confTemaBotao',      'confTemaBotaoHex',      '#E5B25D');
+    _setThemeField('confTemaTexto',      'confTemaTextoHex',      '#ffffff');
+    
     previewTemaEmpresa();
     showToast('Visual restaurado para o padrão do sistema!');
 });
