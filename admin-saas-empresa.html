@@ -350,27 +350,27 @@
                 
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <label class="module-toggle">
-                        <input type="checkbox" id="mod_cardapio" checked>
+                        <input type="checkbox" id="mod_cardapio" onchange="atualizarModulo('cardapio', this.checked)">
                         <span>Cardápio Digital</span>
                     </label>
                     <label class="module-toggle">
-                        <input type="checkbox" id="mod_frete" checked>
+                        <input type="checkbox" id="mod_frete" onchange="atualizarModulo('frete', this.checked)">
                         <span>Cálculo de Frete / Entrega</span>
                     </label>
                     <label class="module-toggle">
-                        <input type="checkbox" id="mod_dashboard" checked>
+                        <input type="checkbox" id="mod_dashboard" onchange="atualizarModulo('dashboard', this.checked)">
                         <span>Dashboard de Métricas</span>
                     </label>
                     <label class="module-toggle">
-                        <input type="checkbox" id="mod_pagamento" checked>
+                        <input type="checkbox" id="mod_pagamento" onchange="atualizarModulo('pagamento', this.checked)">
                         <span>Pagamento Online (Pix/Cartão)</span>
                     </label>
                     <label class="module-toggle">
-                        <input type="checkbox" id="mod_estoque" checked>
+                        <input type="checkbox" id="mod_estoque" onchange="atualizarModulo('estoque', this.checked)">
                         <span>Gestão de Estoque</span>
                     </label>
                     <label class="module-toggle">
-                        <input type="checkbox" id="mod_relatorios" checked>
+                        <input type="checkbox" id="mod_relatorios" onchange="atualizarModulo('relatorios', this.checked)">
                         <span>Relatórios Avançados</span>
                     </label>
                 </div>

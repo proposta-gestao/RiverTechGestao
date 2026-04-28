@@ -218,6 +218,34 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     }
 });
 
+// Salvamento automático de módulos
+window.atualizarModulo = async (modulo, checked) => {
+    if (!EMPRESA_ID || !EMPRESA_DATA) return;
+
+    // Atualiza o objeto local para manter sincronia
+    if (!EMPRESA_DATA.modulos) EMPRESA_DATA.modulos = {};
+    EMPRESA_DATA.modulos[modulo] = checked;
+
+    try {
+        const { error } = await sb
+            .from('empresas')
+            .update({ modulos: EMPRESA_DATA.modulos })
+            .eq('id', EMPRESA_ID);
+
+        if (error) throw error;
+        
+        // Feedback visual discreto
+        showToast(`Módulo ${modulo} ${checked ? 'ativado' : 'desativado'}!`);
+    } catch (err) {
+        console.error('Erro ao atualizar módulo:', err);
+        showToast('Erro ao salvar alteração: ' + err.message, 'error');
+        
+        // Reverte o switch visualmente em caso de falha
+        document.getElementById(`mod_${modulo}`).checked = !checked;
+        EMPRESA_DATA.modulos[modulo] = !checked;
+    }
+};
+
 // --- MODAIS ---
 window.abrirModal = (id) => {
     document.getElementById(id).style.display = 'flex';
