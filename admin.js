@@ -2454,6 +2454,9 @@ document.getElementById('confCep').oninput = (e) => {
     }
 
     if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);
+    e.target.value = v;
+};
+
 // --- Custom Time Picker Logic ---
 let activeTimeTarget = null;
 let currentHour = 18;
