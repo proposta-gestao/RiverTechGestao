@@ -279,32 +279,8 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
 // 10. Editar Empresa
 // ==========================================
 window.abrirModalEdicao = (id) => {
-    const emp = EMPRESAS.find(e => e.id === id);
-    if (!emp) return;
-
-    document.getElementById('editEmpId').value = emp.id;
-    document.getElementById('editEmpNome').value = emp.nome;
-    document.getElementById('editEmpPlano').value = emp.plano;
-    document.getElementById('editEmpStatus').value = emp.status;
-    document.getElementById('editEmpCor').value = emp.cor_primaria || '#E5B25D'; // legado
-
-    // Preencher campos de tema
-    const primaria   = emp.tema_cor_primaria   || emp.cor_primaria || '#E5B25D';
-    const secundaria = emp.tema_cor_secundaria  || '#1E90FF';
-    const botao      = emp.tema_cor_botao       || primaria;
-    const bg         = emp.tema_cor_bg          || '#0d0d0d';
-    const surface    = emp.tema_cor_surface     || '#1a1a1a';
-
-    _setColorField('editTemaCorPrimaria',   'editTemaCorPrimariaHex',   primaria);
-    _setColorField('editTemaCorSecundaria', 'editTemaCorSecundariaHex', secundaria);
-    _setColorField('editTemaCorBotao',      'editTemaCorBotaoHex',      botao);
-    _setColorField('editTemaCorBg',         'editTemaCorBgHex',         bg);
-    _setColorField('editTemaCorSurface',    'editTemaCorSurfaceHex',    surface);
-
-    // Atualizar preview inicial
-    previewTema();
-
-    document.getElementById('modalEditarEmpresa').classList.add('show');
+    // Agora redirecionamos para a página dedicada
+    window.location.href = `admin-saas-empresa.html?id=${id}`;
 };
 
 document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', async () => {

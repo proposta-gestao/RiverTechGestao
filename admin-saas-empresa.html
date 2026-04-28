@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão da Empresa | Admin Master</title>
+    <link rel="stylesheet" href="admin-saas.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .company-page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-gold);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .info-grid { grid-template-columns: 1fr; }
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .section-card h3 {
+            margin-bottom: 1.25rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .url-box label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .url-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .url-text {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-item:last-child { border-bottom: none; }
+
+        .admin-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-email { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-ativo { background: rgba(16, 185, 129, 0.1); color: var(--accent-green); }
+        .status-inativo { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+
+        .copy-btn-all {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            background: var(--bg-hover);
+            border: 1px dashed var(--accent-gold);
+            color: var(--accent-gold);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .copy-btn-all:hover {
+            background: rgba(234, 179, 8, 0.1);
+        }
+
+        .form-inline {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .form-inline input {
+            flex: 1;
+            padding: 8px 12px;
+            background: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-gold);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            transform: translateY(100px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+        #toast.show { transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Copiado com sucesso!</div>
+
+    <div class="company-page-container">
+        
+        <header class="page-header">
+            <div>
+                <a href="admin-saas.html" class="back-link">← Voltar para lista</a>
+                <h1 id="empresaNome" style="margin-top: 0.5rem; font-size: 2rem;">Carregando...</h1>
+            </div>
+            <div id="empresaStatusBadge">
+                <!-- Badge aqui -->
+            </div>
+        </header>
+
+        <!-- Métricas Financeiras -->
+        <div class="metrics-grid">
+            <div class="section-card">
+                <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Faturamento Total</div>
+                <div id="faturamentoTotal" style="font-size: 1.8rem; font-weight: 800; margin-top: 5px;">R$ 0,00</div>
+            </div>
+            <div class="section-card">
+                <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Faturamento (Mês)</div>
+                <div id="faturamentoMes" style="font-size: 1.8rem; font-weight: 800; margin-top: 5px; color: var(--accent-green);">R$ 0,00</div>
+            </div>
+            <div class="section-card">
+                <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Total de Pedidos</div>
+                <div id="totalPedidos" style="font-size: 1.8rem; font-weight: 800; margin-top: 5px;">0</div>
+            </div>
+            <div class="section-card">
+                <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Ticket Médio</div>
+                <div id="ticketMedio" style="font-size: 1.8rem; font-weight: 800; margin-top: 5px;">R$ 0,00</div>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            
+            <!-- URLs de Acesso -->
+            <div class="section-card">
+                <h3>🔗 URLs de Acesso</h3>
+                
+                <div class="url-box">
+                    <label>📍 Cardápio Digital</label>
+                    <div class="url-content">
+                        <span class="url-text" id="urlMenu">...</span>
+                        <button class="btn-sm btn-outline" onclick="copyToClipboard('urlMenu')">Copiar</button>
+                    </div>
+                </div>
+
+                <div class="url-box">
+                    <label>⚙️ Painel Admin</label>
+                    <div class="url-content">
+                        <span class="url-text" id="urlAdmin">...</span>
+                        <button class="btn-sm btn-outline" onclick="copyToClipboard('urlAdmin')">Copiar</button>
+                    </div>
+                </div>
+
+                <div class="url-box">
+                    <label>🎧 Painel Atendente</label>
+                    <div class="url-content">
+                        <span class="url-text" id="urlAtendente">...</span>
+                        <button class="btn-sm btn-outline" onclick="copyToClipboard('urlAtendente')">Copiar</button>
+                    </div>
+                </div>
+
+                <button class="copy-btn-all" onclick="copyAllUrls()">📋 Copiar todos os links com instruções</button>
+            </div>
+
+            <!-- Gestão de Administradores -->
+            <div class="section-card">
+                <h3>👥 Administradores (<span id="countAdmins">0</span>)</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Usuários com permissão total nesta empresa.</p>
+                
+                <ul class="admin-list" id="adminList">
+                    <!-- Lista dinâmica -->
+                </ul>
+
+                <div class="form-inline">
+                    <input type="email" id="newAdminEmail" placeholder="E-mail do novo admin...">
+                    <button class="btn-primary" id="btnAddAdmin" style="padding: 8px 16px;">Adicionar</button>
+                </div>
+                <small style="color: var(--text-secondary); display: block; margin-top: 8px;">O usuário já deve estar cadastrado no sistema.</small>
+            </div>
+
+            <!-- Identidade Visual (White-Label) -->
+            <div class="section-card">
+                <h3>🎨 Identidade Visual</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Personalize as cores globais desta empresa.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.5rem;">
+                    <div class="theme-color-field">
+                        <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700;">COR PRIMÁRIA</label>
+                        <input type="color" id="editTemaCorPrimaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 4px; cursor: pointer; background: #1a1a1a;">
+                    </div>
+                    <div class="theme-color-field">
+                        <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700;">COR SECUNDÁRIA</label>
+                        <input type="color" id="editTemaCorSecundaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 4px; cursor: pointer; background: #1a1a1a;">
+                    </div>
+                    <div class="theme-color-field">
+                        <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700;">COR DOS BOTÕES</label>
+                        <input type="color" id="editTemaCorBotao" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 4px; cursor: pointer; background: #1a1a1a;">
+                    </div>
+                    <div class="theme-color-field">
+                        <label style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 700;">FUNDO GERAL</label>
+                        <input type="color" id="editTemaCorBg" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 4px; cursor: pointer; background: #1a1a1a;">
+                    </div>
+                </div>
+
+                <div id="themePreview" style="padding: 1rem; border-radius: 8px; border: 1px solid #333; margin-bottom: 1rem; text-align: center;">
+                    <div id="previewCard" style="padding: 10px; border-radius: 6px; margin-bottom: 8px; font-weight: 700; font-size: 0.8rem;">Preview do Produto</div>
+                    <button id="previewBtn" style="padding: 6px 15px; border-radius: 4px; border: none; font-weight: 800; font-size: 0.75rem;">BOTÃO COMPRAR</button>
+                </div>
+                
+                <button class="btn-outline" onclick="restaurarTemaPadrao()" style="width: 100%; font-size: 0.8rem; padding: 8px;">↺ Restaurar Padrão Premium</button>
+            </div>
+
+            <!-- Configurações e Status -->
+            <div class="section-card">
+                <h3>⚙️ Configurações</h3>
+                <div class="form-group">
+                    <label>Plano Atual</label>
+                    <select id="editEmpPlano" style="width: 100%; margin-top: 5px;">
+                        <option value="basico">Básico</option>
+                        <option value="pro">Pro</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label>Status da Empresa</label>
+                    <select id="editEmpStatus" style="width: 100%; margin-top: 5px;">
+                        <option value="ativo">Ativa (Acesso Liberado)</option>
+                        <option value="inativo">Inativa (Acesso Bloqueado)</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="btnSalvarConfig" style="width: 100%; margin-top: 1.5rem; padding: 12px;">Atualizar Configurações</button>
+            </div>
+
+            <!-- Informações Complementares -->
+            <div class="section-card">
+                <h3>ℹ️ Informações Adicionais</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary);">Empresa ID:</span>
+                        <code id="infoId" style="font-size: 0.75rem;">...</code>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary);">Criada em:</span>
+                        <span id="infoCriacao">...</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary);">Último Pedido:</span>
+                        <span id="infoUltimoPedido">...</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--text-secondary);">Ticket Médio Geral:</span>
+                        <span id="infoTicketGeral">...</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="admin-saas-empresa.js"></script>
+</body>
+</html>
