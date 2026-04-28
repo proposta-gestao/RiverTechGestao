@@ -188,6 +188,20 @@ function abrirModal(id) {
     document.getElementById(id).classList.add('active');
 }
 
+/**
+ * Atalho para esconder/mostrar elementos do DOM e aplicar classe de controle.
+ */
+function toggleElement(el, show, displayType = 'block') {
+    if (!el) return;
+    if (show) {
+        el.style.display = displayType;
+        el.classList.remove('module-hidden');
+    } else {
+        el.style.display = 'none';
+        el.classList.add('module-hidden');
+    }
+}
+
 // Fechar modal ao clicar fora (no backdrop)
 document.addEventListener('click', (e) => {
     if (e.target.classList.contains('admin-modal-backdrop')) {
@@ -635,7 +649,7 @@ function aplicarFiltrosDeModulos() {
         console.warn('[Modules] Tenant não pronto. Abortando filtros.');
         return;
     }
-    console.log('[Modules] Aplicando filtros granulares e corrigindo sub-abas. Módulos:', window.TENANT.modulos);
+    console.log('[Modules] Aplicando filtros granulares. Módulos:', window.TENANT.modulos);
 
     let dynamicCss = '';
     const toggleSubtab = (subId, ativo) => {
@@ -645,7 +659,9 @@ function aplicarFiltrosDeModulos() {
         
         const buttons = document.querySelectorAll(`[data-subtab="${subId}"]`);
         const contents = document.querySelectorAll(`#subtab-${subId}`);
-        console.log(`[Modules Debug] Subtab "${subId}" -> ${ativo ? 'VISÍVEL' : 'ESCONDIDA CSS'} (${buttons.length} botões, ${contents.length} conteúdos)`);
+        
+        buttons.forEach(b => toggleElement(b, ativo, 'inline-block'));
+        contents.forEach(c => toggleElement(c, ativo));
     };
 
     const mods = window.TENANT.modulos || {};
@@ -661,7 +677,7 @@ function aplicarFiltrosDeModulos() {
     
     toggleElement(document.getElementById('stockAlertPanel'), mProdEstoque);
     toggleElement(document.getElementById('groupEstoqueCard'), mProdEstoque);
-    document.querySelectorAll('.col-estoque').forEach(el => toggleElement(el, mProdEstoque));
+    document.querySelectorAll('.col-estoque').forEach(el => toggleElement(el, mProdEstoque, 'table-cell'));
     toggleElement(document.getElementById('prodEstoqueMin')?.closest('.form-group'), mProdEstoque);
 
     const mQualquerProduto = mProdGerenciar || mProdCategorias || mProdEstoque;
@@ -717,7 +733,8 @@ function aplicarFiltrosDeModulos() {
 
     // 6. EXTRAS
     const mCardapio = isModuloAtivo('cardapio');
-    toggleElement(document.querySelector('.btn-link-cardapio'), mCardapio);
+    const btnCardapio = document.querySelector('.btn-link-cardapio');
+    if (btnCardapio) toggleElement(btnCardapio, mCardapio);
 
     // --- Redirecionamento Automático (Segurança e UX) ---
     
@@ -735,13 +752,10 @@ function aplicarFiltrosDeModulos() {
         // Se a sub-aba ativa está oculta
         if (activeSubContent && (activeSubContent.classList.contains('module-hidden') || activeSubContent.style.display === 'none')) {
             console.log('[Modules] Sub-aba ativa está desativada. Redirecionando...');
-            // Procura o primeiro botão que não tenha a classe module-hidden e não esteja display:none
             const primeiroBotaoVisivel = Array.from(activeTabContent.querySelectorAll('.subtab-btn')).find(b => {
                 return !b.classList.contains('module-hidden') && b.style.display !== 'none';
             });
-            if (primeiroBotaoVisivel) {
-                primeiroBotaoVisivel.click();
-            }
+            if (primeiroBotaoVisivel) primeiroBotaoVisivel.click();
         }
     }
     
@@ -1170,7 +1184,7 @@ function renderProdutos() {
                     </td>
                     <td>${p.categories?.name || '-'}</td>
                     <td onclick="editarProduto('${p.id}')" style="cursor:pointer;" title="Clique para editar">${formatCurrency(p.price)}</td>
-                    <td class="col-estoque" onclick="editarProduto('${p.id}')" style="cursor:pointer; color:${stockColor}; font-weight: ${stockColor !== 'inherit' ? '700' : 'normal'}; ${isModuloAtivo('estoque') ? '' : 'display:none;'}" title="Clique para ajustar estoque">${p.stock}</td>
+                    <td class="col-estoque" onclick="editarProduto('${p.id}')" style="cursor:pointer; color:${stockColor}; font-weight: ${stockColor !== 'inherit' ? '700' : 'normal'}; ${isModuloAtivo('produtos_estoque') ? '' : 'display:none;'}" title="Clique para ajustar estoque">${p.stock}</td>
                     <td>${toggleHTML}</td>
                     <td>
                         <div class="actions-cell">
