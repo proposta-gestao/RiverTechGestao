@@ -2420,9 +2420,10 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
     btn.textContent = 'Salvar Configurações';
 };
 
-document.getElementById('btnBuscarCepConfig').onclick = async () => {
+async function buscarCepAdmin() {
     const cep = document.getElementById('confCep').value.replace(/\D/g, '');
-    if (cep.length !== 8) { showToast('CEP inválido.', 'error'); return; }
+    if (cep.length !== 8) return;
+    
     try {
         const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
         const data = await res.json();
@@ -2438,7 +2439,7 @@ document.getElementById('btnBuscarCepConfig').onclick = async () => {
     } catch (err) {
         console.error('Erro ao buscar CEP:', err);
     }
-};
+}
 
 // Formatação e Auto-fetch CEP
 document.getElementById('confCep').oninput = (e) => {
@@ -2446,7 +2447,7 @@ document.getElementById('confCep').oninput = (e) => {
     
     // Auto-fetch ao atingir 8 dígitos
     if (v.length === 8) {
-        document.getElementById('btnBuscarCepConfig').click();
+        buscarCepAdmin();
     }
 
     if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);

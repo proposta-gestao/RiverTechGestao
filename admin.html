@@ -421,27 +421,27 @@
                         <div class="form-row">
                             <div class="form-group" style="flex:2">
                                 <label for="confNomeLoja">Nome da Loja</label>
-                                <input type="text" id="confNomeLoja" placeholder="Ex: ♠️♦️ACP♥️♣️">
+                                <input type="text" id="confNomeLoja" placeholder="Ex: Minha Loja">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex:0.4">
+                                <label for="confCep">CEP</label>
+                                <input type="text" id="confCep" placeholder="00000-000" maxlength="9">
+                            </div>
+                            <div class="form-group" style="flex:1.2">
+                                <label for="confLogradouro">Logradouro</label>
+                                <input type="text" id="confLogradouro" placeholder="Rua, Avenida...">
+                            </div>
+                            <div class="form-group" style="flex:0.3">
+                                <label for="confNumero">Nº</label>
+                                <input type="text" id="confNumero" placeholder="123">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group" style="flex:1">
-                                <label for="confCep">CEP</label>
-                                <div style="display:flex;gap:8px;">
-                                    <input type="text" id="confCep" placeholder="00000-000" maxlength="9">
-                                    <button class="btn-sm btn-edit" id="btnBuscarCepConfig"
-                                        style="white-space:nowrap;padding:0 14px;">Buscar</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group" style="flex:2">
-                                <label for="confLogradouro">Logradouro</label>
-                                <input type="text" id="confLogradouro" placeholder="Rua, Avenida...">
-                            </div>
-                            <div class="form-group" style="flex:0.6">
-                                <label for="confNumero">Número</label>
-                                <input type="text" id="confNumero" placeholder="123">
+                                <label for="confBairro">Bairro</label>
+                                <input type="text" id="confBairro" placeholder="Bairro">
                             </div>
                             <div class="form-group" style="flex:1">
                                 <label for="confComplemento">Complemento</label>
@@ -449,20 +449,16 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group" style="flex:1.5">
-                                <label for="confBairro">Bairro</label>
-                                <input type="text" id="confBairro" placeholder="Bairro">
-                            </div>
                             <div class="form-group" style="flex:2">
                                 <label for="confCidade">Cidade</label>
                                 <input type="text" id="confCidade" placeholder="Cidade">
                             </div>
-                            <div class="form-group" style="flex:0.5">
+                            <div class="form-group" style="flex:0.4">
                                 <label for="confEstado">UF</label>
                                 <input type="text" id="confEstado" placeholder="MG" maxlength="2">
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-top: 10px;">
                             <label for="confReferencia">Ponto de Referência</label>
                             <input type="text" id="confReferencia" placeholder="Ex: Próximo ao mercado X">
                         </div>
