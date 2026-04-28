@@ -126,8 +126,24 @@
             
             <div class="form-group">
                 <label>Endereço da Loja (Link)</label>
-                <input type="text" id="empSlug" required>
+                <input type="text" id="empSlug" required placeholder="https://river-tech-gestao.vercel.app/nome-da-loja">
                 <small>A loja ficará acessível no link acima + o nome escolhido.</small>
+                
+                <!-- Previews Dinâmicos -->
+                <div class="url-previews" id="urlPreviews" style="display: none;">
+                    <div class="url-preview-item">
+                        <label>🔗 Cardápio (Cliente)</label>
+                        <code id="previewMenu">...</code>
+                    </div>
+                    <div class="url-preview-item">
+                        <label>⚙️ Painel de Gestão (Admin)</label>
+                        <code id="previewAdmin">...</code>
+                    </div>
+                    <div class="url-preview-item">
+                        <label>🧑‍🍳 Tela do Atendente</label>
+                        <code id="previewAtendente">...</code>
+                    </div>
+                </div>
             </div>
 
             <div class="form-row">

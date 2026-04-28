@@ -187,12 +187,38 @@ function fecharModal(id) {
 document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     document.getElementById('empNome').value = '';
     document.getElementById('empSlug').value = 'https://river-tech-gestao.vercel.app/';
+    atualizarPreviewsURL(); 
     document.getElementById('empPlano').value = 'basico';
     document.getElementById('empCor').value = '#FF5733';
     document.getElementById('empAdminEmail').value = '';
     document.getElementById('empAdminSenha').value = 'Mudar123!';
     document.getElementById('modalNovaEmpresa').classList.add('show');
 });
+
+// Atualiza as 3 URLs em tempo real para visualização do lojista
+function atualizarPreviewsURL() {
+    const input = document.getElementById('empSlug').value;
+    const container = document.getElementById('urlPreviews');
+    
+    let slug = input;
+    // Tenta pegar o slug seja colando o link inteiro ou apenas o nome
+    if (slug.includes('river-tech-gestao.vercel.app/')) {
+        slug = slug.split('/').filter(p => p).pop() || '';
+    }
+
+    if (slug && slug !== 'river-tech-gestao.vercel.app') {
+        container.style.display = 'block';
+        const baseUrl = `https://river-tech-gestao.vercel.app/${slug}`;
+        
+        document.getElementById('previewMenu').textContent = baseUrl;
+        document.getElementById('previewAdmin').textContent = `${baseUrl}/painel-gestao`;
+        document.getElementById('previewAtendente').textContent = `${baseUrl}/atendente`;
+    } else {
+        container.style.display = 'none';
+    }
+}
+
+document.getElementById('empSlug').addEventListener('input', atualizarPreviewsURL);
 
 document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async () => {
     const btn = document.getElementById('btnSalvarNovaEmpresa');
