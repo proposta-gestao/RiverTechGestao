@@ -1,16 +1,43 @@
 :root {
-            --primary: #E5B25D;
-            --primary-hover: #d4a14c;
-            --bg-body: #0d0d0d;
-            --bg-card: #1a1a1a;
-            --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --border-color: rgba(229, 178, 93, 0.2);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --glass: rgba(26, 26, 26, 0.8);
-        }
+    /* === IDENTIDADE (personalizável pelo tenant) === */
+    --color-primary:        #E5B25D;
+    --color-primary-hover:  #d4a14c;
+    --color-secondary:      #1E90FF;
+    --color-primary-10:     rgba(229,178,93,0.10);
+    --color-primary-30:     rgba(229,178,93,0.30);
+
+    /* === BACKGROUNDS === */
+    --color-bg:             #0d0d0d;
+    --color-surface:        #1a1a1a;
+    --color-surface-hover:  #222222;
+
+    /* === TEXTO === */
+    --color-text:           #ffffff;
+    --color-text-muted:     #a0a0a0;
+
+    /* === BORDAS === */
+    --color-border:         rgba(229,178,93,0.2);
+
+    /* === FEEDBACK === */
+    --color-success:        #00B894;
+    --color-warning:        #FDCB6E;
+    --color-danger:         #FF4757;
+
+    /* === ALIASES DE COMPATIBILIDADE === */
+    --primary:              var(--color-primary);
+    --primary-hover:        var(--color-primary-hover);
+    --bg-body:              var(--color-bg);
+    --bg-card:              var(--color-surface);
+    --text-main:            var(--color-text);
+    --text-muted:           var(--color-text-muted);
+    --border-color:         var(--color-border);
+
+    /* === UTILITÁRIOS === */
+    --shadow:     0 8px 32px rgba(0,0,0,0.4);
+    --radius:     16px;
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --glass:      rgba(26,26,26,0.8);
+}
 
         * {
             margin: 0;

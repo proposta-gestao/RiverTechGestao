@@ -1735,13 +1735,22 @@ window.toggleUrlInput = (containerId) => {
 
 async function carregarConfiguracoes() {
     const empresaId = getTenantId();
-    const [settingsRes, zonasRes] = await Promise.all([
+    const [settingsRes, zonasRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
-        sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at')
+        sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at'),
+        sb.from('empresas').select('tema_cor_primaria, tema_cor_secundaria, tema_cor_botao').eq('id', empresaId).single()
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
         showToast('Erro ao carregar configurações', 'error');
+    }
+
+    if (empresaRes.data) {
+        const e = empresaRes.data;
+        _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   e.tema_cor_primaria   || '#E5B25D');
+        _setThemeField('confTemaSecundaria', 'confTemaSecundariaHex', e.tema_cor_secundaria || '#1E90FF');
+        _setThemeField('confTemaBotao',      'confTemaBotaoHex',      e.tema_cor_botao      || '#E5B25D');
+        previewTemaEmpresa();
     }
 
     if (settingsRes.data) {
@@ -1790,6 +1799,92 @@ async function carregarConfiguracoes() {
         renderZonasFrete();
     }
 }
+
+// --- Funções de Tema (Empresa) ---
+
+function _setThemeField(pickerId, hexId, value) {
+    const picker = document.getElementById(pickerId);
+    const hex = document.getElementById(hexId);
+    if (picker) picker.value = value;
+    if (hex) hex.value = value;
+}
+
+// Atualiza o preview de tema no painel da empresa
+window.previewTemaEmpresa = () => {
+    const primaria   = document.getElementById('confTemaPrimaria').value;
+    const secundaria = document.getElementById('confTemaSecundaria').value;
+    const botao      = document.getElementById('confTemaBotao').value;
+
+    // Sincroniza campos hex
+    document.getElementById('confTemaPrimariaHex').value   = primaria;
+    document.getElementById('confTemaSecundariaHex').value = secundaria;
+    document.getElementById('confTemaBotaoHex').value      = botao;
+
+    // Aplica no preview local
+    const previewArea = document.getElementById('empLivePreview');
+    const previewBtn  = document.getElementById('empLiveBtn');
+    const previewPrice = document.getElementById('empLivePrice');
+
+    if (previewBtn) {
+        previewBtn.style.backgroundColor = botao;
+        previewBtn.style.color = '#000';
+    }
+    if (previewPrice) {
+        previewPrice.style.color = primaria;
+    }
+};
+
+// Salvar Tema (Empresa)
+document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async () => {
+    const btn = document.getElementById('btnSalvarTemaEmpresa');
+    const empresaId = getTenantId();
+    
+    const tema_cor_primaria   = document.getElementById('confTemaPrimaria').value;
+    const tema_cor_secundaria = document.getElementById('confTemaSecundaria').value;
+    const tema_cor_botao      = document.getElementById('confTemaBotao').value;
+
+    try {
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        const { error } = await sb.from('empresas').update({
+            tema_cor_primaria,
+            tema_cor_secundaria,
+            tema_cor_botao,
+            cor_primaria: tema_cor_primaria // Sincroniza legado
+        }).eq('id', empresaId);
+
+        if (error) throw error;
+
+        showToast('Cores atualizadas com sucesso! ✅', 'success');
+        
+        // Aplica as cores no painel admin atual sem precisar recarregar
+        if (typeof _aplicarWhiteLabel === 'function') {
+            _aplicarWhiteLabel({
+                tema_cor_primaria,
+                tema_cor_secundaria,
+                tema_cor_botao,
+                nome: window.TENANT.nome,
+                logo_url: window.TENANT.logo_url
+            });
+        }
+
+    } catch (err) {
+        showToast('Erro ao salvar tema: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Cores';
+    }
+});
+
+// Restaurar Tema Padrão (Empresa)
+document.getElementById('btnRestaurarTemaEmpresa').addEventListener('click', () => {
+    _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   '#E5B25D');
+    _setThemeField('confTemaSecundaria', 'confTemaSecundariaHex', '#1E90FF');
+    _setThemeField('confTemaBotao',      'confTemaBotaoHex',      '#E5B25D');
+    previewTemaEmpresa();
+    showToast('Visual restaurado para o padrão do sistema!');
+});
 
 // --- Preview de imagem ---
 function atualizarPreviewBanner(url) {

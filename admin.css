@@ -1,18 +1,46 @@
 :root {
-    --primary: #E5B25D;
-    --primary-hover: #d4a14c;
-    --bg-body: #0d0d0d;
-    --bg-card: #1a1a1a;
-    --text-main: #ffffff;
-    --text-muted: #a0a0a0;
-    --border-color: rgba(229, 178, 93, 0.2);
-    --shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-    --radius: 16px;
+    /* === IDENTIDADE (personalizável pelo Admin Master) === */
+    --color-primary:        #E5B25D;
+    --color-primary-hover:  #d4a14c;
+    --color-secondary:      #1E90FF;
+    --color-secondary-hover:#1a7fe0;
+    --color-primary-10:     rgba(229,178,93,0.10);
+    --color-primary-30:     rgba(229,178,93,0.30);
+
+    /* === BACKGROUNDS (personalizável pelo Admin Master) === */
+    --color-bg:             #0d0d0d;
+    --color-surface:        #1a1a1a;
+    --color-surface-hover:  #222222;
+
+    /* === TEXTO (fixo — não personalizável pelo cliente) === */
+    --color-text:           #ffffff;
+    --color-text-muted:     #a0a0a0;
+
+    /* === BORDAS === */
+    --color-border:         rgba(229,178,93,0.2);
+
+    /* === FEEDBACK (fixo) === */
+    --color-success:        #00B894;
+    --color-warning:        #FDCB6E;
+    --color-danger:         #FF4757;
+
+    /* === ALIASES DE COMPATIBILIDADE (para não quebrar código existente) === */
+    --primary:              var(--color-primary);
+    --primary-hover:        var(--color-primary-hover);
+    --bg-body:              var(--color-bg);
+    --bg-card:              var(--color-surface);
+    --text-main:            var(--color-text);
+    --text-muted:           var(--color-text-muted);
+    --border-color:         var(--color-border);
+    --success:              var(--color-success);
+    --warning:              var(--color-warning);
+    --danger:               var(--color-danger);
+
+    /* === UTILITÁRIOS === */
+    --shadow:    0 12px 40px rgba(0,0,0,0.6);
+    --radius:    16px;
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    --danger: #FF4757;
-    --success: #00B894;
-    --warning: #FDCB6E;
-    --glass: rgba(26, 26, 26, 0.8);
+    --glass:     rgba(26,26,26,0.8);
 }
 
 * {

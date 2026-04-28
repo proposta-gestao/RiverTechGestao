@@ -286,7 +286,23 @@ window.abrirModalEdicao = (id) => {
     document.getElementById('editEmpNome').value = emp.nome;
     document.getElementById('editEmpPlano').value = emp.plano;
     document.getElementById('editEmpStatus').value = emp.status;
-    document.getElementById('editEmpCor').value = emp.cor_primaria || '#FF5733';
+    document.getElementById('editEmpCor').value = emp.cor_primaria || '#E5B25D'; // legado
+
+    // Preencher campos de tema
+    const primaria   = emp.tema_cor_primaria   || emp.cor_primaria || '#E5B25D';
+    const secundaria = emp.tema_cor_secundaria  || '#1E90FF';
+    const botao      = emp.tema_cor_botao       || primaria;
+    const bg         = emp.tema_cor_bg          || '#0d0d0d';
+    const surface    = emp.tema_cor_surface     || '#1a1a1a';
+
+    _setColorField('editTemaCorPrimaria',   'editTemaCorPrimariaHex',   primaria);
+    _setColorField('editTemaCorSecundaria', 'editTemaCorSecundariaHex', secundaria);
+    _setColorField('editTemaCorBotao',      'editTemaCorBotaoHex',      botao);
+    _setColorField('editTemaCorBg',         'editTemaCorBgHex',         bg);
+    _setColorField('editTemaCorSurface',    'editTemaCorSurfaceHex',    surface);
+
+    // Atualizar preview inicial
+    previewTema();
 
     document.getElementById('modalEditarEmpresa').classList.add('show');
 };
@@ -297,7 +313,13 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
     const nome = document.getElementById('editEmpNome').value;
     const plano = document.getElementById('editEmpPlano').value;
     const status = document.getElementById('editEmpStatus').value;
-    const cor_primaria = document.getElementById('editEmpCor').value;
+
+    const tema_cor_primaria   = document.getElementById('editTemaCorPrimaria').value;
+    const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
+    const tema_cor_botao      = document.getElementById('editTemaCorBotao').value;
+    const tema_cor_bg         = document.getElementById('editTemaCorBg').value;
+    const tema_cor_surface    = document.getElementById('editTemaCorSurface').value;
+    const cor_primaria        = tema_cor_primaria; // sincronizar legado
 
     try {
         btn.disabled = true;
@@ -305,12 +327,16 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
 
         const { error } = await sb
             .from('empresas')
-            .update({ nome, plano, status, cor_primaria })
+            .update({
+                nome, plano, status, cor_primaria,
+                tema_cor_primaria, tema_cor_secundaria,
+                tema_cor_botao, tema_cor_bg, tema_cor_surface
+            })
             .eq('id', id);
 
         if (error) throw error;
 
-        showToast('Empresa atualizada!');
+        showToast('Empresa e tema atualizados! ✅');
         fecharModal('modalEditarEmpresa');
         carregarEmpresas();
 
@@ -321,6 +347,64 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
         btn.textContent = 'Salvar Alterações';
     }
 });
+
+// ==========================================
+// TEMA: Helpers de preview e sync
+// ==========================================
+function _setColorField(pickerId, hexId, value) {
+    const picker = document.getElementById(pickerId);
+    const hex    = document.getElementById(hexId);
+    if (picker) picker.value = value;
+    if (hex)    hex.value    = value;
+}
+
+// Sincroniza o texto hex com o color picker e atualiza preview
+window.syncColorPicker = (pickerId, hexId) => {
+    const hexVal = document.getElementById(hexId)?.value.trim();
+    if (/^#[0-9A-Fa-f]{6}$/.test(hexVal)) {
+        const picker = document.getElementById(pickerId);
+        if (picker) picker.value = hexVal;
+        previewTema();
+    }
+};
+
+// Atualiza o preview ao vivo no modal
+window.previewTema = () => {
+    const primaria = document.getElementById('editTemaCorPrimaria')?.value || '#E5B25D';
+    const bg       = document.getElementById('editTemaCorBg')?.value       || '#0d0d0d';
+    const surface  = document.getElementById('editTemaCorSurface')?.value  || '#1a1a1a';
+    const botao    = document.getElementById('editTemaCorBotao')?.value     || primaria;
+
+    // Sync hex fields
+    ['editTemaCorPrimaria','editTemaCorSecundaria','editTemaCorBotao','editTemaCorBg','editTemaCorSurface'].forEach(id => {
+        const picker = document.getElementById(id);
+        const hexEl  = document.getElementById(id + 'Hex');
+        if (picker && hexEl) hexEl.value = picker.value;
+    });
+
+    const preview = document.getElementById('themePreview');
+    const card    = document.getElementById('themePreviewCard');
+    const price   = document.getElementById('themePreviewPrice');
+    const btn     = document.getElementById('themePreviewBtn');
+    const badge   = document.getElementById('themePreviewBadge');
+
+    if (preview) preview.style.background = bg;
+    if (card)    card.style.background    = surface;
+    if (price)   price.style.color        = primaria;
+    if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
+    if (badge) { badge.style.background   = primaria; badge.style.color = '#000'; }
+};
+
+// Restaura as cores para o padrão Premium
+window.restaurarTemapadrao = () => {
+    _setColorField('editTemaCorPrimaria',   'editTemaCorPrimariaHex',   '#E5B25D');
+    _setColorField('editTemaCorSecundaria', 'editTemaCorSecundariaHex', '#1E90FF');
+    _setColorField('editTemaCorBotao',      'editTemaCorBotaoHex',      '#E5B25D');
+    _setColorField('editTemaCorBg',         'editTemaCorBgHex',         '#0d0d0d');
+    _setColorField('editTemaCorSurface',    'editTemaCorSurfaceHex',    '#1a1a1a');
+    previewTema();
+    showToast('Tema padrão restaurado!');
+};
 
 // ==========================================
 // Boot

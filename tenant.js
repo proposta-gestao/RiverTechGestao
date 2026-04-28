@@ -74,20 +74,74 @@ window.empresa = null;
 // Promise de inicialização (evita múltiplas chamadas ao banco)
 let _tenantPromise = null;
 
+/**
+ * Converte um hex (#RRGGBB) em rgba(r,g,b,alpha).
+ * Usado para gerar as variantes de opacidade automaticamente.
+ */
+function _hexToRgba(hex, alpha) {
+    if (!hex || !hex.startsWith('#')) return hex;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    if (isNaN(r)) return hex;
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/**
+ * Escurece uma cor hex em uma porcentagem (0-100).
+ * Usado para gerar automaticamente o hover da cor primária.
+ */
+function _darkenHex(hex, percent) {
+    if (!hex || !hex.startsWith('#')) return hex;
+    const r = Math.max(0, parseInt(hex.slice(1,3),16) - Math.round(2.55*percent));
+    const g = Math.max(0, parseInt(hex.slice(3,5),16) - Math.round(2.55*percent));
+    const b = Math.max(0, parseInt(hex.slice(5,7),16) - Math.round(2.55*percent));
+    return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+}
+
 // ================================================================
 // PASSO 5: APLICAR WHITE-LABEL (CSS VARS + LOGO + NOME)
 // ================================================================
 function _aplicarWhiteLabel(data) {
-    // Cor primária via CSS custom property
-    if (data.cor_primaria) {
-        document.documentElement.style.setProperty('--primary', data.cor_primaria);
-        document.documentElement.style.setProperty('--primary-color', data.cor_primaria);
-        // Gera variantes de opacidade automaticamente
-        document.documentElement.style.setProperty('--primary-10', data.cor_primaria + '1A');
-        document.documentElement.style.setProperty('--primary-30', data.cor_primaria + '4D');
-    }
+    const set = (v, val) => { if (val) document.documentElement.style.setProperty(v, val); };
 
-    // Logo: aplica em elementos com class "logo-main" ou id "logoEmpresa"
+    // --- Cores do Tema ---
+    const primaria   = data.tema_cor_primaria   || data.cor_primaria || '#E5B25D';
+    const secundaria = data.tema_cor_secundaria  || '#1E90FF';
+    const botao      = data.tema_cor_botao       || primaria;
+    const bg         = data.tema_cor_bg          || '#0d0d0d';
+    const surface    = data.tema_cor_surface      || '#1a1a1a';
+    const borda      = data.tema_cor_borda        || _hexToRgba(primaria, 0.2);
+
+    // Variáveis do sistema de temas
+    set('--color-primary',        primaria);
+    set('--color-primary-hover',  _darkenHex(primaria, 8));
+    set('--color-secondary',      secundaria);
+    set('--color-secondary-hover',_darkenHex(secundaria, 8));
+    set('--color-primary-10',     _hexToRgba(primaria, 0.10));
+    set('--color-primary-30',     _hexToRgba(primaria, 0.30));
+    set('--color-bg',             bg);
+    set('--color-surface',        surface);
+    set('--color-surface-hover',  _darkenHex(surface, 3));
+    set('--color-border',         borda);
+
+    // Aliases legados (mantém compatibilidade)
+    set('--primary',       primaria);
+    set('--primary-hover', _darkenHex(primaria, 8));
+    set('--bg-body',       bg);
+    set('--bg-card',       surface);
+    set('--border-color',  borda);
+
+    // Aliases do atendente
+    set('--accent-waiter', primaria);
+    set('--bg-waiter',     bg);
+    set('--card-waiter',   surface);
+
+    // Variável de botão (pode ser diferente da primária)
+    set('--color-button',        botao);
+    set('--color-button-hover',  _darkenHex(botao, 8));
+
+    // --- Logo ---
     if (data.logo_url) {
         const logos = document.querySelectorAll('.logo-main, #logoEmpresa');
         logos.forEach(el => {
@@ -103,14 +157,14 @@ function _aplicarWhiteLabel(data) {
         });
     }
 
-    // Nome da empresa: aplica em elementos com class "brand-name"
+    // --- Nome da empresa ---
     if (data.nome) {
         const nomes = document.querySelectorAll('.brand-name, #brandName');
         nomes.forEach(el => { el.textContent = data.nome; });
         document.title = data.nome + ' | Sistema';
     }
 
-    console.info('[Tenant] White-label aplicado:', data.nome, data.cor_primaria);
+    console.info('[Tenant] ✅ Tema aplicado:', primaria, '| Empresa:', data.nome);
 }
 
 // ================================================================
@@ -164,10 +218,10 @@ async function initTenantPublico(supabaseClient) {
 
         console.info('[Tenant] Buscando empresa para slug:', slug);
 
-        // PASSO 2 — Buscar no Supabase
+        // PASSO 2 — Buscar no Supabase (incluindo colunas de tema)
         const { data, error } = await supabaseClient
             .from('empresas')
-            .select('id, nome, slug, cor_primaria, logo_url, status')
+            .select('id, nome, slug, cor_primaria, logo_url, status, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
             .eq('slug', slug)
             .eq('status', 'ativo')
             .single();
@@ -179,13 +233,19 @@ async function initTenantPublico(supabaseClient) {
             return null;
         }
 
-        // PASSO 3 — Armazenar globalmente
-        window.TENANT.empresa_id  = data.id;
-        window.TENANT.slug        = data.slug;
-        window.TENANT.nome        = data.nome;
-        window.TENANT.cor_primaria = data.cor_primaria;
-        window.TENANT.logo_url    = data.logo_url;
-        window.TENANT.pronto      = true;
+        // PASSO 3 — Armazenar globalmente (incluindo tema)
+        window.TENANT.empresa_id       = data.id;
+        window.TENANT.slug             = data.slug;
+        window.TENANT.nome             = data.nome;
+        window.TENANT.cor_primaria     = data.cor_primaria;
+        window.TENANT.logo_url         = data.logo_url;
+        window.TENANT.tema_cor_primaria   = data.tema_cor_primaria;
+        window.TENANT.tema_cor_secundaria = data.tema_cor_secundaria;
+        window.TENANT.tema_cor_botao      = data.tema_cor_botao;
+        window.TENANT.tema_cor_bg         = data.tema_cor_bg;
+        window.TENANT.tema_cor_surface    = data.tema_cor_surface;
+        window.TENANT.tema_cor_borda      = data.tema_cor_borda;
+        window.TENANT.pronto           = true;
 
         // Alias window.empresa para compatibilidade
         window.empresa = {
@@ -214,7 +274,7 @@ async function initTenantAdmin(supabaseClient, userId) {
 
     const { data, error } = await supabaseClient
         .from('usuarios')
-        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status)')
+        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda)')
         .eq('id', userId)
         .single();
 
@@ -231,14 +291,20 @@ async function initTenantAdmin(supabaseClient, userId) {
         return null;
     }
 
-    // PASSO 3 — Armazenar globalmente
-    window.TENANT.empresa_id   = data.empresa_id;
-    window.TENANT.slug         = emp.slug   || null;
-    window.TENANT.nome         = emp.nome   || null;
-    window.TENANT.cor_primaria = emp.cor_primaria || null;
-    window.TENANT.logo_url     = emp.logo_url || null;
-    window.TENANT.role         = data.role;
-    window.TENANT.pronto       = true;
+    // PASSO 3 — Armazenar globalmente (incluindo tema)
+    window.TENANT.empresa_id         = data.empresa_id;
+    window.TENANT.slug               = emp.slug   || null;
+    window.TENANT.nome               = emp.nome   || null;
+    window.TENANT.cor_primaria       = emp.cor_primaria || null;
+    window.TENANT.logo_url           = emp.logo_url || null;
+    window.TENANT.role               = data.role;
+    window.TENANT.tema_cor_primaria   = emp.tema_cor_primaria  || null;
+    window.TENANT.tema_cor_secundaria = emp.tema_cor_secundaria || null;
+    window.TENANT.tema_cor_botao      = emp.tema_cor_botao     || null;
+    window.TENANT.tema_cor_bg         = emp.tema_cor_bg        || null;
+    window.TENANT.tema_cor_surface    = emp.tema_cor_surface   || null;
+    window.TENANT.tema_cor_borda      = emp.tema_cor_borda     || null;
+    window.TENANT.pronto             = true;
 
     window.empresa = {
         id:           data.empresa_id,
@@ -247,10 +313,16 @@ async function initTenantAdmin(supabaseClient, userId) {
         logo_url:     emp.logo_url,
     };
 
-    // PASSO 5 — White-label no admin também
-    if (emp.nome || emp.cor_primaria || emp.logo_url) {
-        _aplicarWhiteLabel(emp);
-    }
+    // PASSO 5 — White-label no admin também (com todos os dados de tema)
+    _aplicarWhiteLabel({
+        ...emp,
+        tema_cor_primaria:   emp.tema_cor_primaria,
+        tema_cor_secundaria: emp.tema_cor_secundaria,
+        tema_cor_botao:      emp.tema_cor_botao,
+        tema_cor_bg:         emp.tema_cor_bg,
+        tema_cor_surface:    emp.tema_cor_surface,
+        tema_cor_borda:      emp.tema_cor_borda,
+    });
 
     console.info('[Tenant] ✅ Admin autenticado:', data.email, '| Empresa:', emp.nome);
     return data.empresa_id;

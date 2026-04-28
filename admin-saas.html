@@ -183,7 +183,7 @@
 
     <!-- Modal: Editar Empresa -->
     <div class="modal" id="modalEditarEmpresa">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 580px;">
             <span class="modal-close" onclick="fecharModal('modalEditarEmpresa')">&times;</span>
             <h2>Editar Empresa</h2>
             
@@ -212,9 +212,77 @@
                 </div>
             </div>
 
-            <div class="form-group" style="display:none;">
-                <label>Cor Primária</label>
-                <input type="color" id="editEmpCor">
+            <hr class="modal-divider">
+            <h3>🎨 Tema Visual</h3>
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:1rem;">
+                Configure as cores que serão aplicadas no cardápio, admin e atendente da loja.
+            </p>
+
+            <div class="theme-editor">
+                <div class="theme-editor-grid">
+                    <div class="theme-color-field">
+                        <label>🎨 Cor Primária</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="editTemaCorPrimaria" value="#E5B25D" oninput="previewTema()">
+                            <input type="text" id="editTemaCorPrimariaHex" value="#E5B25D" oninput="syncColorPicker('editTemaCorPrimaria','editTemaCorPrimariaHex')">
+                        </div>
+                        <small>Botões, preços e destaques</small>
+                    </div>
+                    <div class="theme-color-field">
+                        <label>💙 Cor Secundária</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="editTemaCorSecundaria" value="#1E90FF" oninput="previewTema()">
+                            <input type="text" id="editTemaCorSecundariaHex" value="#1E90FF" oninput="syncColorPicker('editTemaCorSecundaria','editTemaCorSecundariaHex')">
+                        </div>
+                        <small>Links, sub-destaques</small>
+                    </div>
+                    <div class="theme-color-field">
+                        <label>🖱️ Cor dos Botões</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="editTemaCorBotao" value="#E5B25D" oninput="previewTema()">
+                            <input type="text" id="editTemaCorBotaoHex" value="#E5B25D" oninput="syncColorPicker('editTemaCorBotao','editTemaCorBotaoHex')">
+                        </div>
+                        <small>Botão de comprar, confirmar, etc</small>
+                    </div>
+                    <div class="theme-color-field">
+                        <label>🌑 Fundo Geral</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="editTemaCorBg" value="#0d0d0d" oninput="previewTema()">
+                            <input type="text" id="editTemaCorBgHex" value="#0d0d0d" oninput="syncColorPicker('editTemaCorBg','editTemaCorBgHex')">
+                        </div>
+                        <small>Background da página</small>
+                    </div>
+                    <div class="theme-color-field">
+                        <label>🃏 Fundo dos Cards</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="editTemaCorSurface" value="#1a1a1a" oninput="previewTema()">
+                            <input type="text" id="editTemaCorSurfaceHex" value="#1a1a1a" oninput="syncColorPicker('editTemaCorSurface','editTemaCorSurfaceHex')">
+                        </div>
+                        <small>Cards, modais e painéis</small>
+                    </div>
+                </div>
+
+                <!-- Preview ao vivo -->
+                <div class="theme-preview" id="themePreview">
+                    <div class="theme-preview-header">
+                        <span>Preview ao Vivo</span>
+                        <button class="theme-preview-btn" id="themePreviewBtn">Botão</button>
+                    </div>
+                    <div class="theme-preview-card" id="themePreviewCard">
+                        <div class="theme-preview-title" id="themePreviewTitle">Nome do Produto</div>
+                        <div class="theme-preview-price" id="themePreviewPrice">R$ 29,90</div>
+                    </div>
+                    <div class="theme-preview-badge" id="themePreviewBadge">Destaque</div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:0.5rem;">
+                    <button class="btn-outline" onclick="restaurarTemapadrao()" style="font-size:0.8rem; padding:8px 14px;">
+                        ↺ Restaurar Padrão
+                    </button>
+                </div>
+
+                <!-- Campos legados (hidden) -->
+                <input type="hidden" id="editEmpCor">
             </div>
 
             <div class="modal-actions">

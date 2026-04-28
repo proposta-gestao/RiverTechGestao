@@ -1,11 +1,33 @@
 :root {
-    --bg-waiter: #0d0d0d;
-    --card-waiter: #1a1a1a;
-    --accent-waiter: #E5B25D;
-    --status-pendente: #FF4757;
-    --status-pago: #2ED573;
-    --status-cozinha: #1E90FF;
-    --status-concluido: #747D8C;
+    /* === IDENTIDADE (personalizável pelo tenant) === */
+    --color-primary:        #E5B25D;
+    --color-primary-hover:  #d4a14c;
+    --color-secondary:      #1E90FF;
+    --color-primary-10:     rgba(229,178,93,0.10);
+
+    /* === BACKGROUNDS === */
+    --color-bg:             #0d0d0d;
+    --color-surface:        #1a1a1a;
+
+    /* === TEXTO === */
+    --color-text:           #ffffff;
+    --color-text-muted:     #a0a0a0;
+
+    /* === BORDAS === */
+    --color-border:         rgba(229,178,93,0.2);
+
+    /* === STATUS (fixo) === */
+    --color-success:        #00B894;
+    --color-danger:         #FF4757;
+    --status-pendente:      #FF4757;
+    --status-pago:          #2ED573;
+    --status-cozinha:       #1E90FF;
+    --status-concluido:     #747D8C;
+
+    /* === ALIASES DE COMPATIBILIDADE === */
+    --accent-waiter:        var(--color-primary);
+    --bg-waiter:            var(--color-bg);
+    --card-waiter:          var(--color-surface);
 }
 
 body {

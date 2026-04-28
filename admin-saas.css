@@ -443,3 +443,32 @@ input[type="color"] {
     font-size: 0.85rem;
     font-family: 'monospace';
 }
+
+/* ===== THEME EDITOR ===== */
+.theme-editor { background:rgba(0,0,0,0.2); border:1px solid var(--border-color); border-radius:10px; padding:1rem; margin-bottom:1rem; }
+.theme-editor-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1rem; }
+.theme-color-field { display:flex; flex-direction:column; gap:4px; }
+.theme-color-field label { font-size:0.72rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px; }
+.theme-color-field small { font-size:0.65rem; color:#555; }
+.color-input-wrap { display:flex; gap:8px; align-items:center; }
+.color-input-wrap input[type="color"] { width:40px; height:36px; border:none; border-radius:6px; cursor:pointer; padding:2px; background:#1a1a1a; flex-shrink:0; }
+.color-input-wrap input[type="text"] { flex:1; padding:8px 10px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); border-radius:6px; color:var(--text-primary); font-size:0.8rem; font-family:monospace; }
+
+/* Theme live preview */
+.theme-preview { border-radius:10px; padding:1rem; margin-bottom:0.75rem; border:1px solid #333; transition:all 0.3s ease; }
+.theme-preview-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; font-size:0.72rem; color:#666; text-transform:uppercase; letter-spacing:0.5px; }
+.theme-preview-btn { padding:6px 14px; border-radius:6px; border:none; font-weight:700; font-size:0.8rem; cursor:default; transition:background 0.3s ease; }
+.theme-preview-card { border-radius:8px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; transition:background 0.3s ease; }
+.theme-preview-title { font-size:0.85rem; color:#fff; font-weight:600; }
+.theme-preview-price { font-size:1rem; font-weight:800; transition:color 0.3s ease; }
+.theme-preview-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:0.7rem; font-weight:700; transition:background 0.3s ease; }
+
+/* Admin empresa simple theme panel */
+.theme-simple-panel { background:rgba(229,178,93,0.04); border:1px solid rgba(229,178,93,0.15); border-radius:12px; padding:1.25rem; margin-top:1.5rem; }
+.theme-simple-grid { display:flex; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
+.theme-simple-field { display:flex; flex-direction:column; gap:6px; flex:1; min-width:140px; }
+.theme-simple-field label { font-size:0.75rem; font-weight:700; color:var(--text-muted,#a0a0a0); text-transform:uppercase; }
+.theme-live-preview { padding:12px; border-radius:8px; margin-bottom:12px; display:flex; gap:10px; align-items:center; }
+.theme-live-btn { padding:8px 16px; border-radius:8px; border:none; font-weight:700; font-size:0.85rem; cursor:default; }
+.theme-live-price { font-size:1.1rem; font-weight:800; }
+

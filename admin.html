@@ -550,6 +550,48 @@
                                 </div>
                             </div>
                         </div>
+
+                        <hr class="modal-divider" style="margin: 2rem 0;">
+
+                        <!-- Cores da Loja (Novo) -->
+                        <div class="theme-simple-panel">
+                            <h3>🎨 Cores da Loja</h3>
+                            <p>Personalize as cores principais do seu cardápio e painéis.</p>
+                            
+                            <div class="theme-simple-grid">
+                                <div class="theme-simple-field">
+                                    <label>Cor Primária</label>
+                                    <div class="color-input-wrap">
+                                        <input type="color" id="confTemaPrimaria" oninput="previewTemaEmpresa()">
+                                        <input type="text" id="confTemaPrimariaHex" placeholder="#000000" maxlength="7">
+                                    </div>
+                                </div>
+                                <div class="theme-simple-field">
+                                    <label>Cor Secundária</label>
+                                    <div class="color-input-wrap">
+                                        <input type="color" id="confTemaSecundaria" oninput="previewTemaEmpresa()">
+                                        <input type="text" id="confTemaSecundariaHex" placeholder="#000000" maxlength="7">
+                                    </div>
+                                </div>
+                                <div class="theme-simple-field">
+                                    <label>Cor dos Botões</label>
+                                    <div class="color-input-wrap">
+                                        <input type="color" id="confTemaBotao" oninput="previewTemaEmpresa()">
+                                        <input type="text" id="confTemaBotaoHex" placeholder="#000000" maxlength="7">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="theme-live-preview" id="empLivePreview" style="background: var(--color-surface, #1a1a1a); border: 1px solid var(--color-border, #333);">
+                                <button class="theme-live-btn" id="empLiveBtn">Botão de Exemplo</button>
+                                <span class="theme-live-price" id="empLivePrice">R$ 49,90</span>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem;">
+                                <button class="btn-sm btn-outline" id="btnRestaurarTemaEmpresa">Restaurar Padrão</button>
+                                <button class="btn-sm btn-primary" id="btnSalvarTemaEmpresa">Salvar Cores</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 </div> <!-- Fechamento da sub-aba config-visual -->
