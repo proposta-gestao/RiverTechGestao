@@ -640,17 +640,22 @@ function aplicarFiltrosDeModulos() {
     const toggleElement = (el, ativo, displayType = 'block') => {
         if (!el) return;
         if (!ativo) {
+            el.classList.add('module-hidden');
             el.style.setProperty('display', 'none', 'important');
         } else {
+            el.classList.remove('module-hidden');
             el.style.removeProperty('display');
         }
     };
 
     const toggleSubtab = (subId, ativo) => {
-        // Esconde o botão da sub-aba
-        toggleElement(document.querySelector(`[data-subtab="${subId}"]`), ativo);
-        // Esconde o container de conteúdo da sub-aba
-        toggleElement(document.getElementById(`subtab-${subId}`), ativo);
+        const buttons = document.querySelectorAll(`[data-subtab="${subId}"]`);
+        const contents = document.querySelectorAll(`#subtab-${subId}`);
+        
+        console.log(`[Modules Debug] Subtab "${subId}" -> ${ativo ? 'VISÍVEL' : 'ESCONDIDA'} (${buttons.length} botões, ${contents.length} conteúdos)`);
+        
+        buttons.forEach(btn => toggleElement(btn, ativo));
+        contents.forEach(content => toggleElement(content, ativo));
     };
 
     const mods = window.TENANT.modulos || {};
@@ -737,10 +742,13 @@ function aplicarFiltrosDeModulos() {
     const activeTabContent = document.querySelector('.tab-content.active');
     if (activeTabContent) {
         const activeSubContent = activeTabContent.querySelector('.subtab-content.active');
-        // Se a sub-aba ativa está oculta (display: none via style inline !important)
-        if (activeSubContent && activeSubContent.style.display === 'none') {
+        // Se a sub-aba ativa está oculta
+        if (activeSubContent && (activeSubContent.classList.contains('module-hidden') || activeSubContent.style.display === 'none')) {
             console.log('[Modules] Sub-aba ativa está desativada. Redirecionando...');
-            const primeiroBotaoVisivel = activeTabContent.querySelector('.subtab-btn:not([style*="display: none"])');
+            // Procura o primeiro botão que não tenha a classe module-hidden e não esteja display:none
+            const primeiroBotaoVisivel = Array.from(activeTabContent.querySelectorAll('.subtab-btn')).find(b => {
+                return !b.classList.contains('module-hidden') && b.style.display !== 'none';
+            });
             if (primeiroBotaoVisivel) {
                 primeiroBotaoVisivel.click();
             }
@@ -1022,6 +1030,7 @@ function setupAdminRealtime() {
         }, payload => {
             console.log('[Realtime] Dados da empresa atualizados:', payload.new);
             if (payload.new.modulos) {
+                console.log('[Realtime] Novos módulos recebidos:', payload.new.modulos);
                 window.TENANT.modulos = payload.new.modulos;
                 aplicarFiltrosDeModulos();
                 renderProdutos(); // Garante que colunas de estoque sejam atualizadas

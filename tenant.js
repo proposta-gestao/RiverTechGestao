@@ -415,18 +415,17 @@ function getTenantId() {
  * Ex: isModuloAtivo('estoque')
  */
 function isModuloAtivo(modulo) {
-    // Se ainda não carregou o tenant, assumimos falso para segurança
     if (!window.TENANT || !window.TENANT.pronto) return false;
     
     const mods = window.TENANT.modulos || {};
+    let status;
     
-    // Se o módulo não estiver definido no JSON, consideramos ATIVO por padrão (backwards compatibility)
     if (mods[modulo] === undefined) {
-        // console.log(`[Modules] ${modulo} não definido. Ativando por padrão.`);
-        return true;
+        status = true; // backward compatibility
+    } else {
+        status = mods[modulo] === true;
     }
     
-    const ativo = mods[modulo] === true;
-    // console.log(`[Modules] Check: ${modulo} = ${ativo}`);
-    return ativo;
+    console.log(`[Modules Check] ${modulo}: ${status}`);
+    return status;
 }
