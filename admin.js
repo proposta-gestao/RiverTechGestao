@@ -327,22 +327,31 @@ document.getElementById('btnLogout').onclick = async () => {
 
 // Check session on load
 async function checkSession() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (session) {
-        const { data: adminData } = await sb.from('admin_users').select('id').eq('user_id', session.user.id).single();
-        if (adminData) {
-            // --- Multi-Tenant: restaurar empresa_id da sessão ---
-            const empresaId = await initTenantAdmin(sb, session.user.id);
-            if (empresaId) {
-                showAdmin();
-            }
-        } else {
-            // Fallback para usuários novos do SaaS que ainda não estão na tabela legada
-            const { data: saasUser } = await sb.from('usuarios').select('id').eq('id', session.user.id).eq('role', 'admin').single();
-            if (saasUser) {
+    try {
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+            const { data: adminData } = await sb.from('admin_users').select('id').eq('user_id', session.user.id).single();
+            if (adminData) {
+                // --- Multi-Tenant: restaurar empresa_id da sessão ---
                 const empresaId = await initTenantAdmin(sb, session.user.id);
-                if (empresaId) showAdmin();
+                if (empresaId) {
+                    showAdmin();
+                }
+            } else {
+                // Fallback para usuários novos do SaaS que ainda não estão na tabela legada
+                const { data: saasUser } = await sb.from('usuarios').select('id').eq('id', session.user.id).eq('role', 'admin').single();
+                if (saasUser) {
+                    const empresaId = await initTenantAdmin(sb, session.user.id);
+                    if (empresaId) showAdmin();
+                }
             }
+        }
+    } catch (err) {
+        console.error("Erro na verificação de sessão:", err);
+        const errEl = document.getElementById('loginError');
+        if (errEl) {
+            errEl.textContent = err.message;
+            errEl.style.display = 'block';
         }
     }
 }

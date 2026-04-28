@@ -340,6 +340,14 @@ async function initTenantAdmin(supabaseClient, userId) {
         return null;
     }
 
+    // --- VALIDAÇÃO CROSS-TENANT (Prevenir acesso de admin de outra empresa) ---
+    const urlSlug = _resolverSlug();
+    if (urlSlug && urlSlug !== 'teste' && emp.slug && urlSlug !== emp.slug) {
+        console.warn(`[Tenant-Admin] Acesso cruzado bloqueado: admin da empresa '${emp.slug}' tentou acessar o painel de '${urlSlug}'.`);
+        await supabaseClient.auth.signOut();
+        throw new Error(`Acesso negado: Você não tem permissão para acessar o painel desta empresa. Seu painel correto é: /${emp.slug}`);
+    }
+
     // PASSO 3 — Armazenar globalmente (incluindo tema)
     window.TENANT.empresa_id         = data.empresa_id;
     window.TENANT.slug               = emp.slug   || null;
