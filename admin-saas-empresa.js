@@ -196,7 +196,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         btn.textContent = 'Salvando...';
  
         console.log('[SaaS Admin] Salvando configurações...', { plano, status, modulos });
-        const { error } = await sb
+        const { error, data } = await sb
             .from('empresas')
             .update({ 
                 plano, 
@@ -211,10 +211,14 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
             })
             .eq('id', EMPRESA_ID)
             .select();
- 
-        if (error) throw error;
+
+        if (error) {
+            console.error('[SaaS Admin] Erro de banco ao salvar:', error);
+            throw error;
+        }
+
         if (!data || data.length === 0) {
-            throw new Error('Acesso negado: Você não tem permissão para atualizar esta empresa no banco de dados (RLS).');
+            throw new Error('Acesso negado ou registro não encontrado (RLS). Verifique se você é Super Admin.');
         }
  
         showToast('Configurações atualizadas!');
@@ -242,15 +246,19 @@ window.atualizarModulo = async (modulo, checked) => {
             .eq('id', EMPRESA_ID)
             .select();
  
-        if (error) throw error;
+        if (error) {
+            console.error('[Modules] Erro ao atualizar:', error);
+            throw error;
+        }
+
         if (!data || data.length === 0) {
-            throw new Error('Permissão negada no banco de dados (RLS bloqueou a atualização).');
+            throw new Error('Permissão negada no banco de dados (RLS bloqueou a atualização). Certifique-se de estar logado como Super Admin.');
         }
         
         // Feedback visual discreto
-        console.log(`[Modules] ${modulo} atualizado para ${checked}`);
+        console.log(`[Modules] ${modulo} atualizado com sucesso para ${checked}`);
     } catch (err) {
-        console.error('Erro ao atualizar módulo:', err);
+        console.error('Erro crítico ao atualizar módulo:', err);
         showToast('Erro ao salvar alteração: ' + err.message, 'error');
         
         // Reverte o switch visualmente em caso de falha

@@ -191,11 +191,15 @@ function abrirModal(id) {
 /**
  * Atalho para esconder/mostrar elementos do DOM e aplicar classe de controle.
  */
-function toggleElement(el, show, displayType = 'block') {
+function toggleElement(el, show, displayType = null) {
     if (!el) return;
     if (show) {
-        el.style.display = displayType;
         el.classList.remove('module-hidden');
+        if (displayType) {
+            el.style.display = displayType;
+        } else {
+            el.style.removeProperty('display');
+        }
     } else {
         el.style.display = 'none';
         el.classList.add('module-hidden');
