@@ -52,10 +52,10 @@
 
 
             <nav class="admin-tabs">
-                <button class="tab-btn active" data-tab="produtos">📦 Produtos</button>
-                <button class="tab-btn" data-tab="dashboard">📊 Vendas & Performance</button>
-                <button class="tab-btn" data-tab="cupons">🎫 Cupons</button>
-                <button class="tab-btn" data-tab="configuracoes">⚙️ Configurações</button>
+                <button class="tab-btn active" data-tab="produtos" id="nav-produtos">📦 Produtos</button>
+                <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">📊 Vendas & Performance</button>
+                <button class="tab-btn" data-tab="cupons" id="nav-cupons">🎫 Cupons</button>
+                <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">⚙️ Configurações</button>
             </nav>
         </div>
 
@@ -291,7 +291,7 @@
                     <div class="admin-subtabs">
                         <button class="subtab-btn active" data-subtab="lista-produtos">Gerenciar Produtos</button>
                         <button class="subtab-btn" data-subtab="lista-categorias">Gerenciar Categorias</button>
-                        <button class="subtab-btn" data-subtab="lista-estoque">Ajustes de Estoque</button>
+                        <button class="subtab-btn" data-subtab="lista-estoque" id="nav-sub-estoque">Ajustes de Estoque</button>
                     </div>
                 </div>
 
@@ -310,7 +310,7 @@
                                     <th>Nome</th>
                                     <th>Categoria</th>
                                     <th>Preço</th>
-                                    <th>Estoque</th>
+                                    <th class="col-estoque">Estoque</th>
                                     <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
@@ -399,7 +399,7 @@
                     <div class="admin-subtabs" style="margin-bottom: 0; min-width: max-content;">
                         <button class="subtab-btn active" data-subtab="config-endereco">Endereço da Loja</button>
                         <button class="subtab-btn" data-subtab="config-visual">Personalização Visual</button>
-                        <button class="subtab-btn" data-subtab="config-frete">Frete e Entrega</button>
+                        <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
                         <button class="subtab-btn" data-subtab="config-cancelamento">Cancelamentos</button>
                     </div>
                 </div>

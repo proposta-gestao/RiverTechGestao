@@ -69,6 +69,15 @@ function renderDadosBasicos(emp) {
     const dataFormatada = isNaN(dCriacao) ? '—' : dCriacao.toLocaleDateString('pt-BR');
     document.getElementById('infoCriacao').textContent = dataFormatada;
 
+    // Módulos (Feature Flags)
+    const mods = emp.modulos || {};
+    document.getElementById('mod_cardapio').checked = mods.cardapio !== false;
+    document.getElementById('mod_frete').checked = mods.frete !== false;
+    document.getElementById('mod_dashboard').checked = mods.dashboard !== false;
+    document.getElementById('mod_pagamento').checked = mods.pagamento !== false;
+    document.getElementById('mod_estoque').checked = mods.estoque !== false;
+    document.getElementById('mod_relatorios').checked = mods.relatorios !== false;
+
     // Tema
     document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
     document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
@@ -163,6 +172,16 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
 
+    // Módulos
+    const modulos = {
+        cardapio: document.getElementById('mod_cardapio').checked,
+        frete: document.getElementById('mod_frete').checked,
+        dashboard: document.getElementById('mod_dashboard').checked,
+        pagamento: document.getElementById('mod_pagamento').checked,
+        estoque: document.getElementById('mod_estoque').checked,
+        relatorios: document.getElementById('mod_relatorios').checked
+    };
+
     const tema_cor_primaria = document.getElementById('editTemaCorPrimaria').value;
     const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
     const tema_cor_botao = document.getElementById('editTemaCorBotao').value;
@@ -178,6 +197,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 plano, 
                 status,
                 plano_vencimento,
+                modulos,
                 tema_cor_primaria,
                 tema_cor_secundaria,
                 tema_cor_botao,

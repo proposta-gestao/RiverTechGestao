@@ -623,7 +623,66 @@ async function carregarTudo() {
         carregarConfiguracoes()
     ]);
     renderStats();
+    aplicarFiltrosDeModulos(); // Novo: Filtra funcionalidades por empresa
     setupAdminRealtime();
+}
+
+/**
+ * Filtra a interface do lojista escondendo o que não está no plano/módulo ativo.
+ */
+function aplicarFiltrosDeModulos() {
+    console.log('[Modules] Aplicando filtros de funcionalidades...');
+
+    // 1. Dashboard
+    if (!isModuloAtivo('dashboard')) {
+        const navDash = document.getElementById('nav-dashboard');
+        if (navDash) navDash.style.display = 'none';
+        
+        // Se estiver na aba dashboard, pula para a de produtos
+        if (document.querySelector('.tab-btn.active')?.dataset.tab === 'dashboard') {
+            const btnProd = document.getElementById('nav-produtos');
+            if (btnProd) btnProd.click();
+        }
+    }
+
+    // 2. Relatórios (Sub-aba dentro do Dashboard)
+    if (!isModuloAtivo('relatorios')) {
+        const subNavMetricas = document.querySelector('[data-subtab="dashboard-metricas"]');
+        if (subNavMetricas) subNavMetricas.style.display = 'none';
+    }
+
+    // 3. Estoque
+    if (!isModuloAtivo('estoque')) {
+        // Esconde sub-aba de ajustes de estoque
+        const navSubEstoque = document.getElementById('nav-sub-estoque');
+        if (navSubEstoque) navSubEstoque.style.display = 'none';
+
+        // Esconde painel de alertas de estoque
+        const alertPanel = document.getElementById('stockAlertPanel');
+        if (alertPanel) alertPanel.style.display = 'none';
+
+        // Esconde cabeçalho da coluna de estoque na tabela
+        document.querySelectorAll('.col-estoque').forEach(el => el.style.display = 'none');
+
+        // Esconde card de estoque no modal de produto
+        const groupEstoqueCard = document.getElementById('groupEstoqueCard');
+        if (groupEstoqueCard) groupEstoqueCard.style.display = 'none';
+
+        // Esconde campo de estoque mínimo
+        const inputEstoqueMin = document.getElementById('prodEstoqueMin')?.closest('.form-group');
+        if (inputEstoqueMin) inputEstoqueMin.style.display = 'none';
+    }
+
+    // 4. Frete
+    if (!isModuloAtivo('frete')) {
+        const navSubFrete = document.getElementById('nav-sub-frete');
+        if (navSubFrete) navSubFrete.style.display = 'none';
+    }
+
+    // 5. Pagamento (Placeholder para quando implementarmos o UI de pagamento)
+    if (!isModuloAtivo('pagamento')) {
+        // Ex: document.getElementById('config-pagamento-section').style.display = 'none';
+    }
 }
 
 async function carregarAtendentes() {
@@ -1011,7 +1070,7 @@ function renderProdutos() {
                     </td>
                     <td>${p.categories?.name || '-'}</td>
                     <td onclick="editarProduto('${p.id}')" style="cursor:pointer;" title="Clique para editar">${formatCurrency(p.price)}</td>
-                    <td onclick="editarProduto('${p.id}')" style="cursor:pointer; color:${stockColor}; font-weight: ${stockColor !== 'inherit' ? '700' : 'normal'}" title="Clique para ajustar estoque">${p.stock}</td>
+                    <td class="col-estoque" onclick="editarProduto('${p.id}')" style="cursor:pointer; color:${stockColor}; font-weight: ${stockColor !== 'inherit' ? '700' : 'normal'}; ${isModuloAtivo('estoque') ? '' : 'display:none;'}" title="Clique para ajustar estoque">${p.stock}</td>
                     <td>${toggleHTML}</td>
                     <td>
                         <div class="actions-cell">

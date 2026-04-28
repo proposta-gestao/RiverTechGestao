@@ -169,6 +169,35 @@
             transform: scale(1.1);
         }
 
+        .module-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .module-toggle:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--accent-gold);
+        }
+
+        .module-toggle input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-gold);
+            cursor: pointer;
+        }
+
+        .module-toggle span {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
         .form-inline {
             display: flex;
             gap: 10px;
@@ -312,6 +341,39 @@
                 </div>
                 
                 <button class="btn-outline" onclick="restaurarTemaPadrao()" style="width: 100%; font-size: 0.8rem; padding: 8px;">↺ Restaurar Padrão Premium</button>
+            </div>
+
+            <!-- Gestão de Módulos (Feature Flags) -->
+            <div class="section-card">
+                <h3>📦 Gestão de Módulos</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Ative ou desative funcionalidades para este cliente.</p>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label class="module-toggle">
+                        <input type="checkbox" id="mod_cardapio" checked>
+                        <span>Cardápio Digital</span>
+                    </label>
+                    <label class="module-toggle">
+                        <input type="checkbox" id="mod_frete" checked>
+                        <span>Cálculo de Frete / Entrega</span>
+                    </label>
+                    <label class="module-toggle">
+                        <input type="checkbox" id="mod_dashboard" checked>
+                        <span>Dashboard de Métricas</span>
+                    </label>
+                    <label class="module-toggle">
+                        <input type="checkbox" id="mod_pagamento" checked>
+                        <span>Pagamento Online (Pix/Cartão)</span>
+                    </label>
+                    <label class="module-toggle">
+                        <input type="checkbox" id="mod_estoque" checked>
+                        <span>Gestão de Estoque</span>
+                    </label>
+                    <label class="module-toggle">
+                        <input type="checkbox" id="mod_relatorios" checked>
+                        <span>Relatórios Avançados</span>
+                    </label>
+                </div>
             </div>
 
             <!-- Configurações e Status -->

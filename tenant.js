@@ -65,6 +65,7 @@ window.TENANT = {
     nome: null,
     cor_primaria: null,
     logo_url: null,
+    modulos: {},
     pronto: false,
 };
 
@@ -253,6 +254,7 @@ async function initTenantPublico(supabaseClient) {
         window.TENANT.nome             = data.nome;
         window.TENANT.cor_primaria     = data.cor_primaria;
         window.TENANT.logo_url         = data.logo_url;
+        window.TENANT.modulos          = data.modulos || {};
         window.TENANT.tema_cor_primaria   = data.tema_cor_primaria;
         window.TENANT.tema_cor_secundaria = data.tema_cor_secundaria;
         window.TENANT.tema_cor_botao      = data.tema_cor_botao;
@@ -366,4 +368,21 @@ function getTenantId() {
         );
     }
     return window.TENANT.empresa_id;
+}
+
+/**
+ * Verifica se um determinado módulo está ativo para a empresa atual.
+ * Ex: isModuloAtivo('estoque')
+ */
+function isModuloAtivo(modulo) {
+    // Se ainda não carregou o tenant, assumimos falso para segurança
+    if (!window.TENANT || !window.TENANT.pronto) return false;
+    
+    const mods = window.TENANT.modulos;
+    
+    // Se o módulo não estiver definido no JSON, consideramos ATIVO por padrão (backwards compatibility)
+    // A menos que queiramos um sistema restritivo (opt-in), então mudaríamos para false.
+    if (mods[modulo] === undefined) return true;
+    
+    return mods[modulo] === true;
 }
