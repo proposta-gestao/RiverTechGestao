@@ -2454,8 +2454,66 @@ document.getElementById('confCep').oninput = (e) => {
     }
 
     if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);
-    e.target.value = v;
+// --- Custom Time Picker Logic ---
+let activeTimeTarget = null;
+let currentHour = 18;
+let currentMin = 0;
+
+window.openTimePicker = (targetId, title) => {
+    activeTimeTarget = document.getElementById(targetId);
+    document.getElementById('timePickerTitle').textContent = title;
+    
+    const val = activeTimeTarget.value || '18:00';
+    const [h, m] = val.split(':').map(Number);
+    currentHour = h;
+    currentMin = m;
+    
+    updateTimeDisplay();
+    document.getElementById('modalTimePicker').classList.add('active');
 };
+
+window.adjustTime = (type, amount) => {
+    if (type === 'hour') {
+        currentHour = (currentHour + amount + 24) % 24;
+    } else {
+        currentMin = (currentMin + amount + 60) % 60;
+    }
+    updateTimeDisplay();
+};
+
+function updateTimeDisplay() {
+    document.getElementById('displayHour').textContent = currentHour.toString().padStart(2, '0');
+    document.getElementById('displayMin').textContent = currentMin.toString().padStart(2, '0');
+}
+
+window.closeTimePicker = () => {
+    document.getElementById('modalTimePicker').classList.remove('active');
+};
+
+window.confirmTimePicker = () => {
+    const timeStr = `${currentHour.toString().padStart(2, '0')}:${currentMin.toString().padStart(2, '0')}`;
+    activeTimeTarget.value = timeStr;
+    
+    // Dispara evento de mudança se necessário
+    activeTimeTarget.dispatchEvent(new Event('change'));
+    
+    closeTimePicker();
+};
+
+// Vincula os inputs ao novo picker
+document.addEventListener('DOMContentLoaded', () => {
+    const openInp = document.getElementById('confOpeningTime');
+    const closeInp = document.getElementById('confClosingTime');
+    
+    if (openInp) {
+        openInp.readOnly = true;
+        openInp.onclick = () => openTimePicker('confOpeningTime', '🕒 Horário de Abertura');
+    }
+    if (closeInp) {
+        closeInp.readOnly = true;
+        closeInp.onclick = () => openTimePicker('confClosingTime', '🕒 Horário de Fechamento');
+    }
+});
 
 // --- Justificativas de Cancelamento ---
 function renderJustificativas() {
