@@ -228,8 +228,8 @@ body {
 .btn-login {
     width: 100%;
     padding: 16px;
-    background: var(--primary);
-    color: #000;
+    background: var(--color-button);
+    color: var(--color-button-text, #000);
     border: none;
     border-radius: 12px;
     font-weight: 800;
@@ -239,13 +239,12 @@ body {
     transition: var(--transition);
     text-transform: uppercase;
     letter-spacing: 1px;
-    box-shadow: 0 4px 15px rgba(229, 178, 93, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-login:hover {
-    background: var(--primary-hover);
+    background: var(--color-button-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(229, 178, 93, 0.4);
 }
 
 .btn-login:disabled {
@@ -1158,9 +1157,10 @@ body {
     border-radius: 50px;
 }
 
+.btn-primary,
 .btn-save {
-    background: var(--color-button);
-    color: var(--color-button-text, #000);
+    background: var(--color-button) !important;
+    color: var(--color-button-text, #000) !important;
     border: none;
     padding: 12px 28px;
     border-radius: 12px;
@@ -1171,10 +1171,11 @@ body {
     letter-spacing: 1px;
 }
 
+.btn-primary:hover,
 .btn-save:hover {
-    background: var(--primary-hover);
+    background: var(--color-button-hover) !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(229, 178, 93, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-cancel {
@@ -1385,7 +1386,6 @@ body {
     border: none;
     text-transform: uppercase;
     letter-spacing: 1px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .btn-upload-gallery:hover {
@@ -2125,22 +2125,21 @@ input:checked+.slider:before {
 
 /* ===== Botões de Upload Destacados ===== */
 .btn-upload-gallery.highlight {
-    background: var(--primary);
-    color: #000;
+    background: var(--color-button);
+    color: var(--color-button-text, #000);
     padding: 12px 24px;
     border-radius: 12px;
     font-size: 0.9rem;
     font-weight: 800;
-    box-shadow: 0 4px 15px rgba(229, 178, 93, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     border: none;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .btn-upload-gallery.highlight:hover {
-    background: var(--primary-hover);
+    background: var(--color-button-hover);
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(229, 178, 93, 0.5);
 }
 
 /* Botão de URL Secundário mas visível */
@@ -2373,8 +2372,8 @@ input[type=number] {
 }
 
 .promo-type-btn.active {
-    background: var(--warning);
-    color: #000;
+    background: var(--color-button);
+    color: var(--color-button-text, #000);
 }
 
 .promo-preview {

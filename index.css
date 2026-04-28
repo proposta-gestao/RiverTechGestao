@@ -819,8 +819,8 @@
 
         .btn-checkout:hover {
             transform: translateY(-2px);
-            background: var(--primary-hover);
-            box-shadow: 0 8px 25px rgba(229, 178, 93, 0.4);
+            background: var(--color-button-hover);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
 
         /* Modal */
@@ -1010,8 +1010,8 @@
 
         .btn-add-confirm {
             width: 100%;
-            background: var(--primary);
-            color: white;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             border: none;
             padding: 16px;
             border-radius: 12px;
@@ -1022,7 +1022,7 @@
         }
 
         .btn-add-confirm:hover {
-            background: var(--primary-hover);
+            background: var(--color-button-hover);
         }
 
         .post-add-actions {
@@ -1054,12 +1054,12 @@
         }
 
         .btn-go-cart {
-            background: var(--primary);
-            color: #000;
+            background: var(--btn-bg);
+            color: var(--btn-text);
         }
 
         .btn-go-cart:hover {
-            background: var(--primary-hover);
+            background: var(--color-button-hover);
         }
 
         @media (max-width: 600px) {
@@ -1242,8 +1242,8 @@
         /* BotÃ£o Continuar */
         .btn-continue-step {
             width: 100%;
-            background: var(--primary);
-            color: #000;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             border: none;
             padding: 16px;
             border-radius: 14px;
@@ -1258,7 +1258,7 @@
         }
 
         .btn-continue-step:hover:not(:disabled) {
-            background: var(--primary-hover);
+            background: var(--color-button-hover);
             transform: translateY(-1px);
         }
 
