@@ -358,6 +358,13 @@ sb.auth.onAuthStateChange(async (event, session) => {
 async function showAdmin() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminLayout').classList.add('visible');
+    
+    // Atualizar link do cardápio com o slug do tenant
+    const btnCardapio = document.querySelector('.btn-link-cardapio');
+    if (btnCardapio && window.TENANT?.slug) {
+        btnCardapio.href = `/${window.TENANT.slug}`;
+    }
+
     await carregarTudo();
 }
 
