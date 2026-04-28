@@ -1155,20 +1155,22 @@ async function renderizarGradeGaleria(gridId, isCompleto = false) {
     let filesToShow = files.slice(0, limit);
 
     filesToShow.forEach(file => {
-        const { data: urlData } = sb.storage.from('product-images').getPublicUrl(file.name);
+        const path = `${getTenantId()}/${file.name}`;
+        const { data: urlData } = sb.storage.from('product-images').getPublicUrl(path);
         const isSelected = (preSelecionada === urlData.publicUrl) ? 'selected' : '';
+        
         html += `
-                    <div class="gallery-item ${isSelected}" onclick="selecionarImagemGaleria('${urlData.publicUrl}', this, '${isCompleto}')" title="${file.name}">
-                        <img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy">
-                    </div>
-                `;
+            <div class="gallery-item ${isSelected}" onclick="selecionarImagemGaleria('${urlData.publicUrl}', this, '${isCompleto}')" title="${file.name}">
+                <img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy">
+            </div>
+        `;
     });
 
     if (!isCompleto && files.length > 7) {
         html += `
                     <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(229, 178, 93, 0.1);color:var(--primary);font-size:0.8rem;text-align:center;font-weight:800;border:1px dashed var(--primary); cursor:pointer;" onclick="abrirGaleriaCompleta()">
                         <span style="font-size:1.2rem;">+${files.length - 7}</span>
-                        Ver mais imagens
+                        Ver todas
                     </div>
                 `;
     }
@@ -1179,10 +1181,8 @@ async function carregarGaleria(preSelecionada = '') {
     const inputSel = document.getElementById('prodImagemSelecionada');
     inputSel.value = preSelecionada;
 
-    const grid = document.getElementById('imageGalleryGrid');
-    grid.innerHTML = '<div style="padding:1rem;color:var(--text-muted);font-size:0.9rem;">Carregando imagens...</div>';
-
-    const { data, error } = await sb.storage.from('product-images').list();
+    const empresaId = getTenantId();
+    const { data, error } = await sb.storage.from('product-images').list(empresaId);
     if (error) {
         grid.innerHTML = '<div style="color:var(--danger);font-size:0.8rem;">Erro ao carregar imagens.</div>';
         return;
@@ -1229,9 +1229,13 @@ async function handleImageUpload(file, forceUpsert = false, customName = null) {
     const originalName = file.name;
     const targetName = customName || originalName;
 
-    const { error: uploadError } = await sb.storage.from('product-images').upload(targetName, file, { upsert: forceUpsert });
+    const empresaId = getTenantId();
+    const targetPath = `${empresaId}/${targetName}`;
+
+    const { error: uploadError } = await sb.storage.from('product-images').upload(targetPath, file, { upsert: forceUpsert });
 
     if (uploadError) {
+        // ... (resto do tratamento de erro de duplicação permanece igual)
         if (uploadError.statusCode === '409' || uploadError.message?.includes('Duplicate')) {
             const wantToReplace = await customConfirm('Substituir Imagem?', `Já existe uma imagem chamada "${targetName}".\nDeseja SUBSTITUIR a imagem existente?`);
             if (wantToReplace) {
@@ -1258,7 +1262,7 @@ async function handleImageUpload(file, forceUpsert = false, customName = null) {
         }
     }
 
-    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(targetName);
+    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(targetPath);
     await carregarGaleria(urlData.publicUrl);
     showToast('Imagem salva!', 'success');
 }
@@ -1919,10 +1923,14 @@ function atualizarPreviewLogo(url) {
 // --- Upload de imagem de visual (banner/logo) ---
 async function handleVisualImageUpload(file, tipo) {
     showToast('Enviando imagem...', 'success');
+    const empresaId = getTenantId();
     const targetName = `visual_${tipo}_${Date.now()}_${file.name}`;
-    const { error } = await sb.storage.from('product-images').upload(targetName, file, { upsert: true });
+    const targetPath = `${empresaId}/${targetName}`;
+
+    const { error } = await sb.storage.from('product-images').upload(targetPath, file, { upsert: true });
     if (error) { showToast('Erro ao enviar imagem: ' + error.message, 'error'); return null; }
-    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(targetName);
+    
+    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(targetPath);
     return urlData.publicUrl;
 }
 
