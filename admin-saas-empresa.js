@@ -61,8 +61,13 @@ function renderDadosBasicos(emp) {
     document.getElementById('empresaNome').textContent = emp.nome;
     document.getElementById('editEmpPlano').value = emp.plano;
     document.getElementById('editEmpStatus').value = emp.status;
+    document.getElementById('editPlanoVencimento').value = emp.plano_vencimento || '';
     document.getElementById('infoId').textContent = emp.id;
-    document.getElementById('infoCriacao').textContent = new Date(emp.created_at).toLocaleDateString('pt-BR');
+    
+    // Formatação de data brasileira segura
+    const dCriacao = new Date(emp.created_at);
+    const dataFormatada = isNaN(dCriacao) ? '—' : dCriacao.toLocaleDateString('pt-BR');
+    document.getElementById('infoCriacao').textContent = dataFormatada;
 
     // Tema
     document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
@@ -156,6 +161,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const btn = document.getElementById('btnSalvarConfig');
     const plano = document.getElementById('editEmpPlano').value;
     const status = document.getElementById('editEmpStatus').value;
+    const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
 
     const tema_cor_primaria = document.getElementById('editTemaCorPrimaria').value;
     const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
@@ -171,6 +177,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
             .update({ 
                 plano, 
                 status,
+                plano_vencimento,
                 tema_cor_primaria,
                 tema_cor_secundaria,
                 tema_cor_botao,
@@ -194,9 +201,14 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
 // Adicionar Admin
 document.getElementById('btnAddAdmin').addEventListener('click', async () => {
     const email = document.getElementById('newAdminEmail').value.trim();
+    const feedback = document.getElementById('adminFeedback');
     if (!email) return;
 
     try {
+        feedback.style.display = 'block';
+        feedback.style.color = 'var(--text-secondary)';
+        feedback.textContent = 'Buscando usuário...';
+
         // Buscar se o usuário existe
         const { data: user, error: errUser } = await sb
             .from('usuarios')
@@ -204,7 +216,9 @@ document.getElementById('btnAddAdmin').addEventListener('click', async () => {
             .eq('email', email)
             .single();
 
-        if (errUser || !user) throw new Error('Usuário não encontrado. Ele deve se cadastrar primeiro.');
+        if (errUser || !user) throw new Error('Usuário não encontrado no sistema.');
+
+        feedback.textContent = 'Vinculando acesso...';
 
         // Vincular usuário à empresa como admin
         const { error: errUpdate } = await sb
@@ -214,10 +228,15 @@ document.getElementById('btnAddAdmin').addEventListener('click', async () => {
 
         if (errUpdate) throw errUpdate;
 
-        showToast('Administrador adicionado!');
+        feedback.style.color = 'var(--accent-green)';
+        feedback.textContent = 'Sucesso! Administrador vinculado. ✅';
         document.getElementById('newAdminEmail').value = '';
+        
+        setTimeout(() => { feedback.style.display = 'none'; }, 3000);
         carregarAdmins();
     } catch (err) {
+        feedback.style.color = 'var(--accent-red)';
+        feedback.textContent = `Erro: ${err.message}`;
         showToast(err.message, 'error');
     }
 });
