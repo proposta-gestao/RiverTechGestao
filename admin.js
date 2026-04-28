@@ -362,6 +362,17 @@ sb.auth.onAuthStateChange(async (event, session) => {
         document.getElementById('adminLayout').classList.remove('visible');
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('loginSenha').value = '';
+        
+        // Limpar cache do Tenant e estado local para evitar vazamento entre logins na mesma aba
+        if (window.TENANT) {
+            window.TENANT.pronto = false;
+            window.TENANT.empresa_id = null;
+            window.TENANT.slug = null;
+        }
+        produtos = [];
+        categorias = [];
+        cupons = [];
+        pedidos = [];
     }
 });
 

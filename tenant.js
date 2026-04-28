@@ -293,8 +293,8 @@ async function initTenantPublico(supabaseClient) {
 // TENANT PARA O ADMIN (usa auth.uid() → tabela usuarios)
 // ================================================================
 async function initTenantAdmin(supabaseClient, userId) {
-    // Cache: se já carregado pelo subdomínio, enriquece apenas
-    if (window.TENANT.pronto) return window.TENANT.empresa_id;
+    // Removemos o cache inseguro que permitia login de outros usuários na mesma sessão
+    // if (window.TENANT.pronto) return window.TENANT.empresa_id;
 
     // Tentamos primeiro com o tema completo
     let { data, error } = await supabaseClient
