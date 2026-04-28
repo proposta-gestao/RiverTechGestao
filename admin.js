@@ -1944,7 +1944,7 @@ async function carregarConfiguracoes() {
     const [settingsRes, zonasRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at'),
-        sb.from('empresas').select('tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_texto, tema_cor_bg, tema_cor_surface').eq('id', empresaId).single()
+        sb.from('empresas').select('tema_cor_primaria, tema_cor_botao, tema_cor_texto').eq('id', empresaId).single()
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
@@ -1954,11 +1954,8 @@ async function carregarConfiguracoes() {
     if (empresaRes.data) {
         const e = empresaRes.data;
         _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   e.tema_cor_primaria   || '#E5B25D');
-        _setThemeField('confTemaSecundaria', 'confTemaSecundariaHex', e.tema_cor_secundaria || '#1E90FF');
         _setThemeField('confTemaBotao',      'confTemaBotaoHex',      e.tema_cor_botao      || '#E5B25D');
         _setThemeField('confTemaTexto',      'confTemaTextoHex',      e.tema_cor_texto      || '#ffffff');
-        _setThemeField('confTemaBg',         'confTemaBgHex',         e.tema_cor_bg         || '#0d0d0d');
-        _setThemeField('confTemaSurface',    'confTemaSurfaceHex',    e.tema_cor_surface    || '#1a1a1a');
         previewTemaEmpresa();
 
         // Atualizar títulos dinâmicos
@@ -2037,20 +2034,14 @@ function _setThemeField(pickerId, hexId, value) {
 
 // Atualiza o preview de tema no painel da empresa
 window.previewTemaEmpresa = () => {
-    const primaria   = document.getElementById('confTemaPrimaria').value;
-    const secundaria = document.getElementById('confTemaSecundaria').value;
-    const botao      = document.getElementById('confTemaBotao').value;
-    const texto      = document.getElementById('confTemaTexto').value;
-    const bg         = document.getElementById('confTemaBg').value;
-    const surface    = document.getElementById('confTemaSurface').value;
+    const primaria = document.getElementById('confTemaPrimaria').value;
+    const botao    = document.getElementById('confTemaBotao').value;
+    const texto    = document.getElementById('confTemaTexto').value;
 
     // Sincroniza campos hex
-    document.getElementById('confTemaPrimariaHex').value   = primaria;
-    document.getElementById('confTemaSecundariaHex').value = secundaria;
-    document.getElementById('confTemaBotaoHex').value      = botao;
-    document.getElementById('confTemaTextoHex').value      = texto;
-    document.getElementById('confTemaBgHex').value         = bg;
-    document.getElementById('confTemaSurfaceHex').value    = surface;
+    document.getElementById('confTemaPrimariaHex').value = primaria;
+    document.getElementById('confTemaBotaoHex').value    = botao;
+    document.getElementById('confTemaTextoHex').value    = texto;
 
     // Aplica no preview local
     const previewArea = document.getElementById('empLivePreview');
@@ -2058,9 +2049,7 @@ window.previewTemaEmpresa = () => {
     const previewPrice = document.getElementById('empLivePrice');
 
     if (previewArea) {
-        previewArea.style.backgroundColor = surface; // Fundo do card no preview
         previewArea.style.color = texto; 
-        previewArea.parentElement.style.backgroundColor = bg; // Fundo geral no preview
     }
     if (previewBtn) {
         previewBtn.style.backgroundColor = botao;
@@ -2077,12 +2066,9 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
     const btn = document.getElementById('btnSalvarTemaEmpresa');
     const empresaId = getTenantId();
     
-    const tema_cor_primaria   = document.getElementById('confTemaPrimaria').value;
-    const tema_cor_secundaria = document.getElementById('confTemaSecundaria').value;
-    const tema_cor_botao      = document.getElementById('confTemaBotao').value;
-    const tema_cor_texto      = document.getElementById('confTemaTexto').value;
-    const tema_cor_bg         = document.getElementById('confTemaBg').value;
-    const tema_cor_surface    = document.getElementById('confTemaSurface').value;
+    const tema_cor_primaria = document.getElementById('confTemaPrimaria').value;
+    const tema_cor_botao    = document.getElementById('confTemaBotao').value;
+    const tema_cor_texto    = document.getElementById('confTemaTexto').value;
 
     try {
         btn.disabled = true;
@@ -2090,11 +2076,8 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
 
         const { error } = await sb.from('empresas').update({
             tema_cor_primaria,
-            tema_cor_secundaria,
             tema_cor_botao,
             tema_cor_texto,
-            tema_cor_bg,
-            tema_cor_surface,
             cor_primaria: tema_cor_primaria // Sincroniza legado
         }).eq('id', empresaId);
 

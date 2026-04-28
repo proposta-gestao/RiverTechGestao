@@ -108,26 +108,28 @@ function _aplicarWhiteLabel(data) {
 
     // --- Cores do Tema ---
     const primaria   = data.tema_cor_primaria   || data.cor_primaria || '#E5B25D';
-    const secundaria = data.tema_cor_secundaria  || '#1E90FF';
-    const botao      = data.tema_cor_botao       || primaria;
+    const botao      = data.tema_cor_botao       || '#E5B25D'; // Isolado da primária
+    const texto      = data.tema_cor_texto       || '#ffffff';
     const bg         = data.tema_cor_bg          || '#0d0d0d';
     const surface    = data.tema_cor_surface      || '#1a1a1a';
-    const texto      = data.tema_cor_texto        || '#ffffff';
     const borda      = data.tema_cor_borda        || _hexToRgba(primaria, 0.2);
 
     // Variáveis do sistema de temas
     set('--color-primary',        primaria);
     set('--color-primary-hover',  _darkenHex(primaria, 8));
-    set('--color-secondary',      secundaria);
-    set('--color-secondary-hover',_darkenHex(secundaria, 8));
     set('--color-primary-10',     _hexToRgba(primaria, 0.10));
     set('--color-primary-30',     _hexToRgba(primaria, 0.30));
     set('--color-bg',             bg);
     set('--color-surface',        surface);
-    set('--color-surface-hover',  _darkenHex(surface, 3));
     set('--color-border',         borda);
     set('--color-text',           texto);
     set('--text-main',            texto);
+    
+    // Novas variáveis isoladas para botões
+    set('--color-button-bg',      botao);
+    set('--btn-bg',               botao);
+    set('--color-button-text',    texto); // Opcional: usar a cor de texto definida
+    set('--btn-text',             texto);
 
     // Aliases legados (mantém compatibilidade)
     set('--primary',       primaria);

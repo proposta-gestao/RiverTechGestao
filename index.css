@@ -15,6 +15,10 @@
     --color-text:           #ffffff;
     --color-text-muted:     #a0a0a0;
 
+    /* === BOTÕES === */
+    --color-button-bg:      var(--color-primary);
+    --color-button-text:    #000000;
+
     /* === BORDAS === */
     --color-border:         rgba(229,178,93,0.2);
 
@@ -31,6 +35,8 @@
     --text-main:            var(--color-text);
     --text-muted:           var(--color-text-muted);
     --border-color:         var(--color-border);
+    --btn-bg:               var(--color-button-bg);
+    --btn-text:             var(--color-button-text);
 
     /* === UTILITÁRIOS === */
     --shadow:     0 8px 32px rgba(0,0,0,0.4);
@@ -129,7 +135,7 @@
         .brand-name {
             font-size: 1.3rem;
             font-weight: 800;
-            color: white;
+            color: var(--text-main);
             letter-spacing: -0.02em;
             text-transform: uppercase;
         }
@@ -264,7 +270,7 @@
             border: 1px solid var(--border-color);
             border-radius: 50px;
             font-size: 0.95rem;
-            color: white;
+            color: var(--text-main);
             outline: none;
             transition: var(--transition);
         }
@@ -276,8 +282,8 @@
         }
 
         .cart-toggle {
-            background: var(--primary);
-            color: #000;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             border: none;
             padding: 10px 22px;
             border-radius: 50px;
@@ -472,7 +478,7 @@
             font-weight: 700;
             font-size: 1.05rem;
             margin-bottom: 2px;
-            color: white;
+            color: var(--text-main);
             letter-spacing: -0.02em;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -498,8 +504,8 @@
         }
 
         .btn-add {
-            background: var(--primary);
-            color: #000;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             border: none;
             padding: 8px 16px;
             border-radius: 10px;
