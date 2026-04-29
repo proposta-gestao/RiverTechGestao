@@ -6,6 +6,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let EMPRESA_ID = null;
 let EMPRESA_DATA = null;
+let STORE_SETTINGS_DATA = null; // Armazena o ID e dados atuais do branding
 
 // ==========================================
 // 1. Inicialização e Segurança
@@ -65,6 +66,7 @@ async function carregarConfiguracoesLoja() {
     if (error && error.code !== 'PGRST116') return;
 
     if (settings) {
+        STORE_SETTINGS_DATA = settings;
         document.getElementById('editBrandName').value = settings.brand_name || '';
         document.getElementById('editBrandSubtitle').value = settings.brand_subtitle || '';
     }
@@ -82,6 +84,8 @@ const LISTA_MODULOS = [
 function renderDadosBasicos(emp) {
     document.getElementById('empresaNome').textContent = emp.nome;
     document.getElementById('editEmpNome').value = emp.nome;
+    // Se a função applyCnpjMask já estiver carregada (estará no hoisting ou definimos global)
+    document.getElementById('editEmpCNPJ').value = emp.cnpj ? applyCnpjMask(emp.cnpj) : '';
     document.getElementById('editEmpPlano').value = emp.plano;
     document.getElementById('editEmpStatus').value = emp.status;
     document.getElementById('editPlanoVencimento').value = emp.plano_vencimento || '';
@@ -98,6 +102,19 @@ function renderDadosBasicos(emp) {
         const el = document.getElementById(`mod_${key}`);
         if (el) el.checked = mods[key] !== false;
     });
+
+    // Sincronizar Master Toggles e Estado dos Containers
+    ['produtos', 'vendas', 'ops'].forEach(g => {
+        const container = document.getElementById(`grupo_${g}`);
+        const master = document.getElementById(`master_${g}`);
+        if (container && master) {
+            const checkboxes = container.querySelectorAll('input[id^="mod_"]');
+            const atLeastOneOn = Array.from(checkboxes).some(cb => cb.checked);
+            master.checked = atLeastOneOn;
+            if (!atLeastOneOn) container.classList.add('disabled');
+            else container.classList.remove('disabled');
+        }
+    });
  
     // Tema
     document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
@@ -112,13 +129,13 @@ function renderDadosBasicos(emp) {
     const urlAdmin = `${baseUrl}/admin.html?tenant=${emp.slug}`;
     const urlAten = `${baseUrl}/atendente.html?tenant=${emp.slug}`;
  
-    document.getElementById('urlMenu').textContent = urlMenu;
+    document.getElementById('urlMenu').textContent = `/${emp.slug}`;
     document.getElementById('urlMenu').href = urlMenu;
     
-    document.getElementById('urlAdmin').textContent = urlAdmin;
+    document.getElementById('urlAdmin').textContent = `/admin.html?tenant=${emp.slug}`;
     document.getElementById('urlAdmin').href = urlAdmin;
     
-    document.getElementById('urlAtendente').textContent = urlAten;
+    document.getElementById('urlAtendente').textContent = `/atendente.html?tenant=${emp.slug}`;
     document.getElementById('urlAtendente').href = urlAten;
  
     // --- NOVOS CAMPOS DASHBOARD ---
@@ -214,11 +231,82 @@ async function carregarAdmins() {
 // ==========================================
 // 3. Ações e Funcionalidades
 // ==========================================
+
+// --- VALIDAÇÃO E MÁSCARA DE CNPJ ---
+function cleanCnpj(value) {
+    if (!value) return '';
+    return value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+}
+
+function applyCnpjMask(value) {
+    let v = cleanCnpj(value);
+    if (v.length > 14) v = v.substring(0, 14);
+
+    if (v.length <= 2) return v;
+    if (v.length <= 5) return `${v.substring(0, 2)}.${v.substring(2)}`;
+    if (v.length <= 8) return `${v.substring(0, 2)}.${v.substring(2, 5)}.${v.substring(5)}`;
+    if (v.length <= 12) return `${v.substring(0, 2)}.${v.substring(2, 5)}.${v.substring(5, 8)}/${v.substring(8)}`;
+    return `${v.substring(0, 2)}.${v.substring(2, 5)}.${v.substring(5, 8)}/${v.substring(8, 12)}-${v.substring(12, 14)}`;
+}
+
+let timeoutCnpj = null;
+const inputCnpj = document.getElementById('editEmpCNPJ');
+if (inputCnpj) {
+    inputCnpj.addEventListener('input', (e) => {
+        const input = e.target;
+        let cursor = input.selectionStart;
+        const oldLength = input.value.length;
+        
+        input.value = applyCnpjMask(input.value);
+        
+        // Ajusta cursor para não pular pro final se apagar no meio
+        cursor += (input.value.length - oldLength);
+        if(cursor >= 0) input.setSelectionRange(cursor, cursor);
+
+        const clean = cleanCnpj(input.value);
+        const statusEl = document.getElementById('cnpjStatus');
+        const btnSalvar = document.getElementById('btnSalvarConfig');
+
+        if (clean.length === 14) {
+            statusEl.textContent = '⏳ Buscando...';
+            statusEl.style.color = 'var(--text-secondary)';
+
+            clearTimeout(timeoutCnpj);
+            timeoutCnpj = setTimeout(async () => {
+                try {
+                    // API Gratuita e sem limite rigoroso
+                    const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${clean}`);
+                    if (!res.ok) throw new Error('CNPJ Inválido');
+                    
+                    const data = await res.json();
+                    statusEl.textContent = `✅ Válido (${data.razao_social.substring(0, 15)}...)`;
+                    statusEl.style.color = 'var(--accent-green)';
+                    
+                    // Se os campos de nome estiverem vazios, auto-preenche
+                    const brandInput = document.getElementById('editBrandName');
+                    const nameInput = document.getElementById('editEmpNome');
+                    const sugestaoNome = data.nome_fantasia || data.razao_social;
+
+                    if (!brandInput.value && sugestaoNome) brandInput.value = sugestaoNome;
+                    if (!nameInput.value && sugestaoNome) nameInput.value = sugestaoNome;
+
+                } catch (err) {
+                    statusEl.textContent = '❌ Não encontrado na Receita';
+                    statusEl.style.color = 'var(--accent-red)';
+                }
+            }, 600);
+        } else {
+            statusEl.textContent = clean.length > 0 ? `${clean.length}/14` : '';
+            statusEl.style.color = 'var(--text-secondary)';
+        }
+    });
+}
  
 // Salvar Configurações (Plano e Status)
 document.getElementById('btnSalvarConfig').addEventListener('click', async () => {
     const btn = document.getElementById('btnSalvarConfig');
     const nomeEmpresa = document.getElementById('editEmpNome').value.trim();
+    const cnpj = cleanCnpj(document.getElementById('editEmpCNPJ').value); // Salvando apenas a raiz limpa
     const plano = document.getElementById('editEmpPlano').value;
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
@@ -247,6 +335,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
             .from('empresas')
             .update({ 
                 nome: nomeEmpresa,
+                cnpj,
                 plano, 
                 status,
                 plano_vencimento,
@@ -262,21 +351,41 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         if (errEmp) throw errEmp;
 
         // 2. Atualizar Store Settings (Branding)
+        const upsertData = {
+            empresa_id: EMPRESA_ID,
+            store_name: nomeEmpresa,
+            brand_name,
+            brand_subtitle,
+            updated_at: new Date().toISOString()
+        };
+
+        // RESOLUÇÃO DO ERRO 23502 (ID NULO):
+        // Se já temos um registro carregado, usamos o ID dele.
+        if (STORE_SETTINGS_DATA && STORE_SETTINGS_DATA.id) {
+            upsertData.id = STORE_SETTINGS_DATA.id;
+        } else {
+            // Caso contrário (empresa sem config), buscamos o próximo ID disponível (Manual incremental)
+            const { data: maxRows } = await sb
+                .from('store_settings')
+                .select('id')
+                .order('id', { ascending: false })
+                .limit(1);
+            
+            const lastId = (maxRows && maxRows.length > 0) ? parseInt(maxRows[0].id) : 0;
+            upsertData.id = lastId + 1;
+        }
+
         const { error: errSet } = await sb
             .from('store_settings')
-            .upsert({
-                empresa_id: EMPRESA_ID,
-                brand_name,
-                brand_subtitle,
-                updated_at: new Date().toISOString()
-            }, { onConflict: 'empresa_id' });
+            .upsert(upsertData, { onConflict: 'empresa_id' });
 
         if (errSet) throw errSet;
  
         showToast('Configurações e Branding atualizados! ✅');
-        carregarDadosEmpresa();
+        await carregarDadosEmpresa(); // Recarrega tudo para atualizar STORE_SETTINGS_DATA
     } catch (err) {
-        showToast(err.message, 'error');
+        console.error('Erro ao salvar:', err);
+        showToast(err.message || 'Erro ao salvar configurações', 'error');
     } finally {
         btn.disabled = false;
         btn.textContent = 'Atualizar Configurações';
@@ -317,6 +426,51 @@ window.atualizarModulo = async (modulo, checked) => {
         const el = document.getElementById(`mod_${modulo}`);
         if (el) el.checked = !checked;
         EMPRESA_DATA.modulos[modulo] = !checked;
+    }
+};
+
+// Salvamento automático de módulos individuais
+window.atualizarModulo = async (modulo, checked) => {
+    if (!EMPRESA_ID || !EMPRESA_DATA) return;
+    if (!EMPRESA_DATA.modulos) EMPRESA_DATA.modulos = {};
+    EMPRESA_DATA.modulos[modulo] = checked;
+    try {
+        const { error } = await sb.from('empresas').update({ modulos: EMPRESA_DATA.modulos }).eq('id', EMPRESA_ID);
+        if (error) throw error;
+        
+        // Mensagem de confirmação premium
+        showToast(`Funcionalidade ${checked ? 'ativada' : 'desativada'}!`);
+        console.log(`[Modules] ${modulo} atualizado: ${checked}`);
+    } catch (err) {
+        showToast('Erro ao salvar alteração: ' + err.message, 'error');
+        const el = document.getElementById(`mod_${modulo}`);
+        if (el) el.checked = !checked;
+    }
+};
+
+// Função para ativar/desativar um grupo inteiro de módulos
+window.toggleGrupoModulo = async (containerId, isChecked) => {
+    if (!EMPRESA_ID || !EMPRESA_DATA) return;
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Adiciona/Remove classe visual de desabilitado
+    if (isChecked) container.classList.remove('disabled');
+    else container.classList.add('disabled');
+
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    if (!EMPRESA_DATA.modulos) EMPRESA_DATA.modulos = {};
+    checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+        const key = cb.id.replace('mod_', '');
+        EMPRESA_DATA.modulos[key] = isChecked;
+    });
+    try {
+        const { error } = await sb.from('empresas').update({ modulos: EMPRESA_DATA.modulos }).eq('id', EMPRESA_ID);
+        if (error) throw error;
+        showToast(`Grupo ${isChecked ? 'ativado' : 'desativado'}!`);
+    } catch (err) {
+        showToast('Erro ao atualizar grupo', 'error');
     }
 };
 

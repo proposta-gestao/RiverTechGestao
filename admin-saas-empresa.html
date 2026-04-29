@@ -44,11 +44,11 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.6fr 0.9fr; /* Mais espaço para os dados básicos */
             gap: 1.5rem;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .info-grid { grid-template-columns: 1fr; }
         }
 
@@ -274,6 +274,88 @@
             z-index: 9999;
         }
         #toast.show { transform: translateY(0); }
+        /* Switch Premium Unificado - RESET TOTAL DE LARGURA */
+        .switch {
+            all: initial; /* Limpa heranças indesejadas */
+            position: relative;
+            display: inline-block !important;
+            width: 34px !important;
+            height: 18px !important;
+            min-width: 34px !important;
+            max-width: 34px !important;
+            flex-shrink: 0 !important;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; display: none; }
+        .slider {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1); 
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 20px;
+            box-sizing: border-box;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 12px; width: 12px; left: 2px; bottom: 2px;
+            background-color: #fff; 
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        input:checked + .slider { 
+            background-color: var(--accent-gold) !important; 
+        }
+        input:checked + .slider:before { 
+            transform: translateX(16px) !important; 
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .module-card:hover { border-color: rgba(229, 178, 93, 0.2); }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 0 5px 1rem 5px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .grupo-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: opacity 0.3s ease;
+        }
+        .grupo-content.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .module-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px; /* Padding interno da função */
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        .module-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .module-item span { font-size: 0.85rem; color: var(--text-secondary); }
     </style>
 </head>
 <body>
@@ -295,7 +377,6 @@
             <button class="page-tab-btn active" data-tab="edit-dashboard" onclick="switchPageTab('edit-dashboard')">📊 Dashboard</button>
             <button class="page-tab-btn" data-tab="edit-config" onclick="switchPageTab('edit-config')">⚙️ Configuração</button>
             <button class="page-tab-btn" data-tab="edit-modulos" onclick="switchPageTab('edit-modulos')">🧩 Módulos</button>
-            <button class="page-tab-btn" data-tab="edit-visual" onclick="switchPageTab('edit-visual')">🎨 Visual</button>
             <button class="page-tab-btn" data-tab="edit-equipe" onclick="switchPageTab('edit-equipe')">👥 Equipe</button>
         </div>
 
@@ -357,8 +438,18 @@
                     </div>
 
                     <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Último Pedido:</span>
+                        <span id="infoUltimoPedido" style="font-weight: 600; font-size: 0.9rem;">...</span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                         <span style="color: var(--text-secondary); font-size: 0.9rem;">Criada em:</span>
                         <span id="infoCriacao" style="font-weight: 600;">...</span>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Ticket Médio Geral:</span>
+                        <span id="infoTicketGeral" style="font-weight: 600; color: var(--accent-green);">...</span>
                     </div>
 
                     <div style="display: flex; justify-content: space-between;">
@@ -374,12 +465,30 @@
         <div id="edit-config" class="tab-content">
             <div class="info-grid">
                 <div class="section-card">
-                    <h3>⚙️ Dados da Assinatura</h3>
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <h3>⚙️ Dados Básicos e Branding</h3>
+                    
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label>CNPJ da Empresa</label>
+                        <input type="text" id="editEmpCNPJ" placeholder="00.000.000/0000-00" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                        <div id="cnpjStatus" style="font-size: 0.75rem; font-weight: 700; margin-top: 5px; min-height: 15px;"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
                         <label>Nome da Empresa (Interno)</label>
                         <input type="text" id="editEmpNome" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
                     </div>
-                    <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 1.5rem;">
+
+                    <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 1rem;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Nome da Marca (Exibição Pública)</label>
+                            <input type="text" id="editBrandName" placeholder="Ex: Burguer King" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Subtítulo da Loja</label>
+                            <input type="text" id="editBrandSubtitle" placeholder="Ex: O melhor hamburguer da cidade" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                        </div>
+                    </div>
+                    <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 1rem;">
                         <div class="form-group" style="flex: 1;">
                             <label>Plano Atual</label>
                             <select id="editEmpPlano" style="width: 100%; margin-top: 5px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
@@ -405,115 +514,187 @@
 
                 <div class="section-card">
                     <h3>🔗 URLs de Acesso</h3>
-                    <div class="url-box">
+                    <div class="url-box" style="margin-bottom: 2px;">
                         <label>📍 Cardápio Digital</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlMenu">...</a>
                             <button class="btn-icon-copy" onclick="copyToClipboard('urlMenu')">📋</button>
                         </div>
                     </div>
-                    <div class="url-box">
+                    <div class="url-box" style="margin-bottom: 2px;">
                         <label>⚙️ Painel Admin</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlAdmin">...</a>
                             <button class="btn-icon-copy" onclick="copyToClipboard('urlAdmin')">📋</button>
                         </div>
                     </div>
-                    <div class="url-box">
+                    <div class="url-box" style="margin-bottom: 10px;">
                         <label>🎧 Painel Atendente</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlAtendente">...</a>
                             <button class="btn-icon-copy" onclick="copyToClipboard('urlAtendente')">📋</button>
                         </div>
                     </div>
-                    <button class="copy-btn-all" onclick="copyAllUrls()" style="width: 100%; margin-top: 10px; padding: 12px; background: var(--bg-hover); border: 1px dashed var(--accent-gold); color: var(--accent-gold); border-radius: 8px; cursor: pointer; font-weight: 600;">📋 Copiar todos os links</button>
+                    <button class="copy-btn-all" onclick="copyAllUrls()" style="width: 100%; margin-bottom: 1rem; padding: 12px; background: var(--bg-hover); border: 1px dashed var(--accent-gold); color: var(--accent-gold); border-radius: 8px; cursor: pointer; font-weight: 600;">📋 Copiar links</button>
+
+                    <h3 style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">🎨 Identidade Visual</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
+                        <div class="theme-color-field">
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">PRIMÁRIA</label>
+                            <input type="color" id="editTemaCorPrimaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        </div>
+                        <div class="theme-color-field">
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">BOTÕES</label>
+                            <input type="color" id="editTemaCorBotao" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        </div>
+                        <div class="theme-color-field">
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">FUNDO</label>
+                            <input type="color" id="editTemaCorBg" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        </div>
+                        <div class="theme-color-field">
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">CARDS</label>
+                            <input type="color" id="editTemaCorSecundaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        </div>
+                    </div>
+                    <div id="themePreview" style="padding: 1rem; border-radius: 12px; border: 1px solid #333; margin-bottom: 1rem; text-align: center;">
+                        <div id="previewCard" style="padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 700; font-size: 0.8rem;">Preview</div>
+                        <button id="previewBtn" style="padding: 8px 15px; border-radius: 6px; border: none; font-weight: 800; font-size: 0.75rem;">COMPRAR</button>
+                    </div>
+                    <button class="btn-outline" onclick="restaurarTemaPadrao()" style="width: 100%; font-size: 0.8rem; padding: 8px;">↺ Restaurar Padrão</button>
                 </div>
             </div>
         </div>
 
         <!-- Tab: Módulos -->
         <div id="edit-modulos" class="tab-content">
-            <div class="section-card">
-                <h3>📦 Gestão de Módulos</h3>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 2rem;">As alterações nos módulos são aplicadas em tempo real.</p>
+            <div style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 5px;">🧩 Gestão de Módulos</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Controle quais funcionalidades estão disponíveis para esta empresa.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                    <div class="module-group">
-                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">📦 Produtos</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <label class="module-toggle"><input type="checkbox" id="mod_produtos_gerenciar" onchange="atualizarModulo('produtos_gerenciar', this.checked)"><span>Gerenciar Produtos</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_produtos_categorias" onchange="atualizarModulo('produtos_categorias', this.checked)"><span>Gerenciar Categorias</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_produtos_estoque" onchange="atualizarModulo('produtos_estoque', this.checked)"><span>Controle de Estoque</span></label>
+                <!-- Grupo: Produtos -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div>
+                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📦 PRODUTOS</h4>
+                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Catálogo e Estoque</small>
                         </div>
+                        <label class="switch">
+                            <input type="checkbox" id="master_produtos" onchange="toggleGrupoModulo('grupo_produtos', this.checked)">
+                            <span class="slider"></span>
+                        </label>
                     </div>
-
-                    <div class="module-group">
-                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">📊 Vendas e Métricas</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <label class="module-toggle"><input type="checkbox" id="mod_vendas_visao_geral" onchange="atualizarModulo('vendas_visao_geral', this.checked)"><span>Histórico de Vendas</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_metricas_dashboard" onchange="atualizarModulo('metricas_dashboard', this.checked)"><span>Dashboard de Métricas</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_metricas_performance_vendas" onchange="atualizarModulo('metricas_performance_vendas', this.checked)"><span>Performance Analítica</span></label>
+                    <div class="grupo-content" id="grupo_produtos">
+                        <div class="module-item">
+                            <span>Gerenciar Produtos</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_produtos_gerenciar" onchange="atualizarModulo('produtos_gerenciar', this.checked)">
+                                <span class="slider"></span>
+                            </label>
                         </div>
-                    </div>
-
-                    <div class="module-group">
-                        <h4 style="font-size: 0.75rem; color: var(--accent-gold); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">⚙️ Configurações & Extras</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <label class="module-toggle"><input type="checkbox" id="mod_config_frete" onchange="atualizarModulo('config_frete', this.checked)"><span>Gestão de Frete</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_pagamento" onchange="atualizarModulo('pagamento', this.checked)"><span>Pagamento Online</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_cupons" onchange="atualizarModulo('cupons', this.checked)"><span>Cupons de Desconto</span></label>
-                            <label class="module-toggle"><input type="checkbox" id="mod_cardapio" onchange="atualizarModulo('cardapio', this.checked)"><span>Cardápio Ativo</span></label>
+                        <div class="module-item">
+                            <span>Categorias</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_produtos_categorias" onchange="atualizarModulo('produtos_categorias', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Controle de Estoque</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_produtos_estoque" onchange="atualizarModulo('produtos_estoque', this.checked)">
+                                <span class="slider"></span>
+                            </label>
                         </div>
                     </div>
                 </div>
+
+                <!-- Grupo: Vendas -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div>
+                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📊 VENDAS</h4>
+                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Métricas e Histórico</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="master_vendas" onchange="toggleGrupoModulo('grupo_vendas', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="grupo-content" id="grupo_vendas">
+                        <div class="module-item">
+                            <span>Histórico de Vendas</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_vendas_visao_geral" onchange="atualizarModulo('vendas_visao_geral', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Dashboard de Métricas</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_metricas_dashboard" onchange="atualizarModulo('metricas_dashboard', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Performance Analítica</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_metricas_performance_vendas" onchange="atualizarModulo('metricas_performance_vendas', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo: Operações -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div>
+                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">⚙️ OPERAÇÕES</h4>
+                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Frete, Cupons e Pagamentos</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="master_ops" onchange="toggleGrupoModulo('grupo_ops', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="grupo-content" id="grupo_ops">
+                        <div class="module-item">
+                            <span>Gestão de Frete</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_config_frete" onchange="atualizarModulo('config_frete', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Pagamento Online</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_pagamento" onchange="atualizarModulo('pagamento', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Cupons de Desconto</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_cupons" onchange="atualizarModulo('cupons', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Cardápio Ativo</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_cardapio" onchange="atualizarModulo('cardapio', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- Tab: Visual -->
-        <div id="edit-visual" class="tab-content">
-            <div class="info-grid">
-                <div class="section-card">
-                    <h3>🎨 Identidade da Marca</h3>
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label>Nome da Marca (Público)</label>
-                        <input type="text" id="editBrandName" style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border-color); border-radius: 6px; color: #fff; margin-top: 5px;">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label>Subtítulo da Marca</label>
-                        <input type="text" id="editBrandSubtitle" style="width: 100%; padding: 12px; background: #000; border: 1px solid var(--border-color); border-radius: 6px; color: #fff; margin-top: 5px;">
-                    </div>
-                    <button class="btn-primary" onclick="document.getElementById('btnSalvarConfig').click()" style="width: 100%; padding: 14px;">Atualizar Branding</button>
-                </div>
-
-                <div class="section-card">
-                    <h3>🖌️ Cores do Tema</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">PRIMÁRIA</label>
-                            <input type="color" id="editTemaCorPrimaria" oninput="previewTema()" style="width: 100%; height: 40px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
-                        </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">BOTÕES</label>
-                            <input type="color" id="editTemaCorBotao" oninput="previewTema()" style="width: 100%; height: 40px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
-                        </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">FUNDO GERAL</label>
-                            <input type="color" id="editTemaCorBg" oninput="previewTema()" style="width: 100%; height: 40px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
-                        </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">FUNDO CARDS</label>
-                            <input type="color" id="editTemaCorSecundaria" oninput="previewTema()" style="width: 100%; height: 40px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
-                        </div>
-                    </div>
-
-                    <div id="themePreview" style="padding: 1.5rem; border-radius: 12px; border: 1px solid #333; margin-bottom: 1rem; text-align: center;">
-                        <div id="previewCard" style="padding: 15px; border-radius: 8px; margin-bottom: 10px; font-weight: 700; font-size: 0.9rem;">Preview do Cardápio</div>
-                        <button id="previewBtn" style="padding: 10px 20px; border-radius: 6px; border: none; font-weight: 800; font-size: 0.8rem;">BOTÃO COMPRAR</button>
-                    </div>
-                    <button class="btn-outline" onclick="restaurarTemaPadrao()" style="width: 100%; font-size: 0.85rem; padding: 10px;">↺ Restaurar Padrão Premium</button>
-                </div>
-            </div>
-        </div>
 
         <!-- Tab: Equipe -->
         <div id="edit-equipe" class="tab-content">
