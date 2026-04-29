@@ -1,0 +1,398 @@
+/* ============================================================
+   admin-agenda.css - Estilos do Módulo de Agendamento
+   Design: Premium Dark SaaS
+   ============================================================ */
+
+/* ---- Layout Principal ---- */
+.agenda-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .agenda-layout { grid-template-columns: 1fr; }
+}
+
+/* ---- Card Premium ---- */
+.agenda-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.agenda-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.02);
+}
+
+.agenda-card-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.agenda-card-body {
+    padding: 1.5rem;
+}
+
+/* ---- Mini Calendário ---- */
+.mini-cal {
+    width: 100%;
+}
+
+.mini-cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.mini-cal-nav span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.mini-cal-nav button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.mini-cal-nav button:hover {
+    background: rgba(229, 178, 93, 0.15);
+    border-color: var(--primary);
+}
+
+.mini-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+
+.mini-cal-day-name {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-align: center;
+    padding: 4px 0;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.mini-cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.mini-cal-day:not(.empty):hover {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-color);
+}
+
+.mini-cal-day.today {
+    border-color: var(--primary);
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.mini-cal-day.selected {
+    background: var(--primary);
+    color: #000;
+    font-weight: 700;
+}
+
+.mini-cal-day.has-events::after {
+    content: '';
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--primary);
+}
+
+.mini-cal-day.selected.has-events::after {
+    background: #000;
+}
+
+.mini-cal-day.other-month {
+    opacity: 0.2;
+}
+
+/* ---- Profissionais Sidebar ---- */
+.profissional-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    margin-bottom: 6px;
+}
+
+.profissional-pill:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.profissional-pill.active {
+    background: rgba(229, 178, 93, 0.1);
+    border-color: rgba(229, 178, 93, 0.3);
+}
+
+.profissional-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--border-color);
+}
+
+.profissional-avatar-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.profissional-info { flex: 1; min-width: 0; }
+.profissional-nome { font-size: 0.85rem; font-weight: 600; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profissional-esp { font-size: 0.72rem; color: var(--text-muted); }
+
+/* ---- Timeline de Agendamentos ---- */
+.timeline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.2rem;
+}
+
+.timeline-date-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.timeline-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.timeline-empty .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+
+/* ---- Cards de Agendamento ---- */
+.agendamento-card {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+}
+
+.agendamento-card:hover {
+    border-color: rgba(255,255,255,0.1);
+    transform: translateY(-1px);
+}
+
+.agendamento-cor-bar {
+    width: 4px;
+    flex-shrink: 0;
+}
+
+.agendamento-body {
+    flex: 1;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.agendamento-hora {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 55px;
+    text-align: center;
+}
+
+.agendamento-info { flex: 1; min-width: 0; }
+.agendamento-cliente { font-size: 0.88rem; font-weight: 600; color: var(--text-color); }
+.agendamento-servico { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+
+.agendamento-status {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-pendente    { background: rgba(251,191,36,0.15); color: #f59e0b; }
+.status-confirmado  { background: rgba(34,197,94,0.15);  color: #22c55e; }
+.status-concluido   { background: rgba(99,102,241,0.15); color: #818cf8; }
+.status-cancelado   { background: rgba(239,68,68,0.15);  color: #ef4444; }
+.status-no_show     { background: rgba(156,163,175,0.15);color: #9ca3af; }
+.status-em_andamento{ background: rgba(6,182,212,0.15);  color: #06b6d4; }
+
+.agendamento-actions { display: flex; gap: 6px; padding-right: 12px; }
+.agendamento-actions button {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+.agendamento-actions button:hover { background: rgba(255,255,255,0.1); color: var(--text-color); }
+
+/* ---- Tabs do Módulo ---- */
+.agenda-subtabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+}
+
+.agenda-subtab-btn {
+    flex: 1;
+    min-width: max-content;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.agenda-subtab-btn.active {
+    background: rgba(229, 178, 93, 0.15);
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* ---- Formulário de Serviços/Profissionais ---- */
+.agenda-form-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.agenda-form-card .info { flex: 1; }
+.agenda-form-card .info .nome { font-size: 0.9rem; font-weight: 600; color: var(--text-color); }
+.agenda-form-card .info .sub  { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
+
+/* ---- Grid de Horários ---- */
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.horario-dia {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+}
+
+.horario-dia .dia-nome {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.horario-dia input[type="time"] {
+    width: 100%;
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    background: var(--bg-input, rgba(255,255,255,0.05));
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.horario-dia .switch-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 6px;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+/* ---- Stats Row Agenda ---- */
+.agenda-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.agenda-stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+}
+
+.agenda-stat-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.agenda-stat-value { font-size: 1.5rem; font-weight: 700; color: var(--primary); }

@@ -13,6 +13,7 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="/admin.css">
+    <link rel="stylesheet" href="/admin-agenda.css" id="agenda-css" disabled>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -54,12 +55,115 @@
             <nav class="admin-tabs">
                 <button class="tab-btn active" data-tab="produtos" id="nav-produtos">📦 Produtos</button>
                 <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">📊 Vendas & Performance</button>
+                <button class="tab-btn" data-tab="agenda" id="nav-agenda" style="display:none;">📅 Agenda</button>
                 <button class="tab-btn" data-tab="cupons" id="nav-cupons">🎫 Cupons</button>
                 <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">⚙️ Configurações</button>
             </nav>
         </div>
 
         <div class="admin-content-wrapper">
+
+            <!-- Agenda Tab (Lazy Loaded) -->
+            <div class="tab-content" id="tab-agenda">
+                <!-- Stats Row -->
+                <div class="agenda-stats">
+                    <div class="agenda-stat-card">
+                        <div class="agenda-stat-label">📅 Hoje</div>
+                        <div class="agenda-stat-value" id="agendaStat_total">0</div>
+                    </div>
+                    <div class="agenda-stat-card">
+                        <div class="agenda-stat-label">✅ Concluídos</div>
+                        <div class="agenda-stat-value" id="agendaStat_concluidos" style="color:#22c55e;">0</div>
+                    </div>
+                    <div class="agenda-stat-card">
+                        <div class="agenda-stat-label">⏳ Pendentes</div>
+                        <div class="agenda-stat-value" id="agendaStat_pendentes" style="color:#f59e0b;">0</div>
+                    </div>
+                    <div class="agenda-stat-card">
+                        <div class="agenda-stat-label">💰 Faturamento do Dia</div>
+                        <div class="agenda-stat-value" id="agendaStat_faturamento" style="font-size:1.1rem;">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <!-- Sub-navegação -->
+                <div class="agenda-subtabs">
+                    <button class="agenda-subtab-btn active" data-subtab="agenda" onclick="window.__AGENDA.renderSubtab('agenda')">📅 Agenda do Dia</button>
+                    <button class="agenda-subtab-btn" data-subtab="profissionais" onclick="window.__AGENDA.renderSubtab('profissionais')">👥 Profissionais</button>
+                    <button class="agenda-subtab-btn" data-subtab="servicos" onclick="window.__AGENDA.renderSubtab('servicos')">✂️ Serviços</button>
+                    <button class="agenda-subtab-btn" data-subtab="horarios" onclick="window.__AGENDA.renderSubtab('horarios')">🕒 Horários</button>
+                </div>
+
+                <!-- Subtab: Agenda do Dia -->
+                <div class="agenda-subtab-content active" id="agendaTab_agenda">
+                    <div class="agenda-layout">
+                        <!-- Sidebar: Calendário + Profissionais -->
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <!-- Mini Calendário -->
+                            <div class="agenda-card">
+                                <div class="agenda-card-body">
+                                    <div class="mini-cal">
+                                        <div class="mini-cal-nav">
+                                            <button onclick="window.__AGENDA.navMes(-1)">‹</button>
+                                            <span id="miniCalLabel">--</span>
+                                            <button onclick="window.__AGENDA.navMes(1)">›</button>
+                                        </div>
+                                        <div class="mini-cal-grid" id="miniCalGrid"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Profissionais -->
+                            <div class="agenda-card">
+                                <div class="agenda-card-header">
+                                    <h3>👥 Profissional</h3>
+                                    <button class="btn-sm btn-primary" onclick="window.__AGENDA.editarProfissional('')">+ Novo</button>
+                                </div>
+                                <div class="agenda-card-body" id="profissionaisList" style="padding-top:0.5rem;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Principal -->
+                        <div class="agenda-card">
+                            <div class="agenda-card-header">
+                                <div class="timeline-date-label" id="timelineDateLabel">--</div>
+                                <button class="btn-primary btn-sm" onclick="window.__AGENDA.abrirModalNovoAgendamento()">+ Novo Agendamento</button>
+                            </div>
+                            <div class="agenda-card-body" id="agendaTimeline" style="max-height:70vh; overflow-y:auto;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtab: Profissionais -->
+                <div class="agenda-subtab-content" id="agendaTab_profissionais" style="display:none;">
+                    <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.editarProfissional('')">+ Novo Profissional</button>
+                    </div>
+                    <div id="profissionaisTabList"></div>
+                </div>
+
+                <!-- Subtab: Serviços -->
+                <div class="agenda-subtab-content" id="agendaTab_servicos" style="display:none;">
+                    <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.editarServico('')">+ Novo Serviço</button>
+                    </div>
+                    <div id="servicosTabList"></div>
+                </div>
+
+                <!-- Subtab: Horários de Funcionamento -->
+                <div class="agenda-subtab-content" id="agendaTab_horarios" style="display:none;">
+                    <div class="agenda-card" style="margin-bottom:1rem;">
+                        <div class="agenda-card-header"><h3>🕒 Horário de Funcionamento da Loja</h3></div>
+                        <div class="agenda-card-body" id="horariosTabContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal" id="modalAgendaDetalhes">
+                <div class="modal-content">
+                    <h3>Detalhes do Agendamento</h3>
+                    <div id="conteudoDetalheAgenda"></div>
+                    <button onclick="fecharModal('modalAgendaDetalhes')">Fechar</button>
+                </div>
+            </div>
 
             <!-- Dashboard Tab -->
             <div class="tab-content" id="tab-dashboard">
@@ -709,6 +813,146 @@
             </div>
         </div> <!-- Fechamento da admin-content-wrapper -->
     </div> <!-- Fechamento da admin-layout -->
+
+    <!-- =============================================================== -->
+    <!-- MODAL: Novo / Editar Agendamento                                 -->
+    <!-- =============================================================== -->
+    <div class="admin-modal-backdrop" id="modalNovoAgendamento">
+        <div class="admin-modal" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalNovoAgendamento')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>📅 Agendamento</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__AGENDA.salvarAgendamento()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="agendaModalId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="agendaModalProfissional">Profissional</label>
+                        <select id="agendaModalProfissional"></select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="agendaModalServico">Serviço</label>
+                        <select id="agendaModalServico"></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="agendaModalData">Data</label>
+                        <input type="date" id="agendaModalData">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="agendaModalHora">Horário</label>
+                        <input type="time" id="agendaModalHora">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="agendaModalCliente">Nome do Cliente *</label>
+                        <input type="text" id="agendaModalCliente" placeholder="Ex: João Silva">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="agendaModalTelefone">Telefone *</label>
+                        <input type="tel" id="agendaModalTelefone" placeholder="(00) 00000-0000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="agendaModalObs">Observações</label>
+                    <textarea id="agendaModalObs" placeholder="Alguma preferência ou observação..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- MODAL: Profissional                                              -->
+    <!-- =============================================================== -->
+    <div class="admin-modal-backdrop" id="modalProfissional">
+        <div class="admin-modal" style="max-width:480px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalProfissional')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>👤 Profissional</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__AGENDA.salvarProfissional()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="profModalId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:2">
+                        <label for="profModalNome">Nome *</label>
+                        <input type="text" id="profModalNome" placeholder="Ex: Carlos Barbeiro">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="profModalCor">Cor na Agenda</label>
+                        <input type="color" id="profModalCor" value="#E5B25D">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="profModalEsp">Especialidade</label>
+                    <input type="text" id="profModalEsp" placeholder="Ex: Corte masculino, Barba">
+                </div>
+                <div class="form-group">
+                    <label for="profModalBio">Bio</label>
+                    <textarea id="profModalBio" placeholder="Uma breve descrição..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="profModalFoto">URL da Foto (opcional)</label>
+                    <input type="url" id="profModalFoto" placeholder="https://...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- MODAL: Serviço                                                   -->
+    <!-- =============================================================== -->
+    <div class="admin-modal-backdrop" id="modalServico">
+        <div class="admin-modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalServico')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>✂️ Serviço</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__AGENDA.salvarServico()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="servModalId">
+                <div class="form-group">
+                    <label for="servModalNome">Nome do Serviço *</label>
+                    <input type="text" id="servModalNome" placeholder="Ex: Corte Masculino">
+                </div>
+                <div class="form-group">
+                    <label for="servModalDesc">Descrição</label>
+                    <textarea id="servModalDesc" placeholder="Descreva o serviço..."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="servModalDuracao">Duração (minutos)</label>
+                        <input type="number" id="servModalDuracao" min="5" step="5" value="30">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="servModalPreco">Preço (R$)</label>
+                        <input type="number" id="servModalPreco" min="0" step="0.01" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Product Modal -->
     <div class="admin-modal-backdrop" id="modalProduto">

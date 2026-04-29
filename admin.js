@@ -398,6 +398,18 @@ function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + tabId).classList.add('active');
+
+    // Lazy Load do módulo de Agenda
+    if (tabId === 'agenda' && !window.__AGENDA_INICIADO) {
+        // Habilitar CSS
+        const cssEl = document.getElementById('agenda-css');
+        if (cssEl) cssEl.disabled = false;
+        // Carregar JS
+        const script = document.createElement('script');
+        script.src = '/admin-agenda.js?v=' + Date.now();
+        script.onerror = () => showToast('Erro ao carregar módulo de agenda.', 'error');
+        document.body.appendChild(script);
+    }
 }
 
 
@@ -778,7 +790,15 @@ function aplicarFiltrosDeModulos() {
     const mCupons = isModuloAtivo('cupons');
     toggleElement(document.getElementById('nav-cupons'), mCupons, 'flex');
 
-    // 6. EXTRAS
+    // 6. AGENDAMENTO
+    const mAgendamento = isModuloAtivo('agendamento_ativo');
+    toggleElement(document.getElementById('nav-agenda'), mAgendamento, 'flex');
+    if (mAgendamento) {
+        const cssEl = document.getElementById('agenda-css');
+        if (cssEl) cssEl.disabled = false;
+    }
+
+    // 7. EXTRAS
     const mCardapio = isModuloAtivo('cardapio');
     const btnCardapio = document.querySelector('.btn-link-cardapio');
     if (btnCardapio) toggleElement(btnCardapio, mCardapio);
