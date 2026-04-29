@@ -13,6 +13,51 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="/admin-saas.css">
+    <style>
+        /* Switch Premium Unificado */
+        .switch {
+            all: initial; position: relative; display: inline-block !important;
+            width: 34px !important; height: 18px !important; min-width: 34px !important; max-width: 34px !important;
+            flex-shrink: 0 !important; cursor: pointer; vertical-align: middle;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; display: none; }
+        .slider {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.1); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 20px; box-sizing: border-box;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 2px; bottom: 2px;
+            background-color: #fff; transition: .3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        input:checked + .slider { background-color: var(--accent-gold) !important; }
+        input:checked + .slider:before { transform: translateX(16px) !important; }
+
+        .module-card {
+            background: var(--card-bg, #1a1a1a);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px; padding: 1.5rem; transition: all 0.3s ease;
+        }
+        .module-card:hover { border-color: rgba(229, 178, 93, 0.2); }
+        .module-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; padding: 0 5px 1rem 5px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            user-select: none;
+        }
+        .grupo-content { display: flex; flex-direction: column; gap: 6px; transition: opacity 0.3s ease; }
+        .grupo-content.disabled { opacity: 0.3; pointer-events: none; }
+        .grupo-content.collapsed { display: none; }
+        .accordion-icon { font-size: 0.8rem; color: var(--text-secondary); transition: transform 0.3s; }
+        .module-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px; background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 10px;
+        }
+        .module-item:hover { background: rgba(255, 255, 255, 0.05); }
+        .module-item span { font-size: 0.85rem; color: var(--text-secondary); }
+    </style>
 </head>
 
 <body>
@@ -151,6 +196,10 @@
                             <code id="previewMenu">...</code>
                         </div>
                         <div class="url-preview-item">
+                            <label>📅 Agendamento</label>
+                            <code id="previewAgendamento">...</code>
+                        </div>
+                        <div class="url-preview-item">
                             <label>⚙️ Painel de Gestão (Admin)</label>
                             <code id="previewAdmin">...</code>
                         </div>
@@ -179,21 +228,148 @@
             </div>
 
             <!-- Tab: Módulos -->
-            <div id="tab-modulos" class="tab-content">
+            <div id="tab-modulos" class="tab-content" style="max-height: 50vh; overflow-y: auto;">
                 <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem;">
                     Selecione quais recursos estarão disponíveis para este cliente.
                 </p>
-                <div class="modules-grid">
-                    <div class="module-item"><input type="checkbox" id="n_mod_produtos_gerenciar" checked><label for="n_mod_produtos_gerenciar">Gerenciar Produtos</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_produtos_categorias" checked><label for="n_mod_produtos_categorias">Categorias</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_produtos_estoque" checked><label for="n_mod_produtos_estoque">Controle de Estoque</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_vendas_visao_geral" checked><label for="n_mod_vendas_visao_geral">Visão Geral de Vendas</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_metricas_dashboard" checked><label for="n_mod_metricas_dashboard">Dashboard Métricas</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_config_frete" checked><label for="n_mod_config_frete">Gestão de Frete</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_pagamento" checked><label for="n_mod_pagamento">Pagamentos Online</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_cupons" checked><label for="n_mod_cupons">Cupons de Desconto</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_cardapio" checked><label for="n_mod_cardapio">Menu Digital</label></div>
-                    <div class="module-item"><input type="checkbox" id="n_mod_config_personalizacao" checked><label for="n_mod_config_personalizacao">Personalização Visual</label></div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                    
+                    <!-- Grupo: Produtos -->
+                    <div class="module-card">
+                        <div class="module-header" onclick="toggleAccordionNovo('n_grupo_produtos')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="accordion-icon" id="icon_n_grupo_produtos">▼</span>
+                                <div>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📦 PRODUTOS</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Catálogo e Estoque</small>
+                                </div>
+                            </div>
+                            <label class="switch" onclick="event.stopPropagation()">
+                                <input type="checkbox" id="n_master_produtos" checked onchange="toggleGrupoModuloNovo('n_grupo_produtos', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="grupo-content collapsed" id="n_grupo_produtos">
+                            <div class="module-item">
+                                <span>Gerenciar Produtos</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_produtos_gerenciar" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Categorias</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_produtos_categorias" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Controle de Estoque</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_produtos_estoque" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo: Vendas -->
+                    <div class="module-card">
+                        <div class="module-header" onclick="toggleAccordionNovo('n_grupo_vendas')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="accordion-icon" id="icon_n_grupo_vendas">▼</span>
+                                <div>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📊 VENDAS</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Métricas e Histórico</small>
+                                </div>
+                            </div>
+                            <label class="switch" onclick="event.stopPropagation()">
+                                <input type="checkbox" id="n_master_vendas" checked onchange="toggleGrupoModuloNovo('n_grupo_vendas', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="grupo-content collapsed" id="n_grupo_vendas">
+                            <div class="module-item">
+                                <span>Histórico de Vendas</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_vendas_visao_geral" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Dashboard de Métricas</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_metricas_dashboard" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Performance Analítica</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_metricas_performance_vendas" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo: Operações -->
+                    <div class="module-card">
+                        <div class="module-header" onclick="toggleAccordionNovo('n_grupo_ops')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="accordion-icon" id="icon_n_grupo_ops">▼</span>
+                                <div>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">⚙️ OPERAÇÕES</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Frete, Cupons e Pagamentos</small>
+                                </div>
+                            </div>
+                            <label class="switch" onclick="event.stopPropagation()">
+                                <input type="checkbox" id="n_master_ops" checked onchange="toggleGrupoModuloNovo('n_grupo_ops', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="grupo-content collapsed" id="n_grupo_ops">
+                            <div class="module-item">
+                                <span>Gestão de Frete</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_config_frete" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Pagamento Online</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_pagamento" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Cupons de Desconto</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_cupons" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>Cardápio Ativo</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_cardapio" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo: Agendamento -->
+                    <div class="module-card">
+                        <div class="module-header" onclick="toggleAccordionNovo('n_grupo_agendamento')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="accordion-icon" id="icon_n_grupo_agendamento">▼</span>
+                                <div>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📅 AGENDAMENTO</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e Serviços por Hora</small>
+                                </div>
+                            </div>
+                            <label class="switch" onclick="event.stopPropagation()">
+                                <input type="checkbox" id="n_master_agendamento" checked onchange="toggleGrupoModuloNovo('n_grupo_agendamento', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="grupo-content collapsed" id="n_grupo_agendamento">
+                            <div class="module-item">
+                                <span>📅 Agendamento Online</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_agendamento_ativo" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>👥 Multi-Profissional</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_agendamento_multi_profissional" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>⏳ Lista de Espera</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_agendamento_lista_espera" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>💬 Mensagens Automáticas</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_agendamento_mensagens" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="module-item">
+                                <span>🏆 Clube de Fidelidade</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_agendamento_fidelidade" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

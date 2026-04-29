@@ -49,8 +49,8 @@ function _resolverSlug() {
     // Fallback para ambiente local
     const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
     if (isLocal) {
-        console.warn('[Tenant] Ambiente local — usando slug de desenvolvimento: "teste"');
-        return 'teste';
+        console.warn('[Tenant] Ambiente local — usando slug de desenvolvimento: "TesteRiverTech"');
+        return 'TesteRiverTech';
     }
 
     console.error('[Tenant] Não foi possível determinar o slug a partir de:', hostname, pathname);

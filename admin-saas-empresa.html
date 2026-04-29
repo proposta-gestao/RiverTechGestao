@@ -328,6 +328,8 @@
             margin-bottom: 1.5rem;
             padding: 0 5px 1rem 5px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            user-select: none;
         }
         
         .grupo-content {
@@ -340,6 +342,8 @@
             opacity: 0.3;
             pointer-events: none;
         }
+        .grupo-content.collapsed { display: none; }
+        .accordion-icon { font-size: 0.8rem; color: var(--text-secondary); transition: transform 0.3s; }
 
         .module-item {
             display: flex;
@@ -528,6 +532,13 @@
                             <button class="btn-icon-copy" onclick="copyToClipboard('urlAdmin')">📋</button>
                         </div>
                     </div>
+                    <div class="url-box" style="margin-bottom: 2px;">
+                        <label>📅 Agendamento Online</label>
+                        <div class="url-content">
+                            <a href="#" target="_blank" class="url-text" id="urlAgendamento">...</a>
+                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAgendamento')">📋</button>
+                        </div>
+                    </div>
                     <div class="url-box" style="margin-bottom: 10px;">
                         <label>🎧 Painel Atendente</label>
                         <div class="url-content">
@@ -576,17 +587,20 @@
                 
                 <!-- Grupo: Produtos -->
                 <div class="module-card">
-                    <div class="module-header">
-                        <div>
-                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📦 PRODUTOS</h4>
-                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Catálogo e Estoque</small>
+                    <div class="module-header" onclick="toggleAccordionNovo('grupo_produtos')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="accordion-icon" id="icon_grupo_produtos">▼</span>
+                            <div>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📦 PRODUTOS</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Catálogo e Estoque</small>
+                            </div>
                         </div>
-                        <label class="switch">
+                        <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="master_produtos" onchange="toggleGrupoModulo('grupo_produtos', this.checked)">
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="grupo-content" id="grupo_produtos">
+                    <div class="grupo-content collapsed" id="grupo_produtos">
                         <div class="module-item">
                             <span>Gerenciar Produtos</span>
                             <label class="switch">
@@ -613,17 +627,20 @@
 
                 <!-- Grupo: Vendas -->
                 <div class="module-card">
-                    <div class="module-header">
-                        <div>
-                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📊 VENDAS</h4>
-                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Métricas e Histórico</small>
+                    <div class="module-header" onclick="toggleAccordionNovo('grupo_vendas')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="accordion-icon" id="icon_grupo_vendas">▼</span>
+                            <div>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📊 VENDAS</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Métricas e Histórico</small>
+                            </div>
                         </div>
-                        <label class="switch">
+                        <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="master_vendas" onchange="toggleGrupoModulo('grupo_vendas', this.checked)">
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="grupo-content" id="grupo_vendas">
+                    <div class="grupo-content collapsed" id="grupo_vendas">
                         <div class="module-item">
                             <span>Histórico de Vendas</span>
                             <label class="switch">
@@ -650,17 +667,20 @@
 
                 <!-- Grupo: Operações -->
                 <div class="module-card">
-                    <div class="module-header">
-                        <div>
-                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">⚙️ OPERAÇÕES</h4>
-                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Frete, Cupons e Pagamentos</small>
+                    <div class="module-header" onclick="toggleAccordionNovo('grupo_ops')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="accordion-icon" id="icon_grupo_ops">▼</span>
+                            <div>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">⚙️ OPERAÇÕES</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Frete, Cupons e Pagamentos</small>
+                            </div>
                         </div>
-                        <label class="switch">
+                        <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="master_ops" onchange="toggleGrupoModulo('grupo_ops', this.checked)">
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="grupo-content" id="grupo_ops">
+                    <div class="grupo-content collapsed" id="grupo_ops">
                         <div class="module-item">
                             <span>Gestão de Frete</span>
                             <label class="switch">
@@ -694,17 +714,20 @@
 
                 <!-- Grupo: Agendamento 🆕 -->
                 <div class="module-card">
-                    <div class="module-header">
-                        <div>
-                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📅 AGENDAMENTO</h4>
-                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e Serviços por Hora</small>
+                    <div class="module-header" onclick="toggleAccordionNovo('grupo_agendamento')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="accordion-icon" id="icon_grupo_agendamento">▼</span>
+                            <div>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📅 AGENDAMENTO</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e Serviços por Hora</small>
+                            </div>
                         </div>
-                        <label class="switch">
+                        <label class="switch" onclick="event.stopPropagation()">
                             <input type="checkbox" id="master_agendamento" onchange="toggleGrupoModulo('grupo_agendamento', this.checked)">
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="grupo-content" id="grupo_agendamento">
+                    <div class="grupo-content collapsed" id="grupo_agendamento">
                         <div class="module-item">
                             <span>📅 Agendamento Online</span>
                             <label class="switch">

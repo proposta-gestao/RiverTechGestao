@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Agendamento Online</title>
+    <meta name="description" content="Agende seu horário de forma rápida e fácil.">
+    <meta name="theme-color" content="#E5B25D">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/agendamento.css">
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div class="ag-loading" id="agLoading">
+        <div class="ag-spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Toast -->
+    <div class="ag-toast" id="agToast"></div>
+
+    <!-- Header -->
+    <header class="ag-header">
+        <div class="ag-brand">
+            <div class="ag-logo logo-main" id="agLogo"></div>
+            <div class="ag-brand-text">
+                <h1 class="brand-name" id="agNomeLoja">Carregando...</h1>
+                <p>Agendamento Online</p>
+            </div>
+        </div>
+        <div class="ag-header-badge">📅 Agende já</div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="ag-progress-wrap">
+        <div class="ag-progress-steps" id="agProgressSteps">
+            <div class="ag-step active" data-step="1">
+                <div class="ag-step-dot">1</div>
+                <span class="ag-step-label">Serviço</span>
+            </div>
+            <div class="ag-step" data-step="2">
+                <div class="ag-step-dot">2</div>
+                <span class="ag-step-label">Profissional</span>
+            </div>
+            <div class="ag-step" data-step="3">
+                <div class="ag-step-dot">3</div>
+                <span class="ag-step-label">Data</span>
+            </div>
+            <div class="ag-step" data-step="4">
+                <div class="ag-step-dot">4</div>
+                <span class="ag-step-label">Horário</span>
+            </div>
+            <div class="ag-step" data-step="5">
+                <div class="ag-step-dot">5</div>
+                <span class="ag-step-label">Dados</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="ag-main">
+
+        <!-- ======================================================
+             STEP 1 — ESCOLHER SERVIÇO
+             ====================================================== -->
+        <div class="ag-step-panel active" id="step-1">
+            <h2 class="ag-step-title">O que você precisa? ✂️</h2>
+            <p class="ag-step-subtitle">Escolha o serviço que deseja agendar.</p>
+            <div class="ag-grid" id="servicosGrid">
+                <!-- Preenchido pelo JS -->
+            </div>
+            <div class="ag-step-nav">
+                <button class="ag-btn-next" id="btnStep1Next" disabled onclick="agendarApp.irPara(2)">
+                    Continuar →
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================================================
+             STEP 2 — ESCOLHER PROFISSIONAL
+             ====================================================== -->
+        <div class="ag-step-panel" id="step-2">
+            <h2 class="ag-step-title">Com quem? 👥</h2>
+            <p class="ag-step-subtitle">Escolha o profissional de sua preferência.</p>
+            <div class="ag-grid" id="profissionaisGrid">
+                <!-- Preenchido pelo JS -->
+            </div>
+            <div class="ag-step-nav">
+                <button class="ag-btn-back" onclick="agendarApp.irPara(1)">← Voltar</button>
+                <button class="ag-btn-next" id="btnStep2Next" disabled onclick="agendarApp.irPara(3)">
+                    Continuar →
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================================================
+             STEP 3 — ESCOLHER DATA
+             ====================================================== -->
+        <div class="ag-step-panel" id="step-3">
+            <h2 class="ag-step-title">Qual dia? 📅</h2>
+            <p class="ag-step-subtitle">Escolha a data do seu agendamento.</p>
+
+            <div class="ag-calendar">
+                <div class="ag-cal-header">
+                    <button class="ag-cal-nav" id="calPrev" onclick="agendarApp.navMes(-1)">‹</button>
+                    <span class="ag-cal-month" id="calMonthLabel">--</span>
+                    <button class="ag-cal-nav" id="calNext" onclick="agendarApp.navMes(1)">›</button>
+                </div>
+                <div class="ag-cal-grid" id="calGrid">
+                    <!-- Preenchido pelo JS -->
+                </div>
+            </div>
+
+            <div class="ag-step-nav">
+                <button class="ag-btn-back" onclick="agendarApp.irPara(2)">← Voltar</button>
+                <button class="ag-btn-next" id="btnStep3Next" disabled onclick="agendarApp.irPara(4)">
+                    Ver Horários →
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================================================
+             STEP 4 — ESCOLHER HORÁRIO
+             ====================================================== -->
+        <div class="ag-step-panel" id="step-4">
+            <h2 class="ag-step-title">Que horas? 🕐</h2>
+            <p class="ag-step-subtitle" id="step4Subtitle">Escolha um horário disponível.</p>
+
+            <div class="ag-slots-wrap">
+                <div class="ag-slots-title" id="slotsTitle">Horários disponíveis</div>
+                <div id="slotsContainer">
+                    <!-- Preenchido pelo JS -->
+                </div>
+            </div>
+
+            <div class="ag-step-nav">
+                <button class="ag-btn-back" onclick="agendarApp.irPara(3)">← Voltar</button>
+                <button class="ag-btn-next" id="btnStep4Next" disabled onclick="agendarApp.irPara(5)">
+                    Continuar →
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================================================
+             STEP 5 — DADOS DO CLIENTE + CONFIRMAÇÃO
+             ====================================================== -->
+        <div class="ag-step-panel" id="step-5">
+            <h2 class="ag-step-title">Seus dados 👤</h2>
+            <p class="ag-step-subtitle">Quase lá! Preencha seus dados para confirmar.</p>
+
+            <!-- Resumo -->
+            <div class="ag-summary">
+                <h3>📋 Resumo do Agendamento</h3>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Serviço</span>
+                    <span class="ag-summary-value" id="sumServico">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Profissional</span>
+                    <span class="ag-summary-value" id="sumProfissional">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Data e Hora</span>
+                    <span class="ag-summary-value" id="sumDataHora">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Duração</span>
+                    <span class="ag-summary-value" id="sumDuracao">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Valor</span>
+                    <span class="ag-summary-value price" id="sumPreco">—</span>
+                </div>
+            </div>
+
+            <!-- Formulário -->
+            <div class="ag-form-card">
+                <h3>📞 Seus Dados</h3>
+                <div class="ag-form-group">
+                    <label for="clienteNome">Seu nome completo *</label>
+                    <input type="text" id="clienteNome" placeholder="Ex: João Silva" autocomplete="name">
+                </div>
+                <div class="ag-form-group">
+                    <label for="clienteTel">Seu celular / WhatsApp *</label>
+                    <input type="tel" id="clienteTel" placeholder="(11) 99999-9999" autocomplete="tel">
+                </div>
+                <div class="ag-form-group">
+                    <label for="clienteObs">Observação (opcional)</label>
+                    <textarea id="clienteObs" placeholder="Alguma preferência ou informação adicional..."></textarea>
+                </div>
+            </div>
+
+            <div class="ag-step-nav">
+                <button class="ag-btn-back" onclick="agendarApp.irPara(4)">← Voltar</button>
+                <button class="ag-btn-next" id="btnConfirmar" onclick="agendarApp.confirmarAgendamento()">
+                    ✅ Confirmar Agendamento
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================================================
+             SUCESSO
+             ====================================================== -->
+        <div class="ag-step-panel" id="step-sucesso">
+            <div class="ag-success-icon">✅</div>
+            <h2 class="ag-success-title">Agendado com sucesso!</h2>
+            <p class="ag-success-sub" id="successMsg">
+                Seu horário foi reservado. Te esperamos!
+            </p>
+            <div class="ag-success-card">
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Serviço</span>
+                    <span class="ag-summary-value" id="confServico">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Profissional</span>
+                    <span class="ag-summary-value" id="confProfissional">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Data e Hora</span>
+                    <span class="ag-summary-value" id="confDataHora">—</span>
+                </div>
+                <div class="ag-summary-row">
+                    <span class="ag-summary-label">Valor</span>
+                    <span class="ag-summary-value price" id="confPreco">—</span>
+                </div>
+            </div>
+            <button class="ag-btn-novo" onclick="agendarApp.novoAgendamento()">
+                + Fazer outro agendamento
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Tenant System -->
+    <script src="/tenant.js"></script>
+    <!-- App Logic -->
+    <script src="/agendamento.js"></script>
+</body>
+</html>

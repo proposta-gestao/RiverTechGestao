@@ -131,6 +131,7 @@ function renderDadosBasicos(emp) {
     const urlMenu = `${baseUrl}/${emp.slug}`;
     const urlAdmin = `${baseUrl}/admin.html?tenant=${emp.slug}`;
     const urlAten = `${baseUrl}/atendente.html?tenant=${emp.slug}`;
+    const urlAgendamento = `${baseUrl}/agendamento.html?tenant=${emp.slug}`;
  
     document.getElementById('urlMenu').textContent = `/${emp.slug}`;
     document.getElementById('urlMenu').href = urlMenu;
@@ -140,6 +141,12 @@ function renderDadosBasicos(emp) {
     
     document.getElementById('urlAtendente').textContent = `/atendente.html?tenant=${emp.slug}`;
     document.getElementById('urlAtendente').href = urlAten;
+
+    const elAgendamento = document.getElementById('urlAgendamento');
+    if (elAgendamento) {
+        elAgendamento.textContent = `/agendamento.html?tenant=${emp.slug}`;
+        elAgendamento.href = urlAgendamento;
+    }
  
     // --- NOVOS CAMPOS DASHBOARD ---
     const planBadge = document.getElementById('infoPlanoBadge');
@@ -477,6 +484,18 @@ window.toggleGrupoModulo = async (containerId, isChecked) => {
     }
 };
 
+// Função para expandir/colapsar os cards de módulos
+window.toggleAccordionNovo = (id) => {
+    const el = document.getElementById(id);
+    const icon = document.getElementById('icon_' + id);
+    if (!el) return;
+    
+    el.classList.toggle('collapsed');
+    if (icon) {
+        icon.textContent = el.classList.contains('collapsed') ? '▼' : '▲';
+    }
+};
+
 // --- MODAIS E NAVEGAÇÃO ---
 window.switchPageTab = (tabId) => {
     // Esconder todos os conteúdos
@@ -575,12 +594,17 @@ window.copyAllUrls = () => {
     const menu = document.getElementById('urlMenu').textContent;
     const admin = document.getElementById('urlAdmin').textContent;
     const aten = document.getElementById('urlAtendente').textContent;
+    const agendamento = document.getElementById('urlAgendamento') ? document.getElementById('urlAgendamento').textContent : '';
 
     const fullText = `🚀 *Acessos da sua Loja - RiverTech Gestão*
 
 📍 *Link do Cardápio (Para Clientes):*
 ${menu}
 _Divulgue este link no seu Instagram e WhatsApp._
+
+📅 *Link de Agendamento Online:*
+${agendamento}
+_Envie para os clientes marcarem horários._
 
 ⚙️ *Painel Administrativo (Gestão):*
 ${admin}

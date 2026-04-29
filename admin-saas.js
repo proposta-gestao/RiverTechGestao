@@ -167,7 +167,7 @@ function renderizarEmpresas() {
             <td><span class="badge ${badgeStatus}">${emp.status}</span></td>
             <td class="action-links">
                 <button onclick="abrirModalEdicao('${emp.id}')">Editar</button>
-                <a href="/${emp.slug}/cardapio" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.9rem">Ver Loja ↗</a>
+                <a href="/admin.html?tenant=${emp.slug}" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.9rem">Painel Admin ↗</a>
             </td>
         `;
         tbody.appendChild(tr);
@@ -205,6 +205,8 @@ document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     
     // Reset Módulos (Todos ativos por padrão para facilitar)
     document.querySelectorAll('[id^="n_mod_"]').forEach(cb => cb.checked = true);
+    document.querySelectorAll('[id^="n_master_"]').forEach(cb => cb.checked = true);
+    document.querySelectorAll('.grupo-content').forEach(g => g.classList.remove('disabled'));
 
     // Reset Tema
     _setColorField('n_editTemaCorPrimaria',   'n_editTemaCorPrimariaHex',   '#E5B25D');
@@ -236,8 +238,11 @@ function atualizarPreviewsURL() {
         const baseUrl = `https://river-tech-gestao.vercel.app/${slug}`;
         
         document.getElementById('previewMenu').textContent = baseUrl;
+        document.getElementById('previewAgendamento').textContent = `${baseUrl}/agendar`;
         document.getElementById('previewAdmin').textContent = `${baseUrl}/painel-gestao`;
-        document.getElementById('previewAtendente').textContent = `${baseUrl}/atendente`;
+        if (document.getElementById('previewAtendente')) {
+            document.getElementById('previewAtendente').textContent = `${baseUrl}/atendente`;
+        }
     } else {
         container.style.display = 'none';
     }
@@ -269,8 +274,10 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
     const modulos = {};
     const LISTA_MOD_IDS = [
         'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque',
-        'vendas_visao_geral', 'metricas_dashboard', 'config_frete',
-        'pagamento', 'cupons', 'cardapio', 'config_personalizacao'
+        'vendas_visao_geral', 'metricas_dashboard', 'metricas_performance_vendas',
+        'config_frete', 'pagamento', 'cupons', 'cardapio',
+        'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
+        'agendamento_mensagens', 'agendamento_fidelidade', 'config_personalizacao'
     ];
     LISTA_MOD_IDS.forEach(key => {
         const el = document.getElementById(`n_mod_${key}`);
@@ -425,6 +432,32 @@ window.previewTema = () => {
     if (price)   price.style.color        = primaria;
     if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
     if (badge) { badge.style.background   = primaria; badge.style.color = '#000'; }
+};
+
+// Função para ativar/desativar um grupo inteiro de módulos (Nova Empresa)
+window.toggleGrupoModuloNovo = (containerId, isChecked) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (isChecked) container.classList.remove('disabled');
+    else container.classList.add('disabled');
+
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+    });
+};
+
+// Função para expandir/colapsar os cards de módulos
+window.toggleAccordionNovo = (id) => {
+    const el = document.getElementById(id);
+    const icon = document.getElementById('icon_' + id);
+    if (!el) return;
+    
+    el.classList.toggle('collapsed');
+    if (icon) {
+        icon.textContent = el.classList.contains('collapsed') ? '▼' : '▲';
+    }
 };
 
 // Preview para o modal de NOVA empresa
