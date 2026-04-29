@@ -91,6 +91,7 @@
                     <button class="agenda-subtab-btn" data-subtab="profissionais" onclick="window.__AGENDA.renderSubtab('profissionais')">👥 Profissionais</button>
                     <button class="agenda-subtab-btn" data-subtab="servicos" onclick="window.__AGENDA.renderSubtab('servicos')">✂️ Serviços</button>
                     <button class="agenda-subtab-btn" data-subtab="horarios" onclick="window.__AGENDA.renderSubtab('horarios')">🕒 Horários</button>
+                    <button class="agenda-subtab-btn" data-subtab="lista" onclick="window.__AGENDA.renderSubtab('lista')">📝 Lista de Espera</button>
                 </div>
 
                 <!-- Subtab: Agenda do Dia -->
@@ -164,6 +165,17 @@
                     <div class="agenda-card" style="margin-bottom:1rem;">
                         <div class="agenda-card-header"><h3>🕒 Horário de Funcionamento da Loja</h3></div>
                         <div class="agenda-card-body" id="horariosTabContent"></div>
+                    </div>
+                </div>
+
+                <!-- Subtab: Lista de Espera -->
+                <div class="agenda-subtab-content" id="agendaTab_lista" style="display:none;">
+                    <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.abrirModalListaEspera()">+ Adicionar à Lista</button>
+                    </div>
+                    <div class="agenda-card">
+                        <div class="agenda-card-header"><h3>📝 Clientes em Espera</h3></div>
+                        <div class="agenda-card-body" id="listaEsperaTabContent"></div>
                     </div>
                 </div>
             </div>
@@ -1271,6 +1283,42 @@
             <div class="modal-actions" style="margin-top: 10px;">
                 <button class="btn-cancel" onclick="fecharModal('modalCancelarPedido')">Voltar</button>
                 <button class="btn-save btn-confirm-action" id="btnConfirmarCancelamento" style="background: var(--danger); color: white;">Confirmar Cancelamento</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lista de Espera -->
+    <div class="admin-modal-backdrop" id="modalListaEspera">
+        <div class="admin-modal">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalListaEspera')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>Adicionar à Lista de Espera</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__AGENDA.salvarListaEspera()">Adicionar</button>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="waitlistNome" placeholder="Nome do cliente">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp / Telefone</label>
+                    <input type="text" id="waitlistTelefone" placeholder="(00) 00000-0000">
+                </div>
+                <div class="form-group">
+                    <label>Serviço Desejado</label>
+                    <select id="waitlistServico"></select>
+                </div>
+                <div class="form-group">
+                    <label>Data Preferencial (Opcional)</label>
+                    <input type="date" id="waitlistData">
+                </div>
             </div>
         </div>
     </div>

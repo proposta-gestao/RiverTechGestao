@@ -21,6 +21,7 @@
     let profissionais = [];
     let servicos = [];
     let agendamentosFuturos = [];
+    let listaEspera = [];
     let diasComEventos = new Set();
     let agendaSubscription = null;
     let profissionalSelecionado = null;
@@ -46,7 +47,11 @@
             renderSubtab('agenda'); // Começa na aba de Agenda do dia
             renderMiniCal();
             renderProfissionaisSidebar();
-            await Promise.all([carregarAgendamentos(), carregarAgendamentosFuturos()]);
+            await Promise.all([
+                carregarAgendamentos(), 
+                carregarAgendamentosFuturos(),
+                carregarListaEspera()
+            ]);
             renderTimeline();
             renderTimelineFuturo();
             renderStats();
@@ -65,7 +70,14 @@
                 renderTimeline();
                 renderTimelineFuturo();
                 renderStats();
-            }).subscribe();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'lista_espera', filter: `empresa_id=eq.${EMPRESA_ID()}` }, async () => {
+                await carregarListaEspera();
+                if (document.getElementById('agendaTab_lista').style.display !== 'none') {
+                    renderListaEsperaTab();
+                }
+            })
+            .subscribe();
     }
 
     // ============================================================
@@ -145,6 +157,17 @@
                 diasComEventos.add(new Date(ag.data_hora_inicio).toDateString());
             });
         }
+    }
+
+    async function carregarListaEspera() {
+        const { data, error } = await sb
+            .from('lista_espera')
+            .select('*, servico:servicos(nome)')
+            .eq('empresa_id', EMPRESA_ID())
+            .in('status', ['aguardando', 'notificado'])
+            .order('criado_em', { ascending: true });
+        
+        if (!error) listaEspera = data || [];
     }
 
     // ============================================================
@@ -344,6 +367,7 @@
         if (id === 'servicos') renderServicos();
         if (id === 'profissionais') renderProfissionaisTab();
         if (id === 'horarios') renderHorariosTab();
+        if (id === 'lista') renderListaEsperaTab();
     }
 
     // ============================================================
@@ -429,7 +453,7 @@
                             <input type="time" id="horAbre_${i}" value="${h.hora_abertura}" onchange="window.__AGENDA.salvarHorario(${i})">
                             <input type="time" id="horFecha_${i}" value="${h.hora_fechamento}" onchange="window.__AGENDA.salvarHorario(${i})">
                             <div class="switch-wrap">
-                                <label class="switch" style="width:28px;height:14px;">
+                                <label class="switch">
                                     <input type="checkbox" id="horAtivo_${i}" ${h.ativo ? 'checked' : ''} onchange="window.__AGENDA.salvarHorario(${i})">
                                     <span class="slider"></span>
                                 </label>
@@ -439,22 +463,141 @@
             </div>`;
     }
 
+    // ============================================================
+    // 10.5 Aba: Lista de Espera
+    // ============================================================
+    function renderListaEsperaTab() {
+        const container = document.getElementById('listaEsperaTabContent');
+        if (!container) return;
+
+        if (listaEspera.length === 0) {
+            container.innerHTML = `
+                <div class="timeline-empty">
+                    <div class="icon">📝</div>
+                    <p>Nenhum cliente na lista de espera no momento.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="agenda-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Serviço</th>
+                            <th>Data Desejada</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${listaEspera.map(item => {
+                            const dataDesejada = item.data_desejada ? new Date(item.data_desejada).toLocaleDateString('pt-BR') : 'Qualquer';
+                            const statusClass = item.status === 'notificado' ? 'status-confirmado' : 'status-pendente';
+                            return `
+                                <tr>
+                                    <td>
+                                        <div style="font-weight:600;">${item.cliente_nome}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-muted);">📱 ${item.cliente_telefone}</div>
+                                    </td>
+                                    <td>${item.servico?.nome || '—'}</td>
+                                    <td>${dataDesejada}</td>
+                                    <td><span class="agendamento-status ${statusClass}">${item.status.toUpperCase()}</span></td>
+                                    <td class="agendamento-actions">
+                                        <button onclick="window.__AGENDA.abrirModalNovoAgendamentoParaLista('${item.id}')" title="Converter em Agendamento">📅</button>
+                                        <button onclick="window.__AGENDA.removerDaLista('${item.id}')" title="Remover" style="color:var(--danger);">✕</button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+    }
+
+    async function removerDaLista(id) {
+        if (!confirm('Deseja remover este cliente da lista de espera?')) return;
+        const { error } = await sb.from('lista_espera').update({ status: 'cancelado' }).eq('id', id);
+        if (!error) {
+            window.showToast?.('Removido da lista.');
+            await carregarListaEspera();
+            renderListaEsperaTab();
+        }
+    }
+
+    function abrirModalListaEspera() {
+        const modal = document.getElementById('modalListaEspera');
+        if (!modal) return;
+
+        const selServ = document.getElementById('waitlistServico');
+        selServ.innerHTML = servicos.map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
+
+        document.getElementById('waitlistNome').value = '';
+        document.getElementById('waitlistTelefone').value = '';
+        document.getElementById('waitlistData').value = '';
+
+        modal.classList.add('active');
+    }
+
+    async function salvarListaEspera() {
+        const payload = {
+            empresa_id: EMPRESA_ID(),
+            cliente_nome: document.getElementById('waitlistNome').value.trim(),
+            cliente_telefone: document.getElementById('waitlistTelefone').value.trim(),
+            servico_id: document.getElementById('waitlistServico').value,
+            data_desejada: document.getElementById('waitlistData').value || null,
+            status: 'aguardando'
+        };
+
+        if (!payload.cliente_nome || !payload.cliente_telefone) {
+            window.showToast?.('Nome e Telefone são obrigatórios', 'error');
+            return;
+        }
+
+        const { error } = await sb.from('lista_espera').insert(payload);
+
+        if (error) {
+            window.showToast?.('Erro: ' + error.message, 'error');
+            return;
+        }
+
+        window.showToast?.('Adicionado à lista de espera!');
+        document.getElementById('modalListaEspera').classList.remove('active');
+        await carregarListaEspera();
+        renderListaEsperaTab();
+    }
+
     async function salvarHorario(diaSemana) {
         const abre = document.getElementById(`horAbre_${diaSemana}`)?.value;
         const fecha = document.getElementById(`horFecha_${diaSemana}`)?.value;
         const ativo = document.getElementById(`horAtivo_${diaSemana}`)?.checked;
 
-        const { error } = await sb.from('horarios_funcionamento').upsert({
+        if (ativo === undefined) ativo = true;
+
+        // LIMPEZA TOTAL: Removemos TUDO deste dia (Loja e Profissionais)
+        // Isso garante que não existam registros "fantasmas" atrapalhando a sincronização.
+        await sb.from('horarios_funcionamento')
+            .delete()
+            .eq('empresa_id', EMPRESA_ID())
+            .eq('dia_semana', diaSemana);
+
+        // Inserimos o novo horário da LOJA
+        const { error } = await sb.from('horarios_funcionamento').insert({
             empresa_id: EMPRESA_ID(),
             profissional_id: null,
             dia_semana: diaSemana,
             hora_abertura: abre,
             hora_fechamento: fecha,
             ativo: ativo
-        }, { onConflict: 'empresa_id,profissional_id,dia_semana' });
+        });
 
-        if (!error) window.showToast?.('Horário salvo!');
-        else window.showToast?.('Erro ao salvar horário', 'error');
+        if (!error) {
+            window.showToast?.('Horário sincronizado com sucesso!');
+        } else {
+            console.error('Erro ao salvar horário:', error);
+            window.showToast?.('Erro ao sincronizar horário', 'error');
+        }
     }
 
     // ============================================================
@@ -512,6 +655,24 @@
         modal.classList.add('active');
     }
 
+    function abrirModalNovoAgendamentoParaLista(waitlistId) {
+        const item = listaEspera.find(i => i.id === waitlistId);
+        if (!item) return;
+
+        abrirModalNovoAgendamento();
+        document.getElementById('agendaModalCliente').value = item.cliente_nome || '';
+        document.getElementById('agendaModalTelefone').value = item.cliente_telefone || '';
+        document.getElementById('agendaModalServico').value = item.servico_id || '';
+        document.getElementById('agendaModalData').value = item.data_desejada || dataSelecionada.toISOString().split('T')[0];
+        
+        // Atribuir o ID da lista ao campo oculto (vou precisar criar esse campo no HTML)
+        const hiddenWaitlist = document.getElementById('agendaModalWaitlistId') || document.createElement('input');
+        hiddenWaitlist.type = 'hidden';
+        hiddenWaitlist.id = 'agendaModalWaitlistId';
+        hiddenWaitlist.value = waitlistId;
+        document.getElementById('modalNovoAgendamento').appendChild(hiddenWaitlist);
+    }
+
     async function salvarAgendamento() {
         const profId = document.getElementById('agendaModalProfissional').value;
         const servId = document.getElementById('agendaModalServico').value;
@@ -552,11 +713,20 @@
             return;
         }
 
+        const waitlistId = document.getElementById('agendaModalWaitlistId')?.value;
+        if (waitlistId) {
+            payload.waitlist_id = waitlistId; // Se quiser rastrear a origem
+            // Marcar como confirmado na lista de espera
+            await sb.from('lista_espera').update({ status: 'confirmado', agendamento_id: data.id }).eq('id', waitlistId);
+            document.getElementById('agendaModalWaitlistId').value = '';
+        }
+
         window.showToast?.('Agendamento salvo!');
         document.getElementById('modalNovoAgendamento').classList.remove('active');
-        await carregarAgendamentos();
+        await Promise.all([carregarAgendamentos(), carregarListaEspera()]);
         renderTimeline();
         renderStats();
+        if (document.getElementById('agendaTab_lista').style.display !== 'none') renderListaEsperaTab();
     }
 
     async function atualizarStatus(id, status) {
@@ -642,8 +812,8 @@
             document.getElementById('servModalId').value = '';
             document.getElementById('servModalNome').value = '';
             document.getElementById('servModalDesc').value = '';
-            document.getElementById('servModalDuracao').value = '30';
-            document.getElementById('servModalPreco').value = '0';
+            document.getElementById('servModalDuracao').value = '';
+            document.getElementById('servModalPreco').value = '';
         }
         document.getElementById('modalServico').classList.add('active');
     }
@@ -682,6 +852,7 @@
         editarProfissional, salvarProfissional, toggleProfissional,
         editarServico, salvarServico,
         salvarHorario,
+        abrirModalListaEspera, salvarListaEspera, removerDaLista, abrirModalNovoAgendamentoParaLista
     };
 
     // Iniciar

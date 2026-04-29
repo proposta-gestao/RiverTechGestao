@@ -373,6 +373,11 @@
     --color-primary-10:     rgba(229,178,93,0.10);
     --color-primary-30:     rgba(229,178,93,0.30);
 
+    /* === BOTÕES === */
+    --color-button:         var(--color-primary);
+    --color-button-hover:   var(--color-primary-hover);
+    --color-button-text:    #000000;
+
     /* === BACKGROUNDS (personalizável pelo Admin Master) === */
     --color-bg:             #0d0d0d;
     --color-surface:        #1a1a1a;
@@ -496,24 +501,25 @@ body {
 
 .btn-login {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
     background: var(--color-button);
-    color: var(--color-button-text, #000);
+    color: var(--color-button-text);
     border: none;
     border-radius: 12px;
-    font-weight: 800;
-    font-size: 1.1rem;
+    font-weight: 900;
+    font-size: 1rem;
     cursor: pointer;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     transition: var(--transition);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-login:hover {
     background: var(--color-button-hover);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(229, 178, 93, 0.3);
 }
 
 .btn-login:disabled {

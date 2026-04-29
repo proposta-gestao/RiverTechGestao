@@ -7,14 +7,9 @@
 // ============================================================
 // CONFIGURAÇÃO SUPABASE
 // ============================================================
-const supabaseUrl = 'https://tvuxtmoxpmlnuxrthgho.supabase.co'; // Atualize se necessário ou pegue do global
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2dXh0bW94cG1sbnV4cnRoZ2hvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTExNTI5NzYsImV4cCI6MjAyNjg1Mjk3Nn0.xxx'; // Você deve preencher com a chave correta anon do Supabase. Como não temos a KEY certa exposta aqui, vou simular o init com fetch ou assumir que há config global. 
-// Vamos deixar o setup do client para usar a mesma variável dos outros js
-const supabase = window.supabase ? window.supabase.createClient(
-    // Caso use variáveis globais definidas no projeto:
-    window.SUPABASE_URL || 'https://sua-url-supabase.supabase.co',
-    window.SUPABASE_ANON_KEY || 'sua-chave-anon'
-) : null;
+const SUPABASE_URL = 'https://bpwwdnmhryblhsnywyoz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwd3dkbm1ocnlibGhzbnl3eW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTM4NTksImV4cCI6MjA5MTMyOTg1OX0.AKJAzeYdbiiUyGxiWS4QeU5m3URel6kwsLnP6eGbXLg';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================================
 // ESTADO DO WIZARD
@@ -45,11 +40,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // 1. Inicializa o Tenant
         // Se `supabase` não estiver configurado corretamente, vamos avisar
-        if (!supabase) {
+        if (!sb) {
             console.error('Supabase client não configurado. Certifique-se de incluir a chave.');
         }
 
-        const tenantId = await initTenantPublico(supabase);
+        const tenantId = await initTenantPublico(sb);
         if (!tenantId) {
             hideLoading();
             return; // A tela de erro de loja não encontrada já foi exibida
@@ -148,11 +143,10 @@ window.agendarApp = agendarApp;
 // DADOS BASE: SERVIÇOS E PROFISSIONAIS
 // ============================================================
 async function carregarServicos() {
-    const { data, error } = await supabase
+    const { data, error } = await sb
         .from('servicos')
         .select('*')
         .eq('empresa_id', state.empresaId)
-        .eq('status', 'ativo')
         .order('nome', { ascending: true });
 
     if (error) {
@@ -176,7 +170,7 @@ function renderServicos() {
                 <div class="ag-card-icon">✂️</div>
                 <div>
                     <div class="ag-card-name">${s.nome}</div>
-                    <div class="ag-card-sub">⏱️ ${s.duracao_minutos} min</div>
+                    <div class="ag-card-sub">⏱️ ${s.duracao_min || s.duracao_minutos || 0} min</div>
                 </div>
             </div>
             ${s.descricao ? `<p style="font-size:0.8rem; color:var(--color-muted); margin-bottom:10px;">${s.descricao}</p>` : ''}
@@ -186,11 +180,12 @@ function renderServicos() {
 }
 
 async function carregarProfissionais() {
-    const { data, error } = await supabase
+    const { data, error } = await sb
         .from('profissionais')
         .select('*')
         .eq('empresa_id', state.empresaId)
-        .eq('status', 'ativo')
+        // Se a coluna 'ativo' não existir ou for nula, assume true para não quebrar
+        .or('ativo.eq.true,ativo.is.null') 
         .order('nome', { ascending: true });
 
     if (error) {
@@ -310,11 +305,14 @@ async function carregarSlotsDisponiveis() {
     container.innerHTML = `<div class="ag-slots-loading"><div class="ag-spinner" style="width:24px;height:24px;border-width:2px;"></div> Buscando horários...</div>`;
     document.getElementById('btnStep4Next').disabled = true;
 
-    // Formata data YYYY-MM-DD
-    const isoDate = state.dataSelecionada.toISOString().split('T')[0];
+    // Formata data YYYY-MM-DD em fuso local
+    const y = state.dataSelecionada.getFullYear();
+    const m = String(state.dataSelecionada.getMonth() + 1).padStart(2, '0');
+    const d = String(state.dataSelecionada.getDate()).padStart(2, '0');
+    const isoDate = `${y}-${m}-${d}`;
 
     try {
-        const { data, error } = await supabase.rpc('get_slots_disponiveis', {
+        const { data, error } = await sb.rpc('get_slots_disponiveis', {
             p_empresa_id: state.empresaId,
             p_profissional_id: state.profissional.id,
             p_servico_id: state.servico.id,
@@ -340,16 +338,34 @@ function renderSlots(slots) {
     }
 
     const agora = new Date();
+    const isHoje = state.dataSelecionada.toDateString() === agora.toDateString();
 
     // Cria grid
     let html = `<div class="ag-slots-grid">`;
     slots.forEach((s, i) => {
         const dInicio = new Date(s.slot_inicio);
         
-        // Se for hoje, filtra slots passados
-        if (dInicio < agora) return;
+        // Se for hoje, filtra slots passados (usando comparação nominal)
+        if (isHoje) {
+            // Criamos um Date 'agora' nominal para comparar com o UTC do slot
+            const agoraNominal = new Date();
+            const slotNominal = new Date(s.slot_inicio);
+            
+            // Comparar apenas se o slot é no passado HOJE
+            // slot_inicio vem como "2026-04-30T09:00:00Z"
+            // Queremos saber se "09:00" já passou no relógio local
+            const hSlot = slotNominal.getUTCHours();
+            const mSlot = slotNominal.getUTCMinutes();
+            const hAgora = agoraNominal.getHours();
+            const mAgora = agoraNominal.getMinutes();
 
-        const horaFormatada = dInicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            if (hSlot < hAgora || (hSlot === hAgora && mSlot <= mAgora)) return;
+        }
+
+        // Extrair hora nominal (UTC) para evitar deslocamento de fuso
+        const hora = String(dInicio.getUTCHours()).padStart(2, '0');
+        const min = String(dInicio.getUTCMinutes()).padStart(2, '0');
+        const horaFormatada = `${hora}:${min}`;
         
         html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaFormatada}')">${horaFormatada}</div>`;
     });
@@ -384,7 +400,7 @@ function renderResumo() {
     const dStr = state.dataSelecionada.toLocaleDateString('pt-BR');
     document.getElementById('sumDataHora').textContent = `${dStr} às ${state.slotSelecionado}`;
     
-    document.getElementById('sumDuracao').textContent = `${state.servico.duracao_minutos} min`;
+    document.getElementById('sumDuracao').textContent = `${state.servico.duracao_min || state.servico.duracao_minutos || 0} min`;
     document.getElementById('sumPreco').textContent = `R$ ${Number(state.servico.preco).toFixed(2).replace('.', ',')}`;
 }
 
@@ -400,21 +416,23 @@ async function confirmarAgendamento() {
     document.getElementById('btnConfirmar').disabled = true;
 
     try {
+        const duracao = parseInt(state.servico.duracao_min || state.servico.duracao_minutos || 30);
+        const dataInicio = new Date(state.slotInicio);
+        const dataFim = new Date(dataInicio.getTime() + duracao * 60000);
+
         const payload = {
             empresa_id: state.empresaId,
-            cliente_nome: nome,
-            cliente_telefone: tel,
-            cliente_observacao: obs,
             profissional_id: state.profissional.id,
             servico_id: state.servico.id,
-            data_hora: state.slotInicio,
-            duracao_minutos: state.servico.duracao_minutos,
-            valor_total: state.servico.preco,
-            status: 'pendente',
-            origem: 'online'
+            cliente_nome: nome,
+            cliente_telefone: tel,
+            observacao: obs,
+            data_hora_inicio: dataInicio.toISOString(),
+            data_hora_fim: dataFim.toISOString(),
+            status: 'pendente'
         };
 
-        const { error } = await supabase
+        const { error } = await sb
             .from('agendamentos')
             .insert(payload);
 
@@ -475,17 +493,25 @@ function novoAgendamento() {
 // ============================================================
 function showLoading(msg = 'Carregando...') {
     const el = document.getElementById('agLoading');
-    el.querySelector('p').textContent = msg;
+    if (!el) return;
+    const p = el.querySelector('p');
+    if (p) p.textContent = msg;
     el.classList.remove('hidden');
 }
 
 function hideLoading() {
-    document.getElementById('agLoading').classList.add('hidden');
+    const el = document.getElementById('agLoading');
+    if (el) el.classList.add('hidden');
 }
 
 let toastTimeout;
 function showToast(msg, type = 'success') {
     const el = document.getElementById('agToast');
+    if (!el) {
+        // Se a tela de erro do tenant estiver ativa, usamos alert ou console
+        console.log(`[Toast Fallback] ${type}: ${msg}`);
+        return;
+    }
     el.textContent = msg;
     el.className = `ag-toast show ${type}`;
     

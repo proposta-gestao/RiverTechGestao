@@ -227,23 +227,31 @@ async function initTenantPublico(supabaseClient) {
         console.info('[Tenant] Buscando empresa para slug:', slug);
 
         // PASSO 2 — Buscar no Supabase
-        // Tentamos primeiro com todas as colunas de tema. Se falhar (ex: colunas ainda não criadas),
-        // tentamos uma busca simplificada para não quebrar o acesso à loja.
-        let { data, error } = await supabaseClient
+        // Usamos .ilike para ser case-insensitive no slug (evita erros de digitação)
+        let query = supabaseClient
             .from('empresas')
             .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto')
-            .eq('slug', slug)
-            .eq('status', 'ativo')
-            .single();
+            .ilike('slug', slug);
+
+        // Se estiver em produção, só permitimos empresas ativas
+        const hostname = window.location.hostname;
+        const isLocal = hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.');
+        if (!isLocal) {
+            query = query.eq('status', 'ativo');
+        }
+
+        let { data, error } = await query.single();
 
         if (error && error.code === 'PGRST204') { // Colunas faltando ou erro de estrutura
             console.warn('[Tenant] Erro ao buscar colunas de tema, tentando busca simplificada...');
-            const retry = await supabaseClient
+            let retryQuery = supabaseClient
                 .from('empresas')
                 .select('id, nome, slug, cor_primaria, logo_url, status')
-                .eq('slug', slug)
-                .eq('status', 'ativo')
-                .single();
+                .ilike('slug', slug);
+            
+            if (!isLocal) retryQuery = retryQuery.eq('status', 'ativo');
+            
+            const retry = await retryQuery.single();
             data = retry.data;
             error = retry.error;
         }
