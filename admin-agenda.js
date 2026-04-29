@@ -20,6 +20,9 @@
     let agendamentos = [];
     let profissionais = [];
     let servicos = [];
+    let agendamentosFuturos = [];
+    let diasComEventos = new Set();
+    let agendaSubscription = null;
     let profissionalSelecionado = null;
     let dataSelecionada = new Date();
     let calMes = new Date();
@@ -39,15 +42,30 @@
     async function init() {
         try {
             await Promise.all([carregarProfissionais(), carregarServicos()]);
+            await carregarDiasComAgendamentos();
             renderSubtab('agenda'); // Começa na aba de Agenda do dia
             renderMiniCal();
             renderProfissionaisSidebar();
-            await carregarAgendamentos();
+            await Promise.all([carregarAgendamentos(), carregarAgendamentosFuturos()]);
             renderTimeline();
+            renderTimelineFuturo();
             renderStats();
+            setupRealtime();
         } catch (err) {
             console.error('[Agenda] Erro na inicialização:', err);
         }
+    }
+
+    function setupRealtime() {
+        if (agendaSubscription) return;
+        agendaSubscription = sb.channel('agenda-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'agendamentos', filter: `empresa_id=eq.${EMPRESA_ID()}` }, async () => {
+                await Promise.all([carregarAgendamentos(), carregarAgendamentosFuturos(), carregarDiasComAgendamentos()]);
+                renderMiniCal();
+                renderTimeline();
+                renderTimelineFuturo();
+                renderStats();
+            }).subscribe();
     }
 
     // ============================================================
@@ -91,6 +109,44 @@
         if (!error) agendamentos = data || [];
     }
 
+    async function carregarAgendamentosFuturos() {
+        const amanha = new Date();
+        amanha.setDate(amanha.getDate() + 1);
+        amanha.setHours(0, 0, 0, 0);
+
+        let query = sb.from('agendamentos')
+            .select('*, profissional:profissionais(nome, cor_agenda), servico:servicos(nome, duracao_min, preco)')
+            .eq('empresa_id', EMPRESA_ID())
+            .gte('data_hora_inicio', amanha.toISOString())
+            .in('status', ['pendente', 'confirmado'])
+            .order('data_hora_inicio')
+            .limit(20);
+
+        if (profissionalSelecionado) query = query.eq('profissional_id', profissionalSelecionado);
+
+        const { data } = await query;
+        agendamentosFuturos = data || [];
+    }
+
+    async function carregarDiasComAgendamentos() {
+        const inicioMes = new Date(calMes.getFullYear(), calMes.getMonth(), 1).toISOString();
+        const fimMes = new Date(calMes.getFullYear(), calMes.getMonth() + 1, 0, 23, 59, 59).toISOString();
+        
+        const { data } = await sb.from('agendamentos')
+            .select('data_hora_inicio')
+            .eq('empresa_id', EMPRESA_ID())
+            .gte('data_hora_inicio', inicioMes)
+            .lte('data_hora_inicio', fimMes)
+            .in('status', ['pendente', 'confirmado', 'em_andamento', 'concluido']);
+            
+        diasComEventos.clear();
+        if (data) {
+            data.forEach(ag => {
+                diasComEventos.add(new Date(ag.data_hora_inicio).toDateString());
+            });
+        }
+    }
+
     // ============================================================
     // 3. Renderização do Mini Calendário
     // ============================================================
@@ -120,9 +176,11 @@
             const d = new Date(ano, mes, dia);
             const isHoje = d.toDateString() === hoje.toDateString();
             const isSel = d.toDateString() === dataSelecionada.toDateString();
+            const hasEvents = diasComEventos.has(d.toDateString());
             const classes = ['mini-cal-day',
                 isHoje ? 'today' : '',
                 isSel ? 'selected' : '',
+                hasEvents ? 'has-events' : ''
             ].filter(Boolean).join(' ');
 
             html += `<div class="${classes}" onclick="window.__AGENDA.selecionarDia(${ano}, ${mes}, ${dia})">${dia}</div>`;
@@ -131,8 +189,9 @@
         container.innerHTML = html;
     }
 
-    function navMes(delta) {
+    async function navMes(delta) {
         calMes = new Date(calMes.getFullYear(), calMes.getMonth() + delta, 1);
+        await carregarDiasComAgendamentos();
         renderMiniCal();
     }
 
@@ -188,13 +247,51 @@
     async function filtrarProfissional(id) {
         profissionalSelecionado = id;
         renderProfissionaisSidebar();
-        await carregarAgendamentos();
+        await Promise.all([carregarAgendamentos(), carregarAgendamentosFuturos()]);
         renderTimeline();
+        renderTimelineFuturo();
     }
 
     // ============================================================
     // 5. Timeline de Agendamentos
     // ============================================================
+    function gerarHtmlTimeline(lista, isEmptyMsg) {
+        if (lista.length === 0) {
+            return `
+                <div class="timeline-empty">
+                    <div class="icon">📅</div>
+                    <p>${isEmptyMsg}</p>
+                </div>`;
+        }
+
+        return lista.map(ag => {
+            const dataOb = new Date(ag.data_hora_inicio);
+            const horaInicio = dataOb.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const horaFim = new Date(ag.data_hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const dataLabel = dataOb.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            const cor = ag.profissional?.cor_agenda || '#E5B25D';
+            const statusLabel = STATUS_LABELS[ag.status] || ag.status;
+
+            return `
+                <div class="agendamento-card">
+                    <div class="agendamento-cor-bar" style="background:${cor};"></div>
+                    <div class="agendamento-body">
+                        <div class="agendamento-hora">${horaInicio}<br><small style="color:var(--text-muted);font-weight:400;">${dataLabel}</small></div>
+                        <div class="agendamento-info">
+                            <div class="agendamento-cliente">${ag.cliente_nome} <span style="font-size:0.75rem; color:var(--text-muted);">📱 ${ag.cliente_telefone}</span></div>
+                            <div class="agendamento-servico">${ag.servico?.nome || '—'} · ${ag.profissional?.nome || '—'}</div>
+                        </div>
+                        <span class="agendamento-status status-${ag.status}">${statusLabel}</span>
+                    </div>
+                    <div class="agendamento-actions">
+                        ${ag.status === 'concluido' ? '' : `<button onclick="window.__AGENDA.abrirModalAgendamento('${ag.id}')" title="Ver detalhes">✏️</button>`}
+                        ${ag.status === 'concluido' ? '' : `<button onclick="window.__AGENDA.atualizarStatus('${ag.id}', 'concluido')" title="Marcar como concluído">✅</button>`}
+                        ${['cancelado', 'concluido'].includes(ag.status) ? '' : `<button onclick="window.__AGENDA.cancelarAgendamento('${ag.id}')" title="Cancelar" style="color:#ef4444;">✕</button>`}
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
     function renderTimeline() {
         const container = document.getElementById('agendaTimeline');
         const label = document.getElementById('timelineDateLabel');
@@ -204,40 +301,13 @@
             weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
         });
 
-        if (agendamentos.length === 0) {
-            container.innerHTML = `
-                <div class="timeline-empty">
-                    <div class="icon">📅</div>
-                    <p>Nenhum agendamento para este dia.</p>
-                    <button class="btn-primary btn-sm" style="margin-top: 1rem;" onclick="window.__AGENDA.abrirModalNovoAgendamento()">+ Novo Agendamento</button>
-                </div>`;
-            return;
-        }
+        container.innerHTML = gerarHtmlTimeline(agendamentos, 'Nenhum agendamento para este dia.');
+    }
 
-        container.innerHTML = agendamentos.map(ag => {
-            const horaInicio = new Date(ag.data_hora_inicio).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const horaFim = new Date(ag.data_hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const cor = ag.profissional?.cor_agenda || '#E5B25D';
-            const statusLabel = STATUS_LABELS[ag.status] || ag.status;
-
-            return `
-                <div class="agendamento-card">
-                    <div class="agendamento-cor-bar" style="background:${cor};"></div>
-                    <div class="agendamento-body">
-                        <div class="agendamento-hora">${horaInicio}<br><small style="color:var(--text-muted);font-weight:400;">${horaFim}</small></div>
-                        <div class="agendamento-info">
-                            <div class="agendamento-cliente">${ag.cliente_nome}</div>
-                            <div class="agendamento-servico">${ag.servico?.nome || '—'} · ${ag.profissional?.nome || '—'} · 📱 ${ag.cliente_telefone}</div>
-                        </div>
-                        <span class="agendamento-status status-${ag.status}">${statusLabel}</span>
-                    </div>
-                    <div class="agendamento-actions">
-                        <button onclick="window.__AGENDA.abrirModalAgendamento('${ag.id}')" title="Ver detalhes">✏️</button>
-                        <button onclick="window.__AGENDA.atualizarStatus('${ag.id}', 'concluido')" title="Marcar como concluído" ${ag.status === 'concluido' ? 'disabled' : ''}>✅</button>
-                        <button onclick="window.__AGENDA.cancelarAgendamento('${ag.id}')" title="Cancelar" ${['cancelado','concluido'].includes(ag.status) ? 'disabled' : ''} style="color:#ef4444;">✕</button>
-                    </div>
-                </div>`;
-        }).join('');
+    function renderTimelineFuturo() {
+        const container = document.getElementById('agendaTimelineFuturo');
+        if (!container) return;
+        container.innerHTML = gerarHtmlTimeline(agendamentosFuturos, 'Nenhum agendamento futuro.');
     }
 
     // ============================================================
