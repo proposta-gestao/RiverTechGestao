@@ -162,9 +162,9 @@
 
         profissionais.forEach((p, i) => {
             const cor = p.cor_agenda || CORES_PROFISSIONAL[i % CORES_PROFISSIONAL.length];
-            const inicial = p.nome.charAt(0).toUpperCase();
+            const inicial = (p.nome || '?').charAt(0).toUpperCase();
             const avatar = p.foto_url
-                ? `<img class="profissional-avatar" src="${p.foto_url}" alt="${p.nome}">`
+                ? `<img class="profissional-avatar" src="${p.foto_url}" alt="${p.nome || 'Profissional'}">`
                 : `<div class="profissional-avatar-placeholder" style="background:${cor};">${inicial}</div>`;
             const isActive = profissionalSelecionado === p.id;
 
@@ -264,7 +264,11 @@
     // ============================================================
     function renderSubtab(id) {
         document.querySelectorAll('.agenda-subtab-btn').forEach(b => b.classList.toggle('active', b.dataset.subtab === id));
-        document.querySelectorAll('.agenda-subtab-content').forEach(c => c.classList.toggle('active', c.id === 'agendaTab_' + id));
+        document.querySelectorAll('.agenda-subtab-content').forEach(c => {
+            const isActive = c.id === 'agendaTab_' + id;
+            c.classList.toggle('active', isActive);
+            c.style.display = isActive ? 'block' : 'none';
+        });
 
         // Carregar conteúdo sob demanda
         if (id === 'servicos') renderServicos();
@@ -509,14 +513,23 @@
     }
 
     function editarProfissional(id) {
-        const p = profissionais.find(x => x.id === id);
-        if (!p) return;
-        document.getElementById('profModalId').value = p.id;
-        document.getElementById('profModalNome').value = p.nome;
-        document.getElementById('profModalEsp').value = p.especialidade || '';
-        document.getElementById('profModalBio').value = p.bio || '';
-        document.getElementById('profModalCor').value = p.cor_agenda || '#E5B25D';
-        document.getElementById('profModalFoto').value = p.foto_url || '';
+        if (id) {
+            const p = profissionais.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('profModalId').value = p.id;
+            document.getElementById('profModalNome').value = p.nome || '';
+            document.getElementById('profModalEsp').value = p.especialidade || '';
+            document.getElementById('profModalBio').value = p.bio || '';
+            document.getElementById('profModalCor').value = p.cor_agenda || '#E5B25D';
+            document.getElementById('profModalFoto').value = p.foto_url || '';
+        } else {
+            document.getElementById('profModalId').value = '';
+            document.getElementById('profModalNome').value = '';
+            document.getElementById('profModalEsp').value = '';
+            document.getElementById('profModalBio').value = '';
+            document.getElementById('profModalCor').value = '#E5B25D';
+            document.getElementById('profModalFoto').value = '';
+        }
         document.getElementById('modalProfissional').classList.add('active');
     }
 
@@ -547,13 +560,21 @@
     }
 
     function editarServico(id) {
-        const s = servicos.find(x => x.id === id);
-        if (!s) return;
-        document.getElementById('servModalId').value = s.id;
-        document.getElementById('servModalNome').value = s.nome;
-        document.getElementById('servModalDesc').value = s.descricao || '';
-        document.getElementById('servModalDuracao').value = s.duracao_min;
-        document.getElementById('servModalPreco').value = s.preco;
+        if (id) {
+            const s = servicos.find(x => x.id === id);
+            if (!s) return;
+            document.getElementById('servModalId').value = s.id;
+            document.getElementById('servModalNome').value = s.nome || '';
+            document.getElementById('servModalDesc').value = s.descricao || '';
+            document.getElementById('servModalDuracao').value = s.duracao_min || 30;
+            document.getElementById('servModalPreco').value = s.preco || 0;
+        } else {
+            document.getElementById('servModalId').value = '';
+            document.getElementById('servModalNome').value = '';
+            document.getElementById('servModalDesc').value = '';
+            document.getElementById('servModalDuracao').value = '30';
+            document.getElementById('servModalPreco').value = '0';
+        }
         document.getElementById('modalServico').classList.add('active');
     }
 
