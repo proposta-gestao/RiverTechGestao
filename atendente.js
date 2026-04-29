@@ -1,5 +1,5 @@
 /**
- * ♠️♦️ACP Pedidos — Painel do Atendente (Realtime)
+ * RiverTech — Painel do Atendente (Realtime)
  */
 
 const SUPABASE_URL = 'https://bpwwdnmhryblhsnywyoz.supabase.co';

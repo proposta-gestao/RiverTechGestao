@@ -1,5 +1,5 @@
 /**
- * ♠️♦️ACP♥️♣️ - Cardápio Digital
+ * RiverTech - Cardápio Digital
  * Integrado com Supabase: produtos, categorias, cupons e configurações dinâmicas
  */
 
@@ -862,7 +862,7 @@ document.getElementById("btnEnviar").onclick = async () => {
         if (itemsError) throw itemsError;
 
         const fmtW = (v) => formatCurrency(v);
-        let msg = `*📦 NOVO PEDIDO — ♠️♦️ACP♥️♣️*%0A%0A`;
+        let msg = `*📦 NOVO PEDIDO — RiverTech*%0A%0A`;
         msg += `*👤 Cliente:* ${nomeCliente}%0A`;
         msg += `*📱 Telefone:* ${telefoneCliente}%0A%0A`;
 

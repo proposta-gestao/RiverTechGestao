@@ -1,7 +1,7 @@
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
 /**
- * ACP Pedidos — Service Worker
+ * RiverTech — Service Worker
  * Responsável por:
  *   1. Cache dos arquivos essenciais do PWA (shell)
  *   2. Estratégia Stale-While-Revalidate para assets

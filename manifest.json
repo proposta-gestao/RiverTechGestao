@@ -1,6 +1,6 @@
 {
-  "name": "ACP — Painel do Atendente",
-  "short_name": "ACP Pedidos",
+  "name": "RiverTech — Painel do Atendente",
+  "short_name": "RiverTech",
   "description": "Painel de atendimento em tempo real para receber e gerenciar novos pedidos.",
   "start_url": "/atendente.html",
   "scope": "/",
