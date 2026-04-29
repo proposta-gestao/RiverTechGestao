@@ -409,6 +409,35 @@
         modal.classList.add('active');
     }
 
+    function abrirModalAgendamento(id) {
+        const ag = agendamentos.find(a => a.id === id);
+        if (!ag) return;
+
+        const modal = document.getElementById('modalNovoAgendamento');
+        if (!modal) return;
+
+        // Preencher selects
+        const selProf = document.getElementById('agendaModalProfissional');
+        const selServ = document.getElementById('agendaModalServico');
+        selProf.innerHTML = profissionais.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+        selServ.innerHTML = servicos.map(s => `<option value="${s.id}" data-dur="${s.duracao_min}">${s.nome} (${s.duracao_min}min)</option>`).join('');
+
+        // Preencher valores do agendamento existente
+        document.getElementById('agendaModalProfissional').value = ag.profissional_id;
+        document.getElementById('agendaModalServico').value = ag.servico_id;
+        
+        const dateObj = new Date(ag.data_hora_inicio);
+        document.getElementById('agendaModalData').value = dateObj.toISOString().split('T')[0];
+        document.getElementById('agendaModalHora').value = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        
+        document.getElementById('agendaModalCliente').value = ag.cliente_nome;
+        document.getElementById('agendaModalTelefone').value = ag.cliente_telefone;
+        document.getElementById('agendaModalObs').value = ag.observacao || '';
+        document.getElementById('agendaModalId').value = ag.id;
+
+        modal.classList.add('active');
+    }
+
     async function salvarAgendamento() {
         const profId = document.getElementById('agendaModalProfissional').value;
         const servId = document.getElementById('agendaModalServico').value;
@@ -557,7 +586,7 @@
     // ============================================================
     window.__AGENDA = {
         selecionarDia, navMes, filtrarProfissional, renderSubtab,
-        abrirModalNovoAgendamento, salvarAgendamento,
+        abrirModalNovoAgendamento, abrirModalAgendamento, salvarAgendamento,
         atualizarStatus, cancelarAgendamento,
         editarProfissional, salvarProfissional, toggleProfissional,
         editarServico, salvarServico,
