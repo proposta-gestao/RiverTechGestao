@@ -121,6 +121,25 @@ function renderDadosBasicos(emp) {
     document.getElementById('urlAtendente').textContent = urlAten;
     document.getElementById('urlAtendente').href = urlAten;
  
+    // --- NOVOS CAMPOS DASHBOARD ---
+    const planBadge = document.getElementById('infoPlanoBadge');
+    if (planBadge) {
+        planBadge.textContent = emp.plano || 'basico';
+        planBadge.className = `plan-badge plan-${emp.plano || 'basico'}`;
+    }
+
+    const setSwatch = (id, color) => {
+        const el = document.getElementById(id);
+        if (el) el.style.background = color || '#333';
+    };
+    setSwatch('swatch-primaria', emp.tema_cor_primaria);
+    setSwatch('swatch-botao',    emp.tema_cor_botao || emp.tema_cor_primaria);
+    setSwatch('swatch-bg',       emp.tema_cor_bg);
+    setSwatch('swatch-surface',  emp.tema_cor_secundaria);
+
+    const adminLink = document.getElementById('infoUrlAdmin');
+    if (adminLink) adminLink.href = urlAdmin;
+
     // Badge Status
     const badge = document.getElementById('empresaStatusBadge');
     badge.innerHTML = `<span class="status-badge status-${emp.status}">${emp.status}</span>`;
@@ -155,13 +174,18 @@ async function carregarMetricas() {
         ultimoPedidoStr = new Date(sorted[0].created_at).toLocaleDateString('pt-BR') + ' ' + new Date(sorted[0].created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
     }
  
+    // Formatação limpa (apenas o número) para o novo design
+    const formatClean = (val) => {
+        return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
     // Renderizar
-    document.getElementById('faturamentoTotal').textContent = formatCurrency(totalFaturamento);
-    document.getElementById('faturamentoMes').textContent = formatCurrency(fatMes);
+    document.getElementById('faturamentoTotal').textContent = formatClean(totalFaturamento);
+    document.getElementById('faturamentoMes').textContent = formatClean(fatMes);
     document.getElementById('totalPedidos').textContent = totalPedidos;
-    document.getElementById('ticketMedio').textContent = formatCurrency(ticketMedio);
+    document.getElementById('ticketMedio').textContent = formatClean(ticketMedio);
     document.getElementById('infoUltimoPedido').textContent = ultimoPedidoStr;
-    document.getElementById('infoTicketGeral').textContent = formatCurrency(ticketMedio);
+    document.getElementById('infoTicketGeral').textContent = formatClean(ticketMedio);
 }
  
 async function carregarAdmins() {
@@ -296,7 +320,25 @@ window.atualizarModulo = async (modulo, checked) => {
     }
 };
 
-// --- MODAIS ---
+// --- MODAIS E NAVEGAÇÃO ---
+window.switchPageTab = (tabId) => {
+    // Esconder todos os conteúdos
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    // Desativar todos os botões
+    document.querySelectorAll('.page-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Ativar a aba selecionada
+    document.getElementById(tabId).classList.add('active');
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    
+    // Feedback visual (scroll para o topo da aba se necessário)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 window.abrirModal = (id) => {
     document.getElementById(id).style.display = 'flex';
 };

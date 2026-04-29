@@ -112,80 +112,146 @@
         </main>
     </div>
 
+
     <!-- Modal: Nova Empresa -->
     <div class="modal" id="modalNovaEmpresa">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 800px;">
             <span class="modal-close" onclick="fecharModal('modalNovaEmpresa')">&times;</span>
             <h2>Nova Empresa</h2>
-            <p class="modal-subtitle">Isso criará a loja e o usuário administrador.</p>
+            <p class="modal-subtitle">Configure todos os detalhes da nova loja e provisione o acesso.</p>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nome da Empresa (Interno)</label>
-                    <input type="text" id="empNome" required>
-                </div>
-                <div class="form-group">
-                    <label>Nome da Marca (Público)</label>
-                    <input type="text" id="empBrandName" required placeholder="Ex: Burguer King">
-                </div>
+            <!-- Tabs Navigation -->
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="tab-geral" onclick="switchTab('modalNovaEmpresa', 'tab-geral')">1. Dados Básicos</button>
+                <button class="tab-btn" data-tab="tab-modulos" onclick="switchTab('modalNovaEmpresa', 'tab-modulos')">2. Módulos Ativos</button>
+                <button class="tab-btn" data-tab="tab-tema" onclick="switchTab('modalNovaEmpresa', 'tab-tema')">3. Personalização Visual</button>
             </div>
-            
-            <div class="form-group">
-                <label>Endereço da Loja (Link)</label>
-                <input type="text" id="empSlug" required placeholder="https://river-tech-gestao.vercel.app/nome-da-loja">
-                <small>A loja ficará acessível no link acima + o nome escolhido.</small>
+
+            <!-- Tab: Geral -->
+            <div id="tab-geral" class="tab-content active">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nome da Empresa (Interno)</label>
+                        <input type="text" id="empNome" required placeholder="Ex: RiverTech - Matriz">
+                    </div>
+                    <div class="form-group">
+                        <label>Nome da Marca (Público)</label>
+                        <input type="text" id="empBrandName" required placeholder="Ex: Burger Premium">
+                    </div>
+                </div>
                 
-                <!-- Previews Dinâmicos -->
-                <div class="url-previews" id="urlPreviews" style="display: none;">
-                    <div class="url-preview-item">
-                        <label>🔗 Cardápio (Cliente)</label>
-                        <code id="previewMenu">...</code>
-                    </div>
-                    <div class="url-preview-item">
-                        <label>⚙️ Painel de Gestão (Admin)</label>
-                        <code id="previewAdmin">...</code>
-                    </div>
-                    <div class="url-preview-item">
-                        <label>🧑‍🍳 Tela do Atendente</label>
-                        <code id="previewAtendente">...</code>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-row">
                 <div class="form-group">
-                    <label>Plano</label>
-                    <select id="empPlano">
-                        <option value="basico">Básico</option>
-                        <option value="pro">Pro</option>
-                        <option value="premium">Premium</option>
-                    </select>
+                    <label>Endereço da Loja (Link / Slug)</label>
+                    <input type="text" id="empSlug" required placeholder="burger-premium">
+                    <small>A loja ficará acessível em: river-tech-gestao.vercel.app/<strong>slug</strong></small>
+                    
+                    <div class="url-previews" id="urlPreviews" style="display: none;">
+                        <div class="url-preview-item">
+                            <label>🔗 Cardápio (Cliente)</label>
+                            <code id="previewMenu">...</code>
+                        </div>
+                        <div class="url-preview-item">
+                            <label>⚙️ Painel de Gestão (Admin)</label>
+                            <code id="previewAdmin">...</code>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group" style="display:none;">
-                    <label>Cor Primária</label>
-                    <input type="color" id="empCor" value="#FF5733">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Plano de Assinatura</label>
+                        <select id="empPlano">
+                            <option value="basico">Básico</option>
+                            <option value="pro">Pro</option>
+                            <option value="premium" selected>Premium</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail do Administrador</label>
+                        <input type="email" id="empAdminEmail" required placeholder="dono@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha de Acesso Provisória</label>
+                    <input type="text" id="empAdminSenha" required value="Mudar123!">
                 </div>
             </div>
 
-            <hr class="modal-divider">
-            <h3>Usuário Administrador</h3>
-
-            <div class="form-group">
-                <label>E-mail do Dono da Loja</label>
-                <input type="email" id="empAdminEmail" required>
+            <!-- Tab: Módulos -->
+            <div id="tab-modulos" class="tab-content">
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem;">
+                    Selecione quais recursos estarão disponíveis para este cliente.
+                </p>
+                <div class="modules-grid">
+                    <div class="module-item"><input type="checkbox" id="n_mod_produtos_gerenciar" checked><label for="n_mod_produtos_gerenciar">Gerenciar Produtos</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_produtos_categorias" checked><label for="n_mod_produtos_categorias">Categorias</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_produtos_estoque" checked><label for="n_mod_produtos_estoque">Controle de Estoque</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_vendas_visao_geral" checked><label for="n_mod_vendas_visao_geral">Visão Geral de Vendas</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_metricas_dashboard" checked><label for="n_mod_metricas_dashboard">Dashboard Métricas</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_config_frete" checked><label for="n_mod_config_frete">Gestão de Frete</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_pagamento" checked><label for="n_mod_pagamento">Pagamentos Online</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_cupons" checked><label for="n_mod_cupons">Cupons de Desconto</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_cardapio" checked><label for="n_mod_cardapio">Menu Digital</label></div>
+                    <div class="module-item"><input type="checkbox" id="n_mod_config_personalizacao" checked><label for="n_mod_config_personalizacao">Personalização Visual</label></div>
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label>Senha Provisória</label>
-                <input type="text" id="empAdminSenha" required value="Mudar123!">
+
+            <!-- Tab: Tema -->
+            <div id="tab-tema" class="tab-content">
+                <div class="theme-editor" style="margin-top:0;">
+                    <div class="theme-editor-grid">
+                        <div class="theme-color-field">
+                            <label>🎨 Cor Primária</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="n_editTemaCorPrimaria" value="#E5B25D" oninput="previewTemaNovo()">
+                                <input type="text" id="n_editTemaCorPrimariaHex" value="#E5B25D" oninput="syncColorPicker('n_editTemaCorPrimaria','n_editTemaCorPrimariaHex')">
+                            </div>
+                        </div>
+                        <div class="theme-color-field">
+                            <label>🖱️ Botões</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="n_editTemaCorBotao" value="#E5B25D" oninput="previewTemaNovo()">
+                                <input type="text" id="n_editTemaCorBotaoHex" value="#E5B25D" oninput="syncColorPicker('n_editTemaCorBotao','n_editTemaCorBotaoHex')">
+                            </div>
+                        </div>
+                        <div class="theme-color-field">
+                            <label>🌑 Fundo</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="n_editTemaCorBg" value="#0d0d0d" oninput="previewTemaNovo()">
+                                <input type="text" id="n_editTemaCorBgHex" value="#0d0d0d" oninput="syncColorPicker('n_editTemaCorBg','n_editTemaCorBgHex')">
+                            </div>
+                        </div>
+                        <div class="theme-color-field">
+                            <label>🃏 Superfície</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="n_editTemaCorSurface" value="#1a1a1a" oninput="previewTemaNovo()">
+                                <input type="text" id="n_editTemaCorSurfaceHex" value="#1a1a1a" oninput="syncColorPicker('n_editTemaCorSurface','n_editTemaCorSurfaceHex')">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview ao vivo -->
+                    <div class="theme-preview" id="n_themePreview">
+                        <div class="theme-preview-header">
+                            <span>Preview</span>
+                            <button class="theme-preview-btn" id="n_themePreviewBtn">Botão</button>
+                        </div>
+                        <div class="theme-preview-card" id="n_themePreviewCard">
+                            <div class="theme-preview-title">Exemplo de Produto</div>
+                            <div class="theme-preview-price" id="n_themePreviewPrice">R$ 45,90</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-actions">
                 <button class="btn-outline" onclick="fecharModal('modalNovaEmpresa')">Cancelar</button>
-                <button class="btn-primary" id="btnSalvarNovaEmpresa">Criar e Provisionar</button>
+                <button class="btn-primary" id="btnSalvarNovaEmpresa">Finalizar e Criar Loja</button>
             </div>
         </div>
     </div>
+
 
     <!-- Modal: Editar Empresa -->
     <div class="modal" id="modalEditarEmpresa">

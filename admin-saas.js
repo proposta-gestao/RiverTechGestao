@@ -184,15 +184,39 @@ function fecharModal(id) {
 // ==========================================
 // 9. Criar Nova Empresa
 // ==========================================
+window.switchTab = (modalId, tabId) => {
+    const modal = document.getElementById(modalId);
+    modal.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+    });
+    modal.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === tabId);
+    });
+};
+
 document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
+    // Reset Campos
     document.getElementById('empNome').value = '';
-    document.getElementById('empBrandName').value = ''; // Novo campo
-    document.getElementById('empSlug').value = 'https://river-tech-gestao.vercel.app/';
-    atualizarPreviewsURL(); 
-    document.getElementById('empPlano').value = 'basico';
-    document.getElementById('empCor').value = '#E5B25D';
+    document.getElementById('empBrandName').value = '';
+    document.getElementById('empSlug').value = '';
+    document.getElementById('empPlano').value = 'premium';
     document.getElementById('empAdminEmail').value = '';
     document.getElementById('empAdminSenha').value = 'Mudar123!';
+    
+    // Reset Módulos (Todos ativos por padrão para facilitar)
+    document.querySelectorAll('[id^="n_mod_"]').forEach(cb => cb.checked = true);
+
+    // Reset Tema
+    _setColorField('n_editTemaCorPrimaria',   'n_editTemaCorPrimariaHex',   '#E5B25D');
+    _setColorField('n_editTemaCorBotao',      'n_editTemaCorBotaoHex',      '#E5B25D');
+    _setColorField('n_editTemaCorBg',         'n_editTemaCorBgHex',         '#0d0d0d');
+    _setColorField('n_editTemaCorSurface',    'n_editTemaCorSurfaceHex',    '#1a1a1a');
+    previewTemaNovo();
+
+    // Reset Tabs
+    switchTab('modalNovaEmpresa', 'tab-geral');
+    
+    atualizarPreviewsURL(); 
     document.getElementById('modalNovaEmpresa').classList.add('show');
 });
 
@@ -224,48 +248,78 @@ document.getElementById('empSlug').addEventListener('input', atualizarPreviewsUR
 document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async () => {
     const btn = document.getElementById('btnSalvarNovaEmpresa');
     
-    const p_nome = document.getElementById('empNome').value;
-    let p_slug = document.getElementById('empSlug').value;
-    
-    // Extrai apenas o final se o usuário manteve a URL base
-    if (p_slug.includes('river-tech-gestao.vercel.app/')) {
-        p_slug = p_slug.split('/').filter(p => p).pop();
-    }
-    
+    const p_nome = document.getElementById('empNome').value.trim();
+    let p_slug = document.getElementById('empSlug').value.trim();
+    const p_brand_name = document.getElementById('empBrandName').value.trim();
     const p_plano = document.getElementById('empPlano').value;
-    const p_cor_primaria = document.getElementById('empCor').value;
-    const p_admin_email = document.getElementById('empAdminEmail').value;
-    const p_admin_password = document.getElementById('empAdminSenha').value;
+    const p_admin_email = document.getElementById('empAdminEmail').value.trim();
+    const p_admin_password = document.getElementById('empAdminSenha').value.trim();
 
     if (!p_nome || !p_slug || !p_admin_email || !p_admin_password) {
-        return showToast('Preencha os campos obrigatórios', 'error');
+        switchTab('modalNovaEmpresa', 'tab-geral');
+        return showToast('Preencha os campos obrigatórios na aba Geral', 'error');
     }
+
+    // Extrai apenas o final se o usuário colou a URL inteira
+    if (p_slug.includes('/')) {
+        p_slug = p_slug.split('/').filter(p => p).pop();
+    }
+
+    // Coletar Módulos
+    const modulos = {};
+    const LISTA_MOD_IDS = [
+        'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque',
+        'vendas_visao_geral', 'metricas_dashboard', 'config_frete',
+        'pagamento', 'cupons', 'cardapio', 'config_personalizacao'
+    ];
+    LISTA_MOD_IDS.forEach(key => {
+        const el = document.getElementById(`n_mod_${key}`);
+        if (el) modulos[key] = el.checked;
+    });
+
+    // Coletar Cores
+    const tema = {
+        primaria: document.getElementById('n_editTemaCorPrimaria').value,
+        botao: document.getElementById('n_editTemaCorBotao').value,
+        bg: document.getElementById('n_editTemaCorBg').value,
+        surface: document.getElementById('n_editTemaCorSurface').value
+    };
 
     try {
         btn.disabled = true;
-        btn.textContent = 'Criando...';
+        btn.textContent = 'Criando e Configurando...';
 
-        // Chama a RPC que cria tudo (Evita deslogar o Super Admin pelo signUp)
-        const { data, error } = await sb.rpc('create_tenant_with_admin', {
+        // 1. Criar via RPC (Auth + Empresa + Settings)
+        const { data: newId, error: rpcError } = await sb.rpc('create_tenant_with_admin', {
             p_nome,
             p_slug,
             p_plano,
-            p_cor_primaria,
+            p_cor_primaria: tema.primaria,
             p_logo_url: "",
             p_admin_email,
             p_admin_password,
-            p_brand_name: document.getElementById('empBrandName').value.trim()
+            p_brand_name: p_brand_name || p_nome
         });
 
-        if (error) {
-            // Se erro for de slug único
-            if (error.message.includes('unique constraint')) {
-                throw new Error('Já existe uma empresa com esse slug.');
-            }
-            throw error;
-        }
+        if (rpcError) throw rpcError;
 
-        showToast('Empresa e administrador criados com sucesso!');
+        // 2. Aplicar Módulos e Tema detalhado
+        const { error: updateError } = await sb
+            .from('empresas')
+            .update({
+                modulos: modulos,
+                tema_cor_primaria: tema.primaria,
+                tema_cor_secundaria: '#1E90FF',
+                tema_cor_botao: tema.botao,
+                tema_cor_bg: tema.bg,
+                tema_cor_surface: tema.surface,
+                cor_primaria: tema.primaria // Legado
+            })
+            .eq('id', newId);
+
+        if (updateError) throw updateError;
+
+        showToast('Loja provisionada com sucesso! 🚀');
         fecharModal('modalNovaEmpresa');
         carregarEmpresas();
 
@@ -273,7 +327,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
         showToast(err.message, 'error');
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Criar e Provisionar';
+        btn.textContent = 'Finalizar e Criar Loja';
     }
 });
 
@@ -371,6 +425,31 @@ window.previewTema = () => {
     if (price)   price.style.color        = primaria;
     if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
     if (badge) { badge.style.background   = primaria; badge.style.color = '#000'; }
+};
+
+// Preview para o modal de NOVA empresa
+window.previewTemaNovo = () => {
+    const primaria = document.getElementById('n_editTemaCorPrimaria')?.value || '#E5B25D';
+    const bg       = document.getElementById('n_editTemaCorBg')?.value       || '#0d0d0d';
+    const surface  = document.getElementById('n_editTemaCorSurface')?.value  || '#1a1a1a';
+    const botao    = document.getElementById('n_editTemaCorBotao')?.value     || primaria;
+
+    // Sync hex fields
+    ['n_editTemaCorPrimaria','n_editTemaCorBotao','n_editTemaCorBg','n_editTemaCorSurface'].forEach(id => {
+        const picker = document.getElementById(id);
+        const hexEl  = document.getElementById(id + 'Hex');
+        if (picker && hexEl) hexEl.value = picker.value;
+    });
+
+    const preview = document.getElementById('n_themePreview');
+    const card    = document.getElementById('n_themePreviewCard');
+    const price   = document.getElementById('n_themePreviewPrice');
+    const btn     = document.getElementById('n_themePreviewBtn');
+
+    if (preview) preview.style.background = bg;
+    if (card)    card.style.background    = surface;
+    if (price)   price.style.color        = primaria;
+    if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
 };
 
 // Restaura as cores para o padrão Premium
