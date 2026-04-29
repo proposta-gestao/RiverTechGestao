@@ -78,7 +78,10 @@ const LISTA_MODULOS = [
     'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
     'metricas_dashboard', 'metricas_analise_tempo', 'metricas_performance_vendas', 'metricas_destaques',
     'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',
-    'cupons', 'cardapio', 'pagamento'
+    'cupons', 'cardapio', 'pagamento',
+    // Módulos de Agendamento
+    'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
+    'agendamento_mensagens', 'agendamento_fidelidade'
 ];
 
 function renderDadosBasicos(emp) {
@@ -104,7 +107,7 @@ function renderDadosBasicos(emp) {
     });
 
     // Sincronizar Master Toggles e Estado dos Containers
-    ['produtos', 'vendas', 'ops'].forEach(g => {
+    ['produtos', 'vendas', 'ops', 'agendamento'].forEach(g => {
         const container = document.getElementById(`grupo_${g}`);
         const master = document.getElementById(`master_${g}`);
         if (container && master) {

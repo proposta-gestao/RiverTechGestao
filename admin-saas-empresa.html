@@ -692,6 +692,57 @@
                     </div>
                 </div>
 
+                <!-- Grupo: Agendamento 🆕 -->
+                <div class="module-card">
+                    <div class="module-header">
+                        <div>
+                            <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📅 AGENDAMENTO</h4>
+                            <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e Serviços por Hora</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="master_agendamento" onchange="toggleGrupoModulo('grupo_agendamento', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="grupo-content" id="grupo_agendamento">
+                        <div class="module-item">
+                            <span>📅 Agendamento Online</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_agendamento_ativo" onchange="atualizarModulo('agendamento_ativo', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>👥 Multi-Profissional</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_agendamento_multi_profissional" onchange="atualizarModulo('agendamento_multi_profissional', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>⏳ Lista de Espera</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_agendamento_lista_espera" onchange="atualizarModulo('agendamento_lista_espera', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>💬 Mensagens Automáticas</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_agendamento_mensagens" onchange="atualizarModulo('agendamento_mensagens', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>🏆 Clube de Fidelidade</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_agendamento_fidelidade" onchange="atualizarModulo('agendamento_fidelidade', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
