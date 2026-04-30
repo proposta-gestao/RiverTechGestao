@@ -1,8 +1,3 @@
-/**
- * RiverTech - Cardápio Digital
- * Integrado com Supabase: produtos, categorias, cupons e configurações dinâmicas
- */
-
 // --- Supabase ---
 const SUPABASE_URL = 'https://bpwwdnmhryblhsnywyoz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwd3dkbm1ocnlibGhzbnl3eW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTM4NTksImV4cCI6MjA5MTMyOTg1OX0.AKJAzeYdbiiUyGxiWS4QeU5m3URel6kwsLnP6eGbXLg';
@@ -618,6 +613,9 @@ window.abrirModal = (id) => {
         const btnPrev = document.getElementById('prevBtn');
         const btnNext = document.getElementById('nextBtn');
 
+        // Forçar posição inicial para evitar sincronia errada de pontos
+        carousel.scrollLeft = 0;
+
         // Lógica das Setas
         btnPrev.onclick = () => {
             carousel.scrollBy({ left: -carousel.offsetWidth, behavior: 'smooth' });
@@ -626,12 +624,19 @@ window.abrirModal = (id) => {
             carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
         };
 
+        // Click nos indicadores para navegar direto à imagem
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                carousel.scrollTo({ left: index * carousel.offsetWidth, behavior: 'smooth' });
+            });
+        });
+
         // Listener para atualizar os pontinhos no scroll
         carousel.onscroll = () => {
             const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
             dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
             
-            // Ocultar setas se necessário (opcional)
+            // Ajusta opacidade das setas de acordo com a posição
             btnPrev.style.opacity = carousel.scrollLeft <= 10 ? '0.3' : '1';
             btnNext.style.opacity = (carousel.scrollLeft + carousel.offsetWidth) >= (carousel.scrollWidth - 10) ? '0.3' : '1';
         };

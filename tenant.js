@@ -66,12 +66,47 @@ window.TENANT = {
     nome: null,
     cor_primaria: null,
     logo_url: null,
+    brand_name: null,
+    brand_subtitle: null,
     modulos: {},
     pronto: false,
+    tema_cor_primaria: null,
+    tema_cor_secundaria: null,
+    tema_cor_botao: null,
+    tema_cor_bg: null,
+    tema_cor_surface: null,
+    tema_cor_borda: null,
+    tema_cor_texto: null,
 };
 
 // window.empresa — alias para compatibilidade com código legado
 window.empresa = null;
+
+function invalidateTenantCache() {
+    _tenantPromise = null;
+    if (!window.TENANT) {
+        window.TENANT = {};
+    }
+    window.TENANT.empresa_id = null;
+    window.TENANT.slug = null;
+    window.TENANT.nome = null;
+    window.TENANT.cor_primaria = null;
+    window.TENANT.logo_url = null;
+    window.TENANT.brand_name = null;
+    window.TENANT.brand_subtitle = null;
+    window.TENANT.modulos = {};
+    window.TENANT.pronto = false;
+    window.TENANT.tema_cor_primaria = null;
+    window.TENANT.tema_cor_secundaria = null;
+    window.TENANT.tema_cor_botao = null;
+    window.TENANT.tema_cor_bg = null;
+    window.TENANT.tema_cor_surface = null;
+    window.TENANT.tema_cor_borda = null;
+    window.TENANT.tema_cor_texto = null;
+    window.empresa = null;
+    console.info('[Tenant] Cache do tenant invalidado.');
+}
+window.invalidateTenantCache = invalidateTenantCache;
 
 // Promise de inicialização (evita múltiplas chamadas ao banco)
 let _tenantPromise = null;
@@ -107,15 +142,15 @@ function _darkenHex(hex, percent) {
 function _aplicarWhiteLabel(data) {
     const set = (v, val) => { if (val) document.documentElement.style.setProperty(v, val); };
 
-    // --- Cores do Tema ---
     const primaria   = data.tema_cor_primaria   || data.cor_primaria || '#E5B25D';
-    const botao      = data.tema_cor_botao       || '#E5B25D'; // Isolado da primária
+    const botao      = data.tema_cor_botao       || '#E5B25D';
     const texto      = data.tema_cor_texto       || '#ffffff';
     const bg         = data.tema_cor_bg          || '#0d0d0d';
     const surface    = data.tema_cor_surface      || '#1a1a1a';
     const borda      = data.tema_cor_borda        || _hexToRgba(primaria, 0.2);
+    const brandName  = data.brand_name || data.nome || 'RiverTech';
+    const brandSubtitle = data.brand_subtitle || '';
 
-    // Variáveis do sistema de temas
     set('--color-primary',        primaria);
     set('--color-primary-hover',  _darkenHex(primaria, 8));
     set('--color-primary-10',     _hexToRgba(primaria, 0.10));
@@ -125,8 +160,7 @@ function _aplicarWhiteLabel(data) {
     set('--color-border',         borda);
     set('--color-text',           texto);
     set('--text-main',            texto);
-    
-    // Variáveis de Botão (Isoladas)
+
     set('--color-button',         botao);
     set('--color-button-bg',      botao);
     set('--btn-bg',               botao);
@@ -134,28 +168,24 @@ function _aplicarWhiteLabel(data) {
     set('--btn-text',             texto);
     set('--color-button-hover',   _darkenHex(botao, 8));
 
-    // Aliases legados (compatibilidade com Admin e Cardápio)
     set('--primary',       primaria);
     set('--primary-hover', _darkenHex(primaria, 8));
     set('--bg-body',       bg);
     set('--bg-card',       surface);
     set('--border-color',  borda);
 
-    // Aliases do Atendente
-    set('--accent-waiter', primaria); // Títulos e destaques
+    set('--accent-waiter', primaria);
     set('--bg-waiter',     bg);
     set('--card-waiter',   surface);
-    // Botões do Atendente agora usam a cor de botão isolada
     set('--btn-waiter-bg',   botao);
     set('--btn-waiter-text', texto);
 
-    // --- Logo ---
     if (data.logo_url) {
         const logos = document.querySelectorAll('.logo-main, #logoEmpresa');
         logos.forEach(el => {
             if (el.tagName === 'IMG') {
                 el.src = data.logo_url;
-                el.alt = data.nome || 'Logo';
+                el.alt = brandName || 'Logo';
             } else {
                 el.style.backgroundImage = `url(${data.logo_url})`;
                 el.style.backgroundSize = 'contain';
@@ -165,14 +195,18 @@ function _aplicarWhiteLabel(data) {
         });
     }
 
-    // --- Nome da empresa ---
-    if (data.nome) {
+    if (brandName) {
         const nomes = document.querySelectorAll('.brand-name, #brandName');
-        nomes.forEach(el => { el.textContent = data.nome; });
-        document.title = data.nome + ' | Sistema';
+        nomes.forEach(el => { el.textContent = brandName; });
+        document.title = `${brandName} | Sistema`;
     }
 
-    console.info('[Tenant] ✅ Tema aplicado:', primaria, '| Empresa:', data.nome);
+    if (brandSubtitle) {
+        const subtitles = document.querySelectorAll('.brand-subtitle');
+        subtitles.forEach(el => { el.textContent = brandSubtitle; });
+    }
+
+    console.info('[Tenant] ✅ Tema aplicado:', primaria, '| Empresa:', brandName);
 }
 
 // ================================================================
@@ -209,8 +243,12 @@ function _mostrarTelaNaoEncontrada(slug) {
 // PASSO 2 + 3: BUSCAR EMPRESA E ARMAZENAR GLOBALMENTE
 // Função principal — chamada apenas 1x, resultado cacheado.
 // ================================================================
-async function initTenantPublico(supabaseClient) {
-    // Cache: se já foi carregado, retorna imediatamente
+async function initTenantPublico(supabaseClient, forceRefresh = false) {
+    if (forceRefresh) {
+        invalidateTenantCache();
+    }
+
+    // Cache: se já foi carregado e não for forçado, retorna imediatamente
     if (window.TENANT.pronto) return window.TENANT.empresa_id;
 
     // Evita múltiplas chamadas simultâneas ao banco
@@ -398,8 +436,9 @@ async function initTenantAdmin(supabaseClient, userId) {
  * Inicializa o tenant diretamente pelo ID da empresa.
  * Útil para o painel do atendente que usa um sistema de login customizado.
  */
-async function initTenantById(supabaseClient, empresaId) {
-    if (window.TENANT.pronto && window.TENANT.empresa_id === empresaId) return empresaId;
+async function initTenantById(supabaseClient, empresaId, forceRefresh = false) {
+    if (!forceRefresh && window.TENANT.pronto && window.TENANT.empresa_id === empresaId) return empresaId;
+    if (forceRefresh) invalidateTenantCache();
 
     const { data, error } = await supabaseClient
         .from('empresas')

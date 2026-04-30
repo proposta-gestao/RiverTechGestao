@@ -373,6 +373,18 @@ async function checkSession() {
         console.error("Erro na verificação de sessão:", err);
     }
 }
+
+async function initAdminPublicTheme() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.get('tenant') && !urlParams.get('loja')) return;
+    try {
+        await initTenantPublico(sb);
+    } catch (err) {
+        console.warn('[Admin] Falha ao inicializar tema público:', err?.message || err);
+    }
+}
+
+initAdminPublicTheme();
 checkSession();
 
 sb.auth.onAuthStateChange(async (event, session) => {
@@ -382,10 +394,16 @@ sb.auth.onAuthStateChange(async (event, session) => {
         document.getElementById('loginSenha').value = '';
         
         // Limpar cache do Tenant e estado local para evitar vazamento entre logins na mesma aba
-        if (window.TENANT) {
+        if (typeof invalidateTenantCache === 'function') {
+            invalidateTenantCache();
+        } else if (window.TENANT) {
             window.TENANT.pronto = false;
             window.TENANT.empresa_id = null;
             window.TENANT.slug = null;
+            window.TENANT.nome = null;
+            window.TENANT.cor_primaria = null;
+            window.TENANT.logo_url = null;
+            window.TENANT.modulos = {};
         }
         produtos = [];
         categorias = [];
@@ -424,7 +442,7 @@ function switchTab(tabId, btn) {
         if (cssEl) cssEl.disabled = false;
         // Carregar JS
         const script = document.createElement('script');
-        script.src = '/admin-agenda.js?v=' + Date.now();
+        script.src = 'admin-agenda.js?v=' + Date.now();
         script.onerror = () => showToast('Erro ao carregar módulo de agenda.', 'error');
         document.body.appendChild(script);
     }
@@ -2082,7 +2100,7 @@ async function carregarConfiguracoes() {
     const [settingsRes, zonasRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at'),
-        sb.from('empresas').select('tema_cor_primaria, tema_cor_botao, tema_cor_texto').eq('id', empresaId).single()
+        sb.from('empresas').select('nome, tema_cor_primaria, tema_cor_botao, tema_cor_texto').eq('id', empresaId).single()
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
@@ -2115,6 +2133,13 @@ async function carregarConfiguracoes() {
     if (settingsRes.data) {
         const d = settingsRes.data;
         currentSettingsId = d.id;
+
+        if (window.TENANT) {
+            window.TENANT.brand_name = d.brand_name || window.TENANT.brand_name;
+            window.TENANT.brand_subtitle = d.brand_subtitle || window.TENANT.brand_subtitle;
+            window.TENANT.logo_url = d.logo_url || window.TENANT.logo_url;
+        }
+
         // Dados da Empresa
         document.getElementById('confNomeLoja').value        = d.store_name || '';
         document.getElementById('confCep').value             = d.address_zip || '';
@@ -2265,14 +2290,26 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
 
         showToast('Cores atualizadas com sucesso! ✅', 'success');
         
-        // Aplica as cores no painel admin atual sem precisar recarregar
+        // Atualiza estado global do tenant e aplica o tema imediatamente
+        if (window.TENANT) {
+            window.TENANT.tema_cor_primaria = tema_cor_primaria;
+            window.TENANT.tema_cor_botao = tema_cor_botao;
+            window.TENANT.tema_cor_texto = tema_cor_texto;
+            window.TENANT.tema_cor_bg = tema_cor_bg;
+            window.TENANT.cor_primaria = tema_cor_primaria;
+        }
+
         if (typeof _aplicarWhiteLabel === 'function') {
             _aplicarWhiteLabel({
                 tema_cor_primaria,
                 tema_cor_botao,
                 tema_cor_texto,
+                tema_cor_bg,
+                tema_cor_surface: window.TENANT?.tema_cor_surface || '#1a1a1a',
                 nome: window.TENANT.nome,
-                logo_url: window.TENANT.logo_url
+                logo_url: window.TENANT.logo_url,
+                brand_name: window.TENANT.brand_name,
+                brand_subtitle: window.TENANT.brand_subtitle
             });
         }
 
@@ -2404,6 +2441,26 @@ document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
         showToast('Erro ao salvar visual: ' + error.message, 'error');
     } else {
         showToast('Personalização visual salva!', 'success');
+
+        if (window.TENANT) {
+            window.TENANT.brand_name = payload.brand_name;
+            window.TENANT.brand_subtitle = payload.brand_subtitle;
+            if (payload.logo_url) window.TENANT.logo_url = payload.logo_url;
+        }
+
+        if (typeof _aplicarWhiteLabel === 'function') {
+            _aplicarWhiteLabel({
+                nome: payload.brand_name || window.TENANT.nome,
+                brand_name: payload.brand_name,
+                brand_subtitle: payload.brand_subtitle,
+                logo_url: payload.logo_url || window.TENANT.logo_url,
+                tema_cor_primaria: window.TENANT?.tema_cor_primaria,
+                tema_cor_botao: window.TENANT?.tema_cor_botao,
+                tema_cor_texto: window.TENANT?.tema_cor_texto,
+                tema_cor_bg: window.TENANT?.tema_cor_bg,
+                tema_cor_surface: window.TENANT?.tema_cor_surface,
+            });
+        }
     }
     btn.disabled = false;
     btn.textContent = 'Salvar Visual';
