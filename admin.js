@@ -6,12 +6,20 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 window.sb = sb;
 
+// --- Configurações Cloudinary ---
+const CLOUDINARY_CLOUD_NAME = 'dzt571tv8';
+const CLOUDINARY_UPLOAD_PRESET = 'rivertechimagens';
+
 // --- State ---
 let produtos = [];
 let categorias = [];
 let cupons = [];
 let pedidos = [];
 let imagensGaleria = [];
+let currentProductImages = []; 
+let zonasEntrega = [];         // --- MOVIDO PARA O TOPO ---
+let cancellationReasons = [];  // --- MOVIDO PARA O TOPO ---
+let motivosEstoque = [];       // --- MOVIDO PARA O TOPO ---
 let chartMetricas = null;
 
 // --- Filtros de pedidos ---
@@ -1466,21 +1474,33 @@ async function carregarGaleria(preSelecionada = '') {
 document.getElementById('filtroGaleria').oninput = () => renderizarGradeGaleria('imageGalleryGrid', false);
 document.getElementById('filtroGaleriaCompleta').oninput = () => renderizarGradeGaleria('imageGalleryGridCompleta', true);
 
-window.abrirGaleriaCompleta = () => {
+window.abrirModalGaleriaCompleta = abrirModalGaleriaCompleta;
+function abrirModalGaleriaCompleta() {
     document.getElementById('filtroGaleriaCompleta').value = '';
     renderizarGradeGaleria('imageGalleryGridCompleta', true);
     abrirModal('modalGaleriaCompleta');
-};
+}
 
 window.selecionarImagemGaleria = (url, element, isCompletoStr) => {
     const isCompleto = isCompletoStr === 'true';
-    document.getElementById('prodImagemSelecionada').value = url;
+    
+    if (currentProductImages.length >= 5) {
+        showToast('Limite de 5 imagens atingido.', 'warning');
+        return;
+    }
+
+    if (currentProductImages.includes(url)) {
+        showToast('Esta imagem já foi adicionada.', 'info');
+        return;
+    }
+
+    currentProductImages.push(url);
+    renderizarMiniaturasProduto();
+    showToast('Imagem adicionada da galeria!', 'success');
 
     if (isCompleto) {
         fecharModal('modalGaleriaCompleta');
-        renderizarGradeGaleria('imageGalleryGrid', false);
     } else {
-        document.querySelectorAll('#imageGalleryGrid .gallery-item').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
     }
 };
@@ -1492,11 +1512,11 @@ document.getElementById('btnUploadNovaImagem').onchange = async (e) => {
     e.target.value = '';
 };
 
-// --- CONFIGURAÇÃO CLOUDINARY ---
-const CLOUDINARY_CLOUD_NAME = 'dzt571tv8';
-const CLOUDINARY_UPLOAD_PRESET = 'rivertechimagens';
+// --- CONFIGURAÇÃO CLOUDINARY --- (Movido para o topo)
 
-window.handleCloudinaryUpload = async function(file, subfolder = 'produtos') {
+
+window.handleCloudinaryUpload = handleCloudinaryUpload;
+async function handleCloudinaryUpload(file, subfolder = 'produtos') {
     try {
         const formData = new FormData();
         formData.append('file', file);
@@ -1521,40 +1541,31 @@ window.handleCloudinaryUpload = async function(file, subfolder = 'produtos') {
         window.showToast?.('Erro ao subir imagem: ' + error.message, 'error');
         return null;
     }
-};
+}
 
 async function handleImageUpload(file) {
+    if (currentProductImages.length >= 5) {
+        showToast('Limite de 5 imagens atingido.', 'warning');
+        return null;
+    }
+
     showToast('Enviando imagem para nuvem...', 'success');
     const imageUrl = await window.handleCloudinaryUpload(file, 'produtos');
     
     if (imageUrl) {
-        // --- NOVO: Salvar na tabela de galeria para persistência ---
+        // --- Salvar na tabela de galeria para persistência ---
         const tenantId = getTenantId();
-        const { error: galError } = await sb.from('galeria_imagens').insert({
+        await sb.from('galeria_imagens').insert({
             empresa_id: tenantId,
             url: imageUrl,
             tipo: 'produto'
         });
 
-        if (galError) {
-            console.error('[GALLERY ERROR] Erro ao salvar na tabela galeria_imagens:', galError);
-            showToast('Imagem enviada, mas houve erro ao salvar na galeria: ' + galError.message, 'warning');
-        } else {
-            console.log('[GALLERY OK] Imagem salva na galeria com sucesso.');
-            showToast('Imagem enviada e salva na galeria!', 'success');
-        }
-
-        // Atualiza o campo de imagem selecionada no modal de produto
-        document.getElementById('prodImagemSelecionada').value = imageUrl;
+        // Adicionar ao array local
+        currentProductImages.push(imageUrl);
+        renderizarMiniaturasProduto();
         
-        // Se houver um preview de imagem, atualiza também
-        const preview = document.getElementById('imagePreview');
-        if (preview) {
-            preview.src = imageUrl;
-            preview.style.display = 'block';
-        }
-
-        // Recarregar galeria para mostrar a nova imagem
+        showToast('Imagem adicionada!', 'success');
         await carregarGaleria(imageUrl);
         
         return imageUrl;
@@ -1562,7 +1573,33 @@ async function handleImageUpload(file) {
     return null;
 }
 
-document.getElementById('btnNovoProduto').onclick = () => {
+function renderizarMiniaturasProduto() {
+    const container = document.getElementById('containerImagensProduto');
+    if (!container) return;
+    
+    container.innerHTML = currentProductImages.map((url, index) => `
+        <div class="product-image-thumb">
+            <img src="${url}" alt="Imagem ${index + 1}" crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade">
+            <button class="btn-remove-img" onclick="removerImagemProduto(${index})">×</button>
+        </div>
+    `).join('');
+    
+    // Atualiza o input legado (pega a primeira imagem para compatibilidade se necessário)
+    document.getElementById('prodImagemSelecionada').value = currentProductImages[0] || '';
+    
+    // Desativar botão se chegar a 5
+    const btn = document.getElementById('btnAdicionarImagem');
+    if (btn) btn.disabled = (currentProductImages.length >= 5);
+}
+
+window.removerImagemProduto = removerImagemProduto;
+function removerImagemProduto(index) {
+    currentProductImages.splice(index, 1);
+    renderizarMiniaturasProduto();
+}
+
+window.abrirModalNovoProduto = abrirModalNovoProduto;
+function abrirModalNovoProduto() {
     if (!validarAcessoModulo('produtos_gerenciar')) return;
     document.getElementById('modalProdutoTitle').textContent = 'Novo Produto';
     document.getElementById('produtoId').value = '';
@@ -1581,9 +1618,11 @@ document.getElementById('btnNovoProduto').onclick = () => {
     document.getElementById('prodMotivoSaidaId').value = '';
     document.getElementById('prodObsSaida').value = '';
 
+    currentProductImages = [];
+    renderizarMiniaturasProduto();
     carregarGaleria('');
     abrirModal('modalProduto');
-};
+}
 
 // Listener para mudança de tipo de movimentação
 document.getElementById('prodTipoMovimentacao').onchange = (e) => {
@@ -1608,7 +1647,8 @@ function popularSelectMotivosEstoque() {
         ativos.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
 }
 
-window.editarProduto = (id) => {
+window.editarProduto = editarProduto;
+function editarProduto(id) {
     const p = produtos.find(x => x.id === id);
     if (!p) return;
     document.getElementById('modalProdutoTitle').textContent = 'Editar Produto';
@@ -1635,12 +1675,24 @@ window.editarProduto = (id) => {
     document.getElementById('prodMotivoSaidaId').value = '';
     document.getElementById('prodObsSaida').value = '';
 
-    carregarGaleria(p.image_url || '');
+    // --- Múltiplas Imagens ---
+    if (Array.isArray(p.image_url)) {
+        currentProductImages = [...p.image_url];
+    } else {
+        currentProductImages = p.image_url ? [p.image_url] : [];
+    }
+    renderizarMiniaturasProduto();
+
+    carregarGaleria(currentProductImages[0] || '');
     abrirModal('modalProduto');
 };
 
-document.getElementById('btnSalvarProduto').onclick = async () => {
-    if (!validarAcessoModulo('produtos_gerenciar')) return;
+window.executarSalvarProduto = executarSalvarProduto;
+async function executarSalvarProduto() {
+    if (!validarAcessoModulo('produtos_gerenciar')) {
+        console.warn('[SAVE] Acesso negado ao módulo de produtos.');
+        return;
+    }
     const btn = document.getElementById('btnSalvarProduto');
     const id = document.getElementById('produtoId').value;
     const currentStock = parseInt(document.getElementById('prodEstoque').value) || 0;
@@ -1652,6 +1704,8 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
     const basePrice = parseFloat(document.getElementById('prodPreco').value) || 0;
     const promoVal = parseFloat(document.getElementById('prodPrecoPromo').value) || 0;
     
+    console.log('[SAVE] Iniciando salvamento...', { id, basePrice, promoVal, imgs: currentProductImages.length });
+
     if (promoVal > 0) {
         if (window.currentPromoType === 'pct' && promoVal > 100) {
             showToast('O desconto não pode ser maior que 100%.', 'error');
@@ -1670,7 +1724,7 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
         min_stock_alert: parseInt(document.getElementById('prodEstoqueMin').value) || 0,
         category_id:     document.getElementById('prodCategoria').value || null,
         active:          document.getElementById('prodAtivo').value === 'true',
-        image_url:       document.getElementById('prodImagemSelecionada').value,
+        image_url:       currentProductImages,
         promo_price:     (() => {
             const val = parseFloat(document.getElementById('prodPrecoPromo').value);
             if (!val || val <= 0) return null;
@@ -1688,23 +1742,6 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
         return;
     }
 
-    if (stockInput < 0) {
-        showToast('A quantidade não pode ser negativa.', 'error');
-        return;
-    }
-
-    // Validações específicas de Saída
-    if (id && tipoMov === 'saida') {
-        if (stockInput > currentStock) {
-            showToast('Estoque insuficiente para essa saída.', 'error');
-            return;
-        }
-        if (!motivoId) {
-            showToast('O motivo da saída é obrigatório.', 'error');
-            return;
-        }
-    }
-
     btn.disabled = true;
     btn.textContent = 'Salvando...';
 
@@ -1719,43 +1756,25 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
     let dbError;
     let savedProductId = id;
 
-    if (id) {
-        ({ error: dbError } = await sb.from('products').update(payload).eq('id', id));
-    } else {
-        // ← Multi-Tenant: injeta empresa_id no INSERT
-        const tenantId = getTenantId();
-        if (!tenantId) {
-            showToast('Erro: ID da empresa não encontrado. Tente recarregar a página.', 'error');
-            btn.disabled = false;
-            btn.textContent = id ? 'Salvar Alterações' : 'Salvar Produto';
-            return;
-        }
-        
-        payload.empresa_id = tenantId;
-        console.log('[DEBUG] Tentando salvar produto para empresa:', tenantId, payload);
-        
-        const { data, error } = await sb.from('products').insert(payload).select().single();
-        dbError = error;
-        if (data) savedProductId = data.id;
-    }
-
-    if (dbError) {
-        console.error('[DATABASE ERROR]', dbError);
-        // Tradução amigável de erro de RLS
-        if (dbError.code === '42501' || dbError.message?.includes('row-level security')) {
-            showToast('Erro de Permissão: Você não tem autorização para criar produtos nesta empresa. Verifique seu nível de acesso.', 'error');
+    try {
+        if (id) {
+            ({ error: dbError } = await sb.from('products').update(payload).eq('id', id));
         } else {
-            showToast('Erro ao salvar produto: ' + dbError.message, 'error');
+            const tenantId = getTenantId();
+            if (!tenantId) throw new Error('ID da empresa não encontrado.');
+            payload.empresa_id = tenantId;
+            const { data, error } = await sb.from('products').insert(payload).select().single();
+            dbError = error;
+            if (data) savedProductId = data.id;
         }
-        btn.disabled = false;
-        btn.textContent = id ? 'Salvar Alterações' : 'Salvar Produto';
-        return;
-    } else {
+
+        if (dbError) throw dbError;
+
         // Registrar movimentação
         if (stockInput > 0 || !id) {
             await sb.from('stock_movements').insert({
                 product_id: savedProductId,
-                empresa_id: getTenantId(), // ← Multi-Tenant
+                empresa_id: getTenantId(),
                 type: (!id) ? 'entrada' : tipoMov,
                 quantity: stockInput,
                 reason: (!id) ? 'Estoque inicial' : null,
@@ -1768,10 +1787,15 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
         fecharModal('modalProduto');
         carregarProdutos();
         if (typeof renderStats === 'function') renderStats();
+
+    } catch (err) {
+        console.error('[SAVE ERROR]', err);
+        showToast('Erro ao salvar: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = id ? 'Salvar Alterações' : 'Salvar Produto';
     }
-    btn.disabled = false;
-    btn.textContent = 'Salvar';
-};
+}
 
 window.arquivarProduto = async (id) => {
     if (!await customConfirm('Arquivar Produto', 'Deseja arquivar este produto? Ele não aparecerá mais no cardápio nem no sistema.')) return;
@@ -2046,10 +2070,7 @@ document.getElementById('btnConfirmarCancelamento').onclick = async () => {
 
 // =================== CONFIGURAÇÕES ===================
 
-let zonasEntrega = [];
-let cancellationReasons = [];
-
-// --- Toggle de visibilidade do campo de URL ---
+// --- Funções de Configuração ---
 window.toggleUrlInput = (containerId) => {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -2165,8 +2186,7 @@ function _setThemeField(pickerId, hexId, value) {
 }
 
 // Atualiza o preview de tema no painel da empresa
-// Atualiza o preview de tema no painel da empresa
-window.previewTemaEmpresa = () => {
+function previewTemaEmpresa() {
     const primaria = document.getElementById('confTemaPrimaria').value;
     const botao    = document.getElementById('confTemaBotao').value;
     const texto    = document.getElementById('confTemaTexto').value;
@@ -2211,7 +2231,8 @@ window.previewTemaEmpresa = () => {
         previewBadge.style.backgroundColor = primaria;
         previewBadge.style.color = '#000'; // Geralmente preto em badges de destaque
     }
-};
+}
+window.previewTemaEmpresa = previewTemaEmpresa;
 
 // Salvar Tema (Empresa)
 document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async () => {

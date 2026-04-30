@@ -424,7 +424,7 @@
                 <div class="subtab-content active" id="subtab-lista-produtos">
                     <div class="admin-toolbar">
                         <h2>Produtos <span style="font-size: 0.8rem;">(Arraste para ordenar no cardápio)</span></h2>
-                        <button class="btn-primary" id="btnNovoProduto">+ Novo Produto</button>
+                        <button class="btn-primary" id="btnNovoProduto" onclick="abrirModalNovoProduto()">+ Novo Produto</button>
                     </div>
                     <div class="admin-table-wrapper">
                         <table class="admin-table">
@@ -989,7 +989,7 @@
                     <h3 id="modalProdutoTitle">Novo Produto</h3>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-save" id="btnSalvarProduto">Salvar</button>
+                    <button class="btn-save" id="btnSalvarProduto" onclick="executarSalvarProduto()">Salvar</button>
                 </div>
             </div>
             
@@ -1089,22 +1089,22 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Imagem do Produto</label>
-                <div class="image-gallery-container">
-                    <div class="gallery-toolbar">
-                        <input type="text" id="filtroGaleria" class="gallery-search" placeholder="🔍 Buscar imagem..."
-                            style="flex:1;">
-                        <label for="btnUploadNovaImagem" class="btn-sm btn-upload-gallery"
-                            style="margin-left: 10px; white-space: nowrap;">
-                            + Upload
-                        </label>
-                        <input type="file" id="btnUploadNovaImagem" accept="image/*" style="display:none;">
-                    </div>
-                    <div class="image-gallery-grid" id="imageGalleryGrid">
-                        <!-- Imagens populadas via JS -->
-                        <div style="padding:1rem;color:var(--text-muted);font-size:0.9rem;">Carregando imagens...</div>
-                    </div>
-                    <input type="hidden" id="prodImagemSelecionada">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <label>Imagens do Produto (Máx 5)</label>
+                    <button class="btn-primary btn-sm" type="button" onclick="document.getElementById('uploadImagem').click()" id="btnAdicionarImagem">
+                        + Adicionar Foto
+                    </button>
+                </div>
+                
+                <div id="containerImagensProduto" class="product-images-grid">
+                    <!-- Miniaturas aparecerão aqui via JS -->
+                </div>
+                
+                <input type="hidden" id="prodImagemSelecionada">
+                <input type="file" id="uploadImagem" accept="image/*" style="display:none;" onchange="handleImageUpload(this.files[0])">
+
+                <div style="margin-top: 15px;">
+                    <button class="btn-sm btn-link" type="button" onclick="abrirModalGaleriaCompleta()">Ver Galeria Completa</button>
                 </div>
             </div>
         </div>

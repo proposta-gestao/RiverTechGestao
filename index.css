@@ -1867,3 +1867,119 @@
             from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
+/* =============================================
+   CARROSSEL PREMIUM: DESIGN LIMPO E CENTRALIZADO
+   ============================================= */
+.product-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px; /* Espa�o para os pontos n�o afetarem o centro */
+}
+
+.product-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    border-radius: 12px;
+    background: #000;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.product-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-item {
+    flex: 0 0 100%;
+    width: 100%;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Setas de Navega��o - AGORA CENTRALIZADAS NA IMAGEM */
+.carousel-nav {
+    position: absolute;
+    top: 190px; /* Metade exata da altura da imagem (380/2) */
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    padding: 0;
+}
+
+.carousel-nav:hover {
+    background: var(--primary, #E5B25D);
+    color: var(--color-button-text, #000);
+    border-color: var(--primary, #E5B25D);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-nav.prev { left: 15px; }
+.carousel-nav.next { right: 15px; }
+
+.carousel-nav svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Pontinhos de Navega��o */
+.carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: #fff;
+    transform: scale(1.3);
+}
+
+@media (max-width: 600px) {
+    .carousel-item img {
+        height: 320px;
+    }
+    .carousel-nav {
+        top: 160px; /* Metade da altura mobile (320/2) */
+        width: 38px;
+        height: 38px;
+    }
+}
+

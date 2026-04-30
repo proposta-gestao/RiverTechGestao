@@ -125,17 +125,22 @@ async function carregarProdutos() {
         .or('archived.is.null,archived.eq.false')
         .order('sort_order', { ascending: true });
     if (error) throw error;
-    PRODUTOS = (data || []).map(p => ({
-        id: p.id,
-        nome: p.name,
-        desc: p.description || '',
-        preco: parseFloat(p.price),
-        promo_price: parseFloat(p.promo_price) || 0,
-        img: p.image_url || 'logo_automovel.png',
-        stock: p.stock,
-        cat: p.categories?.name || '',
-        catSlug: p.categories?.slug || ''
-    }));
+    PRODUTOS = (data || []).map(p => {
+        // Garantir que temos um array de imagens
+        const imgs = Array.isArray(p.image_url) ? p.image_url : (p.image_url ? [p.image_url] : []);
+        return {
+            id: p.id,
+            nome: p.name,
+            desc: p.description || '',
+            preco: parseFloat(p.price),
+            promo_price: parseFloat(p.promo_price) || 0,
+            img: imgs[0] || '', // Capa
+            imgs: imgs,         // Todas as fotos
+            stock: p.stock,
+            cat: p.categories?.name || '',
+            catSlug: p.categories?.slug || ''
+        };
+    });
     renderMenu();
 }
 
@@ -284,7 +289,7 @@ function renderMenu() {
         return `
         <article class="product-card${esgotado ? ' esgotado' : ''}" ${esgotado ? '' : `onclick="abrirModal('${p.id}')"`}>
             <div class="product-img-wrap">
-                <img src="${p.img}" alt="${p.nome}" loading="lazy">
+                <img src="${p.img}" alt="${p.nome}" loading="lazy" crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade" onerror="this.src='https://res.cloudinary.com/dzt571tv8/image/upload/v1777512400/placeholder_broken.png'; this.onerror=null;">
                 ${esgotado ? '<span class="badge-esgotado">Esgotado</span>' : ''}
                 ${!esgotado && p.promo_price > 0 ? `<span class="badge-promo">${Math.round((1 - (p.promo_price / p.preco)) * 100)}% OFF</span>` : ''}
             </div>
@@ -583,7 +588,65 @@ window.abrirModal = (id) => {
     state.produtoSelecionado = produto;
     state.quantidadeAtual = 1;
 
-    dom.pImg.src = produto.img;
+    // Renderizar Imagem ou Carrossel
+    const carouselContainer = document.getElementById('productCarouselContainer');
+    if (produto.imgs && produto.imgs.length > 1) {
+        carouselContainer.innerHTML = `
+            <div class="product-carousel-wrapper">
+                <button class="carousel-nav prev" id="prevBtn" aria-label="Anterior">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="product-carousel" id="mainCarousel">
+                    ${produto.imgs.map(url => `
+                        <div class="carousel-item">
+                            <img src="${url}" alt="${produto.nome}" crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade" onerror="this.src='https://res.cloudinary.com/dzt571tv8/image/upload/v1777512400/placeholder_broken.png'; this.onerror=null;">
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="carousel-nav next" id="nextBtn" aria-label="Próximo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+                <div class="carousel-dots">
+                    ${produto.imgs.map((_, i) => `<span class="dot ${i === 0 ? 'active' : ''}"></span>`).join('')}
+                </div>
+            </div>
+        `;
+        
+        // Seletores
+        const carousel = document.getElementById('mainCarousel');
+        const dots = carouselContainer.querySelectorAll('.dot');
+        const btnPrev = document.getElementById('prevBtn');
+        const btnNext = document.getElementById('nextBtn');
+
+        // Lógica das Setas
+        btnPrev.onclick = () => {
+            carousel.scrollBy({ left: -carousel.offsetWidth, behavior: 'smooth' });
+        };
+        btnNext.onclick = () => {
+            carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
+        };
+
+        // Listener para atualizar os pontinhos no scroll
+        carousel.onscroll = () => {
+            const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+            
+            // Ocultar setas se necessário (opcional)
+            btnPrev.style.opacity = carousel.scrollLeft <= 10 ? '0.3' : '1';
+            btnNext.style.opacity = (carousel.scrollLeft + carousel.offsetWidth) >= (carousel.scrollWidth - 10) ? '0.3' : '1';
+        };
+
+        // Inicializa opacidade das setas
+        btnPrev.style.opacity = '0.3';
+    } else {
+        const singleImg = produto.imgs[0] || '';
+        carouselContainer.innerHTML = `
+            <div class="carousel-item">
+                <img src="${singleImg}" id="pimg" alt="${produto.nome}" crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade" onerror="this.src='https://res.cloudinary.com/dzt571tv8/image/upload/v1777512400/placeholder_broken.png'; this.onerror=null;">
+            </div>
+        `;
+    }
+
     dom.pNome.innerText = produto.nome;
     dom.pDesc.innerText = produto.desc;
     
