@@ -616,12 +616,18 @@ window.abrirModal = (id) => {
         // Forçar posição inicial para evitar sincronia errada de pontos
         carousel.scrollLeft = 0;
 
-        // Lógica das Setas
+        const totalSlides = dots.length;
+
+        // Lógica das Setas (carrossel infinito)
         btnPrev.onclick = () => {
-            carousel.scrollBy({ left: -carousel.offsetWidth, behavior: 'smooth' });
+            const currentIndex = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+            const prevIndex = currentIndex === 0 ? totalSlides - 1 : currentIndex - 1;
+            carousel.scrollTo({ left: prevIndex * carousel.offsetWidth, behavior: 'smooth' });
         };
         btnNext.onclick = () => {
-            carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
+            const currentIndex = Math.round(carousel.scrollLeft / carousel.offsetWidth);
+            const nextIndex = currentIndex === totalSlides - 1 ? 0 : currentIndex + 1;
+            carousel.scrollTo({ left: nextIndex * carousel.offsetWidth, behavior: 'smooth' });
         };
 
         // Click nos indicadores para navegar direto à imagem
@@ -635,14 +641,15 @@ window.abrirModal = (id) => {
         carousel.onscroll = () => {
             const index = Math.round(carousel.scrollLeft / carousel.offsetWidth);
             dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-            
-            // Ajusta opacidade das setas de acordo com a posição
-            btnPrev.style.opacity = carousel.scrollLeft <= 10 ? '0.3' : '1';
-            btnNext.style.opacity = (carousel.scrollLeft + carousel.offsetWidth) >= (carousel.scrollWidth - 10) ? '0.3' : '1';
+
+            // Setas sempre ativas no carrossel infinito
+            btnPrev.style.opacity = '1';
+            btnNext.style.opacity = '1';
         };
 
         // Inicializa opacidade das setas
-        btnPrev.style.opacity = '0.3';
+        btnPrev.style.opacity = '1';
+        btnNext.style.opacity = '1';
     } else {
         const singleImg = produto.imgs[0] || '';
         carouselContainer.innerHTML = `
