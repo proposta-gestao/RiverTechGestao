@@ -330,30 +330,39 @@ document.getElementById('btnLogout').onclick = async () => {
 async function checkSession() {
     try {
         const { data: { session } } = await sb.auth.getSession();
-        if (session) {
-            const { data: adminData } = await sb.from('admin_users').select('id').eq('user_id', session.user.id).single();
+        if (!session) return;
+
+        const userId = session.user.id;
+        let isAuthorized = false;
+
+        // 1. Verificar se é Super Admin
+        const { data: isSuper } = await sb.rpc('is_super_admin', { _user_id: userId });
+        
+        if (isSuper) {
+            console.info('[Auth] Super Admin detectado na sessão.');
+            isAuthorized = true;
+        } else {
+            // 2. Verificar se é Admin na tabela legada
+            const { data: adminData } = await sb.from('admin_users').select('id').eq('user_id', userId).single();
             if (adminData) {
-                // --- Multi-Tenant: restaurar empresa_id da sessão ---
-                const empresaId = await initTenantAdmin(sb, session.user.id);
-                if (empresaId) {
-                    showAdmin();
-                }
+                isAuthorized = true;
             } else {
-                // Fallback para usuários novos do SaaS que ainda não estão na tabela legada
-                const { data: saasUser } = await sb.from('usuarios').select('id').eq('id', session.user.id).eq('role', 'admin').single();
-                if (saasUser) {
-                    const empresaId = await initTenantAdmin(sb, session.user.id);
-                    if (empresaId) showAdmin();
-                }
+                // 3. Verificar se é Admin na tabela SaaS
+                const { data: saasUser } = await sb.from('usuarios').select('id').eq('id', userId).eq('role', 'admin').single();
+                if (saasUser) isAuthorized = true;
+            }
+        }
+
+        if (isAuthorized) {
+            const empresaId = await initTenantAdmin(sb, userId);
+            if (empresaId) {
+                showAdmin();
+            } else {
+                console.warn('[Auth] Usuário autorizado mas sem empresa vinculada.');
             }
         }
     } catch (err) {
         console.error("Erro na verificação de sessão:", err);
-        const errEl = document.getElementById('loginError');
-        if (errEl) {
-            errEl.textContent = err.message;
-            errEl.style.display = 'block';
-        }
     }
 }
 checkSession();
@@ -1396,13 +1405,12 @@ async function renderizarGradeGaleria(gridId, isCompleto = false) {
     let filesToShow = files.slice(0, limit);
 
     filesToShow.forEach(file => {
-        const path = `${getTenantId()}/${file.name}`;
-        const { data: urlData } = sb.storage.from('product-images').getPublicUrl(path);
-        const isSelected = (preSelecionada === urlData.publicUrl) ? 'selected' : '';
-        
+        const url = file.url; // Agora usamos a URL direta vinda do banco (ou do mapeamento)
+        const isSelected = (preSelecionada === url) ? 'selected' : '';
+
         html += `
-            <div class="gallery-item ${isSelected}" onclick="selecionarImagemGaleria('${urlData.publicUrl}', this, '${isCompleto}')" title="${file.name}">
-                <img src="${urlData.publicUrl}" alt="${file.name}" loading="lazy">
+            <div class="gallery-item ${isSelected}" onclick="selecionarImagemGaleria('${url}', this, '${isCompleto}')" title="${file.name}">
+                <img src="${url}" alt="${file.name}" loading="lazy">
             </div>
         `;
     });
@@ -1422,14 +1430,33 @@ async function carregarGaleria(preSelecionada = '') {
     const inputSel = document.getElementById('prodImagemSelecionada');
     inputSel.value = preSelecionada;
 
-    const empresaId = getTenantId();
-    const { data, error } = await sb.storage.from('product-images').list(empresaId);
-    if (error) {
-        grid.innerHTML = '<div style="color:var(--danger);font-size:0.8rem;">Erro ao carregar imagens.</div>';
+    const grid = document.getElementById('imageGalleryGrid');
+    if (!grid) return;
+
+    // --- NOVO: Buscar da tabela galeria_imagens ---
+    const { data, error } = await sb
+        .from('galeria_imagens')
+        .select('*')
+        .eq('tipo', 'produto')
+        .order('criado_em', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+        grid.innerHTML = `
+            <div style="padding:2.5rem 1.5rem; color:var(--text-muted); text-align:center; border: 2px dashed rgba(229,178,93,0.2); border-radius: 16px; background: rgba(229,178,93,0.02); grid-column: 1 / -1;">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;">📸</div>
+                <h4 style="color:var(--text-main); margin-bottom: 0.5rem;">Sua galeria está vazia</h4>
+                <p style="font-size:0.85rem; line-height:1.5;">Clique no botão <strong>"Subir Foto"</strong> acima para inserir sua primeira imagem.</p>
+            </div>
+        `;
         return;
     }
 
-    imagensGaleria = data.filter(f => f.name !== '.emptyFolderPlaceholder' && f.name);
+    // Mapear para o formato esperado pela renderização da grade
+    imagensGaleria = data.map(item => ({
+        url: item.url,
+        name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString()
+    }));
+    
     renderizarGradeGaleria('imageGalleryGrid', false);
     if (document.getElementById('modalGaleriaCompleta').classList.contains('active')) {
         renderizarGradeGaleria('imageGalleryGridCompleta', true);
@@ -1465,47 +1492,74 @@ document.getElementById('btnUploadNovaImagem').onchange = async (e) => {
     e.target.value = '';
 };
 
-async function handleImageUpload(file, forceUpsert = false, customName = null) {
-    showToast('Enviando imagem...', 'success');
-    const originalName = file.name;
-    const targetName = customName || originalName;
+// --- CONFIGURAÇÃO CLOUDINARY ---
+const CLOUDINARY_CLOUD_NAME = 'dzt571tv8';
+const CLOUDINARY_UPLOAD_PRESET = 'rivertechimagens';
 
-    const empresaId = getTenantId();
-    const targetPath = `${empresaId}/${targetName}`;
+window.handleCloudinaryUpload = async function(file, subfolder = 'produtos') {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', `loja_${getTenantId()}/${subfolder}`);
 
-    const { error: uploadError } = await sb.storage.from('product-images').upload(targetPath, file, { upsert: forceUpsert });
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            method: 'POST',
+            body: formData
+        });
 
-    if (uploadError) {
-        // ... (resto do tratamento de erro de duplicação permanece igual)
-        if (uploadError.statusCode === '409' || uploadError.message?.includes('Duplicate')) {
-            const wantToReplace = await customConfirm('Substituir Imagem?', `Já existe uma imagem chamada "${targetName}".\nDeseja SUBSTITUIR a imagem existente?`);
-            if (wantToReplace) {
-                return await handleImageUpload(file, true, targetName);
-            } else {
-                const wantToRename = await customConfirm('Salvar Cópia?', "Deseja então SALVAR COMO UMA CÓPIA?");
-                if (wantToRename) {
-                    const lastDot = originalName.lastIndexOf('.');
-                    let namePart = originalName;
-                    let extPart = '';
-                    if (lastDot > 0) {
-                        namePart = originalName.substring(0, lastDot);
-                        extPart = originalName.substring(lastDot);
-                    }
-                    const newName = `${namePart}_copia_${Math.floor(Math.random() * 1000)}${extPart}`;
-                    return await handleImageUpload(file, false, newName);
-                } else {
-                    return;
-                }
-            }
-        } else {
-            showToast('Erro ao fazer upload da imagem', 'error');
-            return;
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error?.message || 'Erro no upload');
         }
-    }
 
-    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(targetPath);
-    await carregarGaleria(urlData.publicUrl);
-    showToast('Imagem salva!', 'success');
+        const data = await response.json();
+        return data.secure_url;
+
+    } catch (error) {
+        console.error('Erro Cloudinary:', error);
+        window.showToast?.('Erro ao subir imagem: ' + error.message, 'error');
+        return null;
+    }
+};
+
+async function handleImageUpload(file) {
+    showToast('Enviando imagem para nuvem...', 'success');
+    const imageUrl = await window.handleCloudinaryUpload(file, 'produtos');
+    
+    if (imageUrl) {
+        // --- NOVO: Salvar na tabela de galeria para persistência ---
+        const tenantId = getTenantId();
+        const { error: galError } = await sb.from('galeria_imagens').insert({
+            empresa_id: tenantId,
+            url: imageUrl,
+            tipo: 'produto'
+        });
+
+        if (galError) {
+            console.error('[GALLERY ERROR] Erro ao salvar na tabela galeria_imagens:', galError);
+            showToast('Imagem enviada, mas houve erro ao salvar na galeria: ' + galError.message, 'warning');
+        } else {
+            console.log('[GALLERY OK] Imagem salva na galeria com sucesso.');
+            showToast('Imagem enviada e salva na galeria!', 'success');
+        }
+
+        // Atualiza o campo de imagem selecionada no modal de produto
+        document.getElementById('prodImagemSelecionada').value = imageUrl;
+        
+        // Se houver um preview de imagem, atualiza também
+        const preview = document.getElementById('imagePreview');
+        if (preview) {
+            preview.src = imageUrl;
+            preview.style.display = 'block';
+        }
+
+        // Recarregar galeria para mostrar a nova imagem
+        await carregarGaleria(imageUrl);
+        
+        return imageUrl;
+    }
+    return null;
 }
 
 document.getElementById('btnNovoProduto').onclick = () => {
@@ -1669,14 +1723,33 @@ document.getElementById('btnSalvarProduto').onclick = async () => {
         ({ error: dbError } = await sb.from('products').update(payload).eq('id', id));
     } else {
         // ← Multi-Tenant: injeta empresa_id no INSERT
-        payload.empresa_id = getTenantId();
+        const tenantId = getTenantId();
+        if (!tenantId) {
+            showToast('Erro: ID da empresa não encontrado. Tente recarregar a página.', 'error');
+            btn.disabled = false;
+            btn.textContent = id ? 'Salvar Alterações' : 'Salvar Produto';
+            return;
+        }
+        
+        payload.empresa_id = tenantId;
+        console.log('[DEBUG] Tentando salvar produto para empresa:', tenantId, payload);
+        
         const { data, error } = await sb.from('products').insert(payload).select().single();
         dbError = error;
         if (data) savedProductId = data.id;
     }
 
     if (dbError) {
-        showToast('Erro ao salvar produto: ' + dbError.message, 'error');
+        console.error('[DATABASE ERROR]', dbError);
+        // Tradução amigável de erro de RLS
+        if (dbError.code === '42501' || dbError.message?.includes('row-level security')) {
+            showToast('Erro de Permissão: Você não tem autorização para criar produtos nesta empresa. Verifique seu nível de acesso.', 'error');
+        } else {
+            showToast('Erro ao salvar produto: ' + dbError.message, 'error');
+        }
+        btn.disabled = false;
+        btn.textContent = id ? 'Salvar Alterações' : 'Salvar Produto';
+        return;
     } else {
         // Registrar movimentação
         if (stockInput > 0 || !id) {
@@ -2245,16 +2318,10 @@ function atualizarPreviewLogo(url) {
 
 // --- Upload de imagem de visual (banner/logo) ---
 async function handleVisualImageUpload(file, tipo) {
-    showToast('Enviando imagem...', 'success');
-    const empresaId = getTenantId();
-    const targetName = `visual_${tipo}_${Date.now()}_${file.name}`;
-    const targetPath = `${empresaId}/${targetName}`;
-
-    const { error } = await sb.storage.from('product-images').upload(targetPath, file, { upsert: true });
-    if (error) { showToast('Erro ao enviar imagem: ' + error.message, 'error'); return null; }
-    
-    const { data: urlData } = sb.storage.from('product-images').getPublicUrl(targetPath);
-    return urlData.publicUrl;
+    showToast(`Enviando ${tipo}...`, 'success');
+    // Usamos a subpasta 'config' para banners e logos
+    const url = await window.handleCloudinaryUpload(file, 'config');
+    return url;
 }
 
 document.getElementById('uploadBanner').onchange = async (e) => {

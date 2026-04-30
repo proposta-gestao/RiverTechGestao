@@ -762,6 +762,19 @@
             document.getElementById('profModalBio').value = p.bio || '';
             document.getElementById('profModalCor').value = p.cor_agenda || '#E5B25D';
             document.getElementById('profModalFoto').value = p.foto_url || '';
+            
+            const preview = document.getElementById('profModalPreview');
+            const placeholder = document.getElementById('profModalAvatarPlaceholder');
+            if (p.foto_url) {
+                if (preview) { preview.src = p.foto_url; preview.style.display = 'block'; }
+                if (placeholder) placeholder.style.display = 'none';
+            } else {
+                if (preview) preview.style.display = 'none';
+                if (placeholder) {
+                    placeholder.style.display = 'flex';
+                    placeholder.textContent = (p.nome || '?').charAt(0).toUpperCase();
+                }
+            }
         } else {
             document.getElementById('profModalId').value = '';
             document.getElementById('profModalNome').value = '';
@@ -769,6 +782,11 @@
             document.getElementById('profModalBio').value = '';
             document.getElementById('profModalCor').value = '#E5B25D';
             document.getElementById('profModalFoto').value = '';
+            
+            const preview = document.getElementById('profModalPreview');
+            const placeholder = document.getElementById('profModalAvatarPlaceholder');
+            if (preview) preview.style.display = 'none';
+            if (placeholder) { placeholder.style.display = 'flex'; placeholder.textContent = '?'; }
         }
         document.getElementById('modalProfissional').classList.add('active');
     }
@@ -854,6 +872,30 @@
         salvarHorario,
         abrirModalListaEspera, salvarListaEspera, removerDaLista, abrirModalNovoAgendamentoParaLista
     };
+
+    // --- EVENTOS DE UPLOAD ---
+    const btnUpload = document.getElementById('btnUploadFotoProf');
+    if (btnUpload) {
+        btnUpload.onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            window.showToast?.('Enviando foto...', 'success');
+            const url = await window.handleCloudinaryUpload(file, 'profissionais');
+            if (url) {
+                document.getElementById('profModalFoto').value = url;
+                const preview = document.getElementById('profModalPreview');
+                const placeholder = document.getElementById('profModalAvatarPlaceholder');
+                if (preview) {
+                    preview.src = url;
+                    preview.style.display = 'block';
+                }
+                if (placeholder) placeholder.style.display = 'none';
+                window.showToast?.('Foto enviada!');
+            }
+            e.target.value = '';
+        };
+    }
 
     // Iniciar
     init();
