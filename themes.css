@@ -1,0 +1,256 @@
+/* =====================================================
+   NICHE-BASED THEMES
+   4 temas personalizados para diferentes setores
+   ===================================================== */
+
+/* =====================================================
+   THEME: CLOTHING (Limpo, Elegante, Contraste Mínimo)
+   ===================================================== */
+:root.theme-clothing {
+    /* Paleta: Tons neutros, preto/branco, acentos pastel */
+    --color-brand-500: #4a4a4a;      /* Cinza escuro elegante */
+    --color-brand-600: #3a3a3a;
+    --color-brand-700: #2a2a2a;
+
+    --bg-page:              #fafafa;  /* Quase branco */
+    --bg-card:              #ffffff;  /* Branco puro */
+    --bg-card-hover:        #f5f5f5;
+    --bg-input:             #ffffff;
+    --bg-input-hover:       #f9f9f9;
+    --bg-overlay-light:     rgba(250, 250, 250, 0.95);
+    --bg-overlay-dark:      rgba(0, 0, 0, 0.5);
+
+    --text-primary:         #1a1a1a;
+    --text-secondary:       #666666;
+    --text-muted:           #999999;
+
+    --border-default:       #f0f0f0;
+    --border-subtle:        #e8e8e8;
+
+    --btn-primary-bg:       #4a4a4a;
+    --btn-primary-text:     #ffffff;
+    --btn-primary-hover:    #3a3a3a;
+    --btn-primary-active:   #2a2a2a;
+
+    --btn-secondary-bg:     #f5f5f5;
+    --btn-secondary-text:   #1a1a1a;
+    --btn-secondary-hover:  #e8e8e8;
+
+    --accent-primary:       #8b7355;  /* Cor complementar: marrom topo */
+    --accent-primary-hover: #7a6349;
+    --accent-success:       #10b981;
+    --accent-warning:       #fbbf24;
+    --accent-danger:        #ef4444;
+
+    --glass-dark:           rgba(255, 255, 255, 0.8);
+    --glass-darker:         rgba(250, 250, 250, 0.95);
+
+    --shadow-md:            0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg:            0 8px 24px rgba(0,0,0,0.12);
+    --shadow-xl:            0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* =====================================================
+   THEME: RESTAURANT (Vibrante, Alto Contraste, Cores Quentes)
+   ===================================================== */
+:root.theme-restaurant {
+    /* Paleta: Vermelho/Laranja/Dourado, fundo escuro */
+    --color-brand-500: #FF6B35;      /* Laranja vibrante */
+    --color-brand-600: #F54719;
+    --color-brand-700: #E53E0E;
+
+    --bg-page:              #0f0f0f;
+    --bg-card:              #1a1a1a;
+    --bg-card-hover:        #252525;
+    --bg-input:             #1a1a1a;
+    --bg-input-hover:       #252525;
+    --bg-overlay-light:     rgba(15, 15, 15, 0.95);
+    --bg-overlay-dark:      rgba(0, 0, 0, 0.85);
+
+    --text-primary:         #ffffff;
+    --text-secondary:       #d4d4d4;
+    --text-muted:           #999999;
+
+    --border-default:       rgba(255, 107, 53, 0.25);
+    --border-subtle:        rgba(255, 255, 255, 0.1);
+
+    --btn-primary-bg:       #FF6B35;
+    --btn-primary-text:     #ffffff;
+    --btn-primary-hover:    #F54719;
+    --btn-primary-active:   #E53E0E;
+
+    --btn-secondary-bg:     #252525;
+    --btn-secondary-text:   #ffffff;
+    --btn-secondary-hover:  #333333;
+
+    --accent-primary:       #FF6B35;
+    --accent-primary-hover: #F54719;
+    --accent-success:       #10b981;
+    --accent-warning:       #fbbf24;
+    --accent-danger:        #ff4757;
+
+    --glass-dark:           rgba(26, 26, 26, 0.85);
+    --glass-darker:         rgba(15, 15, 15, 0.95);
+
+    --shadow-md:            0 8px 24px rgba(255, 107, 53, 0.15);
+    --shadow-lg:            0 12px 32px rgba(0,0,0,0.4);
+    --shadow-xl:            0 25px 50px rgba(0,0,0,0.6);
+}
+
+/* =====================================================
+   THEME: BARBERSHOP (Escuro, Premium, Forte Contraste)
+   ===================================================== */
+:root.theme-barbershop {
+    /* Paleta: Dourado/Preto, clássico e premium */
+    --color-brand-500: #d4af37;      /* Dourado premium */
+    --color-brand-600: #c4952e;
+    --color-brand-700: #a88020;
+
+    --bg-page:              #0a0a0a;
+    --bg-card:              #161616;
+    --bg-card-hover:        #1f1f1f;
+    --bg-input:             #161616;
+    --bg-input-hover:       #1f1f1f;
+    --bg-overlay-light:     rgba(10, 10, 10, 0.95);
+    --bg-overlay-dark:      rgba(0, 0, 0, 0.9);
+
+    --text-primary:         #ffffff;
+    --text-secondary:       #e0e0e0;
+    --text-muted:           #999999;
+
+    --border-default:       rgba(212, 175, 55, 0.2);
+    --border-subtle:        rgba(255, 255, 255, 0.08);
+
+    --btn-primary-bg:       #d4af37;
+    --btn-primary-text:     #0a0a0a;
+    --btn-primary-hover:    #c4952e;
+    --btn-primary-active:   #a88020;
+
+    --btn-secondary-bg:     #1f1f1f;
+    --btn-secondary-text:   #ffffff;
+    --btn-secondary-hover:  #2a2a2a;
+
+    --accent-primary:       #d4af37;
+    --accent-primary-hover: #c4952e;
+    --accent-success:       #10b981;
+    --accent-warning:       #fbbf24;
+    --accent-danger:        #ef4444;
+
+    --glass-dark:           rgba(22, 22, 22, 0.85);
+    --glass-darker:         rgba(10, 10, 10, 0.95);
+
+    --shadow-md:            0 8px 24px rgba(212, 175, 55, 0.12);
+    --shadow-lg:            0 12px 32px rgba(0,0,0,0.5);
+    --shadow-xl:            0 25px 50px rgba(0,0,0,0.8);
+}
+
+/* =====================================================
+   THEME: BEVERAGE (Ousado, Industrial, Saturado)
+   ===================================================== */
+:root.theme-beverage {
+    /* Paleta: Azul/Ciano industrial, símbolos altos contraste */
+    --color-brand-500: #00d4ff;      /* Ciano vibrante */
+    --color-brand-600: #00b8d4;
+    --color-brand-700: #0098b8;
+
+    --bg-page:              #090909;
+    --bg-card:              #131318;
+    --bg-card-hover:        #1a1a21;
+    --bg-input:             #131318;
+    --bg-input-hover:       #1a1a21;
+    --bg-overlay-light:     rgba(9, 9, 9, 0.95);
+    --bg-overlay-dark:      rgba(0, 0, 0, 0.92);
+
+    --text-primary:         #ffffff;
+    --text-secondary:       #e8e8e8;
+    --text-muted:           #8a8a8a;
+
+    --border-default:       rgba(0, 212, 255, 0.25);
+    --border-subtle:        rgba(255, 255, 255, 0.08);
+
+    --btn-primary-bg:       #00d4ff;
+    --btn-primary-text:     #090909;
+    --btn-primary-hover:    #00b8d4;
+    --btn-primary-active:   #0098b8;
+
+    --btn-secondary-bg:     #1a1a21;
+    --btn-secondary-text:   #ffffff;
+    --btn-secondary-hover:  #242429;
+
+    --accent-primary:       #00d4ff;
+    --accent-primary-hover: #00b8d4;
+    --accent-success:       #10b981;
+    --accent-warning:       #fbbf24;
+    --accent-danger:        #ff4444;
+
+    --glass-dark:           rgba(19, 19, 24, 0.85);
+    --glass-darker:         rgba(9, 9, 9, 0.95);
+
+    --shadow-md:            0 8px 24px rgba(0, 212, 255, 0.15);
+    --shadow-lg:            0 12px 32px rgba(0,0,0,0.45);
+    --shadow-xl:            0 25px 50px rgba(0,0,0,0.7);
+}
+
+/* =====================================================
+   DATA-ATTRIBUTE THEMING (Alternative Approach)
+   Use: <html data-theme="restaurant">
+   ===================================================== */
+[data-theme="clothing"] {
+    --color-brand-500: #4a4a4a;
+    --bg-page:              #fafafa;
+    --bg-card:              #ffffff;
+    --bg-card-hover:        #f5f5f5;
+    --text-primary:         #1a1a1a;
+    --text-secondary:       #666666;
+    --border-default:       #f0f0f0;
+    --btn-primary-bg:       #4a4a4a;
+    --btn-primary-text:     #ffffff;
+    --btn-primary-hover:    #3a3a3a;
+    --accent-primary:       #8b7355;
+    --glass-dark:           rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="restaurant"] {
+    --color-brand-500: #FF6B35;
+    --bg-page:              #0f0f0f;
+    --bg-card:              #1a1a1a;
+    --bg-card-hover:        #252525;
+    --text-primary:         #ffffff;
+    --text-secondary:       #d4d4d4;
+    --border-default:       rgba(255, 107, 53, 0.25);
+    --btn-primary-bg:       #FF6B35;
+    --btn-primary-text:     #ffffff;
+    --btn-primary-hover:    #F54719;
+    --accent-primary:       #FF6B35;
+    --glass-dark:           rgba(26, 26, 26, 0.85);
+}
+
+[data-theme="barbershop"] {
+    --color-brand-500: #d4af37;
+    --bg-page:              #0a0a0a;
+    --bg-card:              #161616;
+    --bg-card-hover:        #1f1f1f;
+    --text-primary:         #ffffff;
+    --text-secondary:       #e0e0e0;
+    --border-default:       rgba(212, 175, 55, 0.2);
+    --btn-primary-bg:       #d4af37;
+    --btn-primary-text:     #0a0a0a;
+    --btn-primary-hover:    #c4952e;
+    --accent-primary:       #d4af37;
+    --glass-dark:           rgba(22, 22, 22, 0.85);
+}
+
+[data-theme="beverage"] {
+    --color-brand-500: #00d4ff;
+    --bg-page:              #090909;
+    --bg-card:              #131318;
+    --bg-card-hover:        #1a1a21;
+    --text-primary:         #ffffff;
+    --text-secondary:       #e8e8e8;
+    --border-default:       rgba(0, 212, 255, 0.25);
+    --btn-primary-bg:       #00d4ff;
+    --btn-primary-text:     #090909;
+    --btn-primary-hover:    #00b8d4;
+    --accent-primary:       #00d4ff;
+    --glass-dark:           rgba(19, 19, 24, 0.85);
+}

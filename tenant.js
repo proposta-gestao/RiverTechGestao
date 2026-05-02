@@ -21,6 +21,9 @@
  * O RLS do Supabase valida e garante o isolamento real.
  */
 
+// Ocultar body inicialmente para evitar flash de cores antigas
+document.body.style.display = 'none';
+
 // ================================================================
 // PASSO 1: CAPTURAR O SLUG DA EMPRESA A PARTIR DA URL
 // ================================================================
@@ -205,6 +208,9 @@ function _aplicarWhiteLabel(data) {
         const subtitles = document.querySelectorAll('.brand-subtitle');
         subtitles.forEach(el => { el.textContent = brandSubtitle; });
     }
+
+    // Mostrar body após aplicar tema para evitar flash
+    document.body.style.display = '';
 
     console.info('[Tenant] ✅ Tema aplicado:', primaria, '| Empresa:', brandName);
 }

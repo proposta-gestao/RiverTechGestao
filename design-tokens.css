@@ -1,0 +1,188 @@
+/* =====================================================
+   RIVERTECH DESIGN TOKENS
+   Arquitetura 2-Layer: Base Tokens + Semantic Tokens
+   ===================================================== */
+
+/* =====================================================
+   LAYER 1: BASE TOKENS
+   Raw colors, palettes, scales
+   ===================================================== */
+:root {
+    /* ========== NEUTRAL PALETTE (Grayscale) ========== */
+    --color-neutral-000: #ffffff;
+    --color-neutral-050: #fafafa;
+    --color-neutral-100: #f5f5f5;
+    --color-neutral-150: #efefef;
+    --color-neutral-200: #e5e5e5;
+    --color-neutral-300: #d0d0d0;
+    --color-neutral-400: #b2bec3;
+    --color-neutral-500: #a0a0a0;
+    --color-neutral-600: #808080;
+    --color-neutral-700: #4a4a4a;
+    --color-neutral-800: #222222;
+    --color-neutral-850: #1a1a1a;
+    --color-neutral-900: #0d0d0d;
+    --color-neutral-950: #000000;
+
+    /* ========== BRAND PALETTE (Gold) ========== */
+    --color-brand-100: #fef9f0;
+    --color-brand-200: #fdefce;
+    --color-brand-300: #fde4ac;
+    --color-brand-400: #fcd889;
+    --color-brand-500: #E5B25D;
+    --color-brand-600: #d4a14c;
+    --color-brand-700: #b88a40;
+    --color-brand-800: #9c7236;
+    --color-brand-900: #7d5a2d;
+
+    /* ========== SEMANTIC ACCENT COLORS ========== */
+    --color-success-100: #f0fdf4;
+    --color-success-300: #a7f3d0;
+    --color-success-500: #00B894;
+    --color-success-700: #065f46;
+    --color-success-900: #022c22;
+
+    --color-warning-100: #fffbeb;
+    --color-warning-300: #fde047;
+    --color-warning-500: #FDCB6E;
+    --color-warning-700: #b45309;
+    --color-warning-900: #78350f;
+
+    --color-danger-100: #fef2f2;
+    --color-danger-300: #fca5a5;
+    --color-danger-500: #FF4757;
+    --color-danger-700: #991b1b;
+    --color-danger-900: #460a0a;
+
+    --color-info-100: #eff6ff;
+    --color-info-300: #93c5fd;
+    --color-info-500: #1E90FF;
+    --color-info-700: #1e40af;
+    --color-info-900: #0c2340;
+
+    /* ========== OPACITY HELPERS ========== */
+    --opacity-brand-10: rgba(229, 178, 93, 0.10);
+    --opacity-brand-20: rgba(229, 178, 93, 0.20);
+    --opacity-brand-30: rgba(229, 178, 93, 0.30);
+    --opacity-brand-50: rgba(229, 178, 93, 0.50);
+
+    --opacity-danger-10: rgba(255, 71, 87, 0.10);
+    --opacity-danger-30: rgba(255, 71, 87, 0.30);
+
+    --opacity-neutral-02: rgba(0, 0, 0, 0.02);
+    --opacity-neutral-05: rgba(0, 0, 0, 0.05);
+    --opacity-neutral-10: rgba(0, 0, 0, 0.10);
+    --opacity-neutral-20: rgba(0, 0, 0, 0.20);
+    --opacity-neutral-30: rgba(0, 0, 0, 0.30);
+}
+
+/* =====================================================
+   LAYER 2: SEMANTIC TOKENS
+   Use these tokens ONLY in your CSS
+   ===================================================== */
+:root {
+    /* ========== BACKGROUNDS ========== */
+    --bg-page:              var(--color-neutral-900);
+    --bg-card:              var(--color-neutral-850);
+    --bg-card-hover:        var(--color-neutral-800);
+    --bg-input:             var(--color-neutral-850);
+    --bg-input-hover:       var(--color-neutral-800);
+    --bg-overlay-light:     rgba(13, 13, 13, 0.95);
+    --bg-overlay-dark:      rgba(0, 0, 0, 0.85);
+
+    /* ========== TEXT ========== */
+    --text-primary:         var(--color-neutral-000);
+    --text-secondary:       var(--color-neutral-500);
+    --text-tertiary:        var(--color-neutral-600);
+    --text-muted:           var(--color-neutral-500);
+    --text-disabled:        var(--color-neutral-600);
+
+    /* ========== BORDERS & DIVIDERS ========== */
+    --border-default:       var(--opacity-brand-20);
+    --border-subtle:        var(--opacity-neutral-10);
+    --border-strong:        var(--color-neutral-700);
+
+    /* ========== BUTTONS - PRIMARY ========== */
+    --btn-primary-bg:       var(--color-brand-500);
+    --btn-primary-text:     var(--color-neutral-950);
+    --btn-primary-hover:    var(--color-brand-600);
+    --btn-primary-active:   var(--color-brand-700);
+    --btn-primary-disabled: var(--color-neutral-400);
+
+    /* ========== BUTTONS - SECONDARY ========== */
+    --btn-secondary-bg:     var(--color-neutral-850);
+    --btn-secondary-text:   var(--color-neutral-000);
+    --btn-secondary-border: var(--border-default);
+    --btn-secondary-hover:  var(--color-neutral-800);
+    --btn-secondary-active: var(--color-neutral-700);
+
+    /* ========== FORM ELEMENTS ========== */
+    --input-bg:             var(--bg-input);
+    --input-text:           var(--text-primary);
+    --input-border:         var(--border-default);
+    --input-focus-border:   var(--color-brand-500);
+    --input-focus-shadow:   var(--opacity-brand-10);
+
+    /* ========== STATES ========== */
+    --state-success-bg:     var(--color-success-500);
+    --state-success-text:   var(--color-neutral-000);
+    --state-warning-bg:     var(--color-warning-500);
+    --state-warning-text:   var(--color-neutral-950);
+    --state-danger-bg:      var(--color-danger-500);
+    --state-danger-text:    var(--color-neutral-000);
+    --state-info-bg:        var(--color-info-500);
+    --state-info-text:      var(--color-neutral-000);
+
+    /* ========== ACCENTS ========== */
+    --accent-primary:       var(--color-brand-500);
+    --accent-primary-hover: var(--color-brand-600);
+    --accent-success:       var(--color-success-500);
+    --accent-warning:       var(--color-warning-500);
+    --accent-danger:        var(--color-danger-500);
+    --accent-info:          var(--color-info-500);
+
+    /* ========== UI EFFECTS ========== */
+    --shadow-sm:            0 2px 8px rgba(0,0,0,0.1);
+    --shadow-md:            0 8px 24px rgba(0,0,0,0.2);
+    --shadow-lg:            0 8px 32px rgba(0,0,0,0.4);
+    --shadow-xl:            0 25px 50px rgba(0,0,0,0.8);
+    --shadow-premium:       0 30px 60px rgba(0,0,0,0.8);
+
+    --radius-sm:            8px;
+    --radius-md:            12px;
+    --radius-lg:            16px;
+    --radius-xl:            24px;
+    --radius-full:          999px;
+
+    --transition-fast:      all 0.2s ease;
+    --transition-normal:    all 0.3s ease;
+    --transition-slow:      all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ========== GLASS MORPHISM ========== */
+    --glass-dark:           rgba(26, 26, 26, 0.8);
+    --glass-darker:         rgba(13, 13, 13, 0.95);
+
+    /* ========== GRADIENTS ========== */
+    --gradient-primary:     linear-gradient(90deg, #E5B25D, #d4a14c);
+    --gradient-overlay:     radial-gradient(circle at center, #1a1a24 0%, #0a0a0b 100%);
+}
+
+/* =====================================================
+   UTILITY RESET
+   Applied globally
+   ===================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+}

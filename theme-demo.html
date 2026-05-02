@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiverTech - Theming System Demo</title>
+    
+    <!-- ===== DESIGN TOKENS & THEMES ===== -->
+    <link rel="stylesheet" href="design-tokens.css">
+    <link rel="stylesheet" href="themes.css">
+    <link rel="stylesheet" href="index.css">
+    
+    <style>
+        /* Demo Styles */
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .demo-section {
+            margin: 3rem 0;
+        }
+
+        .demo-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-primary);
+        }
+
+        .theme-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .theme-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-normal);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
+        }
+
+        .theme-btn:hover {
+            background: var(--accent-primary);
+            color: var(--color-neutral-950);
+            transform: translateY(-2px);
+        }
+
+        .theme-btn.active {
+            background: var(--accent-primary);
+            color: var(--color-neutral-950);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .color-box {
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .color-box h4 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .color-box p {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            font-family: monospace;
+        }
+
+        .component-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .component-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-default);
+        }
+
+        .component-card h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+        }
+
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
+            border: 1px solid var(--border-default);
+        }
+
+        .btn-secondary:hover {
+            background: var(--btn-secondary-hover);
+        }
+
+        .info-box {
+            background: var(--opacity-brand-10);
+            border: 1px solid var(--border-default);
+            border-left: 4px solid var(--accent-primary);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box strong {
+            color: var(--accent-primary);
+        }
+
+        code {
+            background: var(--bg-card);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--color-success-500);
+        }
+
+        .override-demo {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-default);
+        }
+
+        .override-demo input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            width: 200px;
+        }
+
+        .override-demo label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .usage-section {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-default);
+            margin-bottom: 1.5rem;
+        }
+
+        .usage-section pre {
+            background: var(--color-neutral-900);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            color: var(--color-success-500);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .badge-success {
+            background: var(--color-success-100);
+            color: var(--color-success-700);
+        }
+
+        .badge-warning {
+            background: var(--color-warning-100);
+            color: var(--color-warning-700);
+        }
+
+        .token-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .token-table th,
+        .token-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .token-table th {
+            background: var(--bg-card);
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .token-table code {
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Header -->
+        <div class="demo-section">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent-primary);">
+                🎨 RiverTech Theming System
+            </h1>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Arquitetura de Design Tokens com suporte a múltiplos temas por nicho
+            </p>
+        </div>
+
+        <!-- Theme Selector -->
+        <div class="demo-section">
+            <h2>Selecione um Tema</h2>
+            <div class="theme-buttons">
+                <button class="theme-btn active" onclick="updateTheme('default')">
+                    🏳️ Default
+                </button>
+                <button class="theme-btn" onclick="updateTheme('clothing')">
+                    👕 Clothing
+                </button>
+                <button class="theme-btn" onclick="updateTheme('restaurant')">
+                    🍕 Restaurant
+                </button>
+                <button class="theme-btn" onclick="updateTheme('barbershop')">
+                    ✂️ Barbershop
+                </button>
+                <button class="theme-btn" onclick="updateTheme('beverage')">
+                    🥤 Beverage
+                </button>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <strong>💡 Dica:</strong> Os temas são aplicados dinamicamente via CSS variables. 
+            Use <code>updateTheme(themeName, overrides)</code> para aplicar temas + customizações.
+        </div>
+
+        <!-- Color Palette -->
+        <div class="demo-section">
+            <h2>Paleta de Cores do Tema Atual</h2>
+            <div class="color-grid">
+                <div class="color-box" style="background: var(--bg-page); border: 1px solid var(--border-default);">
+                    <h4>Fundo Principal</h4>
+                    <p>--bg-page</p>
+                </div>
+                <div class="color-box" style="background: var(--bg-card); border: 1px solid var(--border-default);">
+                    <h4>Card</h4>
+                    <p>--bg-card</p>
+                </div>
+                <div class="color-box" style="background: var(--accent-primary); color: var(--color-neutral-950);">
+                    <h4>Primária</h4>
+                    <p>--accent-primary</p>
+                </div>
+                <div class="color-box" style="background: var(--btn-primary-bg); color: var(--btn-primary-text);">
+                    <h4>Botão Primary</h4>
+                    <p>--btn-primary-bg</p>
+                </div>
+                <div class="color-box" style="background: var(--accent-success); color: white;">
+                    <h4>Sucesso</h4>
+                    <p>--accent-success</p>
+                </div>
+                <div class="color-box" style="background: var(--accent-danger); color: white;">
+                    <h4>Perigo</h4>
+                    <p>--accent-danger</p>
+                </div>
+                <div class="color-box" style="background: var(--accent-warning); color: var(--color-neutral-950);">
+                    <h4>Alerta</h4>
+                    <p>--accent-warning</p>
+                </div>
+                <div class="color-box" style="color: var(--text-primary); background: var(--bg-card); border: 1px solid var(--border-default);">
+                    <h4>Texto Principal</h4>
+                    <p>--text-primary</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Components Showcase -->
+        <div class="demo-section">
+            <h2>Componentes</h2>
+            <div class="component-showcase">
+                <div class="component-card">
+                    <h3>Botões</h3>
+                    <button class="btn btn-primary" style="margin-bottom: 0.5rem; width: 100%;">
+                        Botão Primário
+                    </button>
+                    <button class="btn btn-secondary" style="width: 100%;">
+                        Botão Secundário
+                    </button>
+                </div>
+
+                <div class="component-card">
+                    <h3>Estados</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <span class="badge badge-success">✓ Ativo</span>
+                        <span class="badge badge-warning">⚠ Alerta</span>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <h3>Input</h3>
+                    <input type="text" placeholder="Digite algo..." style="width: 100%; padding: 8px; background: var(--bg-input); border: 1px solid var(--border-default); border-radius: var(--radius-md); color: var(--text-primary);">
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Example -->
+        <div class="demo-section">
+            <h2>Customização Dinâmica</h2>
+            <div class="info-box">
+                <strong>⚙️ Exemplo:</strong> Aplique um tema e customize cores específicas em tempo real.
+            </div>
+            <div class="override-demo">
+                <label>Cor Primária Customizada:</label>
+                <input type="color" id="customColorInput" value="#E5B25D" 
+                       onchange="customizeTheme()" 
+                       style="width: 50px; height: 50px; cursor: pointer; border: none; border-radius: var(--radius-md);">
+                <button class="btn btn-primary" onclick="customizeTheme()" style="margin-left: 10px;">
+                    Aplicar
+                </button>
+                <button class="btn btn-secondary" onclick="resetCustomization()" style="margin-left: 5px;">
+                    Resetar
+                </button>
+            </div>
+        </div>
+
+        <!-- Usage Documentation -->
+        <div class="demo-section">
+            <h2>Como Usar</h2>
+
+            <h3 style="color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 1rem;">1. Importar CSS</h3>
+            <div class="usage-section">
+                <pre>&lt;!-- Ordem importante --&gt;
+&lt;link rel="stylesheet" href="design-tokens.css"&gt;
+&lt;link rel="stylesheet" href="themes.css"&gt;
+&lt;link rel="stylesheet" href="index.css"&gt;</pre>
+            </div>
+
+            <h3 style="color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 1rem;">2. Importar Script</h3>
+            <div class="usage-section">
+                <pre>&lt;script src="theme-manager.js"&gt;&lt;/script&gt;</pre>
+            </div>
+
+            <h3 style="color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 1rem;">3. Aplicar Tema</h3>
+            <div class="usage-section">
+                <pre>// Aplicar tema por nicho
+updateTheme('restaurant');
+
+// Aplicar tema + customizações
+updateTheme('barbershop', {
+  '--btn-primary-bg': '#d4af37',
+  '--accent-primary': '#c4952e'
+});
+
+// Obter tema atual
+themeManager.getCurrentTheme();
+
+// Exportar configuração (para salvar no banco)
+const config = themeManager.exportThemeConfig();</pre>
+            </div>
+
+            <h3 style="color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 1rem;">4. Escutar Mudanças</h3>
+            <div class="usage-section">
+                <pre>document.addEventListener('themechange', (e) => {
+  console.log('Novo tema:', e.detail.theme);
+  console.log('Overrides:', e.detail.overrides);
+});</pre>
+            </div>
+        </div>
+
+        <!-- Token Reference -->
+        <div class="demo-section">
+            <h2>Referência de Tokens Semânticos</h2>
+            <table class="token-table">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Propósito</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>--bg-page</code></td>
+                        <td>Fundo principal da página</td>
+                        <td>Background</td>
+                    </tr>
+                    <tr>
+                        <td><code>--bg-card</code></td>
+                        <td>Fundo de cards e containers</td>
+                        <td>Background</td>
+                    </tr>
+                    <tr>
+                        <td><code>--text-primary</code></td>
+                        <td>Texto principal (heading, body)</td>
+                        <td>Text</td>
+                    </tr>
+                    <tr>
+                        <td><code>--text-muted</code></td>
+                        <td>Texto secundário (labels, hints)</td>
+                        <td>Text</td>
+                    </tr>
+                    <tr>
+                        <td><code>--border-default</code></td>
+                        <td>Bordas padrão</td>
+                        <td>Border</td>
+                    </tr>
+                    <tr>
+                        <td><code>--btn-primary-bg</code></td>
+                        <td>Fundo botão primário</td>
+                        <td>Button</td>
+                    </tr>
+                    <tr>
+                        <td><code>--btn-primary-hover</code></td>
+                        <td>Fundo botão primário (hover)</td>
+                        <td>Button</td>
+                    </tr>
+                    <tr>
+                        <td><code>--accent-primary</code></td>
+                        <td>Cor accent principal (brand)</td>
+                        <td>Accent</td>
+                    </tr>
+                    <tr>
+                        <td><code>--accent-success</code></td>
+                        <td>Cor de sucesso</td>
+                        <td>State</td>
+                    </tr>
+                    <tr>
+                        <td><code>--accent-danger</code></td>
+                        <td>Cor de erro/danger</td>
+                        <td>State</td>
+                    </tr>
+                    <tr>
+                        <td><code>--shadow-lg</code></td>
+                        <td>Sombra grande</td>
+                        <td>Effect</td>
+                    </tr>
+                    <tr>
+                        <td><code>--radius-lg</code></td>
+                        <td>Border radius grande</td>
+                        <td>Space</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Architecture -->
+        <div class="demo-section">
+            <h2>Arquitetura em 2 Camadas</h2>
+            <div style="background: var(--bg-card); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border-default);">
+                <h3 style="color: var(--accent-primary); margin-bottom: 1.5rem;">Layer 1: Base Tokens</h3>
+                <p style="margin-bottom: 1rem;">Cores brutas da paleta (sem uso direto em componentes)</p>
+                <pre style="background: var(--color-neutral-900); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; color: var(--color-success-500); margin-bottom: 2rem;">--color-neutral-100: #f5f5f5;
+--color-neutral-500: #a0a0a0;
+--color-brand-500: #E5B25D;
+--color-success-500: #00B894;</pre>
+
+                <h3 style="color: var(--accent-primary); margin-bottom: 1.5rem;">Layer 2: Semantic Tokens</h3>
+                <p style="margin-bottom: 1rem;">Tokens com significado (ÚNICA camada usada no CSS)</p>
+                <pre style="background: var(--color-neutral-900); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; color: var(--color-success-500);">--bg-page: var(--color-neutral-900);
+--accent-primary: var(--color-brand-500);
+--btn-primary-bg: var(--color-brand-500);
+--text-primary: var(--color-neutral-000);</pre>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--border-default); margin-top: 3rem;">
+            <p>
+                <strong>RiverTech Theming System</strong> • 
+                <a href="#" style="color: var(--accent-primary); text-decoration: none;">Documentação</a> • 
+                <a href="#" style="color: var(--accent-primary); text-decoration: none;">GitHub</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Theming Script -->
+    <script src="theme-manager.js"></script>
+
+    <script>
+        // Demo: Customize theme
+        function customizeTheme() {
+            const color = document.getElementById('customColorInput').value;
+            updateTheme('default', {
+                '--accent-primary': color,
+                '--btn-primary-bg': color
+            });
+        }
+
+        function resetCustomization() {
+            document.getElementById('customColorInput').value = '#E5B25D';
+            themeManager.resetToThemeDefaults();
+        }
+
+        // Update active button
+        document.addEventListener('themechange', (e) => {
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`[onclick="updateTheme('${e.detail.theme}')"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        });
+    </script>
+</body>
+</html>
