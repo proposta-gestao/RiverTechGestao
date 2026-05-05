@@ -115,9 +115,13 @@ function aplicarEstadoSidebar() {
     if (isCollapsed) {
         layout.classList.add('collapsed');
         btn.title = "Expandir Menu";
+        const icon = btn.querySelector('.toggle-icon');
+        if (icon) icon.style.transform = 'rotate(180deg)';
     } else {
         layout.classList.remove('collapsed');
         btn.title = "Recolher Menu";
+        const icon = btn.querySelector('.toggle-icon');
+        if (icon) icon.style.transform = 'rotate(0deg)';
     }
 }
 
@@ -137,10 +141,13 @@ document.getElementById('btnToggleSidebar').addEventListener('click', () => {
         localStorage.setItem('sidebar_collapsed', isCollapsed);
         
         const btn = document.getElementById('btnToggleSidebar');
+        const icon = btn.querySelector('.toggle-icon');
         if (isCollapsed) {
             btn.title = "Expandir Menu";
+            if (icon) icon.style.transform = 'rotate(180deg)';
         } else {
             btn.title = "Recolher Menu";
+            if (icon) icon.style.transform = 'rotate(0deg)';
         }
     }
 });
