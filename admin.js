@@ -1548,12 +1548,15 @@ window.selecionarImagemGaleria = (url, element, isCompletoStr) => {
     }
 };
 
-document.getElementById('btnUploadNovaImagem').onchange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    await handleImageUpload(file);
-    e.target.value = '';
-};
+const elBtnUploadNovaImagem = document.getElementById('btnUploadNovaImagem');
+if (elBtnUploadNovaImagem) {
+    elBtnUploadNovaImagem.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        await handleImageUpload(file);
+        e.target.value = '';
+    };
+}
 
 // --- CONFIGURAÇÃO CLOUDINARY --- (Movido para o topo)
 
