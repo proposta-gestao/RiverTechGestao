@@ -422,9 +422,9 @@
 
 html,
 body {
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
-    /* Impede a rolagem do body, tudo rolará na wrapper */
     margin: 0;
 }
 
@@ -538,7 +538,8 @@ body {
 /* Admin Layout */
 .admin-layout {
     display: none;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
     flex-direction: column;
 }
 

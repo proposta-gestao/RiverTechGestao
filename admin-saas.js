@@ -101,6 +101,25 @@ async function iniciarPainel() {
 // ==========================================
 // 6. Navegação Sidebar
 // ==========================================
+// Toggle Sidebar
+document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+    document.getElementById('adminLayout').classList.toggle('collapsed');
+    document.getElementById('sidebar').classList.toggle('active'); // Para mobile
+});
+
+const btnMobile = document.getElementById('btnMobileMenu');
+if (btnMobile) {
+    btnMobile.addEventListener('click', () => {
+        document.getElementById('sidebar').classList.add('active');
+        document.getElementById('sidebarOverlay').style.display = 'block';
+    });
+}
+
+document.getElementById('sidebarOverlay').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.remove('active');
+    document.getElementById('sidebarOverlay').style.display = 'none';
+});
+
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -111,6 +130,12 @@ document.querySelectorAll('.nav-item').forEach(item => {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         const target = item.getAttribute('data-target');
         document.getElementById(`view-${target}`).classList.add('active');
+
+        // Se estiver no mobile, fecha ao clicar
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').style.display = 'none';
+        }
     });
 });
 
