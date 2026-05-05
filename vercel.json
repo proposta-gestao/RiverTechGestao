@@ -21,6 +21,10 @@
       "destination": "/agendamento.html"
     },
     {
+      "source": "/:loja/loja",
+      "destination": "/loja.html"
+    },
+    {
       "source": "/:loja",
       "destination": "/cardapio.html"
     }
