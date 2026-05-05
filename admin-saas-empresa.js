@@ -126,6 +126,7 @@ function renderDadosBasicos(emp) {
     document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
     document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
     document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
+    document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
     previewTema();
  
     // URLs
@@ -164,7 +165,7 @@ function renderDadosBasicos(emp) {
     setSwatch('swatch-primaria', emp.tema_cor_primaria);
     setSwatch('swatch-botao',    emp.tema_cor_botao || emp.tema_cor_primaria);
     setSwatch('swatch-bg',       emp.tema_cor_bg);
-    setSwatch('swatch-surface',  emp.tema_cor_secundaria);
+    setSwatch('swatch-surface',  emp.tema_cor_surface || '#1a1a1a');
 
     const adminLink = document.getElementById('infoUrlAdmin');
     if (adminLink) adminLink.href = urlAdmin;
@@ -334,6 +335,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
     const tema_cor_botao = document.getElementById('editTemaCorBotao').value;
     const tema_cor_bg = document.getElementById('editTemaCorBg').value;
+    const tema_cor_surface = document.getElementById('editTemaCorSurface').value;
  
     try {
         btn.disabled = true;
@@ -356,6 +358,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 tema_cor_secundaria,
                 tema_cor_botao,
                 tema_cor_bg,
+                tema_cor_surface,
                 cor_primaria: tema_cor_primaria // Legado
             })
             .eq('id', EMPRESA_ID);

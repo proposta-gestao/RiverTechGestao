@@ -216,6 +216,18 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Segmento da Empresa</label>
+                        <select id="empSegmento" onchange="aplicarPresetSegmento(this.value)">
+                            <option value="">— Selecione —</option>
+                            <option value="restaurante">🍽️ Bares / Restaurantes</option>
+                            <option value="barbearia">💈 Barbearia</option>
+                            <option value="loja_roupas">👗 Loja de Roupas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
                         <label>E-mail do Administrador</label>
                         <input type="email" id="empAdminEmail" required placeholder="dono@email.com">
                     </div>
@@ -366,6 +378,29 @@
                             <div class="module-item">
                                 <span>🏆 Clube de Fidelidade</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_agendamento_fidelidade" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grupo: Loja de Roupas -->
+                    <div class="module-card">
+                        <div class="module-header" onclick="toggleAccordionNovo('n_grupo_loja')">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="accordion-icon" id="icon_n_grupo_loja">▼</span>
+                                <div>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">👗 LOJA DE ROUPAS</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Variações, Estoque e Vitrine</small>
+                                </div>
+                            </div>
+                            <label class="switch" onclick="event.stopPropagation()">
+                                <input type="checkbox" id="n_master_loja" onchange="toggleGrupoModuloNovo('n_grupo_loja', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="grupo-content disabled" id="n_grupo_loja">
+                            <div class="module-item">
+                                <span>👗 Módulo Loja Ativo</span>
+                                <label class="switch"><input type="checkbox" id="n_mod_loja_roupas"><span class="slider"></span></label>
                             </div>
                         </div>
                     </div>

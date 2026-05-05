@@ -200,13 +200,14 @@ document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     document.getElementById('empBrandName').value = '';
     document.getElementById('empSlug').value = '';
     document.getElementById('empPlano').value = 'premium';
+    document.getElementById('empSegmento').value = '';
     document.getElementById('empAdminEmail').value = '';
     document.getElementById('empAdminSenha').value = 'Mudar123!';
     
-    // Reset Módulos (Todos ativos por padrão para facilitar)
-    document.querySelectorAll('[id^="n_mod_"]').forEach(cb => cb.checked = true);
-    document.querySelectorAll('[id^="n_master_"]').forEach(cb => cb.checked = true);
-    document.querySelectorAll('.grupo-content').forEach(g => g.classList.remove('disabled'));
+    // Reset Módulos (Todos desativados para forçar seleção via segmento)
+    document.querySelectorAll('[id^="n_mod_"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('[id^="n_master_"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.grupo-content').forEach(g => g.classList.add('disabled'));
 
     // Reset Tema
     _setColorField('n_editTemaCorPrimaria',   'n_editTemaCorPrimariaHex',   '#E5B25D');
@@ -257,6 +258,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
     let p_slug = document.getElementById('empSlug').value.trim();
     const p_brand_name = document.getElementById('empBrandName').value.trim();
     const p_plano = document.getElementById('empPlano').value;
+    const p_segmento = document.getElementById('empSegmento').value;
     const p_admin_email = document.getElementById('empAdminEmail').value.trim();
     const p_admin_password = document.getElementById('empAdminSenha').value.trim();
 
@@ -310,16 +312,20 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
 
         if (rpcError) throw rpcError;
 
-        // 2. Aplicar Módulos e Tema detalhado
+        // 2. Aplicar Módulos, Tema e Segmento
+        const PRESETS = _getSegmentPreset(p_segmento);
         const { error: updateError } = await sb
             .from('empresas')
             .update({
                 modulos: modulos,
+                segmento: p_segmento || null,
                 tema_cor_primaria: tema.primaria,
-                tema_cor_secundaria: '#1E90FF',
+                tema_cor_secundaria: PRESETS.tema.secundaria || '#1E90FF',
                 tema_cor_botao: tema.botao,
                 tema_cor_bg: tema.bg,
                 tema_cor_surface: tema.surface,
+                tema_cor_texto: '#ffffff',
+                tema_cor_borda: PRESETS.tema.borda || `rgba(229,178,93,0.2)`,
                 cor_primaria: tema.primaria // Legado
             })
             .eq('id', newId);
@@ -483,6 +489,126 @@ window.previewTemaNovo = () => {
     if (card)    card.style.background    = surface;
     if (price)   price.style.color        = primaria;
     if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
+};
+
+// ==========================================
+// PRESETS POR SEGMENTO (Theme Manager)
+// ==========================================
+
+/**
+ * Retorna o preset de módulos e tema para um dado segmento.
+ * Baseado nas definições do ThemeManager (themes.css).
+ */
+function _getSegmentPreset(segmento) {
+    const PRESETS = {
+        restaurante: {
+            modulos: {
+                // Produtos
+                produtos_gerenciar: true, produtos_categorias: true, produtos_estoque: true,
+                // Vendas
+                vendas_hoje_op: true, vendas_ontem_op: true, vendas_visao_geral: true,
+                metricas_dashboard: true, metricas_analise_tempo: true,
+                metricas_performance_vendas: true, metricas_destaques: true,
+                // Operações
+                config_frete: true, pagamento: true, cupons: true, cardapio: true,
+                config_personalizacao: true, config_endereco: true, config_cancelamentos: true,
+                // Inativo
+                agendamento_ativo: false, agendamento_multi_profissional: false,
+                agendamento_lista_espera: false, agendamento_mensagens: false, agendamento_fidelidade: false,
+                loja_roupas: false
+            },
+            tema: { primaria: '#FF6B35', botao: '#FF6B35', bg: '#0f0f0f', surface: '#1a1a1a',
+                    secundaria: '#F54719', borda: 'rgba(255,107,53,0.25)', themeClass: 'restaurant' }
+        },
+        barbearia: {
+            modulos: {
+                // Vendas
+                vendas_hoje_op: true, vendas_ontem_op: true, vendas_visao_geral: true,
+                metricas_dashboard: true, metricas_analise_tempo: true,
+                metricas_performance_vendas: true, metricas_destaques: true,
+                // Agendamento
+                agendamento_ativo: true, agendamento_multi_profissional: true,
+                agendamento_lista_espera: true, agendamento_mensagens: true, agendamento_fidelidade: true,
+                // Inativo
+                produtos_gerenciar: false, produtos_categorias: false, produtos_estoque: false,
+                config_frete: false, pagamento: true, cupons: false, cardapio: false,
+                config_personalizacao: true, config_endereco: true, config_cancelamentos: true,
+                loja_roupas: false
+            },
+            tema: { primaria: '#d4af37', botao: '#d4af37', bg: '#0a0a0a', surface: '#161616',
+                    secundaria: '#c4952e', borda: 'rgba(212,175,55,0.2)', themeClass: 'barbershop' }
+        },
+        loja_roupas: {
+            modulos: {
+                // Loja
+                loja_roupas: true,
+                // Vendas
+                vendas_hoje_op: true, vendas_ontem_op: true, vendas_visao_geral: true,
+                metricas_dashboard: true, metricas_analise_tempo: true,
+                metricas_performance_vendas: true, metricas_destaques: true,
+                // Operações
+                config_frete: true, pagamento: true, cupons: true, cardapio: false,
+                config_personalizacao: true, config_endereco: true, config_cancelamentos: true,
+                // Inativo
+                produtos_gerenciar: false, produtos_categorias: false, produtos_estoque: false,
+                agendamento_ativo: false, agendamento_multi_profissional: false,
+                agendamento_lista_espera: false, agendamento_mensagens: false, agendamento_fidelidade: false
+            },
+            tema: { primaria: '#d4af37', botao: '#d4af37', bg: '#0f172a', surface: '#1e293b',
+                    secundaria: '#1e3a8a', borda: 'rgba(212,175,55,0.2)', themeClass: 'clothing' }
+        }
+    };
+    return PRESETS[segmento] || { modulos: {}, tema: { primaria: '#E5B25D', botao: '#E5B25D', bg: '#0d0d0d', surface: '#1a1a1a', secundaria: '#1E90FF', borda: 'rgba(229,178,93,0.2)', themeClass: null } };
+}
+
+/**
+ * Aplicado ao selecionar o segmento no formulário de Nova Empresa.
+ * Auto-configura módulos, cores e atualiza o preview.
+ */
+window.aplicarPresetSegmento = (segmento) => {
+    if (!segmento) return;
+    const preset = _getSegmentPreset(segmento);
+
+    // 1. Aplicar Módulos
+    const mods = preset.modulos;
+    Object.entries(mods).forEach(([key, val]) => {
+        const el = document.getElementById(`n_mod_${key}`);
+        if (el) el.checked = val;
+    });
+
+    // Atualizar masters e estados visuais dos grupos
+    const grupos = [
+        { master: 'n_master_produtos',     content: 'n_grupo_produtos',     keys: ['produtos_gerenciar','produtos_categorias','produtos_estoque'] },
+        { master: 'n_master_vendas',       content: 'n_grupo_vendas',       keys: ['vendas_visao_geral','metricas_dashboard','metricas_performance_vendas'] },
+        { master: 'n_master_ops',          content: 'n_grupo_ops',          keys: ['config_frete','pagamento','cupons','cardapio'] },
+        { master: 'n_master_agendamento',  content: 'n_grupo_agendamento',  keys: ['agendamento_ativo','agendamento_multi_profissional','agendamento_lista_espera'] },
+        { master: 'n_master_loja',         content: 'n_grupo_loja',         keys: ['loja_roupas'] },
+    ];
+    grupos.forEach(({ master, content, keys }) => {
+        const grupoAtivo = keys.some(k => mods[k]);
+        const masterEl = document.getElementById(master);
+        const contentEl = document.getElementById(content);
+        if (masterEl) masterEl.checked = grupoAtivo;
+        if (contentEl) {
+            if (grupoAtivo) contentEl.classList.remove('disabled');
+            else contentEl.classList.add('disabled');
+        }
+    });
+
+    // 2. Aplicar Cores
+    const t = preset.tema;
+    _setColorField('n_editTemaCorPrimaria',  'n_editTemaCorPrimariaHex',  t.primaria);
+    _setColorField('n_editTemaCorBotao',     'n_editTemaCorBotaoHex',     t.botao);
+    _setColorField('n_editTemaCorBg',        'n_editTemaCorBgHex',        t.bg);
+    _setColorField('n_editTemaCorSurface',   'n_editTemaCorSurfaceHex',   t.surface);
+    previewTemaNovo();
+
+    // 3. Mostrar toast de confirmação
+    const nomes = { restaurante: 'Bares/Restaurantes 🍽️', barbearia: 'Barbearia 💈', loja_roupas: 'Loja de Roupas 👗' };
+    showToast(`Preset "${nomes[segmento] || segmento}" aplicado! Revise módulos e tema.`);
+
+    // 4. Navegar automaticamente para a aba de módulos para revisão
+    switchTab('modalNovaEmpresa', 'tab-modulos');
 };
 
 // Restaura as cores para o padrão Premium

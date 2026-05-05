@@ -254,10 +254,20 @@ function _aplicarWhiteLabel(data) {
     set('--btn-text',             texto);
     set('--color-button-hover',   _darkenHex(botao, 8));
 
+    // Variáveis Semânticas (Arquitetura Premium)
+    set('--bg-page',              bg);
+    set('--bg-card',              surface);
+    set('--bg-input',             surface);
+    set('--text-primary',         texto);
+    set('--accent-primary',       primaria);
+    set('--accent-primary-hover', _darkenHex(primaria, 8));
+    set('--border-default',       borda);
+    set('--btn-primary-bg',       botao);
+    set('--btn-primary-text',     texto);
+
     set('--primary',       primaria);
     set('--primary-hover', _darkenHex(primaria, 8));
     set('--bg-body',       bg);
-    set('--bg-card',       surface);
     set('--border-color',  borda);
 
     set('--accent-waiter', primaria);
@@ -294,6 +304,18 @@ function _aplicarWhiteLabel(data) {
 
     // Mostrar body após aplicar tema para evitar flash
     _finalizarCarregamentoTenant();
+
+    // Aplicar classe de tema via ThemeManager (baseado no segmento)
+    const SEGMENTO_THEME_MAP = {
+        restaurante: 'restaurant',
+        barbearia:   'barbershop',
+        loja_roupas: 'clothing'
+    };
+    const themeClass = SEGMENTO_THEME_MAP[data.segmento] || null;
+    if (themeClass && window.themeManager) {
+        window.themeManager.updateTheme(themeClass);
+        console.info('[Tenant] 🎨 Theme class aplicada:', themeClass);
+    }
 
     console.info('[Tenant] ✅ Tema aplicado:', primaria, '| Empresa:', brandName);
 }
