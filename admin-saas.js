@@ -211,9 +211,12 @@ document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
 
     // Reset Tema
     _setColorField('n_editTemaCorPrimaria',   'n_editTemaCorPrimariaHex',   '#E5B25D');
+    _setColorField('n_editTemaCorSecundaria', 'n_editTemaCorSecundariaHex', '#1E90FF');
     _setColorField('n_editTemaCorBotao',      'n_editTemaCorBotaoHex',      '#E5B25D');
     _setColorField('n_editTemaCorBg',         'n_editTemaCorBgHex',         '#0d0d0d');
     _setColorField('n_editTemaCorSurface',    'n_editTemaCorSurfaceHex',    '#1a1a1a');
+    _setColorField('n_editTemaCorBorda',      'n_editTemaCorBordaHex',      '#333333');
+    _setColorField('n_editTemaCorTexto',      'n_editTemaCorTextoHex',      '#ffffff');
     previewTemaNovo();
 
     // Reset Tabs
@@ -288,10 +291,13 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
 
     // Coletar Cores
     const tema = {
-        primaria: document.getElementById('n_editTemaCorPrimaria').value,
-        botao: document.getElementById('n_editTemaCorBotao').value,
-        bg: document.getElementById('n_editTemaCorBg').value,
-        surface: document.getElementById('n_editTemaCorSurface').value
+        primaria:   document.getElementById('n_editTemaCorPrimaria').value,
+        secundaria: document.getElementById('n_editTemaCorSecundaria').value,
+        botao:      document.getElementById('n_editTemaCorBotao').value,
+        bg:         document.getElementById('n_editTemaCorBg').value,
+        surface:    document.getElementById('n_editTemaCorSurface').value,
+        borda:      document.getElementById('n_editTemaCorBorda').value,
+        texto:      document.getElementById('n_editTemaCorTexto').value
     };
 
     try {
@@ -325,12 +331,12 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
                 modulos: modulosFinais,
                 segmento: p_segmento || null,
                 tema_cor_primaria: tema.primaria,
-                tema_cor_secundaria: PRESETS.tema.secundaria || '#1E90FF',
+                tema_cor_secundaria: tema.secundaria,
                 tema_cor_botao: tema.botao,
                 tema_cor_bg: tema.bg,
                 tema_cor_surface: tema.surface,
-                tema_cor_texto: '#ffffff',
-                tema_cor_borda: PRESETS.tema.borda || `rgba(229,178,93,0.2)`,
+                tema_cor_borda: tema.borda,
+                tema_cor_texto: tema.texto,
                 cor_primaria: tema.primaria // Legado
             })
             .eq('id', newId);
@@ -369,6 +375,8 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
     const tema_cor_botao      = document.getElementById('editTemaCorBotao').value;
     const tema_cor_bg         = document.getElementById('editTemaCorBg').value;
     const tema_cor_surface    = document.getElementById('editTemaCorSurface').value;
+    const tema_cor_borda      = document.getElementById('editTemaCorBorda').value;
+    const tema_cor_texto      = document.getElementById('editTemaCorTexto').value;
     const cor_primaria        = tema_cor_primaria; // sincronizar legado
 
     try {
@@ -380,7 +388,8 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
             .update({
                 nome, plano, status, cor_primaria,
                 tema_cor_primaria, tema_cor_secundaria,
-                tema_cor_botao, tema_cor_bg, tema_cor_surface
+                tema_cor_botao, tema_cor_bg, tema_cor_surface,
+                tema_cor_borda, tema_cor_texto
             })
             .eq('id', id);
 
@@ -426,7 +435,7 @@ window.previewTema = () => {
     const botao    = document.getElementById('editTemaCorBotao')?.value     || primaria;
 
     // Sync hex fields
-    ['editTemaCorPrimaria','editTemaCorSecundaria','editTemaCorBotao','editTemaCorBg','editTemaCorSurface'].forEach(id => {
+    ['editTemaCorPrimaria','editTemaCorSecundaria','editTemaCorBotao','editTemaCorBg','editTemaCorSurface','editTemaCorBorda','editTemaCorTexto'].forEach(id => {
         const picker = document.getElementById(id);
         const hexEl  = document.getElementById(id + 'Hex');
         if (picker && hexEl) hexEl.value = picker.value;
@@ -479,7 +488,7 @@ window.previewTemaNovo = () => {
     const botao    = document.getElementById('n_editTemaCorBotao')?.value     || primaria;
 
     // Sync hex fields
-    ['n_editTemaCorPrimaria','n_editTemaCorBotao','n_editTemaCorBg','n_editTemaCorSurface'].forEach(id => {
+    ['n_editTemaCorPrimaria','n_editTemaCorSecundaria','n_editTemaCorBotao','n_editTemaCorBg','n_editTemaCorSurface','n_editTemaCorBorda','n_editTemaCorTexto'].forEach(id => {
         const picker = document.getElementById(id);
         const hexEl  = document.getElementById(id + 'Hex');
         if (picker && hexEl) hexEl.value = picker.value;
@@ -522,8 +531,8 @@ function _getSegmentPreset(segmento) {
                 agendamento_lista_espera: false, agendamento_mensagens: false, agendamento_fidelidade: false,
                 loja_roupas: false
             },
-            tema: { primaria: '#FF6B35', botao: '#FF6B35', bg: '#0f0f0f', surface: '#1a1a1a',
-                    secundaria: '#F54719', borda: 'rgba(255,107,53,0.25)', themeClass: 'restaurant' }
+            tema: { primaria: '#FF6B35', secundaria: '#F54719', botao: '#FF6B35', bg: '#0f0f0f', surface: '#1a1a1a',
+                    borda: 'rgba(255,107,53,0.25)', texto: '#ffffff', themeClass: 'restaurant' }
         },
         barbearia: {
             modulos: {
@@ -540,8 +549,8 @@ function _getSegmentPreset(segmento) {
                 config_personalizacao: true, config_endereco: true, config_cancelamentos: true,
                 loja_roupas: false
             },
-            tema: { primaria: '#d4af37', botao: '#d4af37', bg: '#0a0a0a', surface: '#161616',
-                    secundaria: '#c4952e', borda: 'rgba(212,175,55,0.2)', themeClass: 'barbershop' }
+            tema: { primaria: '#d4af37', secundaria: '#c4952e', botao: '#d4af37', bg: '#0a0a0a', surface: '#161616',
+                    borda: 'rgba(212,175,55,0.2)', texto: '#ffffff', themeClass: 'barbershop' }
         },
         loja_roupas: {
             modulos: {
@@ -559,11 +568,11 @@ function _getSegmentPreset(segmento) {
                 agendamento_ativo: false, agendamento_multi_profissional: false,
                 agendamento_lista_espera: false, agendamento_mensagens: false, agendamento_fidelidade: false
             },
-            tema: { primaria: '#d4af37', botao: '#d4af37', bg: '#0f172a', surface: '#1e293b',
-                    secundaria: '#1e3a8a', borda: 'rgba(212,175,55,0.2)', themeClass: 'clothing' }
+            tema: { primaria: '#d4af37', secundaria: '#1e3a8a', botao: '#d4af37', bg: '#0f172a', surface: '#1e293b',
+                    borda: 'rgba(212,175,55,0.2)', texto: '#ffffff', themeClass: 'clothing' }
         }
     };
-    return PRESETS[segmento] || { modulos: {}, tema: { primaria: '#E5B25D', botao: '#E5B25D', bg: '#0d0d0d', surface: '#1a1a1a', secundaria: '#1E90FF', borda: 'rgba(229,178,93,0.2)', themeClass: null } };
+    return PRESETS[segmento] || { modulos: {}, tema: { primaria: '#E5B25D', secundaria: '#1E90FF', botao: '#E5B25D', bg: '#0d0d0d', surface: '#1a1a1a', borda: 'rgba(229,178,93,0.2)', texto: '#ffffff', themeClass: null } };
 }
 
 /**
@@ -603,9 +612,12 @@ window.aplicarPresetSegmento = (segmento) => {
     // 2. Aplicar Cores
     const t = preset.tema;
     _setColorField('n_editTemaCorPrimaria',  'n_editTemaCorPrimariaHex',  t.primaria);
+    _setColorField('n_editTemaCorSecundaria','n_editTemaCorSecundariaHex',t.secundaria);
     _setColorField('n_editTemaCorBotao',     'n_editTemaCorBotaoHex',     t.botao);
     _setColorField('n_editTemaCorBg',        'n_editTemaCorBgHex',        t.bg);
     _setColorField('n_editTemaCorSurface',   'n_editTemaCorSurfaceHex',   t.surface);
+    _setColorField('n_editTemaCorBorda',     'n_editTemaCorBordaHex',     t.borda);
+    _setColorField('n_editTemaCorTexto',     'n_editTemaCorTextoHex',     t.texto);
     previewTemaNovo();
 
     // 3. Mostrar toast de confirmação

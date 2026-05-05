@@ -122,11 +122,13 @@ function renderDadosBasicos(emp) {
     });
  
     // Tema
-    if(document.getElementById('editTemaCorPrimaria')) document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
+    if(document.getElementById('editTemaCorPrimaria'))   document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
     if(document.getElementById('editTemaCorSecundaria')) document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
-    if(document.getElementById('editTemaCorBotao')) document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
-    if(document.getElementById('editTemaCorBg')) document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
-    if(document.getElementById('editTemaCorSurface')) document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
+    if(document.getElementById('editTemaCorBotao'))      document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
+    if(document.getElementById('editTemaCorBg'))         document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
+    if(document.getElementById('editTemaCorSurface'))    document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
+    if(document.getElementById('editTemaCorBorda'))      document.getElementById('editTemaCorBorda').value = emp.tema_cor_borda || 'rgba(229,178,93,0.2)';
+    if(document.getElementById('editTemaCorTexto'))      document.getElementById('editTemaCorTexto').value = emp.tema_cor_texto || '#ffffff';
     previewTema();
  
     // URLs
@@ -162,10 +164,13 @@ function renderDadosBasicos(emp) {
         const el = document.getElementById(id);
         if (el) el.style.background = color || '#333';
     };
-    setSwatch('swatch-primaria', emp.tema_cor_primaria);
-    setSwatch('swatch-botao',    emp.tema_cor_botao || emp.tema_cor_primaria);
-    setSwatch('swatch-bg',       emp.tema_cor_bg);
-    setSwatch('swatch-surface',  emp.tema_cor_surface || '#1a1a1a');
+    setSwatch('swatch-primaria',  emp.tema_cor_primaria);
+    setSwatch('swatch-secundaria',emp.tema_cor_secundaria || '#1E90FF');
+    setSwatch('swatch-botao',     emp.tema_cor_botao || emp.tema_cor_primaria);
+    setSwatch('swatch-bg',        emp.tema_cor_bg);
+    setSwatch('swatch-surface',   emp.tema_cor_surface || '#1a1a1a');
+    setSwatch('swatch-borda',     emp.tema_cor_borda);
+    setSwatch('swatch-texto',     emp.tema_cor_texto);
 
     const adminLink = document.getElementById('infoUrlAdmin');
     if (adminLink) adminLink.href = urlAdmin;
@@ -331,11 +336,13 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         if (el) modulos[key] = el.checked;
     });
  
-    const tema_cor_primaria = document.getElementById('editTemaCorPrimaria')?.value || '#E5B25D';
+    const tema_cor_primaria   = document.getElementById('editTemaCorPrimaria')?.value || '#E5B25D';
     const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria')?.value || '#1E90FF';
-    const tema_cor_botao = document.getElementById('editTemaCorBotao')?.value || '#E5B25D';
-    const tema_cor_bg = document.getElementById('editTemaCorBg')?.value || '#0d0d0d';
-    const tema_cor_surface = document.getElementById('editTemaCorSurface')?.value || '#1a1a1a';
+    const tema_cor_botao      = document.getElementById('editTemaCorBotao')?.value || '#E5B25D';
+    const tema_cor_bg         = document.getElementById('editTemaCorBg')?.value || '#0d0d0d';
+    const tema_cor_surface    = document.getElementById('editTemaCorSurface')?.value || '#1a1a1a';
+    const tema_cor_borda      = document.getElementById('editTemaCorBorda')?.value || 'rgba(229,178,93,0.2)';
+    const tema_cor_texto      = document.getElementById('editTemaCorTexto')?.value || '#ffffff';
  
     try {
         btn.disabled = true;
@@ -359,6 +366,8 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 tema_cor_botao,
                 tema_cor_bg,
                 tema_cor_surface,
+                tema_cor_borda,
+                tema_cor_texto,
                 cor_primaria: tema_cor_primaria // Legado
             })
             .eq('id', EMPRESA_ID);
@@ -628,6 +637,8 @@ window.previewTema = () => {
     const primaria = document.getElementById('editTemaCorPrimaria').value;
     const botao = document.getElementById('editTemaCorBotao').value;
     const bg = document.getElementById('editTemaCorBg').value;
+    const surface = document.getElementById('editTemaCorSurface').value;
+    const texto = document.getElementById('editTemaCorTexto')?.value || '#ffffff';
 
     const preview = document.getElementById('themePreview');
     const card = document.getElementById('previewCard');
@@ -635,8 +646,8 @@ window.previewTema = () => {
 
     if (preview) preview.style.background = bg;
     if (card) {
-        card.style.background = 'rgba(255,255,255,0.05)';
-        card.style.color = primaria;
+        card.style.background = surface;
+        card.style.color = texto;
     }
     if (btn) {
         btn.style.background = botao;
@@ -649,6 +660,9 @@ window.restaurarTemaPadrao = () => {
     document.getElementById('editTemaCorSecundaria').value = '#1E90FF';
     document.getElementById('editTemaCorBotao').value = '#E5B25D';
     document.getElementById('editTemaCorBg').value = '#0d0d0d';
+    document.getElementById('editTemaCorSurface').value = '#1a1a1a';
+    document.getElementById('editTemaCorBorda').value = 'rgba(229,178,93,0.2)';
+    document.getElementById('editTemaCorTexto').value = '#ffffff';
     previewTema();
     showToast('Padrão restaurado (não esqueça de salvar)');
 };
