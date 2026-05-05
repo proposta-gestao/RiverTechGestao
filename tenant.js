@@ -82,7 +82,7 @@ function _createTenantLoader() {
     loader.innerHTML = `
         <div class="tenant-loader-inner">
             <div class="tenant-loader-spinner"></div>
-            <div>Carregando tema da loja...</div>
+            <div>CARREGANDO</div>
         </div>
     `;
     document.body.insertAdjacentElement('afterbegin', loader);
