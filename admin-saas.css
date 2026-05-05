@@ -138,6 +138,11 @@ input:focus, select:focus {
     display: grid;
     grid-template-columns: 260px 1fr;
     min-height: 100vh;
+    transition: grid-template-columns 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-layout.collapsed {
+    grid-template-columns: 80px 1fr;
 }
 
 /* SIDEBAR */
@@ -148,11 +153,42 @@ input:focus, select:focus {
     flex-direction: column;
 }
 .sidebar-header {
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    overflow: hidden;
+}
+
+.sidebar-logo-wrap {
+    display: flex;
+    align-items: center;
     gap: 10px;
+    white-space: nowrap;
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.btn-toggle-sidebar {
+    background: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+.btn-toggle-sidebar:hover {
+    border-color: var(--accent-blue);
+    color: var(--text-primary);
 }
 .sidebar-header h2 {
     font-family: 'Outfit', sans-serif;
@@ -178,11 +214,42 @@ input:focus, select:focus {
 .nav-item {
     color: var(--text-secondary);
     text-decoration: none;
-    padding: 0.8rem 1rem;
+    padding: 0.8rem 1.2rem;
     border-radius: var(--radius);
     transition: all 0.2s;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    white-space: nowrap;
 }
+
+.nav-text {
+    transition: opacity 0.3s;
+}
+
+/* Estado Recolhido Visual */
+.admin-layout.collapsed .sidebar-logo-wrap {
+    opacity: 0;
+    transform: translateX(-20px);
+    pointer-events: none;
+}
+
+.admin-layout.collapsed .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.admin-layout.collapsed .nav-text {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.admin-layout.collapsed .nav-item {
+    justify-content: center;
+    padding: 0.8rem;
+}
+
 .nav-item:hover {
     background: var(--bg-hover);
     color: var(--text-primary);

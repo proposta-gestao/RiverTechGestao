@@ -95,12 +95,55 @@ async function iniciarPainel() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminLayout').style.display = 'grid';
     
+    aplicarEstadoSidebar();
     carregarEmpresas();
 }
 
 // ==========================================
 // 6. Navegação Sidebar
 // ==========================================
+
+/**
+ * Gerencia o estado do sidebar (recolhido/expandido) com persistência
+ */
+function aplicarEstadoSidebar() {
+    const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    const layout = document.getElementById('adminLayout');
+    const btn = document.getElementById('btnToggleSidebar');
+    if (!layout || !btn) return;
+
+    if (isCollapsed) {
+        layout.classList.add('collapsed');
+        btn.title = "Expandir Menu";
+    } else {
+        layout.classList.remove('collapsed');
+        btn.title = "Recolher Menu";
+    }
+}
+
+// Toggle Sidebar (Desktop e Mobile)
+document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+    const layout = document.getElementById('adminLayout');
+    const sidebar = document.getElementById('sidebar');
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+        // No Mobile: Apenas fecha o menu (que é off-canvas)
+        sidebar.classList.remove('active');
+        document.getElementById('sidebarOverlay').style.display = 'none';
+    } else {
+        // No Desktop: Recolhe/Expande e salva preferência
+        const isCollapsed = layout.classList.toggle('collapsed');
+        localStorage.setItem('sidebar_collapsed', isCollapsed);
+        
+        const btn = document.getElementById('btnToggleSidebar');
+        if (isCollapsed) {
+            btn.title = "Expandir Menu";
+        } else {
+            btn.title = "Recolher Menu";
+        }
+    }
+});
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
