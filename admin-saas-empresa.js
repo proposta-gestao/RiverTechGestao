@@ -122,11 +122,11 @@ function renderDadosBasicos(emp) {
     });
  
     // Tema
-    document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
-    document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
-    document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
-    document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
-    document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
+    if(document.getElementById('editTemaCorPrimaria')) document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
+    if(document.getElementById('editTemaCorSecundaria')) document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
+    if(document.getElementById('editTemaCorBotao')) document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
+    if(document.getElementById('editTemaCorBg')) document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
+    if(document.getElementById('editTemaCorSurface')) document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
     previewTema();
  
     // URLs
