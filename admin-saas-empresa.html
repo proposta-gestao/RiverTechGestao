@@ -712,7 +712,7 @@
                     </div>
                 </div>
 
-                <!-- Grupo: Agendamento 🆕 -->
+                <!-- Grupo: Agendamento -->
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_agendamento')">
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -760,6 +760,32 @@
                             <span>🏆 Clube de Fidelidade</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_agendamento_fidelidade" onchange="atualizarModulo('agendamento_fidelidade', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grupo: Loja 🆕 -->
+                <div class="module-card">
+                    <div class="module-header" onclick="toggleAccordionNovo('grupo_loja')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="accordion-icon" id="icon_grupo_loja">▼</span>
+                            <div>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">🛍️ LOJA DE ROUPAS</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Varejo e Grade de Produtos</small>
+                            </div>
+                        </div>
+                        <label class="switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="master_loja" onchange="toggleGrupoModulo('grupo_loja', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="grupo-content collapsed" id="grupo_loja">
+                        <div class="module-item">
+                            <span>🛍️ Módulo Loja Ativo</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_loja_roupas" onchange="atualizarModulo('loja_roupas', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>

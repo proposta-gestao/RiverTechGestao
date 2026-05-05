@@ -81,7 +81,9 @@ const LISTA_MODULOS = [
     'cupons', 'cardapio', 'pagamento',
     // Módulos de Agendamento
     'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
-    'agendamento_mensagens', 'agendamento_fidelidade'
+    'agendamento_mensagens', 'agendamento_fidelidade',
+    // Módulo de Loja de Roupas
+    'loja_roupas'
 ];
 
 function renderDadosBasicos(emp) {

@@ -3,9 +3,12 @@
 // Responsável por gerenciar produtos, categorias e estoque.
 // ============================================================
 
+(function() {
+    'use strict';
+
 // Evitar inicialização dupla
-if (window.__LOJA_INICIADO) return;
-window.__LOJA_INICIADO = true;
+if (window.__LOJA_INICIADO_SCRIPT) return;
+window.__LOJA_INICIADO_SCRIPT = true;
 
 window.__LOJA = window.__LOJA || {};
 
@@ -662,3 +665,5 @@ window.__LOJA.ajustarEstoque = async function(id, delta) {
 if (document.getElementById('tab-loja')) {
     window.__LOJA.init();
 }
+
+})();

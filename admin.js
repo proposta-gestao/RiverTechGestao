@@ -856,6 +856,10 @@ function aplicarFiltrosDeModulos() {
     // 8. LOJA DE ROUPAS
     const mLoja = isModuloAtivo('loja_roupas');
     toggleElement(document.getElementById('nav-loja'), mLoja, 'flex');
+    if (mLoja) {
+        const cssLoja = document.getElementById('loja-css');
+        if (cssLoja) cssLoja.disabled = false;
+    }
 
     // --- Redirecionamento Automático (Segurança e UX) ---
     
