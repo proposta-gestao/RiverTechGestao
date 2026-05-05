@@ -21,8 +21,91 @@
  * O RLS do Supabase valida e garante o isolamento real.
  */
 
-// Ocultar body inicialmente para evitar flash de cores antigas
-document.body.style.display = 'none';
+const _TENANT_LOADING_CLASS = 'tenant-loading';
+const _TENANT_READY_CLASS = 'tenant-ready';
+document.documentElement.classList.add(_TENANT_LOADING_CLASS);
+
+function _createTenantLoader() {
+    if (!document.body || document.body.querySelector('.tenant-loader')) return;
+
+    const style = document.createElement('style');
+    style.textContent = `
+        html.tenant-loading body > :not(.tenant-loader) {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            user-select: none !important;
+        }
+        html.tenant-loading .tenant-loader {
+            position: fixed !important;
+            inset: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #080808 !important;
+            color: #fff !important;
+            z-index: 99999 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        html.tenant-ready .tenant-loader {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 180ms ease-in !important;
+        }
+        .tenant-loader-inner {
+            text-align: center;
+            max-width: 320px;
+            padding: 1.5rem 1.75rem;
+            border-radius: 24px;
+            background: rgba(15, 15, 15, 0.94);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .tenant-loader-spinner {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.16);
+            border-top-color: #E5B25D;
+            animation: tenant-spinner 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes tenant-spinner {
+            to { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    const loader = document.createElement('div');
+    loader.className = 'tenant-loader';
+    loader.setAttribute('aria-live', 'polite');
+    loader.innerHTML = `
+        <div class="tenant-loader-inner">
+            <div class="tenant-loader-spinner"></div>
+            <div>Carregando tema da loja...</div>
+        </div>
+    `;
+    document.body.insertAdjacentElement('afterbegin', loader);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _createTenantLoader);
+} else {
+    _createTenantLoader();
+}
+
+let _tenantLoadFallback = setTimeout(() => {
+    if (document.documentElement.classList.contains(_TENANT_LOADING_CLASS)) {
+        console.warn('[Tenant] Exibindo página após timeout de fallback.');
+        _finalizarCarregamentoTenant();
+    }
+}, 5000);
+
+function _finalizarCarregamentoTenant() {
+    clearTimeout(_tenantLoadFallback);
+    document.documentElement.classList.remove(_TENANT_LOADING_CLASS);
+    document.documentElement.classList.add(_TENANT_READY_CLASS);
+}
 
 // ================================================================
 // PASSO 1: CAPTURAR O SLUG DA EMPRESA A PARTIR DA URL
@@ -210,7 +293,7 @@ function _aplicarWhiteLabel(data) {
     }
 
     // Mostrar body após aplicar tema para evitar flash
-    document.body.style.display = '';
+    _finalizarCarregamentoTenant();
 
     console.info('[Tenant] ✅ Tema aplicado:', primaria, '| Empresa:', brandName);
 }
@@ -219,6 +302,7 @@ function _aplicarWhiteLabel(data) {
 // PASSO 6: TELA DE ERRO — EMPRESA NÃO ENCONTRADA
 // ================================================================
 function _mostrarTelaNaoEncontrada(slug) {
+    _finalizarCarregamentoTenant();
     // Garante que o body seja exibido mesmo se estiver oculto
     document.body.style.display = 'flex';
     document.body.style.flexDirection = 'column';

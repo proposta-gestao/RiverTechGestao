@@ -1,11 +1,33 @@
 
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" class="tenant-loading">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Admin | RiverTech</title>
+    <style>
+        html.tenant-loading body > :not(.tenant-loader) {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            user-select: none !important;
+        }
+        html.tenant-loading .tenant-loader {
+            position: fixed !important;
+            inset: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #080808 !important;
+            color: #fff !important;
+            z-index: 99999 !important;
+        }
+        html.tenant-ready .tenant-loader {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 180ms ease-in !important;
+        }
+    </style>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
