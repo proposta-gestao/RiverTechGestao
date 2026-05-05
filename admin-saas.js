@@ -93,76 +93,73 @@ document.getElementById('btnSair').addEventListener('click', async () => {
 // ==========================================
 async function iniciarPainel() {
     document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminLayout').style.display = 'grid';
+    document.getElementById('adminLayout').style.display = 'flex';
     
-    aplicarEstadoSidebar();
     carregarEmpresas();
 }
 
 // ==========================================
-// 6. Navegação Sidebar
+// 6. Navegação (Topbar e Mobile)
 // ==========================================
 
-/**
- * Gerencia o estado do sidebar (recolhido/expandido) com persistência
- */
-function aplicarEstadoSidebar() {
-    const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
-    const layout = document.getElementById('adminLayout');
-    const btn = document.getElementById('btnToggleSidebar');
-    if (!layout || !btn) return;
+function alternarSecao(target) {
+    // Esconder todas as seções
+    document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+    // Mostrar a seção alvo
+    const secao = document.getElementById(`view-${target}`);
+    if (secao) secao.classList.add('active');
 
-    if (isCollapsed) {
-        layout.classList.add('collapsed');
-        btn.title = "Expandir Menu";
-        const icon = btn.querySelector('.toggle-icon');
-        if (icon) icon.style.transform = 'rotate(180deg)';
-    } else {
-        layout.classList.remove('collapsed');
-        btn.title = "Recolher Menu";
-        const icon = btn.querySelector('.toggle-icon');
-        if (icon) icon.style.transform = 'rotate(0deg)';
-    }
+    // Atualizar estado ativo nos botões (Desktop)
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.getAttribute('data-target') === target);
+    });
+
+    // Atualizar estado ativo nos itens (Mobile)
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-target') === target);
+    });
 }
 
-// Toggle Sidebar (Desktop e Mobile)
-document.getElementById('btnToggleSidebar').addEventListener('click', () => {
-    const layout = document.getElementById('adminLayout');
-    const sidebar = document.getElementById('sidebar');
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-        // No Mobile: Apenas fecha o menu (que é off-canvas)
-        sidebar.classList.remove('active');
-        document.getElementById('sidebarOverlay').style.display = 'none';
-    } else {
-        // No Desktop: Recolhe/Expande e salva preferência
-        const isCollapsed = layout.classList.toggle('collapsed');
-        localStorage.setItem('sidebar_collapsed', isCollapsed);
-        
-        const btn = document.getElementById('btnToggleSidebar');
-        const icon = btn.querySelector('.toggle-icon');
-        if (isCollapsed) {
-            btn.title = "Expandir Menu";
-            if (icon) icon.style.transform = 'rotate(180deg)';
-        } else {
-            btn.title = "Recolher Menu";
-            if (icon) icon.style.transform = 'rotate(0deg)';
-        }
-    }
+// Listeners para Abas Desktop
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-target');
+        alternarSecao(target);
+    });
 });
+
+// Listeners para Menu Mobile
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
-        
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        item.classList.add('active');
-
-        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         const target = item.getAttribute('data-target');
-        document.getElementById(`view-${target}`).classList.add('active');
+        alternarSecao(target);
+        
+        // Fecha o menu mobile após clicar
+        fecharMenuMobile();
     });
 });
+
+// Controle do Menu Mobile
+function abrirMenuMobile() {
+    document.getElementById('sidebar').classList.add('active');
+}
+
+function fecharMenuMobile() {
+    document.getElementById('sidebar').classList.remove('active');
+}
+
+if (document.getElementById('btnMobileMenu')) {
+    document.getElementById('btnMobileMenu').addEventListener('click', abrirMenuMobile);
+}
+
+if (document.getElementById('btnCloseMobile')) {
+    document.getElementById('btnCloseMobile').addEventListener('click', fecharMenuMobile);
+}
+
+if (document.getElementById('sidebarOverlay')) {
+    document.getElementById('sidebarOverlay').addEventListener('click', fecharMenuMobile);
+}
 
 // ==========================================
 // 7. Gerenciamento de Empresas (Tenants)

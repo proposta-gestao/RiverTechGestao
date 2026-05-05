@@ -86,39 +86,47 @@
     <!-- Admin SaaS Layout -->
     <div class="admin-layout" id="adminLayout" style="display: none;">
         
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <button id="btnMobileMenu" class="btn-mobile-menu">☰</button>
-            <span class="mobile-logo">SaaS Admin</span>
-        </div>
-        
-        <!-- Sidebar Overlay -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo-wrap">
-                    <h2 class="sidebar-title">SaaS Admin</h2>
+        <!-- Top Header -->
+        <header class="admin-topbar">
+            <div class="topbar-container">
+                <div class="topbar-logo">
+                    <h2>SaaS Admin</h2>
                     <span class="badge-super">Global</span>
                 </div>
-                <button id="btnToggleSidebar" class="btn-toggle-sidebar" title="Recolher Menu">
-                    <span class="toggle-icon">❮</span>
-                </button>
+                
+                <nav class="admin-tabs">
+                    <button class="nav-tab active" data-target="dashboard">
+                        <span class="tab-icon">📊</span>
+                        <span class="tab-text">Dashboard</span>
+                    </button>
+                    <button class="nav-tab" data-target="empresas">
+                        <span class="tab-icon">🏢</span>
+                        <span class="tab-text">Empresas</span>
+                    </button>
+                </nav>
+
+                <div class="topbar-actions">
+                    <button id="btnSair" class="btn-logout">Sair</button>
+                </div>
+
+                <!-- Mobile Menu Button (Only visible on mobile) -->
+                <button id="btnMobileMenu" class="btn-mobile-toggle">☰</button>
+            </div>
+        </header>
+
+        <!-- Sidebar Overlay (Still needed for mobile drawer) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Sidebar (Mobile Drawer only) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Menu</h2>
+                <button id="btnCloseMobile" class="btn-close-mobile">&times;</button>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-target="dashboard" title="Dashboard">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="#" class="nav-item" data-target="empresas" title="Empresas (Tenants)">
-                    <span class="nav-icon">🏢</span>
-                    <span class="nav-text">Empresas (Tenants)</span>
-                </a>
+                <a href="#" class="nav-item active" data-target="dashboard">📊 Dashboard</a>
+                <a href="#" class="nav-item" data-target="empresas">🏢 Empresas</a>
             </nav>
-            <div class="sidebar-footer">
-                <button id="btnSair" class="btn-outline">Sair da Conta</button>
-            </div>
         </aside>
 
         <!-- Main Content -->
