@@ -151,6 +151,10 @@ input:focus, select:focus {
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    z-index: 1001;
 }
 .sidebar-header {
     padding: 1rem 1.5rem;
@@ -239,9 +243,7 @@ input:focus, select:focus {
 
 /* Estado Recolhido Visual */
 .admin-layout.collapsed .sidebar-logo-wrap {
-    opacity: 0;
-    transform: translateX(-20px);
-    pointer-events: none;
+    display: none;
 }
 
 .admin-layout.collapsed .toggle-icon {
@@ -249,8 +251,7 @@ input:focus, select:focus {
 }
 
 .admin-layout.collapsed .nav-text {
-    opacity: 0;
-    pointer-events: none;
+    display: none;
 }
 
 .admin-layout.collapsed .nav-item {
@@ -262,6 +263,10 @@ input:focus, select:focus {
 .admin-layout.collapsed .sidebar-header {
     justify-content: center;
     padding: 1rem 0;
+}
+
+.admin-layout.collapsed .sidebar-nav {
+    padding: 1rem 0.5rem;
 }
 
 .nav-item:hover {
@@ -619,4 +624,46 @@ input[type="color"] {
     height: 18px;
     cursor: pointer;
     accent-color: var(--accent-blue);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-layout.collapsed {
+        grid-template-columns: 1fr;
+    }
+
+    .mobile-header {
+        display: flex;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: -260px;
+        top: 0;
+        bottom: 0;
+        width: 260px;
+        z-index: 1000;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100vh;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .sidebar.active + .sidebar-overlay {
+        display: block;
+    }
+    
+    .btn-toggle-sidebar {
+        display: none; /* Não precisamos do toggle de desktop no mobile */
+    }
+
+    .main-content {
+        padding: 1rem;
+    }
 }
