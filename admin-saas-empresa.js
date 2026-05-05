@@ -331,11 +331,11 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         if (el) modulos[key] = el.checked;
     });
  
-    const tema_cor_primaria = document.getElementById('editTemaCorPrimaria').value;
-    const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
-    const tema_cor_botao = document.getElementById('editTemaCorBotao').value;
-    const tema_cor_bg = document.getElementById('editTemaCorBg').value;
-    const tema_cor_surface = document.getElementById('editTemaCorSurface').value;
+    const tema_cor_primaria = document.getElementById('editTemaCorPrimaria')?.value || '#E5B25D';
+    const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria')?.value || '#1E90FF';
+    const tema_cor_botao = document.getElementById('editTemaCorBotao')?.value || '#E5B25D';
+    const tema_cor_bg = document.getElementById('editTemaCorBg')?.value || '#0d0d0d';
+    const tema_cor_surface = document.getElementById('editTemaCorSurface')?.value || '#1a1a1a';
  
     try {
         btn.disabled = true;
