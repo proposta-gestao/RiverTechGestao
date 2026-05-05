@@ -1511,8 +1511,11 @@ async function carregarGaleria(preSelecionada = '') {
     }
 }
 
-document.getElementById('filtroGaleria').oninput = () => renderizarGradeGaleria('imageGalleryGrid', false);
-document.getElementById('filtroGaleriaCompleta').oninput = () => renderizarGradeGaleria('imageGalleryGridCompleta', true);
+const elFiltroGaleria = document.getElementById('filtroGaleria');
+if (elFiltroGaleria) elFiltroGaleria.oninput = () => renderizarGradeGaleria('imageGalleryGrid', false);
+
+const elFiltroGaleriaCompleta = document.getElementById('filtroGaleriaCompleta');
+if (elFiltroGaleriaCompleta) elFiltroGaleriaCompleta.oninput = () => renderizarGradeGaleria('imageGalleryGridCompleta', true);
 
 window.abrirModalGaleriaCompleta = abrirModalGaleriaCompleta;
 function abrirModalGaleriaCompleta() {
