@@ -95,75 +95,12 @@ async function iniciarPainel() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminLayout').style.display = 'grid';
     
-    aplicarEstadoSidebar();
     carregarEmpresas();
 }
 
+// ==========================================
 // 6. Navegação Sidebar
 // ==========================================
-
-/**
- * Gerencia o estado do sidebar (recolhido/expandido)
- */
-function aplicarEstadoSidebar() {
-    const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
-    const layout = document.getElementById('adminLayout');
-    const btn = document.getElementById('btnToggleSidebar');
-    const icon = btn.querySelector('.toggle-icon');
-
-    if (isCollapsed) {
-        layout.classList.add('collapsed');
-        if (icon) icon.style.transform = 'rotate(180deg)';
-        btn.title = "Expandir Menu";
-    } else {
-        layout.classList.remove('collapsed');
-        if (icon) icon.style.transform = 'rotate(0deg)';
-        btn.title = "Recolher Menu";
-    }
-}
-
-// Toggle Sidebar
-document.getElementById('btnToggleSidebar').addEventListener('click', () => {
-    const layout = document.getElementById('adminLayout');
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-        // No Mobile: Apenas abre/fecha o menu lateral (off-canvas)
-        document.getElementById('sidebar').classList.toggle('active');
-        const isVisible = document.getElementById('sidebar').classList.contains('active');
-        document.getElementById('sidebarOverlay').style.display = isVisible ? 'block' : 'none';
-    } else {
-        // No Desktop: Recolhe/Expande o menu lateral (collapsible)
-        const isCollapsed = layout.classList.toggle('collapsed');
-        localStorage.setItem('sidebar_collapsed', isCollapsed);
-        
-        // Atualizar UI (Ícone e Tooltip)
-        const btn = document.getElementById('btnToggleSidebar');
-        const icon = btn.querySelector('.toggle-icon');
-        
-        if (isCollapsed) {
-            if (icon) icon.style.transform = 'rotate(180deg)';
-            btn.title = "Expandir Menu";
-        } else {
-            if (icon) icon.style.transform = 'rotate(0deg)';
-            btn.title = "Recolher Menu";
-        }
-    }
-});
-
-const btnMobile = document.getElementById('btnMobileMenu');
-if (btnMobile) {
-    btnMobile.addEventListener('click', () => {
-        document.getElementById('sidebar').classList.add('active');
-        document.getElementById('sidebarOverlay').style.display = 'block';
-    });
-}
-
-document.getElementById('sidebarOverlay').addEventListener('click', () => {
-    document.getElementById('sidebar').classList.remove('active');
-    document.getElementById('sidebarOverlay').style.display = 'none';
-});
-
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
         e.preventDefault();
@@ -174,12 +111,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
         const target = item.getAttribute('data-target');
         document.getElementById(`view-${target}`).classList.add('active');
-
-        // Se estiver no mobile, fecha ao clicar
-        if (window.innerWidth <= 768) {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('sidebarOverlay').style.display = 'none';
-        }
     });
 });
 
