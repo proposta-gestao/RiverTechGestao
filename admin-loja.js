@@ -3,9 +3,14 @@
 // Responsável por gerenciar produtos, categorias e estoque.
 // ============================================================
 
+// Evitar inicialização dupla
+if (window.__LOJA_INICIADO) return;
+window.__LOJA_INICIADO = true;
+
 window.__LOJA = window.__LOJA || {};
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Referência ao cliente Supabase (já inicializado pelo admin.js)
+const sb = window.sb;
 
 // Estado Local
 let lojaProdutos = [];
@@ -653,12 +658,7 @@ window.__LOJA.ajustarEstoque = async function(id, delta) {
     }
 };
 
-// Auto-init via event listener
-document.addEventListener('DOMContentLoaded', () => {
-    // Aguarda admin principal carregar
-    setTimeout(() => {
-        if (document.getElementById('tab-loja')) {
-            window.__LOJA.init();
-        }
-    }, 1000);
-});
+// Auto-init imediato (visto que é carregado via lazy load ou após DOMContentLoaded)
+if (document.getElementById('tab-loja')) {
+    window.__LOJA.init();
+}

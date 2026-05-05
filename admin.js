@@ -449,11 +449,15 @@ function switchTab(tabId, btn) {
 
     // Lazy Load do módulo de Loja de Roupas
     if (tabId === 'loja' && !window.__LOJA_INICIADO) {
+        window.__LOJA_INICIADO = true; // Marca como iniciado IMEDIATAMENTE para evitar duplicatas
         const cssLoja = document.getElementById('loja-css');
         if (cssLoja) cssLoja.disabled = false;
         const scriptLoja = document.createElement('script');
         scriptLoja.src = 'admin-loja.js?v=' + Date.now();
-        scriptLoja.onerror = () => showToast('Erro ao carregar módulo de loja.', 'error');
+        scriptLoja.onerror = () => {
+            window.__LOJA_INICIADO = false;
+            showToast('Erro ao carregar módulo de loja.', 'error');
+        };
         document.body.appendChild(scriptLoja);
     }
 }
