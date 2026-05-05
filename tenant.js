@@ -608,12 +608,13 @@ function isModuloAtivo(modulo) {
     const mods = window.TENANT.modulos || {};
     let status;
     
-    if (mods[modulo] === undefined) {
-        status = true; // backward compatibility
+    // Fallback de segurança: se o módulo de configuração nunca foi salvo (undefined), considera true
+    const modulosCore = ['config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos'];
+    if (modulosCore.includes(modulo) && mods[modulo] === undefined) {
+        status = true; // backward compatibility garantindo acesso
     } else {
         status = mods[modulo] === true;
     }
     
-    console.log(`[Modules Check] ${modulo}: ${status}`);
     return status;
 }

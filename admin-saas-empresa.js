@@ -324,8 +324,8 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
  
-    // Módulos - Coleta todos os estados atuais
-    const modulos = {};
+    // Módulos - Coleta todos os estados atuais mesclando com os existentes para não perder módulos ocultos
+    const modulos = { ...(EMPRESA_DATA.modulos || {}) };
     LISTA_MODULOS.forEach(key => {
         const el = document.getElementById(`mod_${key}`);
         if (el) modulos[key] = el.checked;

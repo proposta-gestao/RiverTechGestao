@@ -314,10 +314,15 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
 
         // 2. Aplicar Módulos, Tema e Segmento
         const PRESETS = _getSegmentPreset(p_segmento);
+        
+        // Mesclar os módulos do preset (que contêm módulos ocultos essenciais como config_endereco) 
+        // com os módulos coletados dos checkboxes na UI
+        const modulosFinais = { ...PRESETS.modulos, ...modulos };
+
         const { error: updateError } = await sb
             .from('empresas')
             .update({
-                modulos: modulos,
+                modulos: modulosFinais,
                 segmento: p_segmento || null,
                 tema_cor_primaria: tema.primaria,
                 tema_cor_secundaria: PRESETS.tema.secundaria || '#1E90FF',
