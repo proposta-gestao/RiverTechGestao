@@ -95,16 +95,55 @@ async function iniciarPainel() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminLayout').style.display = 'grid';
     
+    aplicarEstadoSidebar();
     carregarEmpresas();
 }
 
-// ==========================================
 // 6. Navegação Sidebar
 // ==========================================
+
+/**
+ * Gerencia o estado do sidebar (recolhido/expandido)
+ */
+function aplicarEstadoSidebar() {
+    const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+    const layout = document.getElementById('adminLayout');
+    const btn = document.getElementById('btnToggleSidebar');
+    const icon = btn.querySelector('.toggle-icon');
+
+    if (isCollapsed) {
+        layout.classList.add('collapsed');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+        btn.title = "Expandir Menu";
+    } else {
+        layout.classList.remove('collapsed');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+        btn.title = "Recolher Menu";
+    }
+}
+
 // Toggle Sidebar
 document.getElementById('btnToggleSidebar').addEventListener('click', () => {
-    document.getElementById('adminLayout').classList.toggle('collapsed');
-    document.getElementById('sidebar').classList.toggle('active'); // Para mobile
+    const layout = document.getElementById('adminLayout');
+    const isCollapsed = layout.classList.toggle('collapsed');
+    
+    // Persistir estado
+    localStorage.setItem('sidebar_collapsed', isCollapsed);
+    
+    // Atualizar UI
+    const btn = document.getElementById('btnToggleSidebar');
+    const icon = btn.querySelector('.toggle-icon');
+    
+    if (isCollapsed) {
+        if (icon) icon.style.transform = 'rotate(180deg)';
+        btn.title = "Expandir Menu";
+    } else {
+        if (icon) icon.style.transform = 'rotate(0deg)';
+        btn.title = "Recolher Menu";
+    }
+
+    // Mobile: Toggle active class
+    document.getElementById('sidebar').classList.toggle('active'); 
 });
 
 const btnMobile = document.getElementById('btnMobileMenu');
