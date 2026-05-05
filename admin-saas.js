@@ -125,25 +125,30 @@ function aplicarEstadoSidebar() {
 // Toggle Sidebar
 document.getElementById('btnToggleSidebar').addEventListener('click', () => {
     const layout = document.getElementById('adminLayout');
-    const isCollapsed = layout.classList.toggle('collapsed');
-    
-    // Persistir estado
-    localStorage.setItem('sidebar_collapsed', isCollapsed);
-    
-    // Atualizar UI
-    const btn = document.getElementById('btnToggleSidebar');
-    const icon = btn.querySelector('.toggle-icon');
-    
-    if (isCollapsed) {
-        if (icon) icon.style.transform = 'rotate(180deg)';
-        btn.title = "Expandir Menu";
-    } else {
-        if (icon) icon.style.transform = 'rotate(0deg)';
-        btn.title = "Recolher Menu";
-    }
+    const isMobile = window.innerWidth <= 768;
 
-    // Mobile: Toggle active class
-    document.getElementById('sidebar').classList.toggle('active'); 
+    if (isMobile) {
+        // No Mobile: Apenas abre/fecha o menu lateral (off-canvas)
+        document.getElementById('sidebar').classList.toggle('active');
+        const isVisible = document.getElementById('sidebar').classList.contains('active');
+        document.getElementById('sidebarOverlay').style.display = isVisible ? 'block' : 'none';
+    } else {
+        // No Desktop: Recolhe/Expande o menu lateral (collapsible)
+        const isCollapsed = layout.classList.toggle('collapsed');
+        localStorage.setItem('sidebar_collapsed', isCollapsed);
+        
+        // Atualizar UI (Ícone e Tooltip)
+        const btn = document.getElementById('btnToggleSidebar');
+        const icon = btn.querySelector('.toggle-icon');
+        
+        if (isCollapsed) {
+            if (icon) icon.style.transform = 'rotate(180deg)';
+            btn.title = "Expandir Menu";
+        } else {
+            if (icon) icon.style.transform = 'rotate(0deg)';
+            btn.title = "Recolher Menu";
+        }
+    }
 });
 
 const btnMobile = document.getElementById('btnMobileMenu');
