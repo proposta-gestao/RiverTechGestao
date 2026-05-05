@@ -37,6 +37,7 @@
 
     <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="admin-agenda.css" id="agenda-css" disabled>
+    <link rel="stylesheet" href="admin-loja.css" id="loja-css" disabled>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -79,6 +80,7 @@
                 <button class="tab-btn active" data-tab="produtos" id="nav-produtos">📦 Produtos</button>
                 <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">📊 Vendas & Performance</button>
                 <button class="tab-btn" data-tab="agenda" id="nav-agenda" style="display:none;">📅 Agenda</button>
+                <button class="tab-btn" data-tab="loja" id="nav-loja" style="display:none;">👗 Loja</button>
                 <button class="tab-btn" data-tab="cupons" id="nav-cupons">🎫 Cupons</button>
                 <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">⚙️ Configurações</button>
             </nav>
@@ -516,6 +518,96 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loja de Roupas Tab -->
+            <div class="tab-content" id="tab-loja">
+
+                <!-- Stats Row -->
+                <div class="stats-row" id="lojaStatsRow"></div>
+
+                <!-- Sub-abas -->
+                <div class="produtos-toolbar">
+                    <div class="admin-subtabs">
+                        <button class="subtab-btn active" data-subtab="loja-produtos">👗 Gerenciar Produtos</button>
+                        <button class="subtab-btn" data-subtab="loja-categorias">📂 Categorias</button>
+                        <button class="subtab-btn" data-subtab="loja-estoque">📦 Estoque</button>
+                    </div>
+                </div>
+
+                <!-- Subtab: Gerenciar Produtos -->
+                <div class="subtab-content active" id="subtab-loja-produtos">
+                    <div class="admin-toolbar">
+                        <h2>Produtos da Loja
+                            <span style="font-size:0.8rem; color:var(--text-muted); font-weight:400;" id="lojaProdContador"></span>
+                        </h2>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <select id="lojaFiltroCategoria" style="height:36px; padding:0 10px; border-radius:8px; border:1px solid var(--border-color); background:var(--bg-card); color:var(--text-color); font-size:0.85rem;">
+                                <option value="">Todas categorias</option>
+                            </select>
+                            <button class="btn-primary" onclick="window.__LOJA.novoProduto()">+ Novo Produto</button>
+                        </div>
+                    </div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Imagem</th>
+                                    <th>Nome</th>
+                                    <th>Categoria</th>
+                                    <th>Variações</th>
+                                    <th>Estoque Total</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lojaProdutosBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Subtab: Categorias -->
+                <div class="subtab-content" id="subtab-loja-categorias">
+                    <div class="admin-toolbar">
+                        <h2>Categorias da Loja</h2>
+                        <button class="btn-primary" onclick="window.__LOJA.novaCategoria()">+ Nova Categoria</button>
+                    </div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th style="text-align:center;">Ordem</th>
+                                    <th style="text-align:center;">Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lojaCategoriasBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Subtab: Estoque consolidado -->
+                <div class="subtab-content" id="subtab-loja-estoque">
+                    <div class="admin-toolbar">
+                        <h2>Estoque por Variação</h2>
+                    </div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>SKU</th>
+                                    <th>Cor</th>
+                                    <th>Tamanho</th>
+                                    <th style="text-align:center;">Estoque</th>
+                                    <th style="text-align:center;">Ajustar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lojaEstoqueBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1375,6 +1467,208 @@
             <div style="margin-top: 2.5rem; display: flex; gap: 12px;">
                 <button class="btn-cancel" onclick="closeTimePicker()" style="flex:1">Cancelar</button>
                 <button class="btn-primary" onclick="confirmTimePicker()" style="flex:1">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Produto da Loja (Novo/Editar) -->
+    <div class="admin-modal-backdrop" id="modalLojaProduto">
+        <div class="admin-modal" style="max-width: 700px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalLojaProduto')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="lojaModalTitle">Novo Produto</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" id="btnSalvarLojaProduto" onclick="window.__LOJA.salvarProduto()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="lojaProdId">
+
+                <!-- Linha 1: Nome -->
+                <div class="form-group">
+                    <label for="lojaProdNome">Nome do Produto *</label>
+                    <input type="text" id="lojaProdNome" placeholder="Ex: Camiseta Básica">
+                </div>
+
+                <!-- Linha 2: Descrição -->
+                <div class="form-group">
+                    <label for="lojaProdDescricao">Descrição</label>
+                    <textarea id="lojaProdDescricao" placeholder="Descrição do produto..." style="min-height:70px;"></textarea>
+                </div>
+
+                <!-- Linha 3: Categoria + Status -->
+                <div class="form-row">
+                    <div class="form-group" style="flex:2">
+                        <label for="lojaProdCategoria">Categoria</label>
+                        <select id="lojaProdCategoria">
+                            <option value="">Sem categoria</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="lojaProdAtivo">Status</label>
+                        <select id="lojaProdAtivo">
+                            <option value="true">Ativo</option>
+                            <option value="false">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Linha 4: Imagem -->
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="margin-bottom:0;">Imagem do Produto</label>
+                        <button class="btn-primary btn-sm" type="button" onclick="document.getElementById('lojaUploadImagem').click()" id="btnLojaAdicionarImagem">+ Foto</button>
+                    </div>
+                    <div id="lojaProdImagePreview" style="display:none; margin-bottom:10px; position:relative; width:fit-content;">
+                        <img id="lojaProdImageThumb" src="" alt="Preview" style="width:100px; height:100px; object-fit:cover; border-radius:10px; border:2px solid var(--primary);">
+                        <button onclick="window.__LOJA.removerImagem()" style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:#fff; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; font-size:0.75rem; display:flex; align-items:center; justify-content:center;">✕</button>
+                    </div>
+                    <input type="hidden" id="lojaProdImageUrl">
+                    <input type="file" id="lojaUploadImagem" accept="image/*" style="display:none;" onchange="window.__LOJA.uploadImagem(this.files[0])">
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">WebP, PNG ou JPG. A imagem é associada ao produto, não à variação.</p>
+                </div>
+
+                <hr class="modal-divider" style="margin: 1.2rem 0;">
+
+                <!-- CRIAÇÃO: Seleção de tamanhos e cores -->
+                <div id="lojaNovosCheckboxes">
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Selecione os tamanhos e cores para gerar automaticamente as variações:</p>
+                    <div class="form-row" style="align-items:flex-start; gap:1.5rem;">
+                        <div class="loja-options-group" style="flex:1;">
+                            <label class="group-label">📏 Tamanhos *</label>
+                            <div class="loja-checkbox-grid" id="lojaTamanhosGrid"></div>
+                        </div>
+                        <div class="loja-options-group" style="flex:2;">
+                            <label class="group-label">🎨 Cores *</label>
+                            <div class="loja-checkbox-grid" id="lojaCoresGrid"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tabela interativa de combinações com estoque inicial -->
+                    <div id="lojaCombPreview" style="display:none; margin-top:1.5rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                            <label class="group-label" style="margin-bottom:0;">📋 Variações geradas — defina o estoque inicial:</label>
+                            <button class="btn-sm" style="font-size:0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.3);" onclick="window.__LOJA.aplicarEstoqueGlobal()">Aplicar mesmo valor a todos</button>
+                        </div>
+                        <div class="admin-table-wrapper" style="max-height:280px; overflow-y:auto;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cor</th>
+                                        <th>Tamanho</th>
+                                        <th style="width:130px;">Preço (R$)</th>
+                                        <th style="width:110px;">Estoque Inicial</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lojaCombBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDIÇÃO: Variações existentes -->
+                <div id="lojaVariacoesExistentes" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                        <label class="group-label" style="margin-bottom:0;">🏷️ Variações Cadastradas</label>
+                        <button class="btn-sm btn-primary" onclick="window.__LOJA.abrirModalNovaVariacao()" style="font-size:0.78rem;">+ Nova Variação</button>
+                    </div>
+                    <div class="admin-table-wrapper" style="max-height:300px; overflow-y:auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>SKU</th>
+                                    <th>Cor</th>
+                                    <th>Tam.</th>
+                                    <th style="width:110px;">Preço (R$)</th>
+                                    <th style="width:100px;">Estoque</th>
+                                    <th style="width:60px;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lojaVariacoesEditBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Categoria da Loja -->
+    <div class="admin-modal-backdrop" id="modalLojaCategoria">
+        <div class="admin-modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalLojaCategoria')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="lojaCatModalTitle">Nova Categoria</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__LOJA.salvarCategoria()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="lojaCatId">
+                <div class="form-group">
+                    <label for="lojaCatNome">Nome da Categoria *</label>
+                    <input type="text" id="lojaCatNome" placeholder="Ex: Camisetas, Calças, Acessórios">
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="lojaCatOrdem">Ordem de exibição</label>
+                        <input type="number" id="lojaCatOrdem" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="lojaCatAtivo">Status</label>
+                        <select id="lojaCatAtivo">
+                            <option value="true">Ativo</option>
+                            <option value="false">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nova Variação (ao editar produto) -->
+    <div class="admin-modal-backdrop" id="modalLojaNovaVariacao">
+        <div class="admin-modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalLojaNovaVariacao')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>Nova Variação</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__LOJA.salvarNovaVariacao()">Adicionar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="novaVarProdutoId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="novaVarTamanho">Tamanho *</label>
+                        <select id="novaVarTamanho"></select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="novaVarCor">Cor *</label>
+                        <select id="novaVarCor"></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="novaVarPreco">Preço (R$)</label>
+                        <input type="number" id="novaVarPreco" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="novaVarEstoque">Estoque Inicial</label>
+                        <input type="number" id="novaVarEstoque" min="0" placeholder="0">
+                    </div>
+                </div>
             </div>
         </div>
     </div>

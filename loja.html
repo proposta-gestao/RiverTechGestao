@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="tenant-loading">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Loja | RiverTech</title>
+    <meta name="description" content="Confira nossos produtos disponíveis com variações de tamanho e cor.">
+    <style>
+        html.tenant-loading body > :not(.tenant-loader) {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            user-select: none !important;
+        }
+        html.tenant-loading .tenant-loader {
+            position: fixed !important;
+            inset: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: #080808 !important;
+            color: #fff !important;
+            z-index: 99999 !important;
+        }
+        html.tenant-ready .tenant-loader {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 180ms ease-in !important;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="loja-publica.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="loja-header">
+        <div class="loja-header-inner">
+            <div class="loja-brand">
+                <img class="loja-brand-logo logo-main" id="logoEmpresa" src="" alt="Logo" style="display:none;">
+                <div>
+                    <h1 class="brand-name" id="brandName">Loja</h1>
+                    <div class="loja-brand-subtitle brand-subtitle"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Container Principal -->
+    <main class="loja-container">
+
+        <!-- Filtros -->
+        <div class="loja-pub-filtros">
+            <select id="filtroCategoria">
+                <option value="">Todas categorias</option>
+            </select>
+            <select id="filtroTamanho">
+                <option value="">Todos tamanhos</option>
+            </select>
+            <select id="filtroCor">
+                <option value="">Todas cores</option>
+            </select>
+            <button class="loja-pub-btn-limpar" onclick="limparFiltros()">✕ Limpar filtros</button>
+        </div>
+
+        <!-- Grid de Produtos -->
+        <div class="loja-pub-grid" id="produtosGrid">
+            <div class="loja-pub-empty">
+                <div class="empty-icon">👗</div>
+                <p>Carregando produtos...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal de Detalhes do Produto -->
+    <div class="loja-pub-modal-backdrop" id="modalDetalhes">
+        <div class="loja-pub-modal">
+            <div class="loja-pub-modal-header">
+                <h2 id="modalProdNome">Produto</h2>
+                <button class="loja-pub-modal-close" onclick="fecharDetalhes()">✕</button>
+            </div>
+            <div class="loja-pub-modal-body">
+                <p id="modalProdDesc" style="color: var(--loja-text-muted); margin-bottom: 1rem; font-size: 0.92rem;"></p>
+                <table class="loja-pub-variacoes-table">
+                    <thead>
+                        <tr>
+                            <th>SKU</th>
+                            <th>Cor</th>
+                            <th>Tamanho</th>
+                            <th>Estoque</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalVariacoes"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <!-- Multi-Tenant Context -->
+    <script src="tenant.js"></script>
+    <!-- Loja Logic -->
+    <script src="loja.js"></script>
+</body>
+
+</html>

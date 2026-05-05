@@ -1,0 +1,101 @@
+/* ============================================================
+   admin-loja.css — Estilos do Módulo Loja de Roupas (Admin)
+   Complementa o style.css global focado apenas em modais e
+   geração de variações.
+   ============================================================ */
+
+/* ── Modal: Checkboxes de Tamanho e Cor ── */
+.loja-options-group {
+    margin-bottom: 1.2rem;
+}
+
+.loja-options-group label.group-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-color, #fff);
+    font-size: 0.92rem;
+}
+
+.loja-checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* ── Checkboxes invisíveis substituídos por labels customizadas ── */
+.chk-tam, .chk-cor {
+    display: none;
+}
+
+.loja-checkbox-grid label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted, #999);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    background: var(--bg-card, #1a1a1a);
+}
+
+.loja-checkbox-grid label:hover {
+    border-color: var(--primary, #E5B25D);
+    color: var(--primary, #E5B25D);
+}
+
+/* Estado Ativo/Checked */
+.loja-checkbox-grid input[type="checkbox"]:checked + span,
+.loja-checkbox-grid input[type="checkbox"]:checked + div + span {
+    color: var(--primary, #E5B25D);
+}
+
+.loja-checkbox-grid label:has(input[type="checkbox"]:checked) {
+    border-color: var(--primary, #E5B25D);
+    background: rgba(229, 178, 93, 0.1);
+    color: var(--primary, #E5B25D);
+}
+
+/* ── Ajustes nas tabelas do modal ── */
+#lojaCombPreview table th,
+#lojaVariacoesExistentes table th {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+#lojaCombPreview table td,
+#lojaVariacoesExistentes table td {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+/* Inputs dentro da tabela de preview (geração de variações) */
+.in-preco, .in-estoque {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+    border-radius: 6px;
+    background: rgba(0,0,0,0.2);
+    color: var(--text-color, #fff);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.in-preco:focus, .in-estoque:focus {
+    border-color: var(--primary, #E5B25D);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .loja-checkbox-grid label {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+    }
+}

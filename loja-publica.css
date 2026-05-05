@@ -1,0 +1,432 @@
+/* ============================================================
+   loja-publica.css — Estilos da Página Pública da Loja
+   Design premium, responsivo, alinhado ao white-label
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --loja-bg: var(--color-bg, #0d0d0d);
+    --loja-surface: var(--color-surface, #1a1a1a);
+    --loja-border: var(--color-border, rgba(229, 178, 93, 0.15));
+    --loja-text: var(--color-text, #ffffff);
+    --loja-text-muted: #999;
+    --loja-primary: var(--color-primary, #E5B25D);
+    --loja-primary-hover: var(--color-primary-hover, #d4a44e);
+    --loja-button: var(--color-button, #E5B25D);
+    --loja-danger: #ef4444;
+    --loja-success: #22c55e;
+    --loja-warning: #f59e0b;
+    --loja-radius: 14px;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--loja-bg);
+    color: var(--loja-text);
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+/* ── Header ── */
+.loja-header {
+    background: var(--loja-surface);
+    border-bottom: 1px solid var(--loja-border);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.loja-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.loja-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.loja-brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.loja-brand h1 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--loja-primary);
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.loja-brand-subtitle {
+    font-size: 0.75rem;
+    color: var(--loja-text-muted);
+    font-weight: 400;
+}
+
+/* ── Container Principal ── */
+.loja-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* ── Filtros ── */
+.loja-pub-filtros {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.loja-pub-filtros select {
+    padding: 10px 16px;
+    border: 1.5px solid var(--loja-border);
+    border-radius: var(--loja-radius);
+    background: var(--loja-surface);
+    color: var(--loja-text);
+    font-size: 0.88rem;
+    font-family: 'Inter', sans-serif;
+    min-width: 160px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23999' viewBox='0 0 16 16'%3E%3Cpath d='m4.427 6.927 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 6.5H4.604a.25.25 0 0 0-.177.427'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.loja-pub-filtros select:focus {
+    outline: none;
+    border-color: var(--loja-primary);
+    box-shadow: 0 0 0 3px rgba(229, 178, 93, 0.12);
+}
+
+.loja-pub-btn-limpar {
+    padding: 10px 18px;
+    border: 1.5px solid var(--loja-border);
+    border-radius: var(--loja-radius);
+    background: transparent;
+    color: var(--loja-text-muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.loja-pub-btn-limpar:hover {
+    border-color: var(--loja-danger);
+    color: var(--loja-danger);
+}
+
+/* ── Grid de Produtos ── */
+.loja-pub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.2rem;
+}
+
+/* ── Card de Produto ── */
+.loja-pub-card {
+    background: var(--loja-surface);
+    border: 1px solid var(--loja-border);
+    border-radius: var(--loja-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.loja-pub-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+    border-color: var(--loja-primary);
+}
+
+.loja-pub-card-img {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(229, 178, 93, 0.08), rgba(229, 178, 93, 0.02));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--loja-primary);
+    opacity: 0.4;
+}
+
+.loja-pub-card-body {
+    padding: 1rem 1.2rem;
+}
+
+.loja-pub-card-body h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--loja-text);
+}
+
+.loja-pub-card-body .card-categoria {
+    font-size: 0.78rem;
+    color: var(--loja-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
+
+.loja-pub-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.loja-pub-card-footer .tamanhos-preview {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.loja-pub-tam-chip {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    color: var(--loja-text-muted);
+    font-weight: 600;
+}
+
+.loja-pub-estoque-info {
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.loja-pub-estoque-ok { color: var(--loja-success); }
+.loja-pub-estoque-baixo { color: var(--loja-warning); }
+.loja-pub-estoque-zero { color: var(--loja-danger); }
+
+/* ── Modal de Detalhes do Produto ── */
+.loja-pub-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.loja-pub-modal-backdrop.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.loja-pub-modal {
+    background: var(--loja-surface);
+    border: 1px solid var(--loja-border);
+    border-radius: 18px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.loja-pub-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--loja-border);
+}
+
+.loja-pub-modal-header h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.loja-pub-modal-close {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--loja-border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--loja-text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.loja-pub-modal-close:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--loja-danger);
+    border-color: var(--loja-danger);
+}
+
+.loja-pub-modal-body {
+    padding: 1.5rem;
+}
+
+/* ── Tabela de Variações no Modal ── */
+.loja-pub-variacoes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.loja-pub-variacoes-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--loja-text-muted);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--loja-border);
+}
+
+.loja-pub-variacoes-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font-size: 0.88rem;
+}
+
+.loja-pub-variacoes-table tr:last-child td {
+    border-bottom: none;
+}
+
+.loja-pub-variacoes-table tr:hover td {
+    background: rgba(229, 178, 93, 0.04);
+}
+
+.loja-pub-sku {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    background: rgba(229, 178, 93, 0.1);
+    color: var(--loja-primary);
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.loja-pub-cor-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.loja-pub-btn-vender {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--loja-button);
+    color: #000;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.loja-pub-btn-vender:hover {
+    opacity: 0.85;
+    transform: scale(1.03);
+}
+
+.loja-pub-btn-vender:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ── Estado Vazio ── */
+.loja-pub-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--loja-text-muted);
+    grid-column: 1 / -1;
+}
+
+.loja-pub-empty .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+}
+
+.loja-pub-empty p {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* ── Responsivo ── */
+@media (max-width: 768px) {
+    .loja-pub-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+
+    .loja-pub-filtros {
+        flex-direction: column;
+    }
+
+    .loja-pub-filtros select {
+        width: 100%;
+    }
+
+    .loja-header-inner {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .loja-pub-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .loja-pub-card-img {
+        height: 160px;
+    }
+
+    .loja-pub-modal {
+        border-radius: 14px;
+    }
+}

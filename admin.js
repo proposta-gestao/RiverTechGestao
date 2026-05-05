@@ -446,6 +446,16 @@ function switchTab(tabId, btn) {
         script.onerror = () => showToast('Erro ao carregar módulo de agenda.', 'error');
         document.body.appendChild(script);
     }
+
+    // Lazy Load do módulo de Loja de Roupas
+    if (tabId === 'loja' && !window.__LOJA_INICIADO) {
+        const cssLoja = document.getElementById('loja-css');
+        if (cssLoja) cssLoja.disabled = false;
+        const scriptLoja = document.createElement('script');
+        scriptLoja.src = 'admin-loja.js?v=' + Date.now();
+        scriptLoja.onerror = () => showToast('Erro ao carregar módulo de loja.', 'error');
+        document.body.appendChild(scriptLoja);
+    }
 }
 
 
@@ -838,6 +848,10 @@ function aplicarFiltrosDeModulos() {
     const mCardapio = isModuloAtivo('cardapio');
     const btnCardapio = document.querySelector('.btn-link-cardapio');
     if (btnCardapio) toggleElement(btnCardapio, mCardapio);
+
+    // 8. LOJA DE ROUPAS
+    const mLoja = isModuloAtivo('loja_roupas');
+    toggleElement(document.getElementById('nav-loja'), mLoja, 'flex');
 
     // --- Redirecionamento Automático (Segurança e UX) ---
     
