@@ -2682,11 +2682,16 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
         updated_at:           new Date().toISOString()
     };
     
+    let error;
     if (currentSettingsId) {
         payload.id = currentSettingsId;
+        const res = await sb.from('store_settings').update(payload).eq('id', currentSettingsId);
+        error = res.error;
+    } else {
+        const res = await sb.from('store_settings').insert(payload);
+        error = res.error;
     }
 
-    const { error } = await sb.from('store_settings').upsert(payload, { onConflict: 'empresa_id' });
     if (error) {
         showToast('Erro ao salvar: ' + error.message, 'error');
     } else {
