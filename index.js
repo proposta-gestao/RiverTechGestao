@@ -300,7 +300,7 @@ function renderMenu() {
                         }
                     </div>
                     <button class="btn-add" ${esgotado ? 'disabled' : ''}>
-                        ${esgotado ? 'Esgotado' : 'Adicionar'}
+                        ${esgotado ? 'Esgotado' : '+ Adicionar'}
                     </button>
                 </div>
             </div>
@@ -686,6 +686,15 @@ function atualizarSubtotalModal() {
     if (!state.produtoSelecionado) return;
     const sub = state.produtoSelecionado.preco * state.quantidadeAtual;
     document.getElementById('psubtotal').innerText = formatNumber(sub);
+    
+    // Atualiza o texto do botão de confirmação
+    const btn = document.getElementById('confirmar');
+    if (btn) {
+        btn.innerHTML = `
+            <span>Adicionar ao Carrinho</span>
+            <span>${formatCurrency(sub)}</span>
+        `;
+    }
 }
 
 function toggleModal(show) {
