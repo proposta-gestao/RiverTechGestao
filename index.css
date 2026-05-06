@@ -30,6 +30,10 @@
             letter-spacing: -0.01em;
         }
 
+        .no-scroll {
+            overflow: hidden !important;
+        }
+
         .sticky-store-topbar {
             position: sticky;
             top: 0;
@@ -1045,33 +1049,40 @@
             }
 
             .modal {
-                width: 100%;
-                height: auto;
-                max-height: 90vh;
-                top: auto;
-                bottom: 0;
-                transform: translate(-50%, 0) scale(1);
-                border-radius: 20px 20px 0 0;
-                animation: slideUp 0.3s ease-out;
+                width: 100% !important;
+                height: 100% !important;
+                max-height: 100% !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                transform: none !important;
+                border-radius: 0 !important;
+                animation: fadeIn 0.3s ease-out;
             }
 
             .modal.active {
-                transform: translate(-50%, 0) scale(1);
+                transform: none !important;
+                display: flex;
+            }
+
+            .modal-content {
+                height: 100%;
+                overflow-y: auto;
             }
 
             .modal-image-wrapper img {
-                height: 200px;
+                height: 300px;
+                border-radius: 0;
+            }
+
+            .modal-body {
+                padding: 1rem;
             }
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translate(-50%, 100%);
-            }
-
-            to {
-                transform: translate(-50%, 0);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* =============================================
@@ -1904,9 +1915,17 @@
     justify-content: center;
     backdrop-filter: blur(12px);
     transition: all 0.25s ease;
-            box-shadow: var(--shadow-md);
-            padding: 0;
-        }
+    box-shadow: var(--shadow-md);
+    padding: 0;
+}
+
+.carousel-nav.prev {
+    left: 15px;
+}
+
+.carousel-nav.next {
+    right: 15px;
+}
 
         .carousel-nav:hover {
             background: var(--accent-primary);

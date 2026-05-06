@@ -690,6 +690,7 @@ function atualizarSubtotalModal() {
 function toggleModal(show) {
     dom.popup.classList.toggle('active', show);
     dom.backdrop.classList.toggle('active', show);
+    document.body.classList.toggle('no-scroll', show);
 }
 
 window.removerDoCarrinho = (index) => {
