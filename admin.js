@@ -1516,6 +1516,8 @@ async function carregarGaleria(preSelecionada = '') {
 
     // --- NOVO: Buscar da tabela galeria_imagens ---
     const tenantId = getTenantId();
+    console.log('Carregando galeria para empresa:', tenantId);
+    
     const { data, error } = await sb
         .from('galeria_imagens')
         .select('*')
@@ -1528,11 +1530,15 @@ async function carregarGaleria(preSelecionada = '') {
         return;
     }
 
+    console.log('Imagens retornadas:', data);
+
     // Sempre atualiza o estado global, mesmo que venha vazio
     imagensGaleria = (data || []).map(item => ({
         url: item.url,
         name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString()
     }));
+
+    console.log('imagensGaleria após mapeamento:', imagensGaleria);
 
     if (imagensGaleria.length === 0) {
         grid.innerHTML = `
@@ -1562,8 +1568,13 @@ if (elFiltroGaleriaCompleta) elFiltroGaleriaCompleta.oninput = () => renderizarG
 window.abrirModalGaleriaCompleta = abrirModalGaleriaCompleta;
 async function abrirModalGaleriaCompleta() {
     document.getElementById('filtroGaleriaCompleta').value = '';
-    await carregarGaleria('');
-    renderizarGradeGaleria('imageGalleryGridCompleta', true);
+    try {
+        await carregarGaleria('');
+        console.log('Imagens carregadas:', imagensGaleria.length);
+    } catch (err) {
+        console.error('Erro ao carregar galeria:', err);
+    }
+    await renderizarGradeGaleria('imageGalleryGridCompleta', true);
     abrirModal('modalGaleriaCompleta');
 }
 
