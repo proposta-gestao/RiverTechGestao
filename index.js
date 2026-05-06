@@ -290,6 +290,7 @@ function renderMenu() {
             </div>
             <div class="product-info">
                 <h3 class="product-name">${p.nome}</h3>
+                <p class="product-card-desc">${p.desc}</p>
                 <div class="product-footer">
                     <div class="product-price-wrap">
                         ${p.promo_price > 0 
