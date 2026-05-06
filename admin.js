@@ -1481,7 +1481,7 @@ async function renderizarGradeGaleria(gridId, isCompleto = false) {
 
     if (!isCompleto && files.length > 7) {
         html += `
-                    <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(229, 178, 93, 0.1);color:var(--primary);font-size:0.8rem;text-align:center;font-weight:800;border:1px dashed var(--primary); cursor:pointer;" onclick="abrirGaleriaCompleta()">
+                    <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(229, 178, 93, 0.1);color:var(--primary);font-size:0.8rem;text-align:center;font-weight:800;border:1px dashed var(--primary); cursor:pointer;" onclick="abrirModalGaleriaCompleta()">
                         <span style="font-size:1.2rem;">+${files.length - 7}</span>
                         Ver todas
                     </div>
@@ -1498,13 +1498,26 @@ async function carregarGaleria(preSelecionada = '') {
     if (!grid) return;
 
     // --- NOVO: Buscar da tabela galeria_imagens ---
+    const tenantId = getTenantId();
     const { data, error } = await sb
         .from('galeria_imagens')
         .select('*')
+        .eq('empresa_id', tenantId)
         .eq('tipo', 'produto')
         .order('criado_em', { ascending: false });
 
-    if (error || !data || data.length === 0) {
+    if (error) {
+        console.error('Erro ao carregar galeria:', error);
+        return;
+    }
+
+    // Sempre atualiza o estado global, mesmo que venha vazio
+    imagensGaleria = (data || []).map(item => ({
+        url: item.url,
+        name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString()
+    }));
+
+    if (imagensGaleria.length === 0) {
         grid.innerHTML = `
             <div style="padding:2.5rem 1.5rem; color:var(--text-muted); text-align:center; border: 2px dashed rgba(229,178,93,0.2); border-radius: 16px; background: rgba(229,178,93,0.02); grid-column: 1 / -1;">
                 <div style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5;">📸</div>
@@ -1512,14 +1525,15 @@ async function carregarGaleria(preSelecionada = '') {
                 <p style="font-size:0.85rem; line-height:1.5;">Clique no botão <strong>"Subir Foto"</strong> acima para inserir sua primeira imagem.</p>
             </div>
         `;
-        return;
+    } else {
+        renderizarGradeGaleria('imageGalleryGrid', false);
     }
-
-    // Mapear para o formato esperado pela renderização da grade
-    imagensGaleria = data.map(item => ({
-        url: item.url,
-        name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString()
-    }));
+    
+    // Se a galeria completa estiver aberta, atualiza ela também
+    const modalCompleto = document.getElementById('modalGaleriaCompleta');
+    if (modalCompleto && modalCompleto.classList.contains('active')) {
+        renderizarGradeGaleria('imageGalleryGridCompleta', true);
+    }
     
     renderizarGradeGaleria('imageGalleryGrid', false);
     if (document.getElementById('modalGaleriaCompleta').classList.contains('active')) {
