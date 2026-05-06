@@ -141,24 +141,23 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 // Controle do Menu Mobile
-function abrirMenuMobile() {
+function toggleMenuMobile() {
     const sidebar = document.getElementById('sidebar');
-    const isVisible = sidebar.classList.contains('active');
+    const isVisible = sidebar.classList.toggle('active');
     
-    if (isVisible) {
-        fecharMenuMobile();
-    } else {
-        sidebar.classList.add('active');
-        document.getElementById('sidebarOverlay').style.display = 'block';
-    }
+    // Opcional: Garante que o overlay acompanhe (se o CSS não usar ~ ou +)
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) overlay.style.display = isVisible ? 'block' : 'none';
 }
 
 function fecharMenuMobile() {
     document.getElementById('sidebar').classList.remove('active');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 if (document.getElementById('btnMobileMenu')) {
-    document.getElementById('btnMobileMenu').addEventListener('click', abrirMenuMobile);
+    document.getElementById('btnMobileMenu').addEventListener('click', toggleMenuMobile);
 }
 
 if (document.getElementById('btnCloseMobile')) {
@@ -213,8 +212,8 @@ function renderizarEmpresas() {
         const badgePlano = `badge-${emp.plano}`;
         
         tr.innerHTML = `
-            <td onclick="abrirModalEdicao('${emp.id}')" style="cursor: pointer;">
-                <strong class="company-name-link">${emp.nome}</strong><br>
+            <td>
+                <strong class="clickable-name" onclick="abrirModalEdicao('${emp.id}')">${emp.nome}</strong><br>
                 <small style="color:var(--text-secondary)">ID: ${emp.id.split('-')[0]}...</small>
             </td>
             <td><span class="badge badge-plano ${badgePlano}">${emp.plano}</span></td>
