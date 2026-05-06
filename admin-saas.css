@@ -217,6 +217,15 @@ input:focus, select:focus {
     border-radius: 3px 3px 0 0;
 }
 
+.company-name-link {
+    transition: color 0.2s;
+}
+
+.company-name-link:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
 .tab-icon {
     font-size: 1.1rem;
 }

@@ -89,12 +89,10 @@
         <!-- Top Header -->
         <header class="admin-topbar">
             <div class="topbar-container">
-                <div class="topbar-logo">
-                    <h2>SaaS Admin</h2>
-                    <span class="badge-super">Global</span>
-                </div>
-                
                 <nav class="admin-tabs">
+                    <!-- Mobile Toggle Button (Visible only on mobile) -->
+                    <button id="btnMobileMenu" class="btn-mobile-toggle">☰</button>
+                    
                     <button class="nav-tab active" data-target="dashboard">
                         <span class="tab-icon">📊</span>
                         <span class="tab-text">Dashboard</span>
@@ -106,21 +104,17 @@
                 </nav>
 
                 <div class="topbar-actions">
-                    <button id="btnSair" class="btn-logout">Sair</button>
+                    <button id="btnSair" class="btn-logout">Sair da Conta</button>
                 </div>
-
-                <!-- Mobile Menu Button (Only visible on mobile) -->
-                <button id="btnMobileMenu" class="btn-mobile-toggle">☰</button>
             </div>
         </header>
 
-        <!-- Sidebar Overlay (Still needed for mobile drawer) -->
+        <!-- Sidebar Overlay -->
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Sidebar (Mobile Drawer only) -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2>Menu</h2>
+            <div class="sidebar-header" style="justify-content: flex-end;">
                 <button id="btnCloseMobile" class="btn-close-mobile">&times;</button>
             </div>
             <nav class="sidebar-nav">
@@ -132,11 +126,14 @@
         <!-- Main Content -->
         <main class="main-content">
             
-            <!-- Dashboard View -->
-            <div id="view-dashboard" class="view-section active">
-                <header class="section-header">
-                    <h1>Visão Geral da Plataforma</h1>
-                </header>
+            <!-- View: Dashboard -->
+            <section id="view-dashboard" class="view-section active">
+                <div class="dashboard-header">
+                    <div class="welcome-text">
+                        <h1>SaaS Master Admin</h1>
+                        <p>Visão geral de todas as operações do ecossistema.</p>
+                    </div>
+                </div>
 
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -170,7 +167,6 @@
                         <thead>
                             <tr>
                                 <th>Empresa</th>
-                                <th>Link de Acesso</th>
                                 <th>Plano</th>
                                 <th>Status</th>
                                 <th>Ações</th>

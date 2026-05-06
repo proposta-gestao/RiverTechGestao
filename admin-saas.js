@@ -142,7 +142,15 @@ document.querySelectorAll('.nav-item').forEach(item => {
 
 // Controle do Menu Mobile
 function abrirMenuMobile() {
-    document.getElementById('sidebar').classList.add('active');
+    const sidebar = document.getElementById('sidebar');
+    const isVisible = sidebar.classList.contains('active');
+    
+    if (isVisible) {
+        fecharMenuMobile();
+    } else {
+        sidebar.classList.add('active');
+        document.getElementById('sidebarOverlay').style.display = 'block';
+    }
 }
 
 function fecharMenuMobile() {
@@ -205,11 +213,10 @@ function renderizarEmpresas() {
         const badgePlano = `badge-${emp.plano}`;
         
         tr.innerHTML = `
-            <td>
-                <strong>${emp.nome}</strong><br>
+            <td onclick="abrirModalEdicao('${emp.id}')" style="cursor: pointer;">
+                <strong class="company-name-link">${emp.nome}</strong><br>
                 <small style="color:var(--text-secondary)">ID: ${emp.id.split('-')[0]}...</small>
             </td>
-            <td><code style="background:#27272a;padding:2px 6px;border-radius:4px">https://river-tech-gestao.vercel.app/${emp.slug}</code></td>
             <td><span class="badge badge-plano ${badgePlano}">${emp.plano}</span></td>
             <td><span class="badge ${badgeStatus}">${emp.status}</span></td>
             <td class="action-links">
