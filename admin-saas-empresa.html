@@ -509,9 +509,20 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Vencimento do Plano</label>
-                        <input type="date" id="editPlanoVencimento" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                    <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 1rem;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Segmento</label>
+                            <select id="editEmpSegmento" style="width: 100%; margin-top: 5px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
+                                <option value="">— Selecione —</option>
+                                <option value="restaurante">🍽️ Bares / Restaurantes</option>
+                                <option value="barbearia">💈 Barbearia</option>
+                                <option value="loja_roupas">👗 Loja de Roupas</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Vencimento do Plano</label>
+                            <input type="date" id="editPlanoVencimento" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                        </div>
                     </div>
                     <button class="btn-primary" id="btnSalvarConfig" style="width: 100%; margin-top: 2rem; padding: 14px;">Atualizar Configurações</button>
                 </div>

@@ -92,6 +92,7 @@ function renderDadosBasicos(emp) {
     // Se a função applyCnpjMask já estiver carregada (estará no hoisting ou definimos global)
     document.getElementById('editEmpCNPJ').value = emp.cnpj ? applyCnpjMask(emp.cnpj) : '';
     document.getElementById('editEmpPlano').value = emp.plano;
+    document.getElementById('editEmpSegmento').value = emp.segmento || '';
     document.getElementById('editEmpStatus').value = emp.status;
     document.getElementById('editPlanoVencimento').value = emp.plano_vencimento || '';
     document.getElementById('infoId').textContent = emp.id;
@@ -326,6 +327,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const nomeEmpresa = document.getElementById('editEmpNome').value.trim();
     const cnpj = cleanCnpj(document.getElementById('editEmpCNPJ').value); // Salvando apenas a raiz limpa
     const plano = document.getElementById('editEmpPlano').value;
+    const segmento = document.getElementById('editEmpSegmento').value || null;
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
  
@@ -358,6 +360,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 nome: nomeEmpresa,
                 cnpj,
                 plano, 
+                segmento,
                 status,
                 plano_vencimento,
                 modulos,
