@@ -95,7 +95,7 @@
 /* ── Responsive ── */
 @media (max-width: 600px) {
     .loja-checkbox-grid label {
-        padding: 5px 10px;
-        font-size: 0.8rem;
+        padding: 8px 12px;
+        font-size: 0.9rem;
     }
 }

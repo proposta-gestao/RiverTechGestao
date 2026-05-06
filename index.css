@@ -129,19 +129,18 @@
         }
 
         @media (max-width: 480px) {
-            
-.brand-name {
-        font-size: 1rem;
+    .brand-name {
+        font-size: 1.15rem;
     }
 
     .brand-subtitle {
-        font-size: 0.75rem;
+        font-size: 0.85rem;
     }
 
-            .logo-main {
-                height: 50px;
-                width: 50px;
-            }
+    .logo-main {
+        height: 55px;
+        width: 55px;
+    }
 
             .top-nav {
                 padding: 0.6rem 0.8rem;
@@ -157,23 +156,23 @@
         }
 
         @media (max-width: 360px) {
-            .top-nav {
-                padding: 0.5rem 0.6rem;
-                gap: 0.4rem;
-                justify-content: space-between;
-            }
-            .brand-name {
-                font-size: 0.8rem;
-                white-space: nowrap;
-            }
-            .brand-subtitle {
-                display: none;
-            }
-            .cart-toggle {
-                padding: 8px 10px;
-                gap: 4px;
-                font-size: 0.7rem;
-            }
+    .top-nav {
+        padding: 0.5rem 0.6rem;
+        gap: 0.4rem;
+        justify-content: space-between;
+    }
+    .brand-name {
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+    .brand-subtitle {
+        display: none;
+    }
+    .cart-toggle {
+        padding: 8px 12px;
+        gap: 6px;
+        font-size: 0.85rem;
+    }
             .cart-label {
                 display: none;
             }
@@ -207,15 +206,15 @@
                 gap: 4px;
             }
             .product-name {
-                font-size: 0.85rem;
-            }
-            .product-price {
-                font-size: 1rem;
-            }
-            .btn-add {
-                padding: 6px 10px;
-                font-size: 0.7rem;
-            }
+        font-size: 0.95rem;
+    }
+    .product-price {
+        font-size: 1.1rem;
+    }
+    .btn-add {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+    }
             .product-footer {
                 margin-top: 4px;
                 gap: 8px;
