@@ -49,7 +49,16 @@ function _createTenantLoader() {
         html.tenant-ready .tenant-loader {
             opacity: 0 !important;
             pointer-events: none !important;
-            transition: opacity 180ms ease-in !important;
+            position: fixed !important;
+            inset: 0 !important;
+            transition: opacity 250ms ease-in-out !important;
+            display: none !important; /* Em navegadores modernos isso pode quebrar a transição, mas aqui vamos garantir que ele suma */
+        }
+        /* Garantir que ele suma do fluxo de qualquer forma */
+        .tenant-loader {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 99999 !important;
         }
         .tenant-loader-inner {
             text-align: center;

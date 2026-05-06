@@ -25,7 +25,14 @@
         html.tenant-ready .tenant-loader {
             opacity: 0 !important;
             pointer-events: none !important;
-            transition: opacity 180ms ease-in !important;
+            position: fixed !important;
+            inset: 0 !important;
+            display: none !important;
+        }
+        .tenant-loader {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 99999 !important;
         }
     </style>
 
