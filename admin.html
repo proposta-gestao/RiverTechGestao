@@ -1228,9 +1228,10 @@
                 <input type="hidden" id="prodImagemSelecionada">
                 <input type="file" id="uploadImagem" accept="image/*" style="display:none;" onchange="handleImageUpload(this.files[0])">
 
-                <div style="margin-top: 15px;">
+                <!-- COMENTADO: Galeria completa desativada - requer autenticação privada do Cloudinary -->
+                <!-- <div style="margin-top: 15px;">
                     <button class="btn-sm btn-link" type="button" onclick="abrirModalGaleriaCompleta()">Ver Galeria Completa</button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -1306,8 +1307,8 @@
     </div>
 </div>
 
-    <!-- Full Gallery Modal -->
-    <div class="admin-modal-backdrop" id="modalGaleriaCompleta">
+    <!-- COMENTADO: Full Gallery Modal - Galeria completa desativada -->
+    <!-- <div class="admin-modal-backdrop" id="modalGaleriaCompleta">
         <div class="admin-modal" style="max-width: 650px; display: flex; flex-direction: column; max-height: 90vh;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3 style="margin-bottom: 0;">Galeria Completa</h3>
@@ -1325,7 +1326,7 @@
                 <!-- Full list populated by JS -->
             </div>
         </div>
-    </div>
+    </div> -->
 
 </div>
 

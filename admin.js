@@ -1497,12 +1497,13 @@ async function renderizarGradeGaleria(gridId, isCompleto = false) {
     });
 
     if (!isCompleto && files.length > 7) {
-        html += `
-                    <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(229, 178, 93, 0.1);color:var(--primary);font-size:0.8rem;text-align:center;font-weight:800;border:1px dashed var(--primary); cursor:pointer;" onclick="abrirModalGaleriaCompleta()">
-                        <span style="font-size:1.2rem;">+${files.length - 7}</span>
-                        Ver todas
-                    </div>
-                `;
+        // COMENTADO: Galeria completa requer autenticação privada do Cloudinary
+        // html += `
+        //             <div class="gallery-item" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(229, 178, 93, 0.1);color:var(--primary);font-size:0.8rem;text-align:center;font-weight:800;border:1px dashed var(--primary); cursor:pointer;" onclick="abrirModalGaleriaCompleta()">
+        //                 <span style="font-size:1.2rem;">+${files.length - 7}</span>
+        //                 Ver todas
+        //             </div>
+        //         `;
     }
     grid.innerHTML = html;
 }
@@ -1582,31 +1583,35 @@ async function carregarGaleria(preSelecionada = '') {
         renderizarGradeGaleria('imageGalleryGrid', false);
     }
     
+    // COMENTADO: Galeria completa desativada
     // Se a galeria completa estiver aberta, atualiza ela também
-    const modalCompleto = document.getElementById('modalGaleriaCompleta');
-    if (modalCompleto && modalCompleto.classList.contains('active')) {
-        renderizarGradeGaleria('imageGalleryGridCompleta', true);
-    }
+    // const modalCompleto = document.getElementById('modalGaleriaCompleta');
+    // if (modalCompleto && modalCompleto.classList.contains('active')) {
+    //     renderizarGradeGaleria('imageGalleryGridCompleta', true);
+    // }
 }
 
 const elFiltroGaleria = document.getElementById('filtroGaleria');
 if (elFiltroGaleria) elFiltroGaleria.oninput = () => renderizarGradeGaleria('imageGalleryGrid', false);
 
-const elFiltroGaleriaCompleta = document.getElementById('filtroGaleriaCompleta');
-if (elFiltroGaleriaCompleta) elFiltroGaleriaCompleta.oninput = () => renderizarGradeGaleria('imageGalleryGridCompleta', true);
+// COMENTADO: Filtro de galeria completa desativado
+// const elFiltroGaleriaCompleta = document.getElementById('filtroGaleriaCompleta');
+// if (elFiltroGaleriaCompleta) elFiltroGaleriaCompleta.oninput = () => renderizarGradeGaleria('imageGalleryGridCompleta', true);
 
-window.abrirModalGaleriaCompleta = abrirModalGaleriaCompleta;
-async function abrirModalGaleriaCompleta() {
-    document.getElementById('filtroGaleriaCompleta').value = '';
-    try {
-        await carregarGaleria('');
-        console.log('Imagens carregadas:', imagensGaleria.length);
-    } catch (err) {
-        console.error('Erro ao carregar galeria:', err);
-    }
-    await renderizarGradeGaleria('imageGalleryGridCompleta', true);
-    abrirModal('modalGaleriaCompleta');
-}
+// COMENTADO: Função de galeria completa desativada
+// Para implementar: use API privada do Cloudinary ou armazene imagens no Supabase
+// window.abrirModalGaleriaCompleta = abrirModalGaleriaCompleta;
+// async function abrirModalGaleriaCompleta() {
+//     document.getElementById('filtroGaleriaCompleta').value = '';
+//     try {
+//         await carregarGaleria('');
+//         console.log('Imagens carregadas:', imagensGaleria.length);
+//     } catch (err) {
+//         console.error('Erro ao carregar galeria:', err);
+//     }
+//     await renderizarGradeGaleria('imageGalleryGridCompleta', true);
+//     abrirModal('modalGaleriaCompleta');
+// }
 
 window.selecionarImagemGaleria = (url, element, isCompletoStr) => {
     const isCompleto = isCompletoStr === 'true';
@@ -1625,11 +1630,12 @@ window.selecionarImagemGaleria = (url, element, isCompletoStr) => {
     renderizarMiniaturasProduto();
     showToast('Imagem adicionada da galeria!', 'success');
 
-    if (isCompleto) {
-        fecharModal('modalGaleriaCompleta');
-    } else {
-        element.classList.add('selected');
-    }
+    // COMENTADO: Galeria completa desativada
+    // if (isCompleto) {
+    //     fecharModal('modalGaleriaCompleta');
+    // } else {
+    element.classList.add('selected');
+    // }
 };
 
 const elBtnUploadNovaImagem = document.getElementById('btnUploadNovaImagem');
