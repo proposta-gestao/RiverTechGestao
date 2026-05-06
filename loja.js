@@ -86,10 +86,10 @@ async function init() {
 
 async function carregarCategorias(empresaId) {
     const { data, error } = await sb
-        .from('categories')
-        .select('id, name')
+        .from('loja_categorias')
+        .select('id, nome')
         .eq('empresa_id', empresaId)
-        .order('order_position');
+        .order('ordem');
     if (error) {
         console.error('[Loja] Erro ao carregar categorias:', error);
         return;
@@ -100,7 +100,7 @@ async function carregarCategorias(empresaId) {
 async function carregarProdutos(empresaId) {
     const { data, error } = await sb
         .from('loja_produtos')
-        .select('*, categories(name), loja_variacoes(*)')
+        .select('*, loja_categorias(nome), loja_variacoes(*)')
         .eq('empresa_id', empresaId)
         .eq('ativo', true)
         .order('created_at', { ascending: false });
@@ -121,7 +121,7 @@ function popularFiltros() {
     const selCat = document.getElementById('filtroCategoria');
     if (selCat) {
         selCat.innerHTML = '<option value="">Todas categorias</option>' +
-            categorias.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            categorias.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
         selCat.onchange = renderProdutos;
     }
 
@@ -186,7 +186,7 @@ function renderProdutos() {
 
     container.innerHTML = filtrados.map(p => {
         const variacoes = p.loja_variacoes || [];
-        const catNome = p.categories?.name || '';
+        const catNome = p.loja_categorias?.nome || '';
         const estoqueTotal = variacoes.reduce((s, v) => s + (v.estoque || 0), 0);
 
         // Tamanhos únicos
