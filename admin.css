@@ -560,6 +560,8 @@ body {
     flex: 1;
     overflow-y: auto;
     width: 100%;
+    padding-bottom: 80px; /* Garante que o conteúdo final não seja cortado */
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-header {
@@ -611,10 +613,11 @@ body {
 /* Tabs */
 .admin-tabs {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     border-bottom: 2px solid var(--border-color);
-    overflow: hidden;
+    overflow-x: auto;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
 }
 
 .admin-tabs::-webkit-scrollbar {
@@ -1753,22 +1756,19 @@ body {
 /* Responsive */
 @media (max-width: 768px) {
     .admin-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-        padding: 1.5rem 1rem 4.5rem 1rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 0.8rem 1rem;
         position: relative;
-        min-height: 120px;
+        min-height: auto;
     }
 
     .admin-header-actions {
-        position: absolute;
-        top: 0.8rem;
-        right: 0.8rem;
         display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 6px;
+        align-items: center;
+        gap: 8px;
         z-index: 100;
         width: auto;
     }
@@ -1776,12 +1776,13 @@ body {
     /* Estilo mobile para os links e botões do topo */
     .btn-link-cardapio,
     .btn-logout {
-        width: 140px;
+        width: auto;
+        min-width: 44px;
         text-align: center;
         justify-content: center;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         margin: 0;
-        padding: 8px 12px;
+        padding: 6px 10px;
         box-sizing: border-box;
     }
 
