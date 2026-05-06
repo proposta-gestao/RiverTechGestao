@@ -87,6 +87,7 @@ async function carregarLojaProdutos() {
     const { data, error } = await sb.from('loja_produtos')
         .select('*, loja_categorias(nome), loja_variacoes(*)')
         .eq('empresa_id', getTenantId())
+        .order('ordem', { ascending: true })
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -148,7 +149,8 @@ function renderLojaProdutos() {
         const corEstoque = estoqueTotal <= 0 ? 'var(--danger)' : 'inherit';
 
         return `
-            <tr>
+            <tr data-id="${p.id}">
+                <td class="drag-handle" style="cursor:grab; color:var(--text-muted); font-size:1.2rem;">≡</td>
                 <td><img src="${p.imagem_url || 'Logo.png'}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"></td>
                 <td><strong>${p.nome}</strong></td>
                 <td>${catNome}</td>
@@ -164,6 +166,34 @@ function renderLojaProdutos() {
             </tr>
         `;
     }).join('');
+
+    initSortableLojaProdutos();
+}
+
+function initSortableLojaProdutos() {
+    const el = document.getElementById('lojaProdutosBody');
+    if (!el || el.sortable) return;
+    
+    el.sortable = new Sortable(el, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        onEnd: async (evt) => {
+            if (evt.oldIndex === evt.newIndex) return;
+            const newOrderIds = Array.from(el.querySelectorAll('tr')).map(tr => tr.dataset.id);
+            
+            // Atualizar array local
+            const reordered = newOrderIds.map(id => lojaProdutos.find(p => p.id === id));
+            lojaProdutos = reordered;
+
+            // Salvar no banco
+            const updates = lojaProdutos.map((p, i) => 
+                sb.from('loja_produtos').update({ ordem: i }).eq('id', p.id)
+            );
+            await Promise.all(updates);
+            showToast('Ordem dos produtos atualizada!', 'success');
+        }
+    });
 }
 
 // ------------------------------------------------------------
@@ -542,7 +572,8 @@ function renderLojaCategorias() {
     }
 
     tbody.innerHTML = lojaCategorias.map(c => `
-        <tr>
+        <tr data-id="${c.id}">
+            <td class="drag-handle" style="cursor:grab; color:var(--text-muted); font-size:1.2rem;">≡</td>
             <td><strong>${c.nome}</strong></td>
             <td style="text-align:center;">${c.ordem}</td>
             <td style="text-align:center;"><span class="badge ${c.ativo ? 'badge-active' : 'badge-inactive'}">${c.ativo ? 'Ativo' : 'Inativo'}</span></td>
@@ -552,6 +583,33 @@ function renderLojaCategorias() {
             </td>
         </tr>
     `).join('');
+
+    initSortableLojaCategorias();
+}
+
+function initSortableLojaCategorias() {
+    const el = document.getElementById('lojaCategoriasBody');
+    if (!el || el.sortable) return;
+    
+    el.sortable = new Sortable(el, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        onEnd: async (evt) => {
+            if (evt.oldIndex === evt.newIndex) return;
+            const newOrderIds = Array.from(el.querySelectorAll('tr')).map(tr => tr.dataset.id);
+            
+            const reordered = newOrderIds.map(id => lojaCategorias.find(c => c.id === id));
+            lojaCategorias = reordered;
+
+            const updates = lojaCategorias.map((c, i) => 
+                sb.from('loja_categorias').update({ ordem: i }).eq('id', c.id)
+            );
+            await Promise.all(updates);
+            showToast('Ordem das categorias atualizada!', 'success');
+            renderLojaCategorias(); // Para atualizar o número da ordem na tela
+        }
+    });
 }
 
 window.__LOJA.novaCategoria = function() {
