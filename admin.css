@@ -541,6 +541,7 @@ body {
     height: 100vh;
     height: 100dvh;
     flex-direction: column;
+    border-top: 5px solid var(--primary);
 }
 
 .admin-layout.visible {
@@ -652,7 +653,7 @@ body {
 /* Tab Content */
 .tab-content {
     display: none;
-    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    padding: 0 1.5rem 1.5rem 1.5rem;
     max-width: 1440px;
     margin: 0 auto;
 }
@@ -672,7 +673,6 @@ body {
         height: 100vh;
         height: 100dvh;
         border-right: 1px solid var(--border-color);
-        border-top: 5px solid var(--primary);
         border-bottom: none;
         display: flex;
         flex-direction: column;
