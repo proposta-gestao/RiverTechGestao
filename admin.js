@@ -1520,29 +1520,51 @@ async function carregarGaleria(preSelecionada = '') {
     console.log('getTenantId resultado:', tenantId);
     
     try {
-        const { data, error } = await sb
+        // 1. Buscar de galeria_imagens (novo sistema)
+        const { data: galeriaData, error: galeriaError } = await sb
             .from('galeria_imagens')
             .select('*')
             .eq('empresa_id', tenantId)
             .eq('tipo', 'produto')
             .order('criado_em', { ascending: false });
 
-        if (error) {
-            console.error('Erro ao carregar galeria:', error);
-            console.error('Erro completo:', JSON.stringify(error));
+        if (galeriaError) {
+            console.error('Erro ao carregar galeria:', galeriaError);
+            console.error('Erro completo:', JSON.stringify(galeriaError));
             return;
         }
 
-        console.log('Imagens retornadas:', data);
-        console.log('Total de imagens:', data ? data.length : 0);
+        console.log('Imagens retornadas de galeria_imagens:', galeriaData);
+        console.log('Total de imagens em galeria_imagens:', galeriaData ? galeriaData.length : 0);
 
-        // Sempre atualiza o estado global, mesmo que venha vazio
-        imagensGaleria = (data || []).map(item => ({
+        // 2. FALLBACK: Se não há na galeria_imagens, buscar de loja_produtos (compatibilidade com imagens antigas)
+        let todasAsImagens = (galeriaData || []).map(item => ({
             url: item.url,
-            name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString()
+            name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString(),
+            fonte: 'galeria'
         }));
 
-        console.log('imagensGaleria após mapeamento:', imagensGaleria);
+        if (todasAsImagens.length === 0) {
+            console.log('Nenhuma imagem em galeria_imagens, buscando em loja_produtos...');
+            const { data: produtosData, error: produtosError } = await sb
+                .from('loja_produtos')
+                .select('id, imagem_url, criado_em')
+                .eq('empresa_id', tenantId)
+                .not('imagem_url', 'is', null)
+                .order('criado_em', { ascending: false });
+
+            if (!produtosError && produtosData) {
+                console.log('Imagens encontradas em loja_produtos:', produtosData);
+                todasAsImagens = produtosData.map(item => ({
+                    url: item.imagem_url,
+                    name: 'Imagem ' + new Date(item.criado_em).toLocaleDateString(),
+                    fonte: 'produtos'
+                }));
+            }
+        }
+
+        console.log('imagensGaleria após mapeamento:', todasAsImagens);
+        imagensGaleria = todasAsImagens;
     } catch (err) {
         console.error('Exceção ao carregar galeria:', err);
         return;
