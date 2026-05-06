@@ -1451,7 +1451,8 @@ async function renderizarGradeGaleria(gridId, isCompleto = false) {
     const preSelecionada = inputSel.value;
 
     const filtroId = isCompleto ? 'filtroGaleriaCompleta' : 'filtroGaleria';
-    const termoBusca = document.getElementById(filtroId).value.toLowerCase();
+    const filtroEl = document.getElementById(filtroId);
+    const termoBusca = filtroEl ? filtroEl.value.toLowerCase() : '';
 
     let files = imagensGaleria;
     if (termoBusca) {
@@ -1532,11 +1533,6 @@ async function carregarGaleria(preSelecionada = '') {
     // Se a galeria completa estiver aberta, atualiza ela também
     const modalCompleto = document.getElementById('modalGaleriaCompleta');
     if (modalCompleto && modalCompleto.classList.contains('active')) {
-        renderizarGradeGaleria('imageGalleryGridCompleta', true);
-    }
-    
-    renderizarGradeGaleria('imageGalleryGrid', false);
-    if (document.getElementById('modalGaleriaCompleta').classList.contains('active')) {
         renderizarGradeGaleria('imageGalleryGridCompleta', true);
     }
 }
