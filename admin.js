@@ -438,11 +438,17 @@ function switchTab(tabId, btn) {
     // Atualiza o link de visualização no topo
     const btnLink = document.getElementById('btnVisualizarLink');
     if (btnLink) {
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
         if (tabId === 'loja') {
-            btnLink.href = 'loja';
+            btnLink.href = isLocal 
+                ? `/loja.html?loja=${window.TENANT.slug}` 
+                : `/loja.html?loja=${window.TENANT.slug}`;
             btnLink.innerText = 'Ver Loja ↗';
         } else {
-            btnLink.href = 'cardapio';
+            btnLink.href = isLocal 
+                ? `/cardapio.html?loja=${window.TENANT.slug}` 
+                : `/${window.TENANT.slug}`;
             btnLink.innerText = 'Ver Cardápio ↗';
         }
     }
