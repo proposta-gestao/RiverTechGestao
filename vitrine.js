@@ -1,0 +1,300 @@
+/**
+ * vitrine.js — Listagem de Produtos (Vitrine Pública)
+ * =====================================================
+ * Módulo principal da loja pública. Carrega produtos do Supabase,
+ * renderiza cards com imagem/preço, gerencia filtros, e integra
+ * com modal-produto.js para detalhes e compra.
+ *
+ * Dependências: modal-produto.js (ModalProduto), tenant.js
+ */
+
+(function () {
+    'use strict';
+
+    // ── Supabase ──
+    const SUPABASE_URL = 'https://bpwwdnmhryblhsnywyoz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwd3dkbm1ocnlibGhzbnl3eW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTM4NTksImV4cCI6MjA5MTMyOTg1OX0.AKJAzeYdbiiUyGxiWS4QeU5m3URel6kwsLnP6eGbXLg';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ── Estado ──
+    let produtos = [];
+    let categorias = [];
+
+    // Ordem dos tamanhos para exibição
+    const TAMANHOS_ORDEM = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XXG', 'X1', 'X2', 'UN'];
+
+    /* ══════════════════════════════════════════════
+       INICIALIZAÇÃO
+       ══════════════════════════════════════════════ */
+
+    async function init() {
+        try {
+            const empresaId = await initTenantPublico(sb);
+            if (!empresaId) return;
+
+            // Logo
+            const logoEl = document.getElementById('logoEmpresa');
+            if (window.TENANT.logo_url && logoEl) {
+                logoEl.src = window.TENANT.logo_url;
+                logoEl.style.display = 'block';
+            }
+
+            await Promise.all([
+                carregarCategorias(empresaId),
+                carregarProdutos(empresaId)
+            ]);
+
+            popularFiltros();
+            renderProdutos();
+            _setupModalEvents();
+
+        } catch (err) {
+            console.error('[Vitrine] Erro na inicialização:', err);
+        }
+    }
+
+    /* ══════════════════════════════════════════════
+       CARREGAMENTO DE DADOS
+       ══════════════════════════════════════════════ */
+
+    async function carregarCategorias(empresaId) {
+        const { data, error } = await sb
+            .from('loja_categorias')
+            .select('id, nome')
+            .eq('empresa_id', empresaId)
+            .order('ordem');
+        if (error) {
+            console.error('[Vitrine] Erro categorias:', error);
+            return;
+        }
+        categorias = data || [];
+    }
+
+    async function carregarProdutos(empresaId) {
+        const { data, error } = await sb
+            .from('loja_produtos')
+            .select('*, loja_categorias(nome), loja_variacoes(*)')
+            .eq('empresa_id', empresaId)
+            .eq('ativo', true)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('[Vitrine] Erro produtos:', error);
+            return;
+        }
+        produtos = data || [];
+    }
+
+    /* ══════════════════════════════════════════════
+       FILTROS
+       ══════════════════════════════════════════════ */
+
+    function popularFiltros() {
+        // Categorias
+        const selCat = document.getElementById('filtroCategoria');
+        if (selCat) {
+            selCat.innerHTML = '<option value="">Todas categorias</option>' +
+                categorias.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+            selCat.onchange = renderProdutos;
+        }
+
+        // Tamanhos
+        const tamanhos = new Set();
+        produtos.forEach(p => (p.loja_variacoes || []).forEach(v => tamanhos.add(v.tamanho)));
+        const tamOrdenados = TAMANHOS_ORDEM.filter(t => tamanhos.has(t));
+        // Adicionar tamanhos que não estão na ordem padrão
+        tamanhos.forEach(t => { if (!tamOrdenados.includes(t)) tamOrdenados.push(t); });
+
+        const selTam = document.getElementById('filtroTamanho');
+        if (selTam) {
+            selTam.innerHTML = '<option value="">Todos tamanhos</option>' +
+                tamOrdenados.map(t => `<option value="${t}">${t}</option>`).join('');
+            selTam.onchange = renderProdutos;
+        }
+
+        // Cores
+        const cores = new Set();
+        produtos.forEach(p => (p.loja_variacoes || []).forEach(v => cores.add(v.cor)));
+
+        const selCor = document.getElementById('filtroCor');
+        if (selCor) {
+            selCor.innerHTML = '<option value="">Todas cores</option>' +
+                Array.from(cores).sort().map(c => `<option value="${c}">${c}</option>`).join('');
+            selCor.onchange = renderProdutos;
+        }
+    }
+
+    function limparFiltros() {
+        const ids = ['filtroCategoria', 'filtroTamanho', 'filtroCor'];
+        ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+        renderProdutos();
+    }
+
+    /* ══════════════════════════════════════════════
+       RENDERIZAÇÃO — GRID DE CARDS
+       ══════════════════════════════════════════════ */
+
+    function renderProdutos() {
+        const catId = document.getElementById('filtroCategoria')?.value || '';
+        const tam = document.getElementById('filtroTamanho')?.value || '';
+        const cor = document.getElementById('filtroCor')?.value || '';
+
+        let filtrados = [...produtos];
+
+        if (catId) filtrados = filtrados.filter(p => p.categoria_id === catId);
+        if (tam) filtrados = filtrados.filter(p => (p.loja_variacoes || []).some(v => v.tamanho === tam));
+        if (cor) filtrados = filtrados.filter(p => (p.loja_variacoes || []).some(v => v.cor.toLowerCase() === cor.toLowerCase()));
+
+        const container = document.getElementById('produtosGrid');
+        if (!container) return;
+
+        if (filtrados.length === 0) {
+            container.innerHTML = `
+                <div class="vitrine-empty">
+                    <div class="vitrine-empty-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </div>
+                    <p>Nenhum produto encontrado</p>
+                    <span>Tente alterar os filtros de busca</span>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = filtrados.map((p, index) => {
+            const vars = p.loja_variacoes || [];
+            const catNome = p.loja_categorias?.nome || '';
+            const precos = vars.map(v => parseFloat(v.preco)).filter(pr => pr > 0);
+            const estoqueTotal = vars.reduce((s, v) => s + (v.estoque || 0), 0);
+
+            // Preço para exibir no card
+            let precoHTML = '';
+            if (precos.length > 0) {
+                const min = Math.min(...precos);
+                const max = Math.max(...precos);
+                if (min === max) {
+                    precoHTML = `<span class="card-preco">${_formatPreco(min)}</span>`;
+                } else {
+                    precoHTML = `<span class="card-preco"><small>a partir de</small> ${_formatPreco(min)}</span>`;
+                }
+            }
+
+            // Tamanhos disponíveis
+            const tams = [...new Set(vars.map(v => v.tamanho))];
+            const tamsOrdenados = TAMANHOS_ORDEM.filter(t => tams.includes(t));
+            tams.forEach(t => { if (!tamsOrdenados.includes(t)) tamsOrdenados.push(t); });
+
+            // Imagem com lazy loading
+            const hasImage = !!p.imagem_url;
+            const imageHTML = hasImage
+                ? `<img src="${p.imagem_url}" alt="${p.nome}" loading="lazy" draggable="false">`
+                : `<div class="card-img-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                   </div>`;
+
+            // Estoque badge
+            let estoqueBadge = '';
+            if (estoqueTotal <= 0) {
+                estoqueBadge = '<span class="card-estoque-badge esgotado">Esgotado</span>';
+            } else if (estoqueTotal <= 5) {
+                estoqueBadge = `<span class="card-estoque-badge ultimas">Últimas unidades</span>`;
+            }
+
+            return `
+                <div class="vitrine-card" data-produto-id="${p.id}" style="animation-delay: ${index * 0.05}s">
+                    <div class="card-img-wrapper">
+                        ${imageHTML}
+                        ${estoqueBadge}
+                        ${catNome ? `<span class="card-categoria-badge">${catNome}</span>` : ''}
+                    </div>
+                    <div class="card-info">
+                        <h3 class="card-nome">${p.nome}</h3>
+                        ${precoHTML}
+                        <div class="card-tamanhos">
+                            ${tamsOrdenados.slice(0, 6).map(t => `<span class="card-tam">${t}</span>`).join('')}
+                            ${tamsOrdenados.length > 6 ? `<span class="card-tam more">+${tamsOrdenados.length - 6}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="card-btn-ver" type="button">
+                        <span>Ver produto</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>`;
+        }).join('');
+
+        // Eventos de clique nos cards
+        container.querySelectorAll('.vitrine-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = card.dataset.produtoId;
+                const prod = produtos.find(p => p.id === id);
+                if (prod) ModalProduto.abrir(prod);
+            });
+        });
+    }
+
+    /* ══════════════════════════════════════════════
+       SETUP DO MODAL (Eventos)
+       ══════════════════════════════════════════════ */
+
+    function _setupModalEvents() {
+        // Fechar ao clicar no backdrop
+        const backdrop = document.getElementById('modalProdutoBackdrop');
+        if (backdrop) {
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) ModalProduto.fechar();
+            });
+        }
+
+        // Botão de fechar
+        const closeBtn = document.getElementById('mp-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => ModalProduto.fechar());
+        }
+
+        // Botão de compra
+        const buyBtn = document.getElementById('mp-btn-comprar');
+        if (buyBtn) {
+            buyBtn.addEventListener('click', async () => {
+                await ModalProduto.comprar(sb, async (variacaoId) => {
+                    // Callback de sucesso: recarregar dados
+                    const empresaId = getTenantId();
+                    await carregarProdutos(empresaId);
+                    renderProdutos();
+
+                    // Reabrir modal com dados atualizados
+                    const prod = produtos.find(p =>
+                        (p.loja_variacoes || []).some(v => v.id === variacaoId)
+                    );
+                    if (prod) {
+                        ModalProduto.recarregar(prod);
+                    } else {
+                        ModalProduto.fechar();
+                    }
+                });
+            });
+        }
+    }
+
+    /* ══════════════════════════════════════════════
+       UTILITÁRIOS
+       ══════════════════════════════════════════════ */
+
+    function _formatPreco(valor) {
+        return 'R$\u00A0' + parseFloat(valor).toFixed(2).replace('.', ',');
+    }
+
+    // Expor funções necessárias globalmente
+    window.limparFiltros = limparFiltros;
+
+    // ── Iniciar ──
+    init();
+
+})();
