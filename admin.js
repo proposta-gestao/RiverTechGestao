@@ -1560,8 +1560,9 @@ const elFiltroGaleriaCompleta = document.getElementById('filtroGaleriaCompleta')
 if (elFiltroGaleriaCompleta) elFiltroGaleriaCompleta.oninput = () => renderizarGradeGaleria('imageGalleryGridCompleta', true);
 
 window.abrirModalGaleriaCompleta = abrirModalGaleriaCompleta;
-function abrirModalGaleriaCompleta() {
+async function abrirModalGaleriaCompleta() {
     document.getElementById('filtroGaleriaCompleta').value = '';
+    await carregarGaleria('');
     renderizarGradeGaleria('imageGalleryGridCompleta', true);
     abrirModal('modalGaleriaCompleta');
 }
