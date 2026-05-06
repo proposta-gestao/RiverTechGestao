@@ -565,7 +565,7 @@ body {
 }
 
 .admin-header {
-    padding: 0.4rem 1.5rem;
+    padding: 0 1.5rem 0.4rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -672,6 +672,7 @@ body {
         height: 100vh;
         height: 100dvh;
         border-right: 1px solid var(--border-color);
+        border-top: 5px solid var(--primary);
         border-bottom: none;
         display: flex;
         flex-direction: column;
@@ -683,8 +684,8 @@ body {
     .admin-header {
         flex-direction: column;
         align-items: flex-start;
-        padding: 1rem 1.5rem;
-        gap: 1rem;
+        padding: 0 1.5rem 1rem 1.5rem;
+        gap: 0.8rem;
         border-bottom: 1px solid var(--border-color);
         margin-bottom: 0.5rem;
     }
