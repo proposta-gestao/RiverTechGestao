@@ -435,6 +435,18 @@ function switchTab(tabId, btn) {
     btn.classList.add('active');
     document.getElementById('tab-' + tabId).classList.add('active');
 
+    // Atualiza o link de visualização no topo
+    const btnLink = document.getElementById('btnVisualizarLink');
+    if (btnLink) {
+        if (tabId === 'loja') {
+            btnLink.href = 'loja';
+            btnLink.innerText = 'Ver Loja ↗';
+        } else {
+            btnLink.href = 'cardapio';
+            btnLink.innerText = 'Ver Cardápio ↗';
+        }
+    }
+
     // Lazy Load do módulo de Agenda
     if (tabId === 'agenda' && !window.__AGENDA_INICIADO) {
         // Habilitar CSS
