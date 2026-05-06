@@ -665,10 +665,10 @@ window.abrirModal = (id) => {
     
     // Lógica de preço no modal
     if (produto.promo_price > 0) {
-        dom.pPreco.innerHTML = `<span class="price-old-modal">${formatCurrency(produto.preco)}</span> ${formatCurrency(produto.promo_price)}`;
+        if (dom.pPreco) dom.pPreco.innerHTML = `<span class="price-old-modal">${formatCurrency(produto.preco)}</span> ${formatCurrency(produto.promo_price)}`;
         state.produtoSelecionado = { ...produto, preco: produto.promo_price };
     } else {
-        dom.pPreco.innerText = formatCurrency(produto.preco);
+        if (dom.pPreco) dom.pPreco.innerText = formatCurrency(produto.preco);
         state.produtoSelecionado = produto;
     }
     
