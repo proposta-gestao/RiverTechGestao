@@ -172,7 +172,9 @@ function renderLojaProdutos() {
 
 function initSortableLojaProdutos() {
     const el = document.getElementById('lojaProdutosBody');
-    if (!el || el.sortable) return;
+    if (!el) return;
+
+    if (el.sortable) el.sortable.destroy();
     
     el.sortable = new Sortable(el, {
         animation: 150,
@@ -589,7 +591,9 @@ function renderLojaCategorias() {
 
 function initSortableLojaCategorias() {
     const el = document.getElementById('lojaCategoriasBody');
-    if (!el || el.sortable) return;
+    if (!el) return;
+
+    if (el.sortable) el.sortable.destroy();
     
     el.sortable = new Sortable(el, {
         animation: 150,

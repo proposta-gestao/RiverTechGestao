@@ -1335,6 +1335,8 @@ function renderProdutos() {
                     </td>
                 </tr>
             `}).join('');
+    
+    initSortableProdutos();
 }
 
 window.toggleProdutoAtivo = async (id, isActive) => {
@@ -1351,7 +1353,9 @@ window.toggleProdutoAtivo = async (id, isActive) => {
 
 function initSortableProdutos() {
     const el = document.getElementById('produtosBody');
-    if (!el || el.sortable) return;
+    if (!el) return;
+
+    if (el.sortable) el.sortable.destroy();
     
     el.sortable = new Sortable(el, {
         animation: 150,
