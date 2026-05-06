@@ -355,31 +355,20 @@
                     <h3 id="pnome">Nome do Produto</h3>
                     <p id="pdesc" class="product-description">Descrição detalhada do produto.</p>
 
-                    <div class="product-actions">
-                        <div class="quantity-selector">
-                            <button class="qty-btn" id="menos" aria-label="Diminuir quantidade">−</button>
-                            <span id="qnt" class="qty-value">1</span>
-                            <button class="qty-btn" id="mais" aria-label="Aumentar quantidade">+</button>
-                        </div>
-                        <div class="price-display"
-                            style="display:flex; flex-direction:column; align-items:flex-end; min-width: 120px;">
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight:600;">
-                                Unitário: R$ <span id="ppreco">0,00</span>
-                            </div>
-                            <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">
-                                R$ <span id="psubtotal">0,00</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="observation-wrapper">
                         <label for="obs">Alguma observação?</label>
                         <textarea id="obs" placeholder="Ex: Sem cebola, ponto da carne, etc."></textarea>
                     </div>
 
                     <div class="modal-actions-container">
+                        <div class="quantity-selector" id="modalQtySelector">
+                            <button class="qty-btn" id="menos" aria-label="Diminuir quantidade">−</button>
+                            <span id="qnt" class="qty-value">1</span>
+                            <button class="qty-btn" id="mais" aria-label="Aumentar quantidade">+</button>
+                        </div>
                         <button class="btn-add-confirm" id="confirmar">
-                            Adicionar ao Carrinho
+                            <span>Adicionar</span>
+                            <span id="psubtotal-btn">R$ 0,00</span>
                         </button>
                         <div class="post-add-actions" id="postAddActions" style="display: none;">
                             <button class="btn-continue" id="btnContinuar">Comprar Mais</button>

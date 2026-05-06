@@ -676,7 +676,8 @@ window.abrirModal = (id) => {
     atualizarSubtotalModal();
     
     document.getElementById("obs").value = "";
-    document.getElementById("confirmar").style.display = "block";
+    document.getElementById("confirmar").style.display = "flex";
+    document.getElementById("modalQtySelector").style.display = "flex";
     document.getElementById("postAddActions").style.display = "none";
 
     toggleModal(true);
@@ -685,13 +686,12 @@ window.abrirModal = (id) => {
 function atualizarSubtotalModal() {
     if (!state.produtoSelecionado) return;
     const sub = state.produtoSelecionado.preco * state.quantidadeAtual;
-    document.getElementById('psubtotal').innerText = formatNumber(sub);
     
     // Atualiza o texto do botão de confirmação
     const btn = document.getElementById('confirmar');
     if (btn) {
         btn.innerHTML = `
-            <span>Adicionar ao Carrinho</span>
+            <span>Adicionar</span>
             <span>${formatCurrency(sub)}</span>
         `;
     }
@@ -736,6 +736,7 @@ document.getElementById("confirmar").onclick = () => {
     state.carrinho.push({ ...state.produtoSelecionado, qnt: state.quantidadeAtual, obs });
     renderCarrinho();
     document.getElementById("confirmar").style.display = "none";
+    document.getElementById("modalQtySelector").style.display = "none";
     document.getElementById("postAddActions").style.display = "flex";
 };
 
