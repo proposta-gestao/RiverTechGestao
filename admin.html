@@ -635,6 +635,7 @@
                             <tr>
                                 <th>Código</th>
                                 <th>Desconto</th>
+                                <th>Uso (Cont / Lim)</th>
                                 <th>Status</th>
                                 <th>Ações</th>
                             </tr>
@@ -1287,27 +1288,32 @@
 
             <div class="modal-body">
                 <input type="hidden" id="cupomId">
-                <div class="form-group">
-                    <label for="cupomCodigo">Código</label>
-                    <input type="text" id="cupomCodigo" placeholder="Ex: POKER10" style="text-transform:uppercase;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cupomCodigo">Código</label>
+                        <input type="text" id="cupomCodigo" placeholder="Ex: POKER10" style="text-transform:uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label for="cupomDesconto">Desconto (%)</label>
+                        <input type="number" id="cupomDesconto" min="1" max="100" step="1" placeholder="10">
+                    </div>
                 </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="cupomDesconto">Desconto (%)</label>
-                    <input type="number" id="cupomDesconto" min="1" max="100" step="1" placeholder="10">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cupomLimite">Limite de Uso (Opcional)</label>
+                        <input type="number" id="cupomLimite" min="0" step="1" placeholder="Vazio = ilimitado">
+                    </div>
+                    <div class="form-group">
+                        <label for="cupomAtivo">Status</label>
+                        <select id="cupomAtivo">
+                            <option value="true">Ativo</option>
+                            <option value="false">Inativo</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="cupomAtivo">Status</label>
-                    <select id="cupomAtivo">
-                        <option value="true">Ativo</option>
-                        <option value="false">Inativo</option>
-                    </select>
+                <div style="margin-top: -10px; margin-bottom: 10px;">
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">A contagem de usos será exibida na tabela principal.</small>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="cupomLimite">Limite de Uso (Opcional)</label>
-                <input type="number" id="cupomLimite" min="0" step="1" placeholder="Ex: 50">
-                <small style="color: var(--text-secondary); font-size: 0.75rem;">Deixe vazio para uso ilimitado.</small>
             </div>
         </div>
     </div>
