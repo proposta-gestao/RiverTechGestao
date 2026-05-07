@@ -2238,6 +2238,31 @@ body {
     margin-bottom: 1.5rem;
     display: none;
     border: 1px solid rgba(255, 71, 87, 0.2);
+    position: relative; /* Para o botão fechar */
+}
+
+.btn-close-alert {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: var(--transition);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.btn-close-alert:hover {
+    opacity: 1;
+    background: rgba(255, 71, 87, 0.1);
 }
 
 .stock-alert-panel h3 {

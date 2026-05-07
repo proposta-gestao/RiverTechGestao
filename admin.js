@@ -910,6 +910,11 @@ function aplicarFiltrosDeModulos() {
         document.head.appendChild(styleEl);
     }
     styleEl.innerHTML = dynamicCss;
+    
+    // Recalcula o alerta de estoque após os filtros de módulo
+    if (typeof atualizarAlertaEstoque === 'function') {
+        atualizarAlertaEstoque();
+    }
 }
 
 /**
