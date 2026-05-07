@@ -431,9 +431,17 @@ async function showAdmin() {
 // --- Tabs ---
 function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + tabId).classList.add('active');
+    
+    if (btn) btn.classList.add('active');
+    
+    // Sincroniza sidebar se existir
+    const sideItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+    if (sideItem) sideItem.classList.add('active');
+
+    const content = document.getElementById('tab-' + tabId);
+    if (content) content.classList.add('active');
 
     // Atualiza o link de visualização no topo
     const btnLink = document.getElementById('btnVisualizarLink');
@@ -857,10 +865,12 @@ function aplicarFiltrosDeModulos() {
     // 5. CUPONS
     const mCupons = isModuloAtivo('cupons');
     toggleElement(document.getElementById('nav-cupons'), mCupons, 'flex');
+    toggleElement(document.getElementById('side-nav-cupons'), mCupons, 'flex');
 
     // 6. AGENDAMENTO
     const mAgendamento = isModuloAtivo('agendamento_ativo');
     toggleElement(document.getElementById('nav-agenda'), mAgendamento, 'flex');
+    toggleElement(document.getElementById('side-nav-agenda'), mAgendamento, 'flex');
     if (mAgendamento) {
         const cssEl = document.getElementById('agenda-css');
         if (cssEl) cssEl.disabled = false;
@@ -874,6 +884,7 @@ function aplicarFiltrosDeModulos() {
     // 8. LOJA DE ROUPAS
     const mLoja = isModuloAtivo('loja_roupas');
     toggleElement(document.getElementById('nav-loja'), mLoja, 'flex');
+    toggleElement(document.getElementById('side-nav-loja'), mLoja, 'flex');
     if (mLoja) {
         const cssLoja = document.getElementById('loja-css');
         if (cssLoja) cssLoja.disabled = false;
@@ -2961,7 +2972,60 @@ document.addEventListener('DOMContentLoaded', () => {
         closeInp.readOnly = true;
         closeInp.onclick = () => openTimePicker('confClosingTime', '🕒 Horário de Fechamento');
     }
+
+    initMobileMenu();
 });
+
+function initMobileMenu() {
+    const btnMobileMenu = document.getElementById('btnMobileMenu');
+    const btnCloseMobile = document.getElementById('btnCloseMobile');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    if (btnMobileMenu) {
+        btnMobileMenu.onclick = () => {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.add('active');
+        };
+    }
+
+    if (btnCloseMobile) {
+        btnCloseMobile.onclick = () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        };
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.onclick = () => {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        };
+    }
+
+    // Navegação via sidebar
+    navItems.forEach(item => {
+        item.onclick = () => {
+            const tabId = item.getAttribute('data-tab');
+            const correspondingTabBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            if (correspondingTabBtn) {
+                switchTab(tabId, correspondingTabBtn);
+            }
+            
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.remove('active');
+        };
+    });
+
+    // Logout Mobile
+    const btnLogoutMobile = document.getElementById('btnLogoutMobile');
+    if (btnLogoutMobile) {
+        btnLogoutMobile.onclick = () => {
+            document.getElementById('btnLogout').click();
+        };
+    }
+}
 
 // --- Justificativas de Cancelamento ---
 function renderJustificativas() {

@@ -76,7 +76,10 @@
     <div class="admin-layout" id="adminLayout">
         <div class="admin-topbar">
             <header class="admin-header">
-                <h1>RiverTech <span class="admin-header-label">Admin</span></h1>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <button id="btnMobileMenu" class="btn-mobile-toggle d-md-none">☰</button>
+                    <h1>RiverTech <span class="admin-header-label">Admin</span></h1>
+                </div>
                 <div class="admin-header-actions">
                     <a href="cardapio" class="btn-link-cardapio" target="_blank" id="btnVisualizarLink">
                         <span class="d-none d-md-inline">Ver Cardápio ↗</span>
@@ -1667,6 +1670,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Sidebar (Mobile Drawer) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Menu Principal</h2>
+            <button id="btnCloseMobile" class="btn-close-mobile">&times;</button>
+        </div>
+        <nav class="sidebar-nav">
+            <button class="nav-item active" data-tab="produtos">📦 Produtos</button>
+            <button class="nav-item" data-tab="dashboard">📊 Vendas & Performance</button>
+            <button class="nav-item" data-tab="agenda" id="side-nav-agenda" style="display:none;">📅 Agenda</button>
+            <button class="nav-item" data-tab="loja" id="side-nav-loja" style="display:none;">👗 Loja</button>
+            <button class="nav-item" data-tab="cupons" id="side-nav-cupons">🎫 Cupons</button>
+            <button class="nav-item" data-tab="configuracoes">⚙️ Configurações</button>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="btnLogoutMobile">Sair da Conta</button>
+        </div>
+    </aside>
 
     <!-- Supabase & SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
