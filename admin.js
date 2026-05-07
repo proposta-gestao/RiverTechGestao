@@ -3035,24 +3035,17 @@ function renderizarMotivosEstoque() {
 
     tbody.innerHTML = motivosEstoque.map((m, index) => `
         <tr data-id="${m.id}" data-index="${index}" class="motivo-estoque-row">
-            <td class="drag-handle-motivo">
-                <div style="display: grid; grid-template-columns: repeat(2, 4px); gap: 2px; opacity: 0.6;">
-                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
-                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
-                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
-                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
-                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
-                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
-                </div>
+            <td class="drag-handle-motivo" style="text-align: center; color: var(--text-muted); cursor: grab; font-size: 1.2rem; user-select: none; width: 40px;">
+                ☰
             </td>
             <td style="font-weight:600; cursor:pointer;" onclick="editarMotivoEstoque('${m.id}')" title="Clique para editar">${m.name}</td>
-            <td style="text-align: center;">
+            <td style="text-align: center; width: 100px;">
                 <label class="switch" style="display: inline-block;">
                     <input type="checkbox" ${m.active ? 'checked' : ''} onchange="toggleStatusMotivoEstoque('${m.id}', this.checked)">
                     <span class="slider"></span>
                 </label>
             </td>
-            <td>
+            <td style="width: 150px;">
                 <div style="display:flex;gap:8px;justify-content:center;">
                     <button class="btn-sm btn-edit" onclick="editarMotivoEstoque('${m.id}')">Editar</button>
                     <button class="btn-sm btn-delete" onclick="excluirMotivoEstoque('${m.id}')">Excluir</button>
