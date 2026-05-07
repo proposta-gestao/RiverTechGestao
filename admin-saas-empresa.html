@@ -665,6 +665,20 @@
                     </div>
                     <div class="grupo-content collapsed" id="grupo_vendas">
                         <div class="module-item">
+                            <span>Vendas de Hoje (Operacional)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_vendas_hoje_op" onchange="atualizarModulo('vendas_hoje_op', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Vendas de Ontem (Operacional)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_vendas_ontem_op" onchange="atualizarModulo('vendas_ontem_op', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
                             <span>Histórico de Vendas</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_vendas_visao_geral" onchange="atualizarModulo('vendas_visao_geral', this.checked)">
@@ -679,9 +693,23 @@
                             </label>
                         </div>
                         <div class="module-item">
+                            <span>Análise de Tempo (Picos)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_metricas_analise_tempo" onchange="atualizarModulo('metricas_analise_tempo', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
                             <span>Performance Analítica</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_metricas_performance_vendas" onchange="atualizarModulo('metricas_performance_vendas', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="module-item">
+                            <span>Destaques (Top Itens/Cats)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_metricas_destaques" onchange="atualizarModulo('metricas_destaques', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
