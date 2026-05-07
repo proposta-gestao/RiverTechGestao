@@ -618,7 +618,11 @@ function isModuloAtivo(modulo) {
     let status;
     
     // Fallback de segurança: se o módulo de configuração nunca foi salvo (undefined), considera true
-    const modulosCore = ['config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos'];
+    const modulosCore = [
+        'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',
+        'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
+        'produtos_gerenciar', 'produtos_categorias', 'cardapio'
+    ];
     if (modulosCore.includes(modulo) && mods[modulo] === undefined) {
         status = true; // backward compatibility garantindo acesso
     } else {
