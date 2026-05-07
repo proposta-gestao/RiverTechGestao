@@ -1451,6 +1451,9 @@ function renderCupons() {
                 <tr>
                     <td><strong>${c.code}</strong></td>
                     <td>${c.discount_percent}%</td>
+                    <td style="font-size: 0.85rem; color: var(--text-muted);">
+                        ${c.usage_count || 0} / ${c.usage_limit || '∞'}
+                    </td>
                     <td><span class="badge ${c.active ? 'badge-active' : 'badge-inactive'}">${c.active ? 'Ativo' : 'Inativo'}</span></td>
                     <td>
                         <div class="actions-cell">
@@ -2052,6 +2055,7 @@ document.getElementById('btnNovoCupom').onclick = () => {
     document.getElementById('cupomId').value = '';
     document.getElementById('cupomCodigo').value = '';
     document.getElementById('cupomDesconto').value = '';
+    document.getElementById('cupomLimite').value = '';
     document.getElementById('cupomAtivo').value = 'true';
     abrirModal('modalCupom');
 };
@@ -2063,6 +2067,7 @@ window.editarCupom = (id) => {
     document.getElementById('cupomId').value = c.id;
     document.getElementById('cupomCodigo').value = c.code;
     document.getElementById('cupomDesconto').value = c.discount_percent;
+    document.getElementById('cupomLimite').value = c.usage_limit || '';
     document.getElementById('cupomAtivo').value = String(c.active);
     abrirModal('modalCupom');
 };
@@ -2072,6 +2077,8 @@ document.getElementById('btnSalvarCupom').onclick = async () => {
     const id = document.getElementById('cupomId').value;
     const codigo = document.getElementById('cupomCodigo').value.trim().toUpperCase();
     const desconto = parseFloat(document.getElementById('cupomDesconto').value);
+    const limiteStr = document.getElementById('cupomLimite').value;
+    const limite = limiteStr === '' ? null : parseInt(limiteStr);
     const ativo = document.getElementById('cupomAtivo').value === 'true';
 
     if (!codigo || isNaN(desconto) || desconto <= 0 || desconto > 100) {
@@ -2079,7 +2086,12 @@ document.getElementById('btnSalvarCupom').onclick = async () => {
         return;
     }
 
-    const payload = { code: codigo, discount_percent: desconto, active: ativo };
+    const payload = { 
+        code: codigo, 
+        discount_percent: desconto, 
+        usage_limit: limite,
+        active: ativo 
+    };
 
     let error;
     if (id) {

@@ -94,6 +94,7 @@ async function inicializar() {
         ]);
         aplicarFiltrosDeModulosPublico(); // Novo: Filtra funcionalidades no cardápio
         vincularRadiosEntrega();
+        vincularCupom();
     } catch (e) {
         console.error(e);
         dom.menu.innerHTML = '<p style="text-align:center;color:#FF4757;padding:3rem;">Erro ao carregar o cardápio. Tente recarregar a página.</p>';
@@ -142,7 +143,7 @@ async function carregarProdutos() {
 async function carregarCupons() {
     const { data, error } = await sb
         .from('coupons')
-        .select('code, discount_percent')
+        .select('*')
         .eq('empresa_id', getTenantId())
         .eq('active', true);
     if (error) throw error;
@@ -798,6 +799,35 @@ function vincularRadiosEntrega() {
     });
 }
 
+function vincularCupom() {
+    const btn = document.getElementById('btnCupom');
+    const input = document.getElementById('cupom');
+    if (!btn || !input) return;
+
+    btn.onclick = () => {
+        const codigo = input.value.trim().toUpperCase();
+        if (!codigo) return;
+
+        const cupom = CUPONS.find(c => c.code === codigo);
+
+        if (!cupom) {
+            mostrarToast("Cupom inválido ou expirado.", "error");
+            return;
+        }
+
+        // Verificar limite de uso
+        if (cupom.usage_limit !== null && (cupom.usage_count || 0) >= cupom.usage_limit) {
+            mostrarToast("Este cupom atingiu o limite de usos.", "error");
+            return;
+        }
+
+        state.descontoAtivo = cupom.discount_percent / 100;
+        state.cupomAplicado = cupom.code;
+        mostrarToast(`Cupom ${cupom.code} aplicado!`, "success");
+        renderCarrinho();
+    };
+}
+
 document.getElementById("btnProximaEtapa").onclick = () => {
     if (state.carrinho.length === 0) return;
     navegarStep(2);
@@ -987,6 +1017,14 @@ document.getElementById("btnEnviar").onclick = async () => {
         const posicaoInput = document.getElementById("clientePosicao");
         if (mesaInput) mesaInput.value = '';
         if (posicaoInput) posicaoInput.value = '';
+
+        // Incrementar uso do cupom se houver
+        if (state.cupomAplicado) {
+            const cupomObj = CUPONS.find(c => c.code === state.cupomAplicado);
+            if (cupomObj) {
+                await sb.rpc('increment_coupon_usage', { _coupon_id: cupomObj.id });
+            }
+        }
 
         state.carrinho = [];
         state.descontoAtivo = 0;
