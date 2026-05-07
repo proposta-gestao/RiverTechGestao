@@ -652,7 +652,6 @@
                         <button class="subtab-btn active" data-subtab="config-dados-empresa">Dados da Empresa</button>
                         <button class="subtab-btn" data-subtab="config-visual">Personalização Visual</button>
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
-                        <button class="subtab-btn" data-subtab="config-cancelamento">Cancelamentos</button>
                     </div>
                 </div>
 
@@ -918,39 +917,6 @@
                 </div>
                 </div> <!-- Fechamento da sub-aba config-frete -->
 
-                <div class="subtab-content" id="subtab-config-cancelamento">
-                <!-- Justificativas de Cancelamento -->
-                <div class="config-card" style="margin-top: 1.5rem;">
-                    <div class="config-card-header">
-                        <h2>🚫 Justificativas de Cancelamento</h2>
-                    </div>
-                    <div class="config-card-body">
-                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1rem;">
-                            Cadastre os motivos que os atendentes poderão escolher ao cancelar um pedido.
-                        </p>
-                        
-                        <div style="display:flex; gap:10px; margin-bottom: 1rem;">
-                            <input type="text" id="inputNovaJustificativa" placeholder="Ex: Falta de Estoque, Cliente não quis esperar..." style="flex:1;">
-                            <button class="btn-primary btn-sm" id="btnAdicionarJustificativa" style="white-space:nowrap;">+ Adicionar</button>
-                        </div>
-
-                        <div class="admin-table-wrapper">
-                            <table class="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40px;"></th>
-                                        <th>Motivo</th>
-                                        <th style="width: 80px;">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="justificativasBody">
-                                    <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhuma justificativa cadastrada.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                </div> <!-- Fechamento da sub-aba config-cancelamento -->
 
             </div>
         </div> <!-- Fechamento da admin-content-wrapper -->
