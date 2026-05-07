@@ -3,6 +3,70 @@
     display: none !important;
 }
 
+/* Sortable Styles */
+.motivo-estoque-row {
+    user-select: none;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.motivo-estoque-row:hover {
+    background-color: var(--opacity-neutral-05);
+}
+
+.motivo-estoque-row.dragging {
+    background-color: var(--opacity-brand-10) !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    border-radius: 8px;
+    z-index: 100;
+}
+
+.motivo-estoque-row.sortable-ghost {
+    opacity: 0.2;
+    background-color: var(--accent-primary) !important;
+}
+
+.drag-handle-motivo {
+    cursor: grab;
+    user-select: none;
+    font-size: 1.1rem;
+    touch-action: none;
+    color: var(--text-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.motivo-estoque-row:hover .drag-handle-motivo {
+    color: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+.dragging .drag-handle-motivo {
+    cursor: grabbing;
+    color: var(--accent-primary);
+}
+
+.is-dragging .motivo-estoque-row {
+    cursor: grabbing;
+}
+
+/* Stock Reasons Table Refinement */
+#subtab-lista-estoque .admin-table th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+#subtab-lista-estoque .admin-table td {
+    padding: 1.2rem 1rem;
+}
+
+#subtab-lista-estoque .drag-handle-motivo {
+    width: 50px;
+}
+
 /* =============================================
    PREMIUM THEME EDITOR
 ============================================= */

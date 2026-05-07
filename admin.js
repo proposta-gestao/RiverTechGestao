@@ -2965,7 +2965,7 @@ function renderJustificativas() {
     const tbody = document.getElementById('justificativasBody');
     if (!tbody) return;
     if (cancellationReasons.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhuma justificativa cadastrada.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhuma justificativa cadastrada.</td></tr>';
         return;
     }
     
@@ -3028,10 +3028,22 @@ function renderizarMotivosEstoque() {
     const tbody = document.getElementById('motivosEstoqueBody');
     if (!tbody) return;
 
+    if (motivosEstoque.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhum motivo cadastrado.</td></tr>';
+        return;
+    }
+
     tbody.innerHTML = motivosEstoque.map((m, index) => `
         <tr data-id="${m.id}" data-index="${index}" class="motivo-estoque-row">
-            <td style="text-align: center; color: var(--text-muted); cursor: grab;">
-                <span class="drag-handle-motivo">☰</span>
+            <td class="drag-handle-motivo">
+                <div style="display: grid; grid-template-columns: repeat(2, 4px); gap: 2px; opacity: 0.6;">
+                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
+                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
+                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
+                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
+                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
+                    <div style="width: 3px; height: 3px; background: currentColor; border-radius: 50%;"></div>
+                </div>
             </td>
             <td style="font-weight:600; cursor:pointer;" onclick="editarMotivoEstoque('${m.id}')" title="Clique para editar">${m.name}</td>
             <td style="text-align: center;">
@@ -3052,13 +3064,24 @@ function renderizarMotivosEstoque() {
 
 function initSortableMotivosEstoque() {
     const el = document.getElementById('motivosEstoqueBody');
-    if (!el || el.sortable) return;
+    if (!el) return;
+    
+    // Verificar se a biblioteca Sortable está disponível
+    if (typeof Sortable === 'undefined') {
+        console.error('SortableJS não encontrado.');
+        return;
+    }
+
+    // Destruir instância anterior de forma segura
+    const oldSortable = Sortable.get(el);
+    if (oldSortable) oldSortable.destroy();
 
     el.sortable = new Sortable(el, {
         animation: 150,
         handle: '.drag-handle-motivo',
         ghostClass: 'sortable-ghost',
         dragClass: 'dragging',
+        forceFallback: true, // Forçar fallback ajuda em alguns navegadores e ambientes móveis
         onStart: () => el.classList.add('is-dragging'),
         onEnd: async (evt) => {
             el.classList.remove('is-dragging');
@@ -3071,11 +3094,14 @@ function initSortableMotivosEstoque() {
                 order_position: index + 1
             }));
 
-            // Atualizar localmente
-            motivosEstoque = updates.map(u => {
-                const original = motivosEstoque.find(m => m.id === u.id);
-                return { ...original, order_position: u.order_position };
+            // Atualizar localmente para manter sincronizado sem re-renderizar imediatamente
+            updates.forEach(u => {
+                const item = motivosEstoque.find(m => m.id === u.id);
+                if (item) item.order_position = u.order_position;
             });
+            
+            // Reordenar o array original para bater com o novo DOM
+            motivosEstoque.sort((a, b) => (a.order_position || 0) - (b.order_position || 0));
 
             await salvarOrdemMotivosEstoque(updates);
             showToast('Ordem atualizada!', 'success');
@@ -3095,8 +3121,15 @@ document.getElementById('btnNovoMotivoEstoque').onclick = async () => {
     if (!validarAcessoModulo('produtos_estoque')) return;
     const name = await customPrompt('Novo Motivo de Estoque', 'Digite o nome do motivo:');
     if (name && name.trim()) {
-        // ← Multi-Tenant: injeta empresa_id no INSERT
-        const { error } = await sb.from('stock_reasons').insert({ name: name.trim(), empresa_id: getTenantId() });
+        const nextOrder = (motivosEstoque.length > 0) 
+            ? Math.max(...motivosEstoque.map(m => m.order_position || 0)) + 1 
+            : 1;
+
+        const { error } = await sb.from('stock_reasons').insert({ 
+            name: name.trim(), 
+            empresa_id: getTenantId(),
+            order_position: nextOrder
+        });
         if (error) showToast('Erro ao criar: ' + error.message, 'error');
         else {
             showToast('Motivo criado!', 'success');
