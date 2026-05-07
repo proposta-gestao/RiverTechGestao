@@ -1343,6 +1343,9 @@ function renderProdutos() {
                     <td onclick="editarProduto('${p.id}')" style="cursor:pointer;" title="Clique para editar">
                         <div class="product-name-container">
                             <strong class="clickable-row-name">${p.name}</strong>
+                            <div class="mobile-price-hint" style="display:none; font-size:0.75rem; color:var(--primary); font-weight:700; margin-top:2px;">
+                                ${formatCurrency(p.price)}
+                            </div>
                             ${p.promo_price > 0 ? '<div class="badge-promo-container"><span class="badge badge-promo">PROMO</span></div>' : ''}
                         </div>
                     </td>

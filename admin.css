@@ -1896,9 +1896,10 @@ body {
         background: var(--color-button);
         color: var(--color-button-text, #000);
         border: 1.5px solid rgba(229, 178, 93, 0.3);
-        border-radius: 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        padding: 6px 10px;
         order: 2;
-        /* Ver Cardápio em baixo */
     }
 
     .btn-logout {
@@ -2132,16 +2133,18 @@ body {
     #subtab-lista-produtos .admin-table th:nth-child(3),
     #subtab-lista-produtos .admin-table td:nth-child(3) {
         /* Nome */
-        width: 50% !important;
+        width: 70% !important;
         display: table-cell !important;
+    }
+
+    .mobile-price-hint {
+        display: block !important;
     }
 
     #subtab-lista-produtos .admin-table th:nth-child(5),
     #subtab-lista-produtos .admin-table td:nth-child(5) {
-        /* Preço */
-        width: 25% !important;
-        text-align: center !important;
-        display: table-cell !important;
+        /* Preço (agora escondido porque está no nome) */
+        display: none !important;
     }
 }
 
