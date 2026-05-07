@@ -2177,26 +2177,34 @@ body {
 }
 
 /* ===== Table Mobile Refinement: Stock Adjustments ===== */
-/* 1: Nome, 2: Status, 3: Ações */
+/* 1: Handle, 2: Nome, 3: Status, 4: Ações */
 #subtab-lista-estoque .admin-table th:nth-child(1),
 #subtab-lista-estoque .admin-table td:nth-child(1) {
+    /* Handle */
+    display: table-cell !important;
+    width: 40px !important;
+}
+
+#subtab-lista-estoque .admin-table th:nth-child(2),
+#subtab-lista-estoque .admin-table td:nth-child(2) {
     /* Nome */
     display: table-cell !important;
     width: auto !important;
 }
 
-#subtab-lista-estoque .admin-table th:nth-child(2),
-#subtab-lista-estoque .admin-table td:nth-child(2) {
+#subtab-lista-estoque .admin-table th:nth-child(3),
+#subtab-lista-estoque .admin-table td:nth-child(3) {
     /* Status */
     display: table-cell !important;
-    width: 80px !important;
+    width: 100px !important;
     text-align: center !important;
 }
 
-#subtab-lista-estoque .admin-table th:nth-child(3),
-#subtab-lista-estoque .admin-table td:nth-child(3) {
+#subtab-lista-estoque .admin-table th:nth-child(4),
+#subtab-lista-estoque .admin-table td:nth-child(4) {
     /* Ações */
     display: table-cell !important;
+    width: 150px !important;
     text-align: right !important;
 }
 
