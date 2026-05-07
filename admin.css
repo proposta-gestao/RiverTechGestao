@@ -24,6 +24,17 @@
     cursor: grabbing;
 }
 
+/* Visibility Utilities */
+.d-none { display: none !important; }
+@media (min-width: 769px) {
+    .d-md-none { display: none !important; }
+    .d-md-inline { display: inline !important; }
+    .d-md-flex { display: flex !important; }
+}
+@media (max-width: 768px) {
+    .d-none-mobile { display: none !important; }
+}
+
 /* =============================================
    PREMIUM THEME EDITOR
 ============================================= */
@@ -1899,12 +1910,11 @@ body {
         border-radius: 6px;
         font-size: 0.75rem;
         padding: 6px 10px;
-        order: 2;
+        order: 1;
     }
 
     .btn-logout {
-        order: 1;
-        /* Sair em cima */
+        order: 2;
         background: rgba(255, 71, 87, 0.1);
     }
 

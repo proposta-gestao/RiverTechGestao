@@ -444,12 +444,12 @@ function switchTab(tabId, btn) {
             btnLink.href = isLocal 
                 ? `/loja.html?loja=${window.TENANT.slug}` 
                 : `/loja.html?loja=${window.TENANT.slug}`;
-            btnLink.innerText = 'Ver Loja ↗';
+            btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Loja ↗</span><span class="d-md-none">Loja</span>';
         } else {
             btnLink.href = isLocal 
                 ? `/cardapio.html?loja=${window.TENANT.slug}` 
                 : `/${window.TENANT.slug}`;
-            btnLink.innerText = 'Ver Cardápio ↗';
+            btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Cardápio ↗</span><span class="d-md-none">Cardápio</span>';
         }
     }
 
