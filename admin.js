@@ -3015,11 +3015,12 @@ function initSortableJustificativas() {
 
 async function carregarMotivosEstoque() {
     const { data, error } = await sb.from('stock_reasons').select('*')
-        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
-        .order('name');
+        .eq('empresa_id', getTenantId())
+        .order('order_position', { ascending: true });
     if (!error) {
         motivosEstoque = data;
         renderizarMotivosEstoque();
+        initSortableMotivosEstoque();
     }
 }
 
@@ -3027,13 +3028,11 @@ function renderizarMotivosEstoque() {
     const tbody = document.getElementById('motivosEstoqueBody');
     if (!tbody) return;
 
-    if (motivosEstoque.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhum motivo cadastrado.</td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = motivosEstoque.map(m => `
-        <tr>
+    tbody.innerHTML = motivosEstoque.map((m, index) => `
+        <tr data-id="${m.id}" data-index="${index}" class="motivo-estoque-row">
+            <td style="text-align: center; color: var(--text-muted); cursor: grab;">
+                <span class="drag-handle-motivo">☰</span>
+            </td>
             <td style="font-weight:600; cursor:pointer;" onclick="editarMotivoEstoque('${m.id}')" title="Clique para editar">${m.name}</td>
             <td style="text-align: center;">
                 <label class="switch" style="display: inline-block;">
@@ -3049,6 +3048,47 @@ function renderizarMotivosEstoque() {
             </td>
         </tr>
     `).join('');
+}
+
+function initSortableMotivosEstoque() {
+    const el = document.getElementById('motivosEstoqueBody');
+    if (!el || el.sortable) return;
+
+    el.sortable = new Sortable(el, {
+        animation: 150,
+        handle: '.drag-handle-motivo',
+        ghostClass: 'sortable-ghost',
+        dragClass: 'dragging',
+        onStart: () => el.classList.add('is-dragging'),
+        onEnd: async (evt) => {
+            el.classList.remove('is-dragging');
+            if (evt.oldIndex === evt.newIndex) return;
+
+            // Reordenar baseado no novo estado do DOM
+            const rows = Array.from(el.querySelectorAll('.motivo-estoque-row'));
+            const updates = rows.map((tr, index) => ({
+                id: tr.dataset.id,
+                order_position: index + 1
+            }));
+
+            // Atualizar localmente
+            motivosEstoque = updates.map(u => {
+                const original = motivosEstoque.find(m => m.id === u.id);
+                return { ...original, order_position: u.order_position };
+            });
+
+            await salvarOrdemMotivosEstoque(updates);
+            showToast('Ordem atualizada!', 'success');
+        }
+    });
+}
+
+async function salvarOrdemMotivosEstoque(updates) {
+    const { error } = await sb.from('stock_reasons').upsert(updates, { onConflict: 'id' });
+    if (error) {
+        console.error('Erro ao salvar ordem:', error);
+        showToast('Erro ao sincronizar ordem.', 'error');
+    }
 }
 
 document.getElementById('btnNovoMotivoEstoque').onclick = async () => {
