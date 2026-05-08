@@ -292,6 +292,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
 }
 
 @media (max-width: 600px) {
@@ -300,14 +301,20 @@
         align-items: flex-start;
         padding: 12px;
         gap: 0;
+        min-width: 0; /* Permite encolher */
+    }
+
+    .agendamento-info {
+        width: 100%;
+        min-width: 0;
     }
 
     .agendamento-hora { display: none; }
-    .agendamento-top-row { display: flex; }
+    .agendamento-top-row { display: flex; min-width: 0; }
     .agendamento-hora-compact { display: block; }
 
     .agendamento-cliente {
-        max-width: 100%; 
+        max-width: 12ch; /* Limita a ~12 letras no mobile */
         margin-bottom: 2px;
     }
 
