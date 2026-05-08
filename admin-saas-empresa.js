@@ -180,48 +180,78 @@ function renderDadosBasicos(emp) {
     const badge = document.getElementById('empresaStatusBadge');
     badge.innerHTML = `<span class="status-badge status-${emp.status}">${emp.status}</span>`;
 }
- 
-async function carregarMetricas() {
-    // Buscar todos os pedidos da empresa
-    const { data: orders, error } = await sb
-        .from('orders')
-        .select('total, created_at')
-        .eq('empresa_id', EMPRESA_ID);
- 
-    if (error) return;
- 
-    const totalFaturamento = orders.reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
-    const totalPedidos = orders.length;
-    const ticketMedio = totalPedidos > 0 ? totalFaturamento / totalPedidos : 0;
- 
-    // Faturamento do mês atual
-    const agora = new Date();
-    const mesAtual = agora.getMonth();
-    const anoAtual = agora.getFullYear();
-    const fatMes = orders.filter(o => {
-        const d = new Date(o.created_at);
-        return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
-    }).reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
- 
-    // Último pedido
-    let ultimoPedidoStr = 'Nenhum pedido';
-    if (orders.length > 0) {
-        const sorted = [...orders].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-        ultimoPedidoStr = new Date(sorted[0].created_at).toLocaleDateString('pt-BR') + ' ' + new Date(sorted[0].created_at).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-    }
- 
-    // Formatação limpa (apenas o número) para o novo design
-    const formatClean = (val) => {
-        return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    };
 
-    // Renderizar
-    document.getElementById('faturamentoTotal').textContent = formatClean(totalFaturamento);
-    document.getElementById('faturamentoMes').textContent = formatClean(fatMes);
-    document.getElementById('totalPedidos').textContent = totalPedidos;
-    document.getElementById('ticketMedio').textContent = formatClean(ticketMedio);
-    document.getElementById('infoUltimoPedido').textContent = ultimoPedidoStr;
-    document.getElementById('infoTicketGeral').textContent = formatClean(ticketMedio);
+async function carregarMetricas() {
+    try {
+        // 1. Buscar Pedidos (Produtos) concluídos/finalizados
+        const { data: orders, error: errOrders } = await sb
+            .from('orders')
+            .select('total, created_at, status')
+            .eq('empresa_id', EMPRESA_ID)
+            .in('status', ['concluido', 'finalizado']);
+
+        if (errOrders) throw errOrders;
+
+        // 2. Buscar Agendamentos (Serviços) concluídos
+        const { data: appts, error: errAppts } = await sb
+            .from('agendamentos')
+            .select('empresa_id, status, created_at, servico:servicos(preco)')
+            .eq('empresa_id', EMPRESA_ID)
+            .eq('status', 'concluido');
+
+        if (errAppts) throw errAppts;
+
+        // 3. Processar Totais
+        const totalFaturamentoProdutos = (orders || []).reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
+        const totalFaturamentoServicos = (appts || []).reduce((acc, a) => acc + (parseFloat(a.servico?.preco) || 0), 0);
+        
+        const totalFaturamento = totalFaturamentoProdutos + totalFaturamentoServicos;
+        const totalTransacoes = (orders?.length || 0) + (appts?.length || 0);
+        const ticketMedio = totalTransacoes > 0 ? totalFaturamento / totalTransacoes : 0;
+
+        // 4. Faturamento do mês atual
+        const agora = new Date();
+        const mesAtual = agora.getMonth();
+        const anoAtual = agora.getFullYear();
+
+        const fatMesProd = (orders || []).filter(o => {
+            const d = new Date(o.created_at);
+            return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+        }).reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
+
+        const fatMesServ = (appts || []).filter(a => {
+            const d = new Date(a.created_at);
+            return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
+        }).reduce((acc, a) => acc + (parseFloat(a.servico?.preco) || 0), 0);
+
+        const fatMes = fatMesProd + fatMesServ;
+
+        // 5. Última Transação
+        let ultimoPedidoStr = 'Nenhuma transação';
+        const allTrans = [
+            ...(orders || []).map(o => ({ date: new Date(o.created_at) })),
+            ...(appts || []).map(a => ({ date: new Date(a.created_at) }))
+        ];
+        
+        if (allTrans.length > 0) {
+            const sorted = allTrans.sort((a,b) => b.date - a.date);
+            ultimoPedidoStr = sorted[0].date.toLocaleDateString('pt-BR') + ' ' + sorted[0].date.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Renderizar
+        const formatClean = (val) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        document.getElementById('faturamentoTotal').textContent = formatClean(totalFaturamento);
+        document.getElementById('faturamentoMes').textContent = formatClean(fatMes);
+        document.getElementById('totalPedidos').textContent = totalTransacoes;
+        document.getElementById('ticketMedio').textContent = formatClean(ticketMedio);
+        document.getElementById('infoUltimoPedido').textContent = ultimoPedidoStr;
+        document.getElementById('infoTicketGeral').textContent = formatClean(ticketMedio);
+
+    } catch (err) {
+        console.error('[Metrics] Erro:', err);
+        showToast('Erro ao carregar métricas financeiras', 'error');
+    }
 }
  
 async function carregarAdmins() {
