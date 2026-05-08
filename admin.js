@@ -3315,14 +3315,15 @@ async function salvarJustificativasNoBanco() {
             }
             
             btnAdj.disabled = true;
-    cancellationReasons.push(val);
-    input.value = '';
-    renderJustificativas();
-    
-    await salvarJustificativasNoBanco();
-    showToast('Justificativa adicionada!', 'success');
-    document.getElementById('btnAdicionarJustificativa').disabled = false;
-};
+            cancellationReasons.push(val);
+            input.value = '';
+            renderJustificativas();
+            
+            await salvarJustificativasNoBanco();
+            showToast('Justificativa adicionada!', 'success');
+            btnAdj.disabled = false;
+        };
+    }
 
 window.removerJustificativa = async (index) => {
     cancellationReasons.splice(index, 1);
