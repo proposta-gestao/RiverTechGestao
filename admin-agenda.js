@@ -112,31 +112,78 @@
         }
     }
 
+    async function carregarTudoAgenda() {
+        console.log('[Agenda] Atualizando dados...');
+        await Promise.all([
+            carregarAgendamentos(),
+            carregarAgendamentosFuturos(),
+            carregarDiasComAgendamentos(),
+            carregarListaEspera()
+        ]);
+        renderMiniCal();
+        renderTimeline();
+        renderTimelineFuturo();
+        renderStats();
+        if (document.getElementById('agendaTab_lista')?.style.display !== 'none') {
+            renderListaEsperaTab();
+        }
+    }
+
     function setupRealtime() {
-        if (agendaSubscription) return;
-        agendaSubscription = sb.channel('agenda-changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'agendamentos', filter: `empresa_id=eq.${EMPRESA_ID()}` }, async (payload) => {
-                console.log('[Agenda] Evento Realtime:', payload.eventType);
-                
-                // Se for um novo agendamento, toca o alerta
-                if (payload.eventType === 'INSERT') {
-                    playBell();
+        const empresaId = EMPRESA_ID();
+        if (!empresaId) {
+            console.warn('[Agenda] Realtime não iniciado: EMPRESA_ID não disponível.');
+            return;
+        }
+
+        if (agendaSubscription) {
+            sb.removeChannel(agendaSubscription);
+        }
+
+        console.log('[Agenda] Iniciando Realtime para empresa:', empresaId);
+
+        agendaSubscription = sb.channel('agenda-changes-v2')
+            .on('postgres_changes', { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'agendamentos', 
+                filter: `empresa_id=eq.${empresaId}` 
+            }, async (payload) => {
+                console.log('[Agenda] NOVO AGENDAMENTO!', payload);
+                playBell();
+                if (typeof showToast === 'function') {
                     showToast('📅 Novo agendamento recebido!');
                 }
-
-                await Promise.all([carregarAgendamentos(), carregarAgendamentosFuturos(), carregarDiasComAgendamentos()]);
-                renderMiniCal();
-                renderTimeline();
-                renderTimelineFuturo();
-                renderStats();
+                await carregarTudoAgenda();
             })
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'lista_espera', filter: `empresa_id=eq.${EMPRESA_ID()}` }, async () => {
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: 'agendamentos', 
+                filter: `empresa_id=eq.${empresaId}` 
+            }, async (payload) => {
+                if (payload.eventType === 'INSERT') return; // Já tratado acima
+                console.log('[Agenda] Mudança detectada (Update/Delete):', payload.eventType);
+                await carregarTudoAgenda();
+            })
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: 'lista_espera', 
+                filter: `empresa_id=eq.${empresaId}` 
+            }, async () => {
+                console.log('[Agenda] Mudança na lista de espera');
                 await carregarListaEspera();
-                if (document.getElementById('agendaTab_lista').style.display !== 'none') {
+                if (document.getElementById('agendaTab_lista')?.style.display !== 'none') {
                     renderListaEsperaTab();
                 }
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log('[Agenda] Status da conexão Realtime:', status);
+                if (status === 'CHANNEL_ERROR') {
+                    console.error('[Agenda] Erro ao conectar no Realtime. Verifique se o replication está ativo no banco.');
+                }
+            });
     }
 
     // ============================================================
