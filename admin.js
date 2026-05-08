@@ -453,6 +453,11 @@ function switchTab(tabId, btn) {
                 ? `/loja.html?loja=${window.TENANT.slug}` 
                 : `/loja.html?loja=${window.TENANT.slug}`;
             btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Loja ↗</span><span class="d-md-none">Loja</span>';
+        } else if (tabId === 'agenda') {
+            btnLink.href = isLocal 
+                ? `/agendamento.html?loja=${window.TENANT.slug}` 
+                : `/agendamento.html?loja=${window.TENANT.slug}`;
+            btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Agendamento ↗</span><span class="d-md-none">Agendamento</span>';
         } else {
             btnLink.href = isLocal 
                 ? `/cardapio.html?loja=${window.TENANT.slug}` 
