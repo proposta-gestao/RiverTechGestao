@@ -630,39 +630,45 @@ function calcularInsights(filtrados) {
         const dObj = new Date(p.created_at);
         if (isNaN(dObj.getTime())) return;
 
-        const diaSem = diasSemana[dObj.getDay()];
-        const hora = dObj.getHours();
-        const dataStr = dObj.toLocaleDateString('pt-BR');
+        const isConcluido = p.status === 'concluido' || p.status === 'finalizado';
         const valor = parseFloat(p.total || 0);
 
         if (p.status === 'cancelado') totalCancelados++;
-        totalFaturado += valor;
+        
+        // Só contabiliza faturamento se estiver concluído/finalizado
+        if (isConcluido) {
+            totalFaturado += valor;
 
-        faturamentoPorDiaSemana[diaSem] += valor;
-        faturamentoPorHora[hora] += valor;
-        faturamentoPorData[dataStr] = (faturamentoPorData[dataStr] || 0) + valor;
+            const diaSem = diasSemana[dObj.getDay()];
+            const hora = dObj.getHours();
+            const dataStr = dObj.toLocaleDateString('pt-BR');
 
-        if (p.order_items) {
-            p.order_items.forEach(item => {
-                const prodNome = item.product_name || 'Produto sem nome';
-                const qtd = parseInt(item.quantity) || 0;
-                const preco = parseFloat(item.unit_price || item.price || 0);
+            faturamentoPorDiaSemana[diaSem] += valor;
+            faturamentoPorHora[hora] += valor;
+            faturamentoPorData[dataStr] = (faturamentoPorData[dataStr] || 0) + valor;
 
-                qtdPorProduto[prodNome] = (qtdPorProduto[prodNome] || 0) + qtd;
-                
-                let catNome = 'Geral';
-                if (p.is_agendamento) {
-                    catNome = 'Serviços';
-                } else {
-                    const prod = produtos.find(pr => pr.id === item.product_id);
-                    if (prod) {
-                        const cat = categorias.find(c => c.id === prod.category_id);
-                        if (cat) catNome = cat.name;
+            if (p.order_items) {
+                p.order_items.forEach(item => {
+                    const prodNome = item.product_name || 'Produto sem nome';
+                    const qtd = parseInt(item.quantity) || 0;
+                    const preco = parseFloat(item.unit_price || item.price || 0);
+
+                    qtdPorProduto[prodNome] = (qtdPorProduto[prodNome] || 0) + qtd;
+                    
+                    let catNome = 'Geral';
+                    if (p.is_agendamento) {
+                        catNome = 'Serviços';
+                    } else {
+                        const prod = produtos.find(pr => pr.id === item.product_id);
+                        if (prod) {
+                            const cat = categorias.find(c => c.id === prod.category_id);
+                            if (cat) catNome = cat.name;
+                        }
                     }
-                }
-                
-                faturamentoPorCategoria[catNome] = (faturamentoPorCategoria[catNome] || 0) + (preco * qtd);
-            });
+                    
+                    faturamentoPorCategoria[catNome] = (faturamentoPorCategoria[catNome] || 0) + (preco * qtd);
+                });
+            }
         }
     });
 
@@ -1130,12 +1136,13 @@ function getPedidosFiltrados() {
 }
 
 function atualizarMétricasDashboard() {
-    const filtradosParaStats = getPedidosFiltrados();
+    const filtrados = getPedidosFiltrados();
+    const concluidos = filtrados.filter(p => p.status === 'concluido' || p.status === 'finalizado');
 
     let totalFaturado = 0;
     let totalItens = 0;
 
-    filtradosParaStats.forEach(p => {
+    concluidos.forEach(p => {
         totalFaturado += parseFloat(p.total || 0);
         if (p.order_items) {
             p.order_items.forEach(item => {
@@ -1144,15 +1151,15 @@ function atualizarMétricasDashboard() {
         }
     });
 
-    const avgTicket = filtradosParaStats.length > 0 ? (totalFaturado / filtradosParaStats.length) : 0;
+    const avgTicket = concluidos.length > 0 ? (totalFaturado / concluidos.length) : 0;
 
     document.getElementById('dashTotalValue').innerText = "R$ " + formatNumber(totalFaturado);
-    document.getElementById('dashTotalOrders').innerText = filtradosParaStats.length;
+    document.getElementById('dashTotalOrders').innerText = concluidos.length;
     document.getElementById('dashTotalItems').innerText = totalItens;
     document.getElementById('dashAvgTicket').innerText = "R$ " + formatNumber(avgTicket);
 
-    renderPedidosFiltrados(filtradosParaStats);
-    atualizarGraficoMetricas();
+    renderPedidosFiltrados(filtrados);
+    atualizarGraficoMetricas(filtrados);
 }
 
 function renderPedidosFiltrados(filtrados = null) {
