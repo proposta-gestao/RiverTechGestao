@@ -161,40 +161,42 @@
 
         console.log('[Agenda] Iniciando Realtime para empresa:', empresaId);
 
-        agendaSubscription = sb.channel('agenda-changes-v2')
+        agendaSubscription = sb.channel('agenda-changes-v3')
             .on('postgres_changes', { 
                 event: 'INSERT', 
                 schema: 'public', 
-                table: 'agendamentos', 
-                filter: `empresa_id=eq.${empresaId}` 
+                table: 'agendamentos'
             }, async (payload) => {
+                // Filtro manual no JS (mais robusto que no Supabase filter em alguns casos)
+                if (payload.new.empresa_id !== empresaId) return;
+
                 console.log('[Agenda] NOVO AGENDAMENTO!', payload);
                 playBell();
                 if (typeof showToast === 'function') {
                     showToast('📅 Novo agendamento recebido!');
                 }
                 
-                // Alerta de depuração (temporário para o usuário confirmar que o evento chegou)
                 console.info('[Agenda-Realtime] Notificação enviada ao UI');
-                
                 await carregarTudoAgenda();
             })
             .on('postgres_changes', { 
                 event: '*', 
                 schema: 'public', 
-                table: 'agendamentos', 
-                filter: `empresa_id=eq.${empresaId}` 
+                table: 'agendamentos'
             }, async (payload) => {
-                if (payload.eventType === 'INSERT') return; // Já tratado acima
+                if (payload.new && payload.new.empresa_id !== empresaId) return;
+                if (payload.old && payload.old.empresa_id && payload.old.empresa_id !== empresaId) return;
+
+                if (payload.eventType === 'INSERT') return; 
                 console.log('[Agenda] Mudança detectada (Update/Delete):', payload.eventType);
                 await carregarTudoAgenda();
             })
             .on('postgres_changes', { 
                 event: '*', 
                 schema: 'public', 
-                table: 'lista_espera', 
-                filter: `empresa_id=eq.${empresaId}` 
-            }, async () => {
+                table: 'lista_espera'
+            }, async (payload) => {
+                if (payload.new && payload.new.empresa_id !== empresaId) return;
                 console.log('[Agenda] Mudança na lista de espera');
                 await carregarListaEspera();
                 if (document.getElementById('agendaTab_lista')?.style.display !== 'none') {
