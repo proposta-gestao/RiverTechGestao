@@ -960,54 +960,61 @@ async function carregarAtendentes() {
 }
 
 async function carregarDashboard() {
-    const tenantId = getTenantId();
-    
-    // 1. Carrega Pedidos (Produtos)
-    const { data: dataOrders, error: errorOrders } = await sb
-        .from('orders')
-        .select('*, order_items(*)')
-        .eq('empresa_id', tenantId)
-        .order('created_at', { ascending: false });
+    try {
+        const tenantId = getTenantId();
+        console.log('[Dashboard] Carregando dados para tenant:', tenantId);
+        
+        // 1. Carrega Pedidos (Produtos)
+        const { data: dataOrders, error: errorOrders } = await sb
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('empresa_id', tenantId)
+            .order('created_at', { ascending: false });
 
-    if (errorOrders) { console.error('Erro ao carregar pedidos:', errorOrders); }
+        if (errorOrders) console.error('[Dashboard] Erro orders:', errorOrders);
 
-    // 2. Carrega Agendamentos (Serviços)
-    // Buscamos apenas os que não foram cancelados ou conforme necessidade
-    const { data: dataAgendamentos, error: errorAgendamentos } = await sb
-        .from('agendamentos')
-        .select('*, profissional:profissionais(nome), servico:servicos(nome, preco)')
-        .eq('empresa_id', tenantId)
-        .order('created_at', { ascending: false });
+        // 2. Carrega Agendamentos (Serviços)
+        const { data: dataAgendamentos, error: errorAgendamentos } = await sb
+            .from('agendamentos')
+            .select('*, profissional:profissionais(nome), servico:servicos(nome, preco)')
+            .eq('empresa_id', tenantId);
 
-    if (errorAgendamentos) {
-        console.warn('Erro ao carregar agendamentos para métricas:', errorAgendamentos);
+        if (errorAgendamentos) console.error('[Dashboard] Erro agendamentos:', errorAgendamentos);
+
+        console.log(`[Dashboard] Pedidos: ${dataOrders?.length || 0}, Agendamentos: ${dataAgendamentos?.length || 0}`);
+
+        // 3. Mapeia Agendamentos para o formato de Pedidos
+        const agendamentosMapeados = (dataAgendamentos || []).map(a => {
+            // Fallback para data: usa data_hora_inicio se created_at não existir
+            const dataVenda = a.created_at || a.data_hora_inicio || new Date().toISOString();
+            
+            return {
+                id: a.id,
+                created_at: dataVenda,
+                total: a.servico?.preco || 0,
+                customer_name: a.cliente_nome,
+                customer_phone: a.cliente_telefone,
+                status: a.status,
+                atendente_nome: a.profissional?.nome || '—',
+                is_agendamento: true,
+                order_items: [{
+                    product_name: a.servico?.nome || 'Serviço',
+                    quantity: 1,
+                    unit_price: a.servico?.preco || 0,
+                    is_service: true
+                }]
+            };
+        });
+
+        // 4. Combina tudo e ordena por data decrescente
+        pedidos = [...(dataOrders || []), ...agendamentosMapeados].sort((a, b) => 
+            new Date(b.created_at) - new Date(a.created_at)
+        );
+
+        setModoDashboard(currentModoDashboard);
+    } catch (err) {
+        console.error('[Dashboard] Erro crítico:', err);
     }
-
-    // 3. Mapeia Agendamentos para o formato de Pedidos para unificar a contabilização
-    const agendamentosMapeados = (dataAgendamentos || []).map(a => ({
-        id: a.id,
-        created_at: a.created_at,
-        total: a.servico?.preco || 0,
-        customer_name: a.cliente_nome,
-        customer_phone: a.cliente_telefone,
-        status: a.status,
-        atendente_nome: a.profissional?.nome || '—',
-        is_agendamento: true,
-        order_items: [{
-            product_name: a.servico?.nome || 'Serviço',
-            quantity: 1,
-            unit_price: a.servico?.preco || 0,
-            is_service: true
-        }]
-    }));
-
-    // 4. Combina tudo e ordena por data decrescente
-    pedidos = [...(dataOrders || []), ...agendamentosMapeados].sort((a, b) => 
-        new Date(b.created_at) - new Date(a.created_at)
-    );
-
-    // Inicializa o modo correto (Hoje Op por padrão)
-    setModoDashboard(currentModoDashboard);
 }
 
 // Alterna entre Visão Geral, Ontem (Op) e Hoje (Op)
