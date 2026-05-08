@@ -709,6 +709,12 @@ body {
     margin: 0 auto;
 }
 
+@media (max-width: 600px) {
+    .tab-content {
+        padding: 0 0.75rem 1rem 0.75rem;
+    }
+}
+
 .tab-content.active {
     display: block;
 }

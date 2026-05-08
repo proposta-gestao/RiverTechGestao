@@ -27,6 +27,8 @@
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
     overflow: hidden;
 }
 
@@ -524,7 +526,13 @@ input:focus + .slider {
     }
 
     .agenda-card-body {
-        padding: 1rem;
+        padding: 0.75rem;
+    }
+    
+    @media (max-width: 400px) {
+        .agenda-card-body {
+            padding: 0.5rem;
+        }
     }
     
     .horarios-grid {
