@@ -57,6 +57,41 @@
         }
         .module-item:hover { background: rgba(255, 255, 255, 0.05); }
         .module-item span { font-size: 0.85rem; color: var(--text-secondary); }
+
+        /* Estilos para o Card de Faturamento Global */
+        .clickable-metric {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .clickable-metric::after {
+            content: '👁️ Ver detalhes';
+            position: absolute;
+            bottom: -30px;
+            right: 15px;
+            font-size: 0.7rem;
+            color: var(--accent-gold);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .clickable-metric:hover {
+            transform: translateY(-5px);
+            border-color: rgba(229, 178, 93, 0.4);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+        }
+        .clickable-metric:hover::after {
+            bottom: 15px;
+            opacity: 1;
+        }
+        .metric-value.money {
+            color: var(--accent-gold);
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+        }
+        
+        .saas-table.compact { font-size: 0.85rem; }
+        .saas-table.compact td { padding: 10px 12px; }
     </style>
 </head>
 
@@ -149,6 +184,10 @@
                     <div class="metric-card premium">
                         <h3>Planos Premium</h3>
                         <div class="metric-value" id="metricPremium">--</div>
+                    </div>
+                    <div class="metric-card clickable-metric" id="cardFaturamento" onclick="abrirBreakdownFaturamento()">
+                        <h3>Faturamento Global</h3>
+                        <div class="metric-value money" id="metricFaturamento">R$ 0,00</div>
                     </div>
                 </div>
             </div>
@@ -645,7 +684,36 @@
         </div>
     </div>
 
-    <!-- Supabase CDN -->
+    <!-- Modal: Faturamento por Loja -->
+    <div class="modal" id="modalFaturamentoLojas">
+        <div class="modal-content" style="max-width: 650px;">
+            <span class="modal-close" onclick="fecharModal('modalFaturamentoLojas')">&times;</span>
+            <div style="margin-bottom: 1.5rem;">
+                <h2 style="margin-bottom: 5px;">💰 Faturamento por Loja</h2>
+                <p class="modal-subtitle">Detalhamento das vendas concluídas (Produtos + Serviços) por estabelecimento.</p>
+            </div>
+            
+            <div class="table-container" style="max-height: 60vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;">
+                <table class="saas-table compact">
+                    <thead style="position: sticky; top: 0; background: var(--surface-bg, #1a1a1a); z-index: 2;">
+                        <tr>
+                            <th>🏢 Empresa</th>
+                            <th style="text-align: right;">📦 Produtos</th>
+                            <th style="text-align: right;">✂️ Serviços</th>
+                            <th style="text-align: right;">💎 Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaFaturamentoLojas">
+                        <tr><td colspan="4" style="text-align: center; padding: 2rem;">Carregando dados financeiros...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 1.5rem; justify-content: flex-end;">
+                <button class="btn-outline" onclick="fecharModal('modalFaturamentoLojas')">Fechar</button>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     
     <!-- Script Específico do SaaS Admin -->

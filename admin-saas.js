@@ -11,6 +11,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // 2. Variáveis de Estado Global
 // ==========================================
 let EMPRESAS = [];
+let SALES_DATA = { total: 0, byStore: {} };
 
 // ==========================================
 // 3. Sistema de Notificações (Toast)
@@ -179,9 +180,97 @@ async function carregarEmpresas() {
         EMPRESAS = data || [];
         renderizarEmpresas();
         atualizarMetricas();
+        carregarFaturamentoGlobal(); // Nova métrica global
     } catch (err) {
         showToast('Erro ao carregar empresas: ' + err.message, 'error');
     }
+}
+
+async function carregarFaturamentoGlobal() {
+    try {
+        // Reiniciar dados
+        SALES_DATA = { total: 0, byStore: {} };
+        
+        // 1. Buscar Pedidos (Produtos) concluídos/finalizados de todas as lojas
+        const { data: orders, error: errOrders } = await sb
+            .from('orders')
+            .select('total, empresa_id')
+            .in('status', ['concluido', 'finalizado']);
+
+        if (errOrders) throw errOrders;
+
+        // 2. Buscar Agendamentos (Serviços) concluídos de todas as lojas
+        const { data: appts, error: errAppts } = await sb
+            .from('agendamentos')
+            .select('empresa_id, status, servico:servicos(preco)')
+            .eq('status', 'concluido');
+
+        if (errAppts) throw errAppts;
+
+        // 3. Processar Produtos
+        (orders || []).forEach(o => {
+            const tid = o.empresa_id;
+            if (!SALES_DATA.byStore[tid]) SALES_DATA.byStore[tid] = { products: 0, services: 0 };
+            SALES_DATA.byStore[tid].products += parseFloat(o.total || 0);
+        });
+
+        // 4. Processar Serviços
+        (appts || []).forEach(a => {
+            const tid = a.empresa_id;
+            if (!SALES_DATA.byStore[tid]) SALES_DATA.byStore[tid] = { products: 0, services: 0 };
+            SALES_DATA.byStore[tid].services += parseFloat(a.servico?.preco || 0);
+        });
+
+        // 5. Calcular Total Geral
+        SALES_DATA.total = Object.values(SALES_DATA.byStore).reduce((acc, curr) => acc + curr.products + curr.services, 0);
+
+        // 6. Atualizar UI
+        const el = document.getElementById('metricFaturamento');
+        if (el) el.textContent = formatCurrency(SALES_DATA.total);
+
+    } catch (err) {
+        console.error('[Finance] Erro ao carregar métricas globais:', err);
+    }
+}
+
+function abrirBreakdownFaturamento() {
+    const tbody = document.getElementById('listaFaturamentoLojas');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    
+    // Ordenar lojas pelo faturamento total (descrescente)
+    const storeIds = Object.keys(SALES_DATA.byStore).sort((a, b) => {
+        const totalA = SALES_DATA.byStore[a].products + SALES_DATA.byStore[a].services;
+        const totalB = SALES_DATA.byStore[b].products + SALES_DATA.byStore[b].services;
+        return totalB - totalA;
+    });
+
+    if (storeIds.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Nenhuma venda registrada ainda.</td></tr>';
+    } else {
+        storeIds.forEach(tid => {
+            const emp = EMPRESAS.find(e => e.id === tid);
+            const nomeEmp = emp ? emp.nome : `Loja Desconhecida (${tid.split('-')[0]})`;
+            const data = SALES_DATA.byStore[tid];
+            const total = data.products + data.services;
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${nomeEmp}</strong></td>
+                <td style="text-align: right; color: var(--text-secondary);">${formatCurrency(data.products)}</td>
+                <td style="text-align: right; color: var(--text-secondary);">${formatCurrency(data.services)}</td>
+                <td style="text-align: right;"><strong style="color: var(--accent-gold);">${formatCurrency(total)}</strong></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.getElementById('modalFaturamentoLojas').classList.add('show');
+}
+
+function formatCurrency(v) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 }
 
 function atualizarMetricas() {
