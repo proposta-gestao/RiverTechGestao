@@ -651,10 +651,14 @@ function calcularInsights(filtrados) {
                 qtdPorProduto[prodNome] = (qtdPorProduto[prodNome] || 0) + qtd;
                 
                 let catNome = 'Geral';
-                const prod = produtos.find(pr => pr.id === item.product_id);
-                if (prod) {
-                    const cat = categorias.find(c => c.id === prod.category_id);
-                    if (cat) catNome = cat.name;
+                if (p.is_agendamento) {
+                    catNome = 'Serviços';
+                } else {
+                    const prod = produtos.find(pr => pr.id === item.product_id);
+                    if (prod) {
+                        const cat = categorias.find(c => c.id === prod.category_id);
+                        if (cat) catNome = cat.name;
+                    }
                 }
                 
                 faturamentoPorCategoria[catNome] = (faturamentoPorCategoria[catNome] || 0) + (preco * qtd);
@@ -956,13 +960,51 @@ async function carregarAtendentes() {
 }
 
 async function carregarDashboard() {
-    const { data, error } = await sb
+    const tenantId = getTenantId();
+    
+    // 1. Carrega Pedidos (Produtos)
+    const { data: dataOrders, error: errorOrders } = await sb
         .from('orders')
         .select('*, order_items(*)')
-        .eq('empresa_id', getTenantId()) // ← Multi-Tenant
+        .eq('empresa_id', tenantId)
         .order('created_at', { ascending: false });
-    if (error) { showToast('Erro ao carregar pedidos', 'error'); return; }
-    pedidos = data || [];
+
+    if (errorOrders) { console.error('Erro ao carregar pedidos:', errorOrders); }
+
+    // 2. Carrega Agendamentos (Serviços)
+    // Buscamos apenas os que não foram cancelados ou conforme necessidade
+    const { data: dataAgendamentos, error: errorAgendamentos } = await sb
+        .from('agendamentos')
+        .select('*, profissional:profissionais(nome), servico:servicos(nome, preco)')
+        .eq('empresa_id', tenantId)
+        .order('created_at', { ascending: false });
+
+    if (errorAgendamentos) {
+        console.warn('Erro ao carregar agendamentos para métricas:', errorAgendamentos);
+    }
+
+    // 3. Mapeia Agendamentos para o formato de Pedidos para unificar a contabilização
+    const agendamentosMapeados = (dataAgendamentos || []).map(a => ({
+        id: a.id,
+        created_at: a.created_at,
+        total: a.servico?.preco || 0,
+        customer_name: a.cliente_nome,
+        customer_phone: a.cliente_telefone,
+        status: a.status,
+        atendente_nome: a.profissional?.nome || '—',
+        is_agendamento: true,
+        order_items: [{
+            product_name: a.servico?.nome || 'Serviço',
+            quantity: 1,
+            unit_price: a.servico?.preco || 0,
+            is_service: true
+        }]
+    }));
+
+    // 4. Combina tudo e ordena por data decrescente
+    pedidos = [...(dataOrders || []), ...agendamentosMapeados].sort((a, b) => 
+        new Date(b.created_at) - new Date(a.created_at)
+    );
 
     // Inicializa o modo correto (Hoje Op por padrão)
     setModoDashboard(currentModoDashboard);
@@ -1130,13 +1172,19 @@ function renderPedidosFiltrados(filtrados = null) {
         const d = new Date(p.created_at);
         const dataStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
         const horaStr = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        const qtdItens = p.order_items ? p.order_items.reduce((acc, curr) => acc + curr.quantity, 0) : 0;
+        
+        const isAgendamento = p.is_agendamento === true;
+        const qtdItens = isAgendamento ? 1 : (p.order_items ? p.order_items.reduce((acc, curr) => acc + curr.quantity, 0) : 0);
+        const itensDesc = isAgendamento ? (p.order_items[0]?.product_name || 'Serviço') : `${qtdItens} un.`;
+
         const isPendente = p.status === 'pendente';
         const isPago = p.payment_status === 'pago';
         let badgeClass = 'badge-inactive';
-        if (p.status === 'concluido') badgeClass = 'badge-active';
+        if (p.status === 'concluido' || p.status === 'finalizado') badgeClass = 'badge-active';
         if (p.status === 'cancelado') badgeClass = 'badge-danger';
-        const statusLabel = p.status === 'concluido' ? 'Concluído' : p.status?.charAt(0).toUpperCase() + p.status?.slice(1);
+        
+        const statusLabel = (p.status === 'concluido' || p.status === 'finalizado') ? 'Concluído' : p.status?.charAt(0).toUpperCase() + p.status?.slice(1);
+        
         return `
                     <tr id="pedido-row-${p.id}">
                         <td>
@@ -1146,18 +1194,25 @@ function renderPedidosFiltrados(filtrados = null) {
                         <td><strong>${p.customer_name || 'Desconhecido'}</strong></td>
                         <td><span class="badge" style="background:rgba(255,255,255,0.05);color:#aaa;font-size:0.75rem;">${p.atendente_nome || '—'}</span></td>
                         <td><span class="badge ${badgeClass}" style="text-transform:capitalize;">${statusLabel}</span></td>
-                        <td>${qtdItens} un.</td>
+                        <td>
+                            ${itensDesc}
+                            ${isAgendamento ? '<br><small style="color:var(--primary); font-size:0.7rem; font-weight:600;">(Agendamento)</small>' : ''}
+                        </td>
                         <td><strong>${formatCurrency(p.total)}</strong></td>
                         <td>
                             <div style="display:flex; gap: 5px; justify-content: flex-end;">
-                                ${isPendente
-                                    ? `<button class="btn-sm btn-finalizar" onclick="finalizarPedido('${p.id}')">✅ Finalizar</button>`
-                                    : '<span style="font-size:0.8rem;color:var(--text-muted);">—</span>'
-                                }
-                                ${isPendente && !isPago
-                                    ? `<button class="btn-sm" style="background:transparent; color:#ff4757; border: 1px solid #ff4757;" onclick="cancelarPedido('${p.id}')">❌ Cancelar</button>`
-                                    : ''
-                                }
+                                ${isAgendamento ? `
+                                    <button class="btn-sm" onclick="document.getElementById('nav-agenda').click();" style="background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid var(--primary); font-size:0.7rem; padding: 4px 8px; border-radius: 6px;">Ver na Agenda</button>
+                                ` : `
+                                    ${isPendente
+                                        ? `<button class="btn-sm btn-finalizar" onclick="finalizarPedido('${p.id}')">✅ Finalizar</button>`
+                                        : '<span style="font-size:0.8rem;color:var(--text-muted);">—</span>'
+                                    }
+                                    ${isPendente && !isPago
+                                        ? `<button class="btn-sm" style="background:transparent; color:#ff4757; border: 1px solid #ff4757;" onclick="cancelarPedido('${p.id}')">❌ Cancelar</button>`
+                                        : ''
+                                    }
+                                `}
                             </div>
                         </td>
                     </tr>
@@ -1176,19 +1231,14 @@ function setupAdminRealtime() {
             schema: 'public', 
             table: 'orders' 
         }, payload => {
-            if (payload.eventType === 'INSERT') {
-                pedidos.unshift(payload.new);
-                atualizarMétricasDashboard();
-            } else if (payload.eventType === 'UPDATE') {
-                const idx = pedidos.findIndex(p => p.id === payload.new.id);
-                if (idx !== -1) {
-                    pedidos[idx] = { ...pedidos[idx], ...payload.new };
-                    atualizarMétricasDashboard();
-                }
-            } else if (payload.eventType === 'DELETE') {
-                pedidos = pedidos.filter(p => p.id !== payload.old.id);
-                atualizarMétricasDashboard();
-            }
+            carregarDashboard(); // Recarrega tudo para garantir sincronia total (métricas + lista)
+        })
+        .on('postgres_changes', { 
+            event: '*', 
+            schema: 'public', 
+            table: 'agendamentos' 
+        }, payload => {
+            carregarDashboard(); // Recarrega quando um agendamento mudar
         })
         .subscribe();
 
