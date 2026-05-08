@@ -288,14 +288,14 @@
         }
 
         return lista.map(ag => {
-            const dStr = ag.data_hora_inicio; // Ex: "2026-05-08T15:00:00+00:00"
-            const hInicio = dStr.split('T')[1].slice(0, 5);
+            // Usamos .toISOString() para garantir o formato com 'T' e extraímos a parte UTC (nominal)
+            const dInicio = new Date(ag.data_hora_inicio);
+            const dFim = ag.data_hora_fim ? new Date(ag.data_hora_fim) : null;
             
-            // Calculamos o fim também via string para ser consistente
-            const hFim = ag.data_hora_fim.split('T')[1].slice(0, 5);
+            const hInicio = dInicio.toISOString().split('T')[1].slice(0, 5);
+            const hFim = dFim ? dFim.toISOString().split('T')[1].slice(0, 5) : '--:--';
             
-            const dataOb = new Date(dStr);
-            const dataLabel = `${String(dataOb.getUTCDate()).padStart(2, '0')}/${String(dataOb.getUTCMonth() + 1).padStart(2, '0')}`;
+            const dataLabel = `${String(dInicio.getUTCDate()).padStart(2, '0')}/${String(dInicio.getUTCMonth() + 1).padStart(2, '0')}`;
             const cor = ag.profissional?.cor_agenda || '#E5B25D';
             const statusLabel = STATUS_LABELS[ag.status] || ag.status;
 
@@ -684,9 +684,10 @@
         document.getElementById('agendaModalServico').value = ag.servico_id;
         
         // Data e Hora (UTC nominal)
-        const dStr = ag.data_hora_inicio; // 2026-05-08T15:00:00Z
-        document.getElementById('agendaModalData').value = dStr.split('T')[0];
-        document.getElementById('agendaModalHora').value = dStr.split('T')[1].slice(0, 5);
+        const dInicio = new Date(ag.data_hora_inicio);
+        const isoStr = dInicio.toISOString();
+        document.getElementById('agendaModalData').value = isoStr.split('T')[0];
+        document.getElementById('agendaModalHora').value = isoStr.split('T')[1].slice(0, 5);
         
         document.getElementById('agendaModalCliente').value = ag.cliente_nome;
         document.getElementById('agendaModalTelefone').value = ag.cliente_telefone;
