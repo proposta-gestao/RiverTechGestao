@@ -36,6 +36,48 @@
     };
     const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     const DIAS_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    
+    // ============================================================
+    // Sistema de Áudio (Alerta Sonoro)
+    // ============================================================
+    let audioCtx = null;
+    const bellAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+    async function initAudio() {
+        if (audioCtx) return;
+        try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.addEventListener('statechange', updateAudioBar);
+            console.log('[Agenda-Audio] Contexto iniciado:', audioCtx.state);
+        } catch (e) {
+            console.warn('[Agenda-Audio] Erro:', e);
+        }
+        updateAudioBar();
+    }
+
+    function updateAudioBar() {
+        const bar = document.getElementById('soundAlertBar');
+        if (!bar) return;
+        const isReady = audioCtx && audioCtx.state === 'running';
+        bar.style.display = isReady ? 'none' : 'block';
+    }
+
+    async function resumeAudio() {
+        if (!audioCtx) await initAudio();
+        if (audioCtx.state === 'suspended') {
+            await audioCtx.resume();
+        }
+        updateAudioBar();
+    }
+
+    function playBell() {
+        if (!audioCtx || audioCtx.state !== 'running') {
+            console.warn('[Agenda-Audio] Bloqueado. Estado:', audioCtx?.state);
+            return;
+        }
+        bellAudio.currentTime = 0;
+        bellAudio.play().catch(e => console.warn('[Agenda-Audio] Falha no play:', e));
+    }
 
     // ============================================================
     // 1. Inicialização
@@ -56,6 +98,15 @@
             renderTimelineFuturo();
             renderStats();
             setupRealtime();
+
+            // Inicializa áudio
+            initAudio();
+            const bar = document.getElementById('soundAlertBar');
+            if (bar) bar.onclick = () => {
+                resumeAudio();
+                playBell(); // Teste inicial
+            };
+
         } catch (err) {
             console.error('[Agenda] Erro na inicialização:', err);
         }
@@ -64,7 +115,15 @@
     function setupRealtime() {
         if (agendaSubscription) return;
         agendaSubscription = sb.channel('agenda-changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'agendamentos', filter: `empresa_id=eq.${EMPRESA_ID()}` }, async () => {
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'agendamentos', filter: `empresa_id=eq.${EMPRESA_ID()}` }, async (payload) => {
+                console.log('[Agenda] Evento Realtime:', payload.eventType);
+                
+                // Se for um novo agendamento, toca o alerta
+                if (payload.eventType === 'INSERT') {
+                    playBell();
+                    showToast('📅 Novo agendamento recebido!');
+                }
+
                 await Promise.all([carregarAgendamentos(), carregarAgendamentosFuturos(), carregarDiasComAgendamentos()]);
                 renderMiniCal();
                 renderTimeline();
