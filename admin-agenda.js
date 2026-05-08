@@ -107,6 +107,25 @@
                 playBell(); // Teste inicial
             };
 
+            // Botão de Teste de Alerta (Persistent para o usuário verificar)
+            if (!document.getElementById('btnTestarAudioAgenda')) {
+                const stats = document.querySelector('.agenda-stats');
+                if (stats) {
+                    const btnTest = document.createElement('button');
+                    btnTest.id = 'btnTestarAudioAgenda';
+                    btnTest.style.cssText = 'background:rgba(255,255,255,0.05); color:var(--color-muted); border:1px solid var(--admin-border); padding:6px 12px; border-radius:8px; font-size:0.75rem; cursor:pointer; margin-bottom:1rem; display:flex; align-items:center; gap:6px; transition:all 0.2s;';
+                    btnTest.innerHTML = '<span>🔔</span> Testar Alerta Sonoro';
+                    btnTest.onmouseover = () => btnTest.style.background = 'rgba(255,255,255,0.1)';
+                    btnTest.onmouseout = () => btnTest.style.background = 'rgba(255,255,255,0.05)';
+                    btnTest.onclick = () => {
+                        resumeAudio();
+                        playBell();
+                        showToast('Teste de áudio disparado!');
+                    };
+                    stats.parentNode.insertBefore(btnTest, stats);
+                }
+            }
+
         } catch (err) {
             console.error('[Agenda] Erro na inicialização:', err);
         }
@@ -154,6 +173,10 @@
                 if (typeof showToast === 'function') {
                     showToast('📅 Novo agendamento recebido!');
                 }
+                
+                // Alerta de depuração (temporário para o usuário confirmar que o evento chegou)
+                console.info('[Agenda-Realtime] Notificação enviada ao UI');
+                
                 await carregarTudoAgenda();
             })
             .on('postgres_changes', { 

@@ -3302,17 +3302,19 @@ async function salvarJustificativasNoBanco() {
     }
 }
 
-document.getElementById('btnAdicionarJustificativa').onclick = async () => {
-    if (!validarAcessoModulo('config_cancelamentos')) return;
-    const input = document.getElementById('inputNovaJustificativa');
-    const val = input.value.trim();
-    if (!val) return;
-    if (cancellationReasons.includes(val)) {
-        showToast('Esta justificativa já existe.', 'error');
-        return;
-    }
-    
-    document.getElementById('btnAdicionarJustificativa').disabled = true;
+    const btnAdj = document.getElementById('btnAdicionarJustificativa');
+    if (btnAdj) {
+        btnAdj.onclick = async () => {
+            if (!validarAcessoModulo('config_cancelamentos')) return;
+            const input = document.getElementById('inputNovaJustificativa');
+            const val = input.value.trim();
+            if (!val) return;
+            if (cancellationReasons.includes(val)) {
+                showToast('Esta justificativa já existe.', 'error');
+                return;
+            }
+            
+            btnAdj.disabled = true;
     cancellationReasons.push(val);
     input.value = '';
     renderJustificativas();
