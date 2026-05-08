@@ -117,6 +117,9 @@ const agendarApp = {
         document.querySelectorAll('#servicosGrid .ag-card').forEach(el => el.classList.remove('selected'));
         document.getElementById(`srv-${id}`).classList.add('selected');
         document.getElementById('btnStep1Next').disabled = false;
+
+        // Avança automaticamente para o próximo passo
+        setTimeout(() => this.irPara(2), 200);
     },
 
     selecionarProfissional(id) {
@@ -128,6 +131,9 @@ const agendarApp = {
         document.querySelectorAll('#profissionaisGrid .ag-card').forEach(el => el.classList.remove('selected'));
         document.getElementById(`prof-${id}`).classList.add('selected');
         document.getElementById('btnStep2Next').disabled = false;
+
+        // Avança automaticamente para o próximo passo
+        setTimeout(() => this.irPara(3), 200);
     },
 
     navMes,
@@ -314,6 +320,9 @@ function selecionarDia(ano, mes, dia) {
     
     // Formata para o subtítulo do step 4
     document.getElementById('step4Subtitle').textContent = `Horários para ${newDate.toLocaleDateString('pt-BR')}`;
+
+    // Avança automaticamente para o próximo passo (Horários)
+    setTimeout(() => agendarApp.irPara(4), 250);
 }
 
 // ============================================================
@@ -426,6 +435,9 @@ function selecionarSlot(index, horaFormatada) {
     state.slotFim = slotEl.dataset.fim;
 
     document.getElementById('btnStep4Next').disabled = false;
+
+    // Avança automaticamente para o próximo passo (Resumo)
+    setTimeout(() => agendarApp.irPara(5), 200);
 }
 
 // ============================================================
