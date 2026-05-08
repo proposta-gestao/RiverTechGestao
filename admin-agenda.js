@@ -788,6 +788,23 @@
         await atualizarStatus(id, 'cancelado');
     }
 
+    async function concluirAgendamento(id) {
+        await atualizarStatus(id, 'concluido');
+    }
+
+    async function deletarAgendamento(id) {
+        if (!confirm('Deseja excluir este agendamento permanentemente?')) return;
+        const { error } = await sb.from('agendamentos').delete().eq('id', id);
+        if (!error) {
+            window.showToast?.('Agendamento excluído!');
+            await carregarAgendamentos();
+            renderTimeline();
+            renderStats();
+        } else {
+            window.showToast?.('Erro ao excluir: ' + error.message, 'error');
+        }
+    }
+
     async function toggleProfissional(id, ativo) {
         await sb.from('profissionais').update({ ativo }).eq('id', id);
         await carregarProfissionais();
@@ -928,7 +945,6 @@
         salvarTodosHorarios,
         abrirModalListaEspera,
         salvarListaEspera,
-        processarListaEspera,
         removerDaLista,
         abrirModalNovoAgendamentoParaLista
     };
