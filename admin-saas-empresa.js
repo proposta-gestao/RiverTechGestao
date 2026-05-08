@@ -195,7 +195,7 @@ async function carregarMetricas() {
         // 2. Buscar Agendamentos (Serviços) concluídos
         const { data: appts, error: errAppts } = await sb
             .from('agendamentos')
-            .select('empresa_id, status, created_at, servico:servicos(preco)')
+            .select('empresa_id, status, data_hora_inicio, servico:servicos(preco)')
             .eq('empresa_id', EMPRESA_ID)
             .eq('status', 'concluido');
 
@@ -220,7 +220,7 @@ async function carregarMetricas() {
         }).reduce((acc, o) => acc + (parseFloat(o.total) || 0), 0);
 
         const fatMesServ = (appts || []).filter(a => {
-            const d = new Date(a.created_at);
+            const d = new Date(a.data_hora_inicio);
             return d.getMonth() === mesAtual && d.getFullYear() === anoAtual;
         }).reduce((acc, a) => acc + (parseFloat(a.servico?.preco) || 0), 0);
 
@@ -230,7 +230,7 @@ async function carregarMetricas() {
         let ultimoPedidoStr = 'Nenhuma transação';
         const allTrans = [
             ...(orders || []).map(o => ({ date: new Date(o.created_at) })),
-            ...(appts || []).map(a => ({ date: new Date(a.created_at) }))
+            ...(appts || []).map(a => ({ date: new Date(a.data_hora_inicio) }))
         ];
         
         if (allTrans.length > 0) {
