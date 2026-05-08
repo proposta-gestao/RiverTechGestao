@@ -97,6 +97,43 @@ async function iniciarPainel() {
     document.getElementById('adminLayout').style.display = 'flex';
     
     carregarEmpresas();
+
+    // Listener para o novo botão de limpeza
+    const btnLimpar = document.getElementById('btnLimparVendas');
+    if (btnLimpar) {
+        btnLimpar.addEventListener('click', limparVendasGlobais);
+    }
+}
+
+async function limparVendasGlobais() {
+    const confirmacao = confirm("⚠️ ATENÇÃO: Isso irá apagar TODAS as vendas e agendamentos de TODAS as empresas. Esta ação não pode ser desfeita. Deseja continuar?");
+    
+    if (!confirmacao) return;
+
+    try {
+        showToast('Iniciando limpeza...', 'warning');
+
+        // 1. Limpar Itens de Pedidos
+        const { error: errItems } = await sb.from('order_items').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (errItems) throw errItems;
+
+        // 2. Limpar Pedidos
+        const { error: errOrders } = await sb.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (errOrders) throw errOrders;
+
+        // 3. Limpar Agendamentos
+        const { error: errAgendamentos } = await sb.from('agendamentos').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        if (errAgendamentos) throw errAgendamentos;
+
+        showToast('Base de vendas limpa com sucesso! ✨');
+        
+        // Recarregar métricas
+        carregarFaturamentoGlobal();
+        
+    } catch (err) {
+        console.error('[Limpeza] Erro:', err);
+        showToast('Erro na limpeza: ' + err.message, 'error');
+    }
 }
 
 // ==========================================
