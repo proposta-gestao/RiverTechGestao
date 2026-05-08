@@ -253,6 +253,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0; /* Crucial para conter o transbordamento */
 }
 
 .agendamento-hora {
@@ -284,7 +285,11 @@
     margin-bottom: 6px;
 }
 
-.agendamento-info { flex: 1; min-width: 0; }
+.agendamento-info { 
+    flex: 1; 
+    min-width: 0; 
+    overflow: hidden; 
+}
 .agendamento-cliente { 
     font-size: 0.88rem; 
     font-weight: 600; 
@@ -293,6 +298,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
+    max-width: 17ch; /* Limite de 17 caracteres no desktop como pedido */
 }
 
 @media (max-width: 600px) {
@@ -326,7 +332,7 @@
     }
 
     .agendamento-cliente {
-        max-width: 15ch; 
+        max-width: 12ch; /* Limite mais curto no mobile */
         margin-bottom: 2px;
     }
 
