@@ -445,8 +445,8 @@
                         <span class="agendamento-status status-${ag.status}">${statusLabel}</span>
                     </div>
                     <div class="agendamento-actions">
-                        ${ag.status === 'concluido' ? '' : `<button onclick="window.__AGENDA.abrirModalAgendamento('${ag.id}')" title="Ver detalhes">✏️</button>`}
-                        ${ag.status === 'concluido' ? '' : `<button onclick="window.__AGENDA.atualizarStatus('${ag.id}', 'concluido')" title="Marcar como concluído">✅</button>`}
+                        ${['concluido', 'cancelado'].includes(ag.status) ? '' : `<button onclick="window.__AGENDA.abrirModalAgendamento('${ag.id}')" title="Editar">✏️</button>`}
+                        ${['concluido', 'cancelado'].includes(ag.status) ? '' : `<button onclick="window.__AGENDA.atualizarStatus('${ag.id}', 'concluido')" title="Concluir">✅</button>`}
                         ${['cancelado', 'concluido'].includes(ag.status) ? '' : `<button onclick="window.__AGENDA.cancelarAgendamento('${ag.id}')" title="Cancelar" style="color:#ef4444;">✕</button>`}
                     </div>
                 </div>`;
@@ -908,12 +908,14 @@
     }
 
     async function atualizarStatus(id, status) {
+        console.log('[Agenda] Atualizando status para:', status);
         const { error } = await sb.from('agendamentos').update({ status }).eq('id', id);
         if (!error) {
-            window.showToast?.(`Status atualizado para: ${STATUS_LABELS[status]}`);
-            await carregarAgendamentos();
-            renderTimeline();
-            renderStats();
+            window.showToast?.(`Status atualizado!`);
+            await carregarTudoAgenda();
+        } else {
+            console.error('[Agenda] Erro ao atualizar status:', error);
+            window.showToast?.('Erro ao atualizar status', 'error');
         }
     }
 
