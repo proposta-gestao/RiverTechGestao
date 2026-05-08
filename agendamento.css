@@ -116,6 +116,13 @@ body {
     gap: 6px;
     flex: 1;
     position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.ag-step:hover .ag-step-dot {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(229, 178, 93, 0.4);
 }
 
 .ag-step:not(:last-child)::after {

@@ -58,6 +58,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('agNomeLoja').textContent = window.TENANT.nome;
         }
 
+        // Configura navegação clicável nos passos do topo
+        document.querySelectorAll('.ag-step').forEach(stepEl => {
+            stepEl.style.cursor = 'pointer';
+            stepEl.addEventListener('click', () => {
+                const stepNum = parseInt(stepEl.dataset.step);
+                agendarApp.irPara(stepNum);
+            });
+        });
+
         // 2. Carrega Dados Iniciais
         await carregarServicos();
         await carregarProfissionais();
