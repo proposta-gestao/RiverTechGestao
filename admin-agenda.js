@@ -436,8 +436,11 @@
                     <div class="agendamento-body">
                         <div class="agendamento-hora">${hInicio}<br><small style="color:var(--text-muted);font-weight:400;">${dataLabel}</small></div>
                         <div class="agendamento-info">
-                            <div class="agendamento-cliente">${ag.cliente_nome} <span style="font-size:0.75rem; color:var(--text-muted);">📱 ${ag.cliente_telefone}</span></div>
-                            <div class="agendamento-servico">${ag.servico?.nome || '—'} · ${ag.profissional?.nome || '—'}</div>
+                            <div class="agendamento-cliente">${ag.cliente_nome}</div>
+                            <div class="agendamento-servico">
+                                <span class="d-md-none" style="display:block; color:var(--primary); font-size:0.7rem; margin-bottom:2px;">📱 ${ag.cliente_telefone}</span>
+                                ${ag.servico?.nome || '—'} · ${ag.profissional?.nome || '—'}
+                            </div>
                         </div>
                         <span class="agendamento-status status-${ag.status}">${statusLabel}</span>
                     </div>
