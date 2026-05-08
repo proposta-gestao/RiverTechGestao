@@ -288,10 +288,14 @@
         }
 
         return lista.map(ag => {
-            const dataOb = new Date(ag.data_hora_inicio);
-            const horaInicio = dataOb.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const horaFim = new Date(ag.data_hora_fim).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            const dataLabel = dataOb.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            const dStr = ag.data_hora_inicio; // Ex: "2026-05-08T15:00:00+00:00"
+            const hInicio = dStr.split('T')[1].slice(0, 5);
+            
+            // Calculamos o fim também via string para ser consistente
+            const hFim = ag.data_hora_fim.split('T')[1].slice(0, 5);
+            
+            const dataOb = new Date(dStr);
+            const dataLabel = `${String(dataOb.getUTCDate()).padStart(2, '0')}/${String(dataOb.getUTCMonth() + 1).padStart(2, '0')}`;
             const cor = ag.profissional?.cor_agenda || '#E5B25D';
             const statusLabel = STATUS_LABELS[ag.status] || ag.status;
 
@@ -299,7 +303,7 @@
                 <div class="agendamento-card">
                     <div class="agendamento-cor-bar" style="background:${cor};"></div>
                     <div class="agendamento-body">
-                        <div class="agendamento-hora">${horaInicio}<br><small style="color:var(--text-muted);font-weight:400;">${dataLabel}</small></div>
+                        <div class="agendamento-hora">${hInicio}<br><small style="color:var(--text-muted);font-weight:400;">${dataLabel}</small></div>
                         <div class="agendamento-info">
                             <div class="agendamento-cliente">${ag.cliente_nome} <span style="font-size:0.75rem; color:var(--text-muted);">📱 ${ag.cliente_telefone}</span></div>
                             <div class="agendamento-servico">${ag.servico?.nome || '—'} · ${ag.profissional?.nome || '—'}</div>
@@ -443,13 +447,31 @@
         const horariosMap = {};
         (horarios || []).forEach(h => { horariosMap[h.dia_semana] = h; });
 
+        const hasUnsaved = DIAS_FULL.some((_, i) => !horariosMap[i]);
+
         container.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">
+                    ${hasUnsaved 
+                        ? '⚠️ <span style="color:var(--primary)">Atenção:</span> Alguns horários ainda não foram salvos. Use o botão ao lado para ativar todos.' 
+                        : '✅ Seus horários estão sincronizados com o banco de dados.'}
+                </p>
+                <button class="btn-primary btn-sm" onclick="window.__AGENDA.salvarTodosHorarios()" style="padding: 8px 16px;">
+                    ✨ Salvar Todos os Horários
+                </button>
+            </div>
             <div class="horarios-grid">
                 ${DIAS_FULL.map((nome, i) => {
+                    const isSaved = !!horariosMap[i];
                     const h = horariosMap[i] || { hora_abertura: '09:00', hora_fechamento: '19:00', ativo: i !== 0 };
+                    
                     return `
-                        <div class="horario-dia">
-                            <div class="dia-nome">${nome}</div>
+                        <div class="horario-dia ${!isSaved ? 'horario-dia--not-saved' : ''}" 
+                             style="${!isSaved ? 'border-color: rgba(229,178,93,0.3); background: rgba(229,178,93,0.02);' : ''}">
+                            <div class="dia-nome" style="display:flex; align-items:center; justify-content:center; gap:4px;">
+                                ${nome}
+                                ${!isSaved ? '<span title="Não salvo no banco" style="color:var(--primary); font-size:0.9rem;">●</span>' : ''}
+                            </div>
                             <input type="time" id="horAbre_${i}" value="${h.hora_abertura}" onchange="window.__AGENDA.salvarHorario(${i})">
                             <input type="time" id="horFecha_${i}" value="${h.hora_fechamento}" onchange="window.__AGENDA.salvarHorario(${i})">
                             <div class="switch-wrap">
@@ -458,9 +480,26 @@
                                     <span class="slider"></span>
                                 </label>
                             </div>
+                            ${!isSaved ? '<div style="font-size:0.6rem; color:var(--primary); margin-top:5px; font-weight:600;">PENDENTE</div>' : ''}
                         </div>`;
                 }).join('')}
             </div>`;
+    }
+
+    async function salvarTodosHorarios() {
+        showLoading('Sincronizando todos os horários...');
+        try {
+            for (let i = 0; i < 7; i++) {
+                await salvarHorario(i, true); // true = silencioso
+            }
+            window.showToast?.('Todos os horários foram salvos e ativados!');
+            await renderHorariosTab();
+        } catch (err) {
+            console.error(err);
+            window.showToast?.('Erro ao salvar alguns horários', 'error');
+        } finally {
+            hideLoading();
+        }
     }
 
     // ============================================================
@@ -568,7 +607,7 @@
         renderListaEsperaTab();
     }
 
-    async function salvarHorario(diaSemana) {
+    async function salvarHorario(diaSemana, silencioso = false) {
         const abre = document.getElementById(`horAbre_${diaSemana}`)?.value;
         const fecha = document.getElementById(`horFecha_${diaSemana}`)?.value;
         const ativo = document.getElementById(`horAtivo_${diaSemana}`)?.checked;
@@ -594,7 +633,7 @@
         });
 
         if (!error) {
-            window.showToast?.('Horário sincronizado com sucesso!');
+            if (!silencioso) window.showToast?.('Horário sincronizado com sucesso!');
         } else {
             console.error('Erro ao salvar horário:', error);
             window.showToast?.('Erro ao sincronizar horário', 'error');
@@ -644,9 +683,10 @@
         document.getElementById('agendaModalProfissional').value = ag.profissional_id;
         document.getElementById('agendaModalServico').value = ag.servico_id;
         
-        const dateObj = new Date(ag.data_hora_inicio);
-        document.getElementById('agendaModalData').value = dateObj.toISOString().split('T')[0];
-        document.getElementById('agendaModalHora').value = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        // Data e Hora (UTC nominal)
+        const dStr = ag.data_hora_inicio; // 2026-05-08T15:00:00Z
+        document.getElementById('agendaModalData').value = dStr.split('T')[0];
+        document.getElementById('agendaModalHora').value = dStr.split('T')[1].slice(0, 5);
         
         document.getElementById('agendaModalCliente').value = ag.cliente_nome;
         document.getElementById('agendaModalTelefone').value = ag.cliente_telefone;
@@ -691,7 +731,9 @@
 
         const serv = servicos.find(s => s.id === servId);
         const durMin = serv?.duracao_min || 30;
-        const inicio = new Date(`${data}T${hora}`);
+        
+        // Criamos datas forçando UTC (Z) para salvar o valor nominal
+        const inicio = new Date(`${data}T${hora}:00Z`);
         const fim = new Date(inicio.getTime() + durMin * 60000);
 
         const payload = {
@@ -865,13 +907,29 @@
     // 12. Expor API pública para uso no HTML
     // ============================================================
     window.__AGENDA = {
-        selecionarDia, navMes, filtrarProfissional, renderSubtab,
-        abrirModalNovoAgendamento, abrirModalAgendamento, salvarAgendamento,
-        atualizarStatus, cancelarAgendamento,
-        editarProfissional, salvarProfissional, toggleProfissional,
-        editarServico, salvarServico,
+        renderSubtab,
+        navMes,
+        selecionarDia,
+        filtrarProfissional,
+        abrirModalNovoAgendamento,
+        abrirModalAgendamento,
+        salvarAgendamento,
+        atualizarStatus,
+        cancelarAgendamento,
+        deletarAgendamento,
+        concluirAgendamento,
+        editarProfissional,
+        salvarProfissional,
+        toggleProfissional,
+        editarServico,
+        salvarServico,
         salvarHorario,
-        abrirModalListaEspera, salvarListaEspera, removerDaLista, abrirModalNovoAgendamentoParaLista
+        salvarTodosHorarios,
+        abrirModalListaEspera,
+        salvarListaEspera,
+        processarListaEspera,
+        removerDaLista,
+        abrirModalNovoAgendamentoParaLista
     };
 
     // --- EVENTOS DE UPLOAD ---

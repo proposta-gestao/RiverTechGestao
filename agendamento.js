@@ -325,7 +325,13 @@ async function carregarSlotsDisponiveis() {
 
     } catch (err) {
         console.error('Erro ao buscar slots:', err);
-        container.innerHTML = `<div class="ag-slots-empty">Erro ao carregar horários. Tente novamente.</div>`;
+        container.innerHTML = `
+            <div class="ag-slots-empty">
+                <p>Erro ao carregar horários.</p>
+                <small style="color:var(--color-danger);">${err.message || 'Erro desconhecido'}</small>
+                <br>
+                <button class="ag-btn-back" style="margin-top:10px; padding: 8px 16px;" onclick="agendarApp.irPara(4)">Tentar Novamente</button>
+            </div>`;
     }
 }
 
@@ -343,45 +349,47 @@ function renderSlots(slots) {
     // Cria grid
     let html = `<div class="ag-slots-grid">`;
     let count = 0;
+    const agoraAbs = new Date();
+
     slots.forEach((s, i) => {
         const dInicio = new Date(s.slot_inicio);
         
-        // Se for hoje, filtra slots passados (usando comparação nominal robusta)
+        // Se for hoje, filtra slots que já passaram (comparação absoluta de tempo)
         if (isHoje) {
-            // Criamos um Date 'agora' nominal para comparar com o UTC do slot
-            const agoraNominal = new Date();
-            const slotNominal = new Date(s.slot_inicio);
-            
-            // Comparar apenas se o slot é no passado HOJE
-            // hSlot (UTC) vs hAgora (Local)
-            const hSlot = slotNominal.getUTCHours();
-            const mSlot = slotNominal.getUTCMinutes();
-            const hAgora = agoraNominal.getHours();
-            const mAgora = agoraNominal.getMinutes();
-
-            if (hSlot < hAgora || (hSlot === hAgora && mSlot <= mAgora)) return;
+            if (dInicio <= agoraAbs) return;
         }
 
-        // Extrair hora nominal (UTC) para evitar deslocamento de fuso
-        const hora = String(dInicio.getUTCHours()).padStart(2, '0');
-        const min = String(dInicio.getUTCMinutes()).padStart(2, '0');
-        const horaFormatada = `${hora}:${min}`;
+        // Extrair hora nominal (UTC do banco) para exibir "09:00" etc
+        // Isso garante que o usuário veja exatamente o que foi cadastrado
+        const horaNominal = s.slot_inicio.split('T')[1].slice(0, 5);
         
-        html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaFormatada}')">${horaFormatada}</div>`;
+        html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaNominal}')">${horaNominal}</div>`;
         count++;
     });
     html += `</div>`;
 
     if (count === 0) {
+        const diaSemanaNome = state.dataSelecionada.toLocaleDateString('pt-BR', { weekday: 'long' });
         if (isHoje && slots.length > 0) {
-            container.innerHTML = `<div class="ag-slots-empty">Todos os horários de hoje já passaram. 🌙</div>`;
+            container.innerHTML = `
+                <div class="ag-slots-empty">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌙</div>
+                    <strong>Todos os horários de hoje já passaram.</strong><br>
+                    <p style="margin-top:8px; font-size:0.85rem; color:var(--color-muted);">
+                        Tente selecionar uma data futura no calendário.
+                    </p>
+                </div>`;
         } else {
             container.innerHTML = `
                 <div class="ag-slots-empty">
-                    Nenhum horário disponível para esta data.<br>
-                    <small style="color:var(--color-muted); font-weight:400; margin-top:8px; display:block;">
-                        Verifique se a empresa possui horários de funcionamento cadastrados para este dia da semana.
-                    </small>
+                    <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                    <strong>Nenhum horário disponível para esta data.</strong><br>
+                    <p style="margin-top:10px; font-size:0.85rem; color:var(--color-muted); line-height:1.4;">
+                        Não encontramos horários para <b>${state.profissional.nome}</b> em <b>${diaSemanaNome}</b>.<br>
+                        <span style="display:block; margin-top:8px;">
+                            Verifique se a empresa configurou horários de funcionamento para este dia da semana no painel.
+                        </span>
+                    </p>
                 </div>`;
         }
     } else {
