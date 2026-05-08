@@ -192,10 +192,12 @@ async function carregarFaturamentoGlobal() {
         SALES_DATA = { total: 0, byStore: {} };
         
         // 1. Buscar Pedidos (Produtos) concluídos/finalizados de todas as lojas
+        // Aumentamos o range para garantir que pegamos um volume maior de vendas globais
         const { data: orders, error: errOrders } = await sb
             .from('orders')
             .select('total, empresa_id')
-            .in('status', ['concluido', 'finalizado']);
+            .in('status', ['concluido', 'finalizado'])
+            .range(0, 5000); // Suporte inicial para até 5k vendas globais
 
         if (errOrders) throw errOrders;
 
@@ -203,7 +205,8 @@ async function carregarFaturamentoGlobal() {
         const { data: appts, error: errAppts } = await sb
             .from('agendamentos')
             .select('empresa_id, status, servico:servicos(preco)')
-            .eq('status', 'concluido');
+            .eq('status', 'concluido')
+            .range(0, 5000);
 
         if (errAppts) throw errAppts;
 
@@ -239,25 +242,29 @@ function abrirBreakdownFaturamento() {
 
     tbody.innerHTML = '';
     
-    // Ordenar lojas pelo faturamento total (descrescente)
-    const storeIds = Object.keys(SALES_DATA.byStore).sort((a, b) => {
-        const totalA = SALES_DATA.byStore[a].products + SALES_DATA.byStore[a].services;
-        const totalB = SALES_DATA.byStore[b].products + SALES_DATA.byStore[b].services;
+    // 1. Garantir que todas as lojas de EMPRESAS apareçam, mesmo com R$ 0,00
+    // Ordenar pelo faturamento total descrescente
+    const lojasOrdenadas = [...EMPRESAS].sort((a, b) => {
+        const dataA = SALES_DATA.byStore[a.id] || { products: 0, services: 0 };
+        const dataB = SALES_DATA.byStore[b.id] || { products: 0, services: 0 };
+        const totalA = dataA.products + dataA.services;
+        const totalB = dataB.products + dataB.services;
         return totalB - totalA;
     });
 
-    if (storeIds.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Nenhuma venda registrada ainda.</td></tr>';
+    if (lojasOrdenadas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Nenhuma empresa cadastrada.</td></tr>';
     } else {
-        storeIds.forEach(tid => {
-            const emp = EMPRESAS.find(e => e.id === tid);
-            const nomeEmp = emp ? emp.nome : `Loja Desconhecida (${tid.split('-')[0]})`;
-            const data = SALES_DATA.byStore[tid];
+        lojasOrdenadas.forEach(emp => {
+            const data = SALES_DATA.byStore[emp.id] || { products: 0, services: 0 };
             const total = data.products + data.services;
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>${nomeEmp}</strong></td>
+                <td>
+                    <div style="font-weight: 700;">${emp.nome}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); opacity: 0.7;">${emp.slug}</div>
+                </td>
                 <td style="text-align: right; color: var(--text-secondary);">${formatCurrency(data.products)}</td>
                 <td style="text-align: right; color: var(--text-secondary);">${formatCurrency(data.services)}</td>
                 <td style="text-align: right;"><strong style="color: var(--accent-gold);">${formatCurrency(total)}</strong></td>
