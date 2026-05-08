@@ -134,10 +134,29 @@ const agendarApp = {
     selecionarDia,
     selecionarSlot,
     confirmarAgendamento,
-    novoAgendamento
+    novoAgendamento,
+    validarDadosCliente
 };
 
 window.agendarApp = agendarApp;
+
+// Adicionar listeners para validação em tempo real no passo 5
+document.addEventListener('DOMContentLoaded', () => {
+    const nomeInput = document.getElementById('clienteNome');
+    const telInput = document.getElementById('clienteTel');
+    if (nomeInput) nomeInput.addEventListener('input', validarDadosCliente);
+    if (telInput) telInput.addEventListener('input', validarDadosCliente);
+});
+
+function validarDadosCliente() {
+    const nome = document.getElementById('clienteNome')?.value.trim();
+    const tel = document.getElementById('clienteTel')?.value.trim();
+    const btn = document.getElementById('btnConfirmar');
+    if (!btn) return;
+
+    // Habilita se tiver nome e pelo menos 10 caracteres no telefone
+    btn.disabled = !(nome && tel && tel.length >= 10);
+}
 
 // ============================================================
 // DADOS BASE: SERVIÇOS E PROFISSIONAIS
@@ -413,14 +432,22 @@ function selecionarSlot(index, horaFormatada) {
 // RESUMO E CONFIRMAÇÃO
 // ============================================================
 function renderResumo() {
+    if (!state.servico || !state.profissional || !state.dataSelecionada) {
+        console.warn('Estado incompleto ao renderizar resumo');
+        return;
+    }
+
     document.getElementById('sumServico').textContent = state.servico.nome;
     document.getElementById('sumProfissional').textContent = state.profissional.nome;
     
     const dStr = state.dataSelecionada.toLocaleDateString('pt-BR');
-    document.getElementById('sumDataHora').textContent = `${dStr} às ${state.slotSelecionado}`;
+    document.getElementById('sumDataHora').textContent = `${dStr} às ${state.slotSelecionado || '--:--'}`;
     
-    document.getElementById('sumDuracao').textContent = `${state.servico.duracao_min || state.servico.duracao_minutos || 0} min`;
+    document.getElementById('sumDuracao').textContent = `${state.servico.duracao_min || state.servico.duracao_minutos || 30} min`;
     document.getElementById('sumPreco').textContent = `R$ ${Number(state.servico.preco).toFixed(2).replace('.', ',')}`;
+
+    // Garante que o botão de confirmar siga a validação dos campos
+    validarDadosCliente();
 }
 
 async function confirmarAgendamento() {
@@ -498,11 +525,12 @@ function novoAgendamento() {
     // Reseta UI
     document.querySelector('.ag-progress-wrap').style.display = 'block';
     
-    // Volta para o primeiro passo, mantendo profissional e serviço já selecionados para facilitar
-    // ou podemos resetar a seleção deles também. Para UX, melhor manter serviço e prof e só limpar data.
-    // Mas para garantir fluxo limpo:
+    // Reseta botões
+    document.getElementById('btnStep1Next').disabled = true;
+    document.getElementById('btnStep2Next').disabled = true;
     document.getElementById('btnStep3Next').disabled = true;
     document.getElementById('btnStep4Next').disabled = true;
+    document.getElementById('btnConfirmar').disabled = true;
     
     agendarApp.irPara(1);
 }
