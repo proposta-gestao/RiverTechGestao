@@ -575,12 +575,13 @@
 
         if (ativo === undefined) ativo = true;
 
-        // LIMPEZA TOTAL: Removemos TUDO deste dia (Loja e Profissionais)
-        // Isso garante que não existam registros "fantasmas" atrapalhando a sincronização.
+        // LIMPEZA: Removemos apenas o horário da LOJA (profissional_id IS NULL) para este dia
+        // Isso evita deletar horários específicos de profissionais por acidente.
         await sb.from('horarios_funcionamento')
             .delete()
             .eq('empresa_id', EMPRESA_ID())
-            .eq('dia_semana', diaSemana);
+            .eq('dia_semana', diaSemana)
+            .is('profissional_id', null);
 
         // Inserimos o novo horário da LOJA
         const { error } = await sb.from('horarios_funcionamento').insert({

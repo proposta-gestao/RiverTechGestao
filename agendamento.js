@@ -342,18 +342,18 @@ function renderSlots(slots) {
 
     // Cria grid
     let html = `<div class="ag-slots-grid">`;
+    let count = 0;
     slots.forEach((s, i) => {
         const dInicio = new Date(s.slot_inicio);
         
-        // Se for hoje, filtra slots passados (usando comparação nominal)
+        // Se for hoje, filtra slots passados (usando comparação nominal robusta)
         if (isHoje) {
             // Criamos um Date 'agora' nominal para comparar com o UTC do slot
             const agoraNominal = new Date();
             const slotNominal = new Date(s.slot_inicio);
             
             // Comparar apenas se o slot é no passado HOJE
-            // slot_inicio vem como "2026-04-30T09:00:00Z"
-            // Queremos saber se "09:00" já passou no relógio local
+            // hSlot (UTC) vs hAgora (Local)
             const hSlot = slotNominal.getUTCHours();
             const mSlot = slotNominal.getUTCMinutes();
             const hAgora = agoraNominal.getHours();
@@ -368,11 +368,22 @@ function renderSlots(slots) {
         const horaFormatada = `${hora}:${min}`;
         
         html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaFormatada}')">${horaFormatada}</div>`;
+        count++;
     });
     html += `</div>`;
 
-    if (html === `<div class="ag-slots-grid"></div>`) {
-        container.innerHTML = `<div class="ag-slots-empty">Todos os horários de hoje já passaram.</div>`;
+    if (count === 0) {
+        if (isHoje && slots.length > 0) {
+            container.innerHTML = `<div class="ag-slots-empty">Todos os horários de hoje já passaram. 🌙</div>`;
+        } else {
+            container.innerHTML = `
+                <div class="ag-slots-empty">
+                    Nenhum horário disponível para esta data.<br>
+                    <small style="color:var(--color-muted); font-weight:400; margin-top:8px; display:block;">
+                        Verifique se a empresa possui horários de funcionamento cadastrados para este dia da semana.
+                    </small>
+                </div>`;
+        }
     } else {
         container.innerHTML = html;
     }
