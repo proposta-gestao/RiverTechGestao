@@ -801,7 +801,9 @@
     }
 
     function abrirModalAgendamento(id) {
-        const ag = agendamentos.find(a => a.id === id);
+        let ag = agendamentos.find(a => a.id === id);
+        // Se não achar na agenda do dia, busca na lista de futuros
+        if (!ag) ag = agendamentosFuturos.find(a => a.id === id);
         if (!ag) return;
 
         const modal = document.getElementById('modalNovoAgendamento');
