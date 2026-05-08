@@ -434,15 +434,20 @@
                 <div class="agendamento-card">
                     <div class="agendamento-cor-bar" style="background:${cor};"></div>
                     <div class="agendamento-body">
-                        <div class="agendamento-hora">${hInicio}<br><small style="color:var(--text-muted);font-weight:400;">${dataLabel}</small></div>
+                        <!-- Top Line: Hora e Status -->
+                        <div class="agendamento-top-row">
+                            <div class="agendamento-hora-compact">${hInicio} <span class="agendamento-data-tag">${dataLabel}</span></div>
+                            <span class="agendamento-status status-${ag.status}">${statusLabel}</span>
+                        </div>
+
+                        <!-- Main Info -->
                         <div class="agendamento-info">
                             <div class="agendamento-cliente">${ag.cliente_nome}</div>
                             <div class="agendamento-servico">
-                                <span class="d-md-none" style="display:block; color:var(--primary); font-size:0.7rem; margin-bottom:2px;">📱 ${ag.cliente_telefone}</span>
+                                <span class="mobile-phone" style="display:none;">📱 ${ag.cliente_telefone}</span>
                                 ${ag.servico?.nome || '—'} · ${ag.profissional?.nome || '—'}
                             </div>
                         </div>
-                        <span class="agendamento-status status-${ag.status}">${statusLabel}</span>
                     </div>
                     <div class="agendamento-actions">
                         ${ag.status === 'concluido' ? '' : `<button onclick="window.__AGENDA.abrirModalAgendamento('${ag.id}')" title="Ver detalhes">✏️</button>`}
