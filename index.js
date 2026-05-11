@@ -799,17 +799,28 @@ function toggleTipoEntrega(tipo) {
     const secaoMesa = document.getElementById('secaoMesa');
     const secaoTipo = document.getElementById('secaoTipoRecebimento');
 
-    if (!state.freteHabilitado) {
-        if (secaoEndereco) secaoEndereco.style.display = 'none';
-        if (secaoMesa) secaoMesa.style.display = '';
-        if (secaoTipo) secaoTipo.style.display = 'none';
-        state.tipoEntrega = 'mesa';
-        state.freteAtivo = 0;
-        renderTotalBreakdown();
-        return;
+    // Se a opção selecionada for entrega e o frete não estiver habilitado, volta para retirada (fallback seguro)
+    if (tipo === 'entrega' && !state.freteHabilitado) {
+        tipo = 'retirada';
+        state.tipoEntrega = 'retirada';
+        const optR = document.getElementById('optRetirada');
+        if (optR) optR.checked = true;
     }
 
-    if (secaoTipo) secaoTipo.style.display = '';
+    if (secaoTipo) {
+        secaoTipo.style.display = '';
+        // Verifica quantas opções estão visíveis. Se só tiver 1, oculta a seção de escolha.
+        const options = secaoTipo.querySelectorAll('.delivery-option');
+        let visiveis = 0;
+        options.forEach(opt => {
+            if (window.getComputedStyle(opt).display !== 'none' && opt.style.display !== 'none') {
+                visiveis++;
+            }
+        });
+        if (visiveis <= 1) {
+            secaoTipo.style.display = 'none';
+        }
+    }
 
     if (tipo === 'entrega') {
         if (secaoEndereco) secaoEndereco.style.display = '';
@@ -818,13 +829,13 @@ function toggleTipoEntrega(tipo) {
         if (secaoEndereco) secaoEndereco.style.display = 'none';
         if (secaoMesa) secaoMesa.style.display = '';
         state.freteAtivo = 0;
-        renderTotalBreakdown();
-    } else {
+    } else { // retirada
         if (secaoEndereco) secaoEndereco.style.display = 'none';
         if (secaoMesa) secaoMesa.style.display = 'none';
         state.freteAtivo = 0;
-        renderTotalBreakdown();
     }
+    
+    renderTotalBreakdown();
 }
 
 function vincularRadiosEntrega() {
