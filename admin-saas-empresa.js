@@ -880,27 +880,26 @@ window.testarConexaoPix = async () => {
         resultEl.style.border = '1px solid rgba(234, 179, 8, 0.3)';
         resultEl.innerHTML = '⏳ Conectando à API do Mercado Pago...';
         
-        // Chama a API do MP para verificar se o token é válido
-        // Endpoint de "me" retorna dados do dono do token
-        const resp = await fetch('https://api.mercadopago.com/users/me', {
-            headers: { 'Authorization': `Bearer ${tokenParaTestar}` }
+        // Chama a API do MP via Edge Function (evita CORS)
+        const { data: edgeData, error: edgeErr } = await sb.functions.invoke('mercadopago-test', {
+            body: { token: tokenParaTestar }
         });
         
-        const data = await resp.json();
+        if (edgeErr) throw edgeErr;
         
-        if (resp.ok && data.id) {
+        if (edgeData && edgeData.success) {
             resultEl.style.background = 'rgba(16, 185, 129, 0.1)';
             resultEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
             resultEl.innerHTML = `
                 ✅ <strong>Conexão bem-sucedida!</strong><br>
                 <span style="font-size: 0.8rem; color: var(--text-secondary);">
-                    Conta: <strong>${data.first_name || ''} ${data.last_name || ''}</strong> 
-                    (${data.email || 'e-mail não disponível'})<br>
-                    ID: ${data.id} | País: ${data.country_id || 'BR'}
+                    Conta: <strong>${edgeData.first_name || ''} ${edgeData.last_name || ''}</strong> 
+                    (${edgeData.email || 'e-mail não disponível'})<br>
+                    ID: ${edgeData.id} | País: ${edgeData.country_id || 'BR'}
                 </span>
             `;
         } else {
-            const msg = data.message || data.error || 'Token inválido ou expirado.';
+            const msg = edgeData?.error || 'Token inválido ou expirado.';
             resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
             resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
             resultEl.innerHTML = `❌ <strong>Falha na conexão:</strong> ${msg}`;
