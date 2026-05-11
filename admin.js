@@ -2697,7 +2697,11 @@ document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
 };
 
 // --- Toggle Frete ---
+let alternandoFrete = false;
 document.getElementById('confFreteAtivo').onchange = async function () {
+    if (alternandoFrete) return;
+    try {
+        alternandoFrete = true;
     const ativo = this.checked;
     document.getElementById('freteZonasContainer').style.display = ativo ? 'block' : 'none';
 
@@ -2721,6 +2725,11 @@ document.getElementById('confFreteAtivo').onchange = async function () {
         showToast('Erro ao salvar configuração de frete: ' + error.message, 'error');
     } else {
         showToast(ativo ? '🚚 Frete habilitado!' : 'Frete desabilitado.', 'success');
+    }
+    } catch (err) {
+        showToast('Erro ao alternar frete: ' + err.message, 'error');
+    } finally {
+        alternandoFrete = false;
     }
 };
 
@@ -2808,7 +2817,9 @@ window.editarZona = (id) => {
     abrirModal('modalZona');
 };
 
+let salvandoZona = false;
 document.getElementById('btnSalvarZona').onclick = async () => {
+    if (salvandoZona) return;
     if (!validarAcessoModulo('config_frete')) return;
     const btn = document.getElementById('btnSalvarZona');
     const id = document.getElementById('zonaId').value;
@@ -2829,30 +2840,39 @@ document.getElementById('btnSalvarZona').onclick = async () => {
         active: ativo
     };
 
-    btn.disabled = true;
-    btn.textContent = 'Salvando...';
+    try {
+        salvandoZona = true;
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
 
-    let error;
-    if (id) {
-        ({ error } = await sb.from('shipping_zones').update(payload).eq('id', id));
-    } else {
-        // ← Multi-Tenant: injeta empresa_id no INSERT
-        ({ error } = await sb.from('shipping_zones').insert({ ...payload, empresa_id: getTenantId() }));
-    }
+        let error;
+        if (id) {
+            ({ error } = await sb.from('shipping_zones').update(payload).eq('id', id));
+        } else {
+            // ← Multi-Tenant: injeta empresa_id no INSERT
+            ({ error } = await sb.from('shipping_zones').insert({ ...payload, empresa_id: getTenantId() }));
+        }
 
-    if (error) {
-        showToast('Erro ao salvar: ' + error.message, 'error');
-    } else {
-        showToast(id ? 'Bairro atualizado!' : 'Bairro criado!', 'success');
-        fecharModal('modalZona');
-        const { data } = await sb.from('shipping_zones').select('*')
-            .eq('empresa_id', getTenantId())
-            .order('name');
-        zonasEntrega = data || [];
-        renderZonasFrete();
+        if (error) {
+            showToast('Erro ao salvar: ' + error.message, 'error');
+        } else {
+            showToast(id ? 'Zona atualizada!' : 'Zona criada!', 'success');
+            fecharModal('modalZona');
+            
+            // Recarrega do banco para garantir sincronia
+            const { data } = await sb.from('shipping_zones').select('*')
+                .eq('empresa_id', getTenantId())
+                .order('name');
+            zonasEntrega = data || [];
+            renderZonasFrete();
+        }
+    } catch (err) {
+        showToast('Erro inesperado: ' + err.message, 'error');
+    } finally {
+        salvandoZona = false;
+        btn.disabled = false;
+        btn.textContent = 'Salvar';
     }
-    btn.disabled = false;
-    btn.textContent = 'Salvar';
 };
 
 window.excluirZona = async (id, nome) => {
