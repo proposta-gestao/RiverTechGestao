@@ -59,6 +59,9 @@ async function carregarDadosEmpresa() {
 
     // 4. Configurações da Loja (Branding)
     await carregarConfiguracoesLoja();
+
+    // 5. Status do PIX
+    carregarStatusPix();
 }
 
 async function carregarConfiguracoesLoja() {
@@ -712,6 +715,221 @@ function showToast(message, type = 'success') {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
+
+// ==========================================
+// PIX / Mercado Pago — Gestão por Empresa
+// ==========================================
+
+/**
+ * Carrega o status do PIX da empresa.
+ * Chamado automaticamente ao carregar os dados da empresa.
+ */
+function carregarStatusPix() {
+    if (!EMPRESA_DATA) return;
+    
+    const toggle = document.getElementById('pixHabilitadoToggle');
+    const tokenInput = document.getElementById('pixAccessToken');
+    const statusIcon = document.getElementById('pixStatusIcon');
+    const statusTitle = document.getElementById('pixStatusTitle');
+    const statusDesc = document.getElementById('pixStatusDesc');
+    
+    if (!toggle) return; // Aba PIX não existe na página
+    
+    toggle.checked = EMPRESA_DATA.pix_habilitado === true;
+    
+    // O token vem mascarado do banco (ou vazio)
+    // Mostramos apenas se foi configurado ou não
+    const temToken = !!EMPRESA_DATA.mp_access_token;
+    
+    if (temToken && EMPRESA_DATA.pix_habilitado) {
+        statusIcon.innerHTML = '✅';
+        statusIcon.style.background = 'rgba(16, 185, 129, 0.1)';
+        statusTitle.textContent = 'PIX Ativo';
+        statusTitle.style.color = 'var(--accent-green)';
+        statusDesc.textContent = 'Clientes podem pagar via PIX nesta empresa.';
+    } else if (temToken && !EMPRESA_DATA.pix_habilitado) {
+        statusIcon.innerHTML = '⏸️';
+        statusIcon.style.background = 'rgba(234, 179, 8, 0.1)';
+        statusTitle.textContent = 'PIX Configurado (Desativado)';
+        statusTitle.style.color = 'var(--accent-gold)';
+        statusDesc.textContent = 'Token cadastrado, mas PIX desligado. Ative o toggle para habilitar.';
+    } else {
+        statusIcon.innerHTML = '⚠️';
+        statusIcon.style.background = 'rgba(239, 68, 68, 0.1)';
+        statusTitle.textContent = 'PIX não configurado';
+        statusTitle.style.color = 'var(--accent-red)';
+        statusDesc.textContent = 'Configure o token do Mercado Pago abaixo.';
+    }
+    
+    // Preenche o campo com asteriscos se o token existe (nunca expomos o real)
+    if (temToken) {
+        tokenInput.value = '';
+        tokenInput.placeholder = '••••••••••••••••••••••••••••• (token salvo — insira um novo para substituir)';
+    } else {
+        tokenInput.value = '';
+        tokenInput.placeholder = 'APP_USR-xxxxxxxxxxxx-xxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxx';
+    }
+}
+
+/**
+ * Toggle PIX habilitado/desabilitado (sem alterar o token).
+ */
+window.togglePixHabilitado = async (checked) => {
+    if (!EMPRESA_ID) return;
+    
+    try {
+        const { error } = await sb
+            .from('empresas')
+            .update({ pix_habilitado: checked })
+            .eq('id', EMPRESA_ID);
+
+        if (error) throw error;
+
+        EMPRESA_DATA.pix_habilitado = checked;
+        carregarStatusPix();
+        showToast(checked ? 'PIX habilitado! ✅' : 'PIX desabilitado.');
+    } catch (err) {
+        showToast('Erro ao alterar status PIX: ' + err.message, 'error');
+        // Reverter toggle
+        document.getElementById('pixHabilitadoToggle').checked = !checked;
+    }
+};
+
+/**
+ * Salva o Access Token do Mercado Pago para a empresa.
+ */
+window.salvarConfigPix = async () => {
+    if (!EMPRESA_ID) return;
+    
+    const btn = document.getElementById('btnSalvarPix');
+    const tokenInput = document.getElementById('pixAccessToken');
+    const token = tokenInput.value.trim();
+    
+    if (!token) {
+        showToast('Insira o Access Token do Mercado Pago.', 'error');
+        return;
+    }
+    
+    // Validação básica do formato do token
+    if (!token.startsWith('APP_USR-') && !token.startsWith('TEST-')) {
+        const confirmar = confirm(
+            'O token não parece ter o formato padrão do Mercado Pago (APP_USR-... ou TEST-...).\n\n' +
+            'Deseja salvar mesmo assim?'
+        );
+        if (!confirmar) return;
+    }
+    
+    try {
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+        
+        const { error } = await sb
+            .from('empresas')
+            .update({ 
+                mp_access_token: token,
+                pix_habilitado: true // Habilita automaticamente ao salvar um token
+            })
+            .eq('id', EMPRESA_ID);
+
+        if (error) throw error;
+
+        EMPRESA_DATA.mp_access_token = token;
+        EMPRESA_DATA.pix_habilitado = true;
+        document.getElementById('pixHabilitadoToggle').checked = true;
+        
+        carregarStatusPix();
+        showToast('Token PIX salvo e habilitado! 🎉');
+        
+    } catch (err) {
+        showToast('Erro ao salvar token: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar Configuração PIX';
+    }
+};
+
+/**
+ * Testa a conexão com a API do Mercado Pago usando o token.
+ * Não cria nenhum pagamento — apenas verifica se o token é válido.
+ */
+window.testarConexaoPix = async () => {
+    const btn = document.getElementById('btnTestarPix');
+    const resultEl = document.getElementById('pixTestResult');
+    const tokenInput = document.getElementById('pixAccessToken');
+    
+    // Usar o token do input OU o que já está salvo
+    let tokenParaTestar = tokenInput.value.trim();
+    
+    if (!tokenParaTestar && EMPRESA_DATA?.mp_access_token) {
+        tokenParaTestar = EMPRESA_DATA.mp_access_token;
+    }
+    
+    if (!tokenParaTestar) {
+        resultEl.style.display = 'block';
+        resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
+        resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        resultEl.innerHTML = '❌ <strong>Nenhum token para testar.</strong> Insira o Access Token primeiro.';
+        return;
+    }
+    
+    try {
+        btn.disabled = true;
+        btn.textContent = '🔄 Testando...';
+        resultEl.style.display = 'block';
+        resultEl.style.background = 'rgba(234, 179, 8, 0.1)';
+        resultEl.style.border = '1px solid rgba(234, 179, 8, 0.3)';
+        resultEl.innerHTML = '⏳ Conectando à API do Mercado Pago...';
+        
+        // Chama a API do MP para verificar se o token é válido
+        // Endpoint de "me" retorna dados do dono do token
+        const resp = await fetch('https://api.mercadopago.com/users/me', {
+            headers: { 'Authorization': `Bearer ${tokenParaTestar}` }
+        });
+        
+        const data = await resp.json();
+        
+        if (resp.ok && data.id) {
+            resultEl.style.background = 'rgba(16, 185, 129, 0.1)';
+            resultEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+            resultEl.innerHTML = `
+                ✅ <strong>Conexão bem-sucedida!</strong><br>
+                <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                    Conta: <strong>${data.first_name || ''} ${data.last_name || ''}</strong> 
+                    (${data.email || 'e-mail não disponível'})<br>
+                    ID: ${data.id} | País: ${data.country_id || 'BR'}
+                </span>
+            `;
+        } else {
+            const msg = data.message || data.error || 'Token inválido ou expirado.';
+            resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
+            resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+            resultEl.innerHTML = `❌ <strong>Falha na conexão:</strong> ${msg}`;
+        }
+        
+    } catch (err) {
+        resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
+        resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+        resultEl.innerHTML = `❌ <strong>Erro de rede:</strong> ${err.message}`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🧪 Testar Conexão';
+    }
+};
+
+/**
+ * Alterna a visibilidade do campo de token (password/text).
+ */
+window.toggleTokenVisibility = () => {
+    const input = document.getElementById('pixAccessToken');
+    const btn = document.getElementById('btnToggleToken');
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🔒';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
+};
 
 // Iniciar
 init();

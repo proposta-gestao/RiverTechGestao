@@ -152,9 +152,10 @@ async function carregarCupons() {
 
 async function carregarConfiguracoesPublicas() {
     const empresaId = getTenantId();
-    const [settingsRes, zonesRes] = await Promise.all([
+    const [settingsRes, zonesRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
-        sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).eq('active', true)
+        sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).eq('active', true),
+        sb.from('empresas').select('pix_habilitado').eq('id', empresaId).single()
     ]);
 
     if (!settingsRes.error && settingsRes.data) {
@@ -172,6 +173,9 @@ async function carregarConfiguracoesPublicas() {
         // Ordenar por nome para facilitar visualização
         ZONAS_FRETE = (zonesRes.data || []).sort((a, b) => a.name.localeCompare(b.name));
     }
+
+    // PIX Multi-Tenant: Verificar se a empresa tem PIX habilitado
+    state.pixHabilitado = !!(empresaRes.data && empresaRes.data.pix_habilitado);
 }
 
 /**
@@ -196,7 +200,8 @@ function aplicarFiltrosDeModulosPublico() {
     }
 
     // 2. Pagamento Online
-    if (!isModuloAtivo('pagamento')) {
+    // PIX só aparece se: módulo 'pagamento' ativo E empresa tem pix_habilitado no banco
+    if (!isModuloAtivo('pagamento') || !state.pixHabilitado) {
         const optPix = document.getElementById('payPix')?.closest('.delivery-option');
         if (optPix) optPix.style.display = 'none';
         
