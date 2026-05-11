@@ -198,10 +198,14 @@ function aplicarFiltrosDeModulosPublico() {
         const secEnd = document.getElementById('secaoEndereco');
         if (secEnd) secEnd.style.display = 'none';
 
-        // Garante que a opção ativa seja 'mesa' ou 'retirada'
-        const optR = document.getElementById('optRetirada');
-        if (optR) optR.checked = true;
-        toggleTipoEntrega('mesa');
+        // Garante que a opção ativa seja 'mesa' (se módulo ativo) ou 'retirada'
+        if (isModuloAtivo('pedido_mesa')) {
+            toggleTipoEntrega('mesa');
+        } else {
+            const optR = document.getElementById('optRetirada');
+            if (optR) optR.checked = true;
+            toggleTipoEntrega('retirada');
+        }
     }
 
     // 2. Pagamento Online
