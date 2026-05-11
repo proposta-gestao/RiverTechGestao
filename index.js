@@ -401,10 +401,9 @@ function navegarStep(n) {
         if (line) line.style.background = 'var(--primary)';
         renderTotalBreakdown();
 
-        const tipoAtual = state.freteHabilitado ? state.tipoEntrega : 'mesa';
-        toggleTipoEntrega(tipoAtual);
+        toggleTipoEntrega(state.tipoEntrega);
 
-        if (state.freteHabilitado) {
+        if (state.freteHabilitado || true) { // Garante que os eventos onchange sejam sempre vinculados
             const optR = document.getElementById('optRetirada');
             const optE = document.getElementById('optEntrega');
             const optM = document.getElementById('optMesa');
@@ -801,6 +800,14 @@ function toggleTipoEntrega(tipo) {
 
     // Se a opção selecionada for entrega e o frete não estiver habilitado, volta para retirada (fallback seguro)
     if (tipo === 'entrega' && !state.freteHabilitado) {
+        tipo = 'retirada';
+        state.tipoEntrega = 'retirada';
+        const optR = document.getElementById('optRetirada');
+        if (optR) optR.checked = true;
+    }
+
+    // Se a opção selecionada for mesa e a mesa não estiver habilitada, volta para retirada
+    if (tipo === 'mesa' && typeof isModuloAtivo === 'function' && !isModuloAtivo('pedido_mesa')) {
         tipo = 'retirada';
         state.tipoEntrega = 'retirada';
         const optR = document.getElementById('optRetirada');
