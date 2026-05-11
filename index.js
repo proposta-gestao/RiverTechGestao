@@ -155,8 +155,12 @@ async function carregarConfiguracoesPublicas() {
     const [settingsRes, zonesRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).eq('active', true),
-        sb.from('empresas').select('pix_habilitado, cartao_habilitado').eq('id', empresaId).single()
+        sb.from('empresas_publico').select('pix_habilitado, cartao_habilitado').eq('id', empresaId).single()
     ]);
+
+    if (empresaRes.error) {
+        console.error('[Config] Erro ao buscar empresa:', empresaRes.error);
+    }
 
     if (!settingsRes.error && settingsRes.data) {
         CONFIG_LOJA = settingsRes.data;
