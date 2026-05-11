@@ -1153,6 +1153,28 @@ function mostrarConfirmacaoPedido(nome, formaPagamento = '', freteHabilitado = t
     requestAnimationFrame(() => overlay.classList.add('order-confirm-visible'));
 }
 
+function mostrarRedirecionamentoMercadoPago() {
+    const overlay = document.createElement('div');
+    overlay.className = 'mp-redirect-overlay';
+    overlay.innerHTML = `
+        <div class="mp-redirect-box">
+            <div class="mp-secure-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                Ambiente Seguro
+            </div>
+            <div class="mp-brand">
+                💳 Mercado Pago
+            </div>
+            <p class="mp-redirect-text">Estamos preparando o seu ambiente de pagamento criptografado.<br>Por favor, aguarde...</p>
+            <div class="mp-spinner"></div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    // Forçar reflow para ativar animação CSS
+    requestAnimationFrame(() => overlay.classList.add('active'));
+}
+
 // UI Controls
 const toggleCart = (show) => {
     dom.cart.classList.toggle('open', show);
@@ -1285,15 +1307,13 @@ async function iniciarFluxoCartaoCheckoutPro(orderId, whatsappMsg) {
             // Salvar no localStorage que estamos enviando pro checkout, para quando voltar
             localStorage.setItem('aguardando_retorno_mp', 'true');
             
-            // Opcional: Avisar via zap que o pedido foi gerado (já que ele vai sair da tela)
-            if (state.freteHabilitado) {
-                // Abre silenciosamente em background se possível ou envia webhook, mas como é client side,
-                // pode ser bloqueado se não for click direto. 
-                // Para Checkout Pro, o ideal é enviar a msg ANTES de ir, ou DEPOIS que ele volta.
-                // Vamos apenas redirecionar para a URL do MP.
-            }
+            // Exibir o Popup Premium
+            mostrarRedirecionamentoMercadoPago();
             
-            window.location.href = data.url; // Redirecionamento para o Mercado Pago
+            // Um pequeno delay só para o usuário poder ver a animação premium antes de ir
+            setTimeout(() => {
+                window.location.href = data.url; // Redirecionamento para o Mercado Pago
+            }, 1200);
         } else {
             throw new Error('URL de pagamento não retornada');
         }
