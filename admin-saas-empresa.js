@@ -839,7 +839,7 @@ window.salvarConfigPix = async () => {
         btn.disabled = true;
         btn.textContent = 'Salvando...';
         
-        const updateData: any = {
+        const updateData = {
             pix_habilitado: pixAtivo,
             cartao_habilitado: cartaoAtivo,
             cartao_parcelamento: parcelamentoAtivo
