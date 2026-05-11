@@ -585,7 +585,7 @@ body {
 
 .admin-topbar {
     flex-shrink: 0;
-    z-index: 100;
+    z-index: 1000;
     background: rgba(13, 13, 13, 0.9);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
@@ -614,28 +614,39 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .admin-header-actions {
     display: flex;
     gap: 10px;
     align-items: center;
+    flex-shrink: 0;
 }
 
+/* Estilos base do botão de menu mobile */
 .btn-mobile-toggle {
-    display: none;
+    display: none; /* Escondido por padrão, mostrado via media query */
     background: none;
     border: none;
-    color: var(--text-primary);
-    font-size: 1.5rem;
+    color: #ffffff !important; /* Força cor branca para visibilidade */
+    font-size: 1.8rem;
     cursor: pointer;
-    padding: 4px;
+    padding: 8px;
     border-radius: 8px;
     transition: background 0.2s;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 
 .btn-mobile-toggle:hover {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.1);
 }
 
 .btn-link-cardapio {
@@ -832,20 +843,20 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-.btn-mobile-toggle {
-    display: none;
-    background: none;
-    border: none;
-    color: var(--text-main);
-    font-size: 1.8rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    line-height: 1;
-}
+/* Botão de Menu Mobile - Oculto por padrão no Desktop */
+
+/* 
+   LOGICA DE NAVEGAÇÃO RESPONSIVA
+   ----------------------------------------------
+   Abaixo de 1024px: Menu via Botão (Drawer)
+   Acima de 1024px: Menu via Sidebar (Fixo)
+*/
 
 @media (max-width: 1023px) {
     .btn-mobile-toggle {
-        display: block;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     .admin-tabs {
@@ -2045,7 +2056,7 @@ body {
         gap: 10px;
         padding: 0.8rem 1rem;
         position: relative;
-        min-height: auto;
+        min-height: 60px;
     }
 
     .admin-header-actions {
