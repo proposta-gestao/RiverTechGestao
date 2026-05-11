@@ -195,6 +195,9 @@ function aplicarFiltrosDeModulosPublico() {
         const optE = document.getElementById('optEntrega')?.closest('.delivery-option');
         if (optE) optE.style.display = 'none';
         
+        const optR = document.getElementById('optRetirada')?.closest('.delivery-option');
+        if (optR) optR.style.display = 'none';
+        
         const secEnd = document.getElementById('secaoEndereco');
         if (secEnd) secEnd.style.display = 'none';
 
