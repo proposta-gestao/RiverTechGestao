@@ -919,7 +919,7 @@ document.getElementById("btnEnviar").onclick = async () => {
     let camposEndereco = {};
     let freteValor = 0;
 
-    if (!state.freteHabilitado || state.tipoEntrega === 'mesa') {
+    if (state.tipoEntrega === 'mesa') {
         const mesa    = document.getElementById("clienteMesa")?.value.trim() || '';
         const posicao = document.getElementById("clientePosicao")?.value.trim() || '';
         if (!mesa)    return mostrarToast("Por favor, informe o número da MESA.", "error");
