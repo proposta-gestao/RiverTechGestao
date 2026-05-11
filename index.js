@@ -155,7 +155,7 @@ async function carregarConfiguracoesPublicas() {
     const [settingsRes, zonesRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).eq('active', true),
-        sb.from('empresas').select('pix_habilitado').eq('id', empresaId).single()
+        sb.from('empresas').select('pix_habilitado, cartao_habilitado').eq('id', empresaId).single()
     ]);
 
     if (!settingsRes.error && settingsRes.data) {
@@ -176,6 +176,7 @@ async function carregarConfiguracoesPublicas() {
 
     // PIX Multi-Tenant: Verificar se a empresa tem PIX habilitado
     state.pixHabilitado = !!(empresaRes.data && empresaRes.data.pix_habilitado);
+    state.cartaoHabilitado = !!(empresaRes.data && empresaRes.data.cartao_habilitado);
 }
 
 /**
@@ -204,8 +205,16 @@ function aplicarFiltrosDeModulosPublico() {
     if (!isModuloAtivo('pagamento') || !state.pixHabilitado) {
         const optPix = document.getElementById('payPix')?.closest('.delivery-option');
         if (optPix) optPix.style.display = 'none';
-        
-        // Garante que selecione 'dinheiro' ou 'cartao' (presencial)
+    }
+    
+    // Cartão só aparece se: módulo 'pagamento' ativo E empresa tem cartao_habilitado no banco
+    if (!isModuloAtivo('pagamento') || !state.cartaoHabilitado) {
+        const optCartao = document.getElementById('payCartao')?.closest('.delivery-option');
+        if (optCartao) optCartao.style.display = 'none';
+    }
+
+    // Se nenhum pagamento online estiver ativo, garante que selecione 'dinheiro'
+    if (!state.pixHabilitado && !state.cartaoHabilitado) {
         const optDin = document.getElementById('payDinheiro');
         if (optDin) optDin.checked = true;
     }
@@ -1040,6 +1049,8 @@ document.getElementById("btnEnviar").onclick = async () => {
         
         if (state.formaPagamento === 'pix') {
             await iniciarFluxoPix(orderId, totalFinal, msg);
+        } else if (state.formaPagamento === 'cartao') {
+            await iniciarFluxoCartaoCheckoutPro(orderId, msg);
         } else {
             const concluir = () => {
                 if (state.freteHabilitado) {
@@ -1048,7 +1059,7 @@ document.getElementById("btnEnviar").onclick = async () => {
                 mostrarConfirmacaoPedido(nomeCliente, state.formaPagamento, state.freteHabilitado);
             };
 
-            if (state.formaPagamento === 'dinheiro' || state.formaPagamento === 'cartao') {
+            if (state.formaPagamento === 'dinheiro') {
                 mostrarAlertaPagamentoManual(concluir);
             } else {
                 concluir();
@@ -1240,6 +1251,52 @@ async function iniciarFluxoPix(orderId, total, whatsappMsg) {
         mostrarToast('Erro ao gerar PIX.', 'error');
         modal.classList.remove('active');
         const btn = document.getElementById('btnEnviar');
+        btn.disabled = false;
+        btn.innerHTML = `<span>Tentar novamente</span>`;
+    }
+}
+// =============================================
+// FLUXO CARTÃO (CHECKOUT PRO) MERCADO PAGO
+// =============================================
+
+async function iniciarFluxoCartaoCheckoutPro(orderId, whatsappMsg) {
+    const btn = document.getElementById('btnEnviar');
+    
+    try {
+        mostrarToast('Gerando link de pagamento...', 'success');
+        btn.disabled = true;
+        btn.innerHTML = `<span>Redirecionando...</span><span class="atendente-icon">⏳</span>`;
+
+        const { data, error } = await sb.functions.invoke('mercadopago-checkout', {
+            body: { orderId }
+        });
+
+        if (error || (data && data.error)) {
+            const msgErro = error?.details || data?.error || 'Erro desconhecido ao gerar link';
+            mostrarToast('Erro do Mercado Pago: ' + msgErro, 'error');
+            throw new Error(msgErro);
+        }
+
+        if (data && data.url) {
+            // Salvar no localStorage que estamos enviando pro checkout, para quando voltar
+            localStorage.setItem('aguardando_retorno_mp', 'true');
+            
+            // Opcional: Avisar via zap que o pedido foi gerado (já que ele vai sair da tela)
+            if (state.freteHabilitado) {
+                // Abre silenciosamente em background se possível ou envia webhook, mas como é client side,
+                // pode ser bloqueado se não for click direto. 
+                // Para Checkout Pro, o ideal é enviar a msg ANTES de ir, ou DEPOIS que ele volta.
+                // Vamos apenas redirecionar para a URL do MP.
+            }
+            
+            window.location.href = data.url; // Redirecionamento para o Mercado Pago
+        } else {
+            throw new Error('URL de pagamento não retornada');
+        }
+
+    } catch (err) {
+        console.error('Erro no fluxo Cartão:', err);
+        mostrarToast('Erro ao redirecionar para pagamento.', 'error');
         btn.disabled = false;
         btn.innerHTML = `<span>Tentar novamente</span>`;
     }

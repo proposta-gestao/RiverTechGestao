@@ -381,7 +381,7 @@
             <button class="page-tab-btn active" data-tab="edit-dashboard" onclick="switchPageTab('edit-dashboard')">📊 Dashboard</button>
             <button class="page-tab-btn" data-tab="edit-config" onclick="switchPageTab('edit-config')">⚙️ Configuração</button>
             <button class="page-tab-btn" data-tab="edit-modulos" onclick="switchPageTab('edit-modulos')">🧩 Módulos</button>
-            <button class="page-tab-btn" data-tab="edit-pix" onclick="switchPageTab('edit-pix')">💰 PIX</button>
+            <button class="page-tab-btn" data-tab="edit-pix" onclick="switchPageTab('edit-pix')">💳 Pagamentos Online</button>
             <button class="page-tab-btn" data-tab="edit-equipe" onclick="switchPageTab('edit-equipe')">👥 Equipe</button>
         </div>
 
@@ -847,33 +847,64 @@
             </div>
         </div>
 
-        <!-- Tab: PIX / Pagamento -->
+        <!-- Tab: Pagamento Online (Mercado Pago) -->
         <div id="edit-pix" class="tab-content">
             <div style="max-width: 700px;">
                 <div style="margin-bottom: 2rem;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 5px;">💰 Integração PIX — Mercado Pago</h2>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Configure a conta do Mercado Pago desta empresa para receber pagamentos PIX diretamente.</p>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 5px;">💳 Integração Mercado Pago</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Configure a conta do Mercado Pago desta empresa para receber pagamentos via PIX e Cartão diretamente.</p>
                 </div>
 
                 <!-- Status Card -->
                 <div class="section-card" style="margin-bottom: 1.5rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div id="pixStatusIcon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(239, 68, 68, 0.1);">⚠️</div>
                             <div>
-                                <div id="pixStatusTitle" style="font-weight: 700; font-size: 1rem;">PIX não configurado</div>
+                                <div id="pixStatusTitle" style="font-weight: 700; font-size: 1rem;">Pagamento não configurado</div>
                                 <div id="pixStatusDesc" style="font-size: 0.8rem; color: var(--text-secondary);">Configure o token do Mercado Pago abaixo.</div>
                             </div>
                         </div>
-                        <label class="switch">
-                            <input type="checkbox" id="pixHabilitadoToggle" onchange="togglePixHabilitado(this.checked)">
-                            <span class="slider"></span>
-                        </label>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="display: block; font-size: 0.95rem;">Habilitar PIX</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Exibe a opção de pagar com PIX (QR Code).</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="pixHabilitadoToggle" onchange="togglePagamento('pix', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong style="display: block; font-size: 0.95rem;">Habilitar Cartão (Checkout Pro)</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Redireciona para o Mercado Pago para pagar com Cartão.</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cartaoHabilitadoToggle" onchange="togglePagamento('cartao', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-left: 20px; border-left: 2px solid var(--border-color);">
+                            <div>
+                                <strong style="display: block; font-size: 0.95rem;">Permitir Parcelamento no Cartão</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Se desligado, limita a compra no cartão a 1x (à vista).</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="cartaoParcelamentoToggle" onchange="togglePagamento('parcelamento', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
 
-                    <div style="padding: 1rem; background: rgba(229, 178, 93, 0.05); border: 1px solid rgba(229, 178, 93, 0.15); border-radius: 10px; margin-bottom: 1rem;">
+                    <div style="padding: 1rem; background: rgba(229, 178, 93, 0.05); border: 1px solid rgba(229, 178, 93, 0.15); border-radius: 10px; margin-top: 1.5rem;">
                         <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-gold); margin-bottom: 8px;">ℹ️ Como funciona</div>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">Cada empresa precisa de sua própria conta Mercado Pago. O dinheiro do PIX cai <strong style="color: #fff;">diretamente na conta da empresa</strong>, sem passar pela RiverTech. Nenhum dado financeiro é compartilhado entre empresas.</p>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">Cada empresa precisa de sua própria conta Mercado Pago. O dinheiro cai <strong style="color: #fff;">diretamente na conta da empresa</strong>. Nenhum dado financeiro é compartilhado entre empresas.</p>
                     </div>
                 </div>
 

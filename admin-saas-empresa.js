@@ -721,47 +721,52 @@ function showToast(message, type = 'success') {
 // ==========================================
 
 /**
- * Carrega o status do PIX da empresa.
+ * Carrega o status do PIX e Cartão da empresa.
  * Chamado automaticamente ao carregar os dados da empresa.
  */
 function carregarStatusPix() {
     if (!EMPRESA_DATA) return;
     
-    const toggle = document.getElementById('pixHabilitadoToggle');
+    const togglePix = document.getElementById('pixHabilitadoToggle');
+    const toggleCartao = document.getElementById('cartaoHabilitadoToggle');
+    const toggleParcelamento = document.getElementById('cartaoParcelamentoToggle');
+    
     const tokenInput = document.getElementById('pixAccessToken');
     const statusIcon = document.getElementById('pixStatusIcon');
     const statusTitle = document.getElementById('pixStatusTitle');
     const statusDesc = document.getElementById('pixStatusDesc');
     
-    if (!toggle) return; // Aba PIX não existe na página
+    if (!togglePix) return; // Aba Pagamentos não existe na página
     
-    toggle.checked = EMPRESA_DATA.pix_habilitado === true;
+    togglePix.checked = EMPRESA_DATA.pix_habilitado === true;
+    toggleCartao.checked = EMPRESA_DATA.cartao_habilitado === true;
+    toggleParcelamento.checked = EMPRESA_DATA.cartao_parcelamento === true;
     
     // O token vem mascarado do banco (ou vazio)
     // Mostramos apenas se foi configurado ou não
     const temToken = !!EMPRESA_DATA.mp_access_token;
     
-    if (temToken && EMPRESA_DATA.pix_habilitado) {
+    if (temToken && (EMPRESA_DATA.pix_habilitado || EMPRESA_DATA.cartao_habilitado)) {
         statusIcon.innerHTML = '✅';
         statusIcon.style.background = 'rgba(16, 185, 129, 0.1)';
-        statusTitle.textContent = 'PIX Ativo';
+        statusTitle.textContent = 'Pagamentos Online Ativos';
         statusTitle.style.color = 'var(--accent-green)';
-        statusDesc.textContent = 'Clientes podem pagar via PIX nesta empresa.';
-    } else if (temToken && !EMPRESA_DATA.pix_habilitado) {
+        statusDesc.textContent = 'A empresa está pronta para receber pagamentos pelo site.';
+    } else if (temToken) {
         statusIcon.innerHTML = '⏸️';
         statusIcon.style.background = 'rgba(234, 179, 8, 0.1)';
-        statusTitle.textContent = 'PIX Configurado (Desativado)';
+        statusTitle.textContent = 'Pagamentos Configurados (Desativados)';
         statusTitle.style.color = 'var(--accent-gold)';
-        statusDesc.textContent = 'Token cadastrado, mas PIX desligado. Ative o toggle para habilitar.';
+        statusDesc.textContent = 'Token cadastrado, mas PIX/Cartão estão desligados.';
     } else {
         statusIcon.innerHTML = '⚠️';
         statusIcon.style.background = 'rgba(239, 68, 68, 0.1)';
-        statusTitle.textContent = 'PIX não configurado';
+        statusTitle.textContent = 'Pagamentos não configurados';
         statusTitle.style.color = 'var(--accent-red)';
-        statusDesc.textContent = 'Configure o token do Mercado Pago abaixo.';
+        statusDesc.textContent = 'Configure o token de Produção do Mercado Pago abaixo.';
     }
     
-    // Preenche o campo com asteriscos se o token existe (nunca expomos o real)
+    // Preenche o campo com asteriscos se o token existe
     if (temToken) {
         tokenInput.value = '';
         tokenInput.placeholder = '••••••••••••••••••••••••••••• (token salvo — insira um novo para substituir)';
@@ -772,26 +777,32 @@ function carregarStatusPix() {
 }
 
 /**
- * Toggle PIX habilitado/desabilitado (sem alterar o token).
+ * Toggle individual para as opções de pagamento.
  */
-window.togglePixHabilitado = async (checked) => {
+window.togglePagamento = async (tipo, checked) => {
     if (!EMPRESA_ID) return;
+    
+    let field = '';
+    let toggleId = '';
+    if (tipo === 'pix') { field = 'pix_habilitado'; toggleId = 'pixHabilitadoToggle'; }
+    else if (tipo === 'cartao') { field = 'cartao_habilitado'; toggleId = 'cartaoHabilitadoToggle'; }
+    else if (tipo === 'parcelamento') { field = 'cartao_parcelamento'; toggleId = 'cartaoParcelamentoToggle'; }
     
     try {
         const { error } = await sb
             .from('empresas')
-            .update({ pix_habilitado: checked })
+            .update({ [field]: checked })
             .eq('id', EMPRESA_ID);
 
         if (error) throw error;
 
-        EMPRESA_DATA.pix_habilitado = checked;
+        EMPRESA_DATA[field] = checked;
         carregarStatusPix();
-        showToast(checked ? 'PIX habilitado! ✅' : 'PIX desabilitado.');
+        showToast(checked ? `${tipo.toUpperCase()} habilitado! ✅` : `${tipo.toUpperCase()} desabilitado.`);
     } catch (err) {
-        showToast('Erro ao alterar status PIX: ' + err.message, 'error');
+        showToast(`Erro ao alterar ${tipo}: ` + err.message, 'error');
         // Reverter toggle
-        document.getElementById('pixHabilitadoToggle').checked = !checked;
+        document.getElementById(toggleId).checked = !checked;
     }
 };
 
@@ -805,13 +816,18 @@ window.salvarConfigPix = async () => {
     const tokenInput = document.getElementById('pixAccessToken');
     const token = tokenInput.value.trim();
     
-    if (!token) {
+    // Toggles states to save along with the token
+    const pixAtivo = document.getElementById('pixHabilitadoToggle').checked;
+    const cartaoAtivo = document.getElementById('cartaoHabilitadoToggle').checked;
+    const parcelamentoAtivo = document.getElementById('cartaoParcelamentoToggle').checked;
+    
+    if (!token && !EMPRESA_DATA.mp_access_token) {
         showToast('Insira o Access Token do Mercado Pago.', 'error');
         return;
     }
     
-    // Validação básica do formato do token
-    if (!token.startsWith('APP_USR-') && !token.startsWith('TEST-')) {
+    // Validação básica do formato do token (se estiver enviando um novo)
+    if (token && !token.startsWith('APP_USR-') && !token.startsWith('TEST-')) {
         const confirmar = confirm(
             'O token não parece ter o formato padrão do Mercado Pago (APP_USR-... ou TEST-...).\n\n' +
             'Deseja salvar mesmo assim?'
@@ -823,28 +839,36 @@ window.salvarConfigPix = async () => {
         btn.disabled = true;
         btn.textContent = 'Salvando...';
         
+        const updateData: any = {
+            pix_habilitado: pixAtivo,
+            cartao_habilitado: cartaoAtivo,
+            cartao_parcelamento: parcelamentoAtivo
+        };
+        
+        if (token) {
+            updateData.mp_access_token = token;
+        }
+        
         const { error } = await sb
             .from('empresas')
-            .update({ 
-                mp_access_token: token,
-                pix_habilitado: true // Habilita automaticamente ao salvar um token
-            })
+            .update(updateData)
             .eq('id', EMPRESA_ID);
 
         if (error) throw error;
 
-        EMPRESA_DATA.mp_access_token = token;
-        EMPRESA_DATA.pix_habilitado = true;
-        document.getElementById('pixHabilitadoToggle').checked = true;
+        if (token) EMPRESA_DATA.mp_access_token = token;
+        EMPRESA_DATA.pix_habilitado = pixAtivo;
+        EMPRESA_DATA.cartao_habilitado = cartaoAtivo;
+        EMPRESA_DATA.cartao_parcelamento = parcelamentoAtivo;
         
         carregarStatusPix();
-        showToast('Token PIX salvo e habilitado! 🎉');
+        showToast('Configurações de pagamento salvas! 🎉');
         
     } catch (err) {
-        showToast('Erro ao salvar token: ' + err.message, 'error');
+        showToast('Erro ao salvar configurações: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Salvar Configuração PIX';
+        btn.textContent = 'Salvar Configuração de Pagamentos';
     }
 };
 
