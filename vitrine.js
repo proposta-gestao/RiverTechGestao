@@ -44,6 +44,29 @@
                 carregarProdutos(empresaId)
             ]);
 
+            // Configurar opções de pagamento baseadas na empresa
+            const { data: empData } = await sb.from('empresas_publico').select('pix_habilitado, cartao_habilitado').eq('id', empresaId).single();
+            if (empData) {
+                if (!empData.pix_habilitado) {
+                    const rPix = document.querySelector('input[value="pix"]')?.closest('label');
+                    if (rPix) rPix.style.display = 'none';
+                }
+                if (!empData.cartao_habilitado) {
+                    const rCartao = document.querySelector('input[value="cartao"]')?.closest('label');
+                    if (rCartao) rCartao.style.display = 'none';
+                }
+                if (!empData.pix_habilitado && !empData.cartao_habilitado) {
+                    const rDin = document.querySelector('input[value="dinheiro"]');
+                    if (rDin) rDin.checked = true;
+                }
+            }
+
+            // Módulo Mesa/Posição
+            if (!isModuloAtivo('pedido_mesa')) {
+                const optMesa = document.getElementById('lblChkMesa');
+                if (optMesa) optMesa.style.display = 'none';
+            }
+
             popularFiltros();
             renderProdutos();
             _setupModalEvents();
@@ -285,11 +308,177 @@
 
     /* ══════════════════════════════════════════════
        UTILITÁRIOS
+    /* ══════════════════════════════════════════════
+       CHECKOUT E PAGAMENTOS
        ══════════════════════════════════════════════ */
 
-    function _formatPreco(valor) {
-        return 'R$\u00A0' + parseFloat(valor).toFixed(2).replace('.', ',');
+    window.processarCheckoutLoja = async function(variacao, onSuccess) {
+        const nome = document.getElementById('chkNome').value.trim();
+        const telefone = document.getElementById('chkTelefone').value.trim();
+        const tipoEntrega = document.querySelector('input[name="chkEntrega"]:checked')?.value || 'retirada';
+        const endereco = document.getElementById('chkEndereco').value.trim();
+        const mesa = document.getElementById('chkMesa')?.value.trim();
+        const posicao = document.getElementById('chkPosicao')?.value.trim();
+        const formaPgto = document.querySelector('input[name="chkPagamento"]:checked')?.value || 'pix';
+
+        if (!nome || !telefone) {
+            alert('Por favor, preencha nome e telefone.');
+            return;
+        }
+
+        if (tipoEntrega === 'entrega' && !endereco) {
+            alert('Por favor, preencha o endereço de entrega.');
+            return;
+        }
+
+        if (tipoEntrega === 'mesa' && !mesa) {
+            alert('Por favor, preencha o número da mesa.');
+            return;
+        }
+
+        const btn = document.getElementById('btnConfirmarCheckout');
+        const oldText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Processando...';
+
+        try {
+            // 1. Abater Estoque Primeiro (Garante a reserva)
+            const { error: estqErr } = await sb.rpc('loja_remover_estoque', {
+                p_variacao_id: variacao.id,
+                p_quantidade: 1
+            });
+
+            if (estqErr) {
+                alert('Estoque insuficiente ou indisponível.');
+                btn.disabled = false;
+                btn.textContent = oldText;
+                return;
+            }
+
+            // 2. Criar Pedido
+            const prod = produtos.find(p => p.id === variacao.produto_id) || { nome: 'Produto Loja' };
+            const subtotal = parseFloat(variacao.preco);
+            const empresaId = getTenantId();
+
+            const { data: orderData, error: orderErr } = await sb.from('orders').insert({
+                empresa_id: empresaId,
+                customer_name: nome,
+                customer_phone: telefone,
+                customer_address: tipoEntrega === 'entrega' 
+                    ? { endereco_completo: endereco } 
+                    : (tipoEntrega === 'mesa' ? { mesa, posicao } : null),
+                subtotal: subtotal,
+                discount: 0,
+                total: subtotal,
+                delivery_type: tipoEntrega,
+                payment_method: formaPgto,
+                status: 'pendente'
+            }).select().single();
+
+            if (orderErr) {
+                alert('Erro ao criar pedido: ' + orderErr.message);
+                btn.disabled = false;
+                btn.textContent = oldText;
+                return;
+            }
+
+            // 3. Inserir Item
+            await sb.from('order_items').insert({
+                order_id: orderData.id,
+                product_id: prod.id,
+                product_name: `${prod.nome} (${variacao.tamanho} - ${variacao.cor})`,
+                quantity: 1,
+                unit_price: subtotal,
+                total_price: subtotal,
+                empresa_id: empresaId
+            });
+
+            // Fechar modal de checkout
+            document.getElementById('modalCheckoutBackdrop').classList.remove('active');
+            document.body.style.overflow = '';
+
+            // 4. Fluxo de Pagamento
+            if (formaPgto === 'pix') {
+                await gerarPixCheckout(orderData.id, subtotal, empresaId);
+            } else if (formaPgto === 'cartao') {
+                await gerarCartaoCheckout(orderData.id);
+            } else {
+                alert('Pedido realizado com sucesso!');
+                if (typeof onSuccess === 'function') await onSuccess(variacao.id);
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert('Erro: ' + err.message);
+            btn.disabled = false;
+            btn.textContent = oldText;
+        }
+    };
+
+    async function gerarPixCheckout(orderId, total, empresaId) {
+        document.getElementById('modalPix').style.display = 'flex';
+        document.getElementById('pixQrImage').style.display = 'none';
+        document.getElementById('btnCopiarPix').style.display = 'none';
+        document.getElementById('pixStatusMessage').textContent = 'Gerando PIX...';
+
+        try {
+            const { data, error } = await sb.functions.invoke('mercadopago-pix', {
+                body: { orderId: orderId, total: total, empresaId: empresaId }
+            });
+
+            if (error || !data || data.error) {
+                document.getElementById('pixStatusMessage').textContent = 'Erro ao gerar PIX.';
+                return;
+            }
+
+            document.getElementById('pixQrImage').src = `data:image/png;base64,${data.qr_code_base64}`;
+            document.getElementById('pixQrImage').style.display = 'block';
+            document.getElementById('pixLoading').style.display = 'none';
+            document.getElementById('btnCopiarPix').style.display = 'block';
+            document.getElementById('pixStatusMessage').textContent = 'Aguardando pagamento...';
+
+            window.codigoPixCopiaCola = data.qr_code;
+            const btnCopiar = document.getElementById('btnCopiarPix');
+            btnCopiar.onclick = () => {
+                navigator.clipboard.writeText(window.codigoPixCopiaCola);
+                document.getElementById('copyPixFeedback').style.display = 'block';
+                setTimeout(() => document.getElementById('copyPixFeedback').style.display = 'none', 2000);
+            };
+        } catch (err) {
+            console.error(err);
+            document.getElementById('pixStatusMessage').textContent = 'Erro de rede.';
+        }
     }
+
+    async function gerarCartaoCheckout(orderId) {
+        const overlay = document.getElementById('mpRedirectOverlay');
+        overlay.style.display = 'flex';
+        try {
+            const { data, error } = await sb.functions.invoke('mercadopago-checkout', {
+                body: { orderId: orderId }
+            });
+            if (error || !data || data.error) {
+                overlay.style.display = 'none';
+                alert('Erro ao processar checkout seguro.');
+                return;
+            }
+            if (data.url) window.location.href = data.url;
+        } catch (err) {
+            overlay.style.display = 'none';
+            console.error(err);
+            alert('Erro de rede.');
+        }
+    }
+
+    // Modal Events
+    document.getElementById('mc-close')?.addEventListener('click', () => {
+        document.getElementById('modalCheckoutBackdrop').classList.remove('active');
+        document.body.style.overflow = '';
+    });
+    document.getElementById('closeModalPix')?.addEventListener('click', () => {
+        document.getElementById('modalPix').style.display = 'none';
+        window.location.reload(); // Recarregar após fechar PIX
+    });
 
     // Expor funções necessárias globalmente
     window.limparFiltros = limparFiltros;

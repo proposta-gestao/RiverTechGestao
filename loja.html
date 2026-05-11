@@ -125,7 +125,127 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- MODAL CHECKOUT LOJA -->
+    <div class="modal-backdrop" id="modalCheckoutBackdrop">
+        <div class="modal-content" style="max-width: 500px; padding: 2rem; border-radius: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="font-size:1.4rem; font-weight:800; color:var(--text);">Finalizar Compra</h2>
+                <button class="modal-close" id="mc-close" type="button" style="position:static;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-muted);">Nome completo *</label>
+                <input type="text" id="chkNome" placeholder="Ex: Maria Silva" style="width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:var(--text);">
+            </div>
+            
+            <div class="form-group" style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-muted);">Telefone / WhatsApp *</label>
+                <input type="tel" id="chkTelefone" placeholder="(31) 99999-9999" maxlength="15" style="width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:var(--text);">
+            </div>
+
+            <p style="font-size:0.9rem; font-weight:600; margin-bottom:0.5rem; color:var(--text);">Como prefere receber?</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:1.5rem;">
+                <label style="display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer;">
+                    <input type="radio" name="chkEntrega" value="retirada" checked onchange="document.getElementById('chkEnderecoContainer').style.display='none'; document.getElementById('chkMesaContainer').style.display='none'">
+                    <span>🏠 Retirar</span>
+                </label>
+                <label style="display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer;" id="lblChkFrete">
+                    <input type="radio" name="chkEntrega" value="entrega" onchange="document.getElementById('chkEnderecoContainer').style.display='block'; document.getElementById('chkMesaContainer').style.display='none'">
+                    <span>🚚 Entrega</span>
+                </label>
+                <label style="display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer;" id="lblChkMesa">
+                    <input type="radio" name="chkEntrega" value="mesa" onchange="document.getElementById('chkEnderecoContainer').style.display='none'; document.getElementById('chkMesaContainer').style.display='block'">
+                    <span>🍽️ Na Mesa</span>
+                </label>
+            </div>
+
+            <div id="chkMesaContainer" style="display:none; margin-bottom:1.5rem;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="form-group">
+                        <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-muted);">Mesa *</label>
+                        <input type="text" id="chkMesa" placeholder="Ex: 05" style="width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:var(--text);">
+                    </div>
+                    <div class="form-group">
+                        <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-muted);">Posição</label>
+                        <input type="text" id="chkPosicao" placeholder="Ex: 02" style="width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:var(--text);">
+                    </div>
+                </div>
+            </div>
+
+            <div id="chkEnderecoContainer" style="display:none; margin-bottom:1.5rem;">
+                <div class="form-group">
+                    <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.4rem; color:var(--text-muted);">Endereço Completo *</label>
+                    <textarea id="chkEndereco" placeholder="Rua, Número, Bairro, Ponto de Referência..." rows="3" style="width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:var(--text); resize:vertical;"></textarea>
+                </div>
+            </div>
+
+            <p style="font-size:0.9rem; font-weight:600; margin-bottom:0.5rem; color:var(--text);">Forma de Pagamento</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:2rem;">
+                <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer;">
+                    <input type="radio" name="chkPagamento" value="pix" checked>
+                    <span>📱 PIX</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer;" id="lblChkCartao">
+                    <input type="radio" name="chkPagamento" value="cartao">
+                    <span>💳 Cartão (Online)</span>
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; padding:12px; border:1px solid rgba(255,255,255,0.1); border-radius:10px; cursor:pointer; grid-column:span 2;">
+                    <input type="radio" name="chkPagamento" value="dinheiro">
+                    <span>💵 Pagamento na Entrega/Loja</span>
+                </label>
+            </div>
+
+            <button id="btnConfirmarCheckout" style="width:100%; padding:15px; border-radius:12px; background:var(--primary); color:#000; font-weight:800; font-size:1.1rem; border:none; cursor:pointer;">
+                Confirmar Pagamento
+            </button>
+        </div>
+    </div>
+
+    <!-- PIX Payment Modal -->
+    <div class="modal" id="modalPix" aria-modal="true" role="dialog" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:#1a1a1a; padding:2rem; border-radius:16px; text-align:center; position:relative; max-width:400px; width:90%;">
+            <h3 style="margin-bottom:1rem;">Pague com PIX</h3>
+            <p style="margin-bottom:1.5rem; color:#aaa;">Escaneie o QR Code ou copie o código abaixo para pagar.</p>
+
+            <div id="pixQrContainer" style="margin-bottom:1.5rem;">
+                <div id="pixLoading">⏳ Gerando QR Code...</div>
+                <img id="pixQrImage" src="" alt="QR Code PIX" style="display:none; margin:0 auto; max-width:200px; border-radius:8px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom:1.5rem;">
+                <button class="btn-checkout" id="btnCopiarPix" style="display:none; width:100%; padding:12px; border-radius:8px; background:#333; color:#fff; border:none; cursor:pointer;">
+                    Copiar Código PIX 📋
+                </button>
+                <small id="copyPixFeedback" style="display:none; color:var(--success); display:block; margin-top:8px;">Código copiado! ✅</small>
+            </div>
+
+            <div id="pixStatusMessage" style="color:var(--primary); font-weight:600;">Aguardando pagamento...</div>
+            <button class="close-modal" id="closeModalPix" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+    </div>
+
+    <!-- Redirect MP Premium Overlay -->
+    <div id="mpRedirectOverlay" class="mp-redirect-overlay" style="display:none;">
+        <div class="mp-redirect-content">
+            <div class="mp-logo-container">
+                <!-- SVG animado do Mercado Pago (simplificado para o loader) -->
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="mp-logo-pulse">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" fill="#009EE3"/>
+                </svg>
+            </div>
+            <h2 class="mp-redirect-title">Iniciando pagamento seguro...</h2>
+            <p class="mp-redirect-subtitle">Você será redirecionado para o Checkout Pro em instantes.</p>
+            <div class="mp-loader-bar">
+                <div class="mp-loader-progress"></div>
+            </div>
+            <div class="mp-secure-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>Ambiente Seguro PCI-DSS</span>
+            </div>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script src="theme-manager.js"></script>
     <script src="tenant.js"></script>

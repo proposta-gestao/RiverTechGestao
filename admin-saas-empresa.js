@@ -81,7 +81,7 @@ const LISTA_MODULOS = [
     'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
     'metricas_dashboard', 'metricas_analise_tempo', 'metricas_performance_vendas', 'metricas_destaques',
     'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',
-    'cupons', 'cardapio', 'pagamento',
+    'cupons', 'cardapio', 'pagamento', 'pedido_mesa',
     // Módulos de Agendamento
     'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
     'agendamento_mensagens', 'agendamento_fidelidade',
@@ -453,6 +453,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
 });
  
 // Salvamento automático de módulos
+// Salvamento automático de módulos individuais
 window.atualizarModulo = async (modulo, checked) => {
     if (!EMPRESA_ID || !EMPRESA_DATA) return;
  
@@ -473,10 +474,11 @@ window.atualizarModulo = async (modulo, checked) => {
         }
 
         if (!data || data.length === 0) {
-            throw new Error('Permissão negada no banco de dados (RLS bloqueou a atualização). Certifique-se de estar logado como Super Admin.');
+            throw new Error('Permissão negada ou empresa não encontrada.');
         }
         
-        // Feedback visual discreto
+        // Feedback visual premium
+        showToast(`Funcionalidade ${checked ? 'ativada' : 'desativada'}!`);
         console.log(`[Modules] ${modulo} atualizado com sucesso para ${checked}`);
     } catch (err) {
         console.error('Erro crítico ao atualizar módulo:', err);
@@ -489,24 +491,7 @@ window.atualizarModulo = async (modulo, checked) => {
     }
 };
 
-// Salvamento automático de módulos individuais
-window.atualizarModulo = async (modulo, checked) => {
-    if (!EMPRESA_ID || !EMPRESA_DATA) return;
-    if (!EMPRESA_DATA.modulos) EMPRESA_DATA.modulos = {};
-    EMPRESA_DATA.modulos[modulo] = checked;
-    try {
-        const { error } = await sb.from('empresas').update({ modulos: EMPRESA_DATA.modulos }).eq('id', EMPRESA_ID);
-        if (error) throw error;
-        
-        // Mensagem de confirmação premium
-        showToast(`Funcionalidade ${checked ? 'ativada' : 'desativada'}!`);
-        console.log(`[Modules] ${modulo} atualizado: ${checked}`);
-    } catch (err) {
-        showToast('Erro ao salvar alteração: ' + err.message, 'error');
-        const el = document.getElementById(`mod_${modulo}`);
-        if (el) el.checked = !checked;
-    }
-};
+
 
 // Função para ativar/desativar um grupo inteiro de módulos
 window.toggleGrupoModulo = async (containerId, isChecked) => {

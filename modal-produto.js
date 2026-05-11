@@ -315,44 +315,28 @@
         const variacao = _getVariacaoSelecionada();
         if (!variacao || variacao.estoque <= 0) return;
 
-        const btn = document.getElementById('mp-btn-comprar');
-        const texto = document.getElementById('mp-btn-texto');
-        btn.disabled = true;
-        texto.textContent = 'Processando...';
-        btn.classList.add('loading');
-
-        try {
-            const { error } = await supabaseClient.rpc('loja_remover_estoque', {
-                p_variacao_id: variacao.id,
-                p_quantidade: 1
-            });
-
-            if (error) {
-                if (error.message.includes('Estoque insuficiente')) {
-                    _showToast('Estoque insuficiente para esta variação.', 'error');
-                } else {
-                    _showToast('Erro ao processar compra: ' + error.message, 'error');
-                }
-                btn.disabled = false;
-                texto.textContent = 'Comprar agora';
-                btn.classList.remove('loading');
-                return;
+        // Ocultar modal de produto temporariamente e abrir o de checkout
+        fechar();
+        
+        const chkBackdrop = document.getElementById('modalCheckoutBackdrop');
+        if (chkBackdrop) {
+            chkBackdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Grava a variação selecionada no botão para uso posterior
+            const btnConfirm = document.getElementById('btnConfirmarCheckout');
+            if (btnConfirm) {
+                btnConfirm.dataset.variacaoId = variacao.id;
+                // Limpar event listeners antigos recriando o elemento
+                const novoBtn = btnConfirm.cloneNode(true);
+                btnConfirm.parentNode.replaceChild(novoBtn, btnConfirm);
+                
+                novoBtn.addEventListener('click', async () => {
+                    if (typeof window.processarCheckoutLoja === 'function') {
+                        await window.processarCheckoutLoja(variacao, onSuccess);
+                    }
+                });
             }
-
-            // Sucesso
-            _showToast('Compra realizada com sucesso!', 'success');
-            btn.classList.remove('loading');
-
-            if (typeof onSuccess === 'function') {
-                await onSuccess(variacao.id);
-            }
-
-        } catch (err) {
-            console.error('[ModalProduto] Erro na compra:', err);
-            _showToast('Erro inesperado: ' + (err.message || err), 'error');
-            btn.disabled = false;
-            texto.textContent = 'Comprar agora';
-            btn.classList.remove('loading');
         }
     }
 

@@ -223,6 +223,19 @@ function aplicarFiltrosDeModulosPublico() {
         if (optDin) optDin.checked = true;
     }
 
+    // 2.1. Mesa e Posição
+    if (!isModuloAtivo('pedido_mesa')) {
+        const optMesa = document.getElementById('optMesa')?.closest('.delivery-option');
+        if (optMesa) optMesa.style.display = 'none';
+        
+        // Se a opção Mesa estiver selecionada, muda para Retirada
+        if (state.tipoEntrega === 'mesa') {
+            const optR = document.getElementById('optRetirada');
+            if (optR) optR.checked = true;
+            toggleTipoEntrega('retirada');
+        }
+    }
+
     // 3. Cardápio Digital (Site Público)
     if (!isModuloAtivo('cardapio')) {
         document.body.innerHTML = `
@@ -400,10 +413,18 @@ function navegarStep(n) {
         if (state.freteHabilitado) {
             const optR = document.getElementById('optRetirada');
             const optE = document.getElementById('optEntrega');
+            const optM = document.getElementById('optMesa');
             if (optR) optR.onchange = () => toggleTipoEntrega('retirada');
             if (optE) optE.onchange = () => toggleTipoEntrega('entrega');
-            if (optR && state.tipoEntrega !== 'entrega') optR.checked = true;
-            if (optE && state.tipoEntrega === 'entrega') optE.checked = true;
+            if (optM) optM.onchange = () => toggleTipoEntrega('mesa');
+            
+            if (state.tipoEntrega === 'entrega') {
+                if (optE) optE.checked = true;
+            } else if (state.tipoEntrega === 'mesa') {
+                if (optM) optM.checked = true;
+            } else {
+                if (optR) optR.checked = true;
+            }
         }
 
         const btnBuscarCep = document.getElementById('btnBuscarCep');
@@ -799,13 +820,14 @@ function toggleTipoEntrega(tipo) {
     if (tipo === 'entrega') {
         if (secaoEndereco) secaoEndereco.style.display = '';
         if (secaoMesa) secaoMesa.style.display = 'none';
+    } else if (tipo === 'mesa') {
+        if (secaoEndereco) secaoEndereco.style.display = 'none';
+        if (secaoMesa) secaoMesa.style.display = '';
+        state.freteAtivo = 0;
+        renderTotalBreakdown();
     } else {
         if (secaoEndereco) secaoEndereco.style.display = 'none';
-        if (tipo === 'mesa' && !state.freteHabilitado) {
-            if (secaoMesa) secaoMesa.style.display = '';
-        } else {
-            if (secaoMesa) secaoMesa.style.display = 'none';
-        }
+        if (secaoMesa) secaoMesa.style.display = 'none';
         state.freteAtivo = 0;
         renderTotalBreakdown();
     }
