@@ -899,8 +899,13 @@ body {
     }
 
     .admin-header h1 {
-        font-size: 1.2rem;
-        width: auto;
+        font-size: 1.15rem;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        white-space: normal; /* Permite quebra para não estourar */
     }
 
     .admin-header-actions {
@@ -923,6 +928,7 @@ body {
         flex-direction: column;
         gap: 4px;
         padding: 1rem;
+        margin-top: 1.5rem; /* Espaço superior abaixo da linha/header */
         border-bottom: none;
         overflow-y: auto;
     }
