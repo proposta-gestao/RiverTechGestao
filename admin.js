@@ -514,6 +514,9 @@ document.querySelectorAll('.subtab-btn').forEach(btn => {
             if (btn.dataset.subtab === 'dashboard-metricas') {
                 setTimeout(atualizarGraficoMetricas, 100);
             }
+            if (btn.dataset.subtab === 'config-equipe') {
+                carregarAtendentesLista();
+            }
         }
     };
 });
@@ -2945,6 +2948,159 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
     }
     btn.disabled = false;
     btn.textContent = 'Salvar Configurações';
+};
+
+// --- Gestão de Atendentes ---
+let listaAtendentesLocal = [];
+
+async function hashSenha(senha) {
+    if (!senha) return null;
+    const msgUint8 = new TextEncoder().encode(senha);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function carregarAtendentesLista() {
+    try {
+        const { data, error } = await sb.from('atendentes')
+            .select('*')
+            .eq('empresa_id', getTenantId())
+            .order('nome');
+        
+        if (error) throw error;
+        listaAtendentesLocal = data || [];
+        renderAtendentesLista();
+    } catch (err) {
+        console.error('Erro ao carregar atendentes:', err);
+    }
+}
+
+function renderAtendentesLista() {
+    const tbody = document.getElementById('atendentesListaBody');
+    if (!tbody) return;
+
+    if (listaAtendentesLocal.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum atendente cadastrado.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = listaAtendentesLocal.map(a => `
+        <tr>
+            <td><strong>${a.nome}</strong></td>
+            <td><code>${a.cpf}</code></td>
+            <td style="font-size:0.8rem; color:var(--text-muted);">${new Date(a.created_at).toLocaleDateString()}</td>
+            <td style="text-align: center;">
+                <div style="display: flex; gap: 8px; justify-content: center;">
+                    <button class="btn-primary btn-sm" onclick="abrirModalAtendente('${a.id}')" title="Editar">✏️</button>
+                    <button class="btn-cancel btn-sm" onclick="excluirAtendente('${a.id}', '${a.nome}')" title="Excluir">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.abrirModalAtendente = (id = null) => {
+    const modal = document.getElementById('modalAtendente');
+    const title = document.getElementById('atendenteModalTitle');
+    const inputId = document.getElementById('atendenteId');
+    const inputNome = document.getElementById('atendenteNome');
+    const inputCpf = document.getElementById('atendenteCpf');
+    const inputSenha = document.getElementById('atendenteSenha');
+    const dicaSenha = document.getElementById('atendenteSenhaDica');
+
+    inputId.value = id || '';
+    inputNome.value = '';
+    inputCpf.value = '';
+    inputSenha.value = '';
+    
+    if (id) {
+        title.textContent = 'Editar Atendente';
+        const a = listaAtendentesLocal.find(x => x.id === id);
+        if (a) {
+            inputNome.value = a.nome;
+            inputCpf.value = a.cpf;
+        }
+        dicaSenha.textContent = 'Deixe em branco para manter a senha atual.';
+    } else {
+        title.textContent = 'Novo Atendente';
+        dicaSenha.textContent = 'Senha obrigatória para novos cadastros.';
+    }
+
+    modal.style.display = 'flex';
+};
+
+document.getElementById('btnSalvarAtendente').onclick = async () => {
+    const id = document.getElementById('atendenteId').value;
+    const nome = document.getElementById('atendenteNome').value.trim();
+    const cpf = document.getElementById('atendenteCpf').value.trim().replace(/\D/g, '');
+    const senhaRaw = document.getElementById('atendenteSenha').value;
+
+    if (!nome || !cpf) {
+        showToast('Nome e CPF são obrigatórios', 'warning');
+        return;
+    }
+    if (cpf.length !== 11) {
+        showToast('CPF deve ter 11 dígitos', 'warning');
+        return;
+    }
+    if (!id && !senhaRaw) {
+        showToast('A senha é obrigatória para novos cadastros', 'warning');
+        return;
+    }
+
+    const btn = document.getElementById('btnSalvarAtendente');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try {
+        const payload = { 
+            nome, 
+            cpf, 
+            empresa_id: getTenantId(),
+            senha_hash: true 
+        };
+        
+        if (senhaRaw) {
+            payload.senha = await hashSenha(senhaRaw);
+        }
+
+        let res;
+        if (id) {
+            res = await sb.from('atendentes').update(payload).eq('id', id);
+        } else {
+            res = await sb.from('atendentes').insert(payload);
+        }
+
+        if (res.error) {
+            if (res.error.message.includes('unique')) {
+                showToast('Este CPF já está cadastrado nesta empresa', 'error');
+            } else {
+                showToast('Erro ao salvar: ' + res.error.message, 'error');
+            }
+        } else {
+            showToast('Atendente salvo com sucesso!', 'success');
+            fecharModal('modalAtendente');
+            carregarAtendentesLista();
+        }
+    } catch (err) {
+        showToast('Erro: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar';
+    }
+};
+
+window.excluirAtendente = async (id, nome) => {
+    if (!await customConfirm('Excluir Atendente', `Deseja realmente remover ${nome} da equipe?`)) return;
+    
+    const { error } = await sb.from('atendentes').delete().eq('id', id);
+    if (error) {
+        showToast('Erro ao excluir: ' + error.message, 'error');
+    } else {
+        showToast('Atendente removido!', 'success');
+        carregarAtendentesLista();
+    }
 };
 
 async function buscarCepAdmin() {

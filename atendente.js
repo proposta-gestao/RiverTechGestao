@@ -115,32 +115,55 @@ function formatCpf(v) {
 }
 
 // --- Auth ---
+async function hashSenha(senha) {
+    if (!senha) return null;
+    const msgUint8 = new TextEncoder().encode(senha);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 async function login() {
     const cpf = document.getElementById('loginCpf').value.replace(/\D/g, '');
-    const senha = document.getElementById('loginSenha').value;
+    const senhaRaw = document.getElementById('loginSenha').value;
     const errorMsg = document.getElementById('errorMsg');
 
-    if (cpf.length !== 11 || !senha) {
+    if (cpf.length !== 11 || !senhaRaw) {
         errorMsg.innerText = "Informe um CPF válido e a senha.";
         errorMsg.style.display = 'block';
         return;
     }
 
-    const { data, error } = await sb
+    // Busca o atendente pelo CPF primeiro
+    const { data: user, error: fetchError } = await sb
         .from('atendentes')
         .select('*')
         .eq('cpf', cpf)
-        .eq('senha', senha)
         .single();
 
-    if (error || !data) {
+    if (fetchError || !user) {
         errorMsg.innerText = "CPF ou Senha incorretos.";
         errorMsg.style.display = 'block';
         return;
     }
 
-    waiter = data;
-    localStorage.setItem('acp_waiter', JSON.stringify(data));
+    // Verifica a senha (hash ou plain text dependendo da flag senha_hash)
+    let senhaValida = false;
+    if (user.senha_hash) {
+        const inputHash = await hashSenha(senhaRaw);
+        senhaValida = (inputHash === user.senha);
+    } else {
+        senhaValida = (senhaRaw === user.senha);
+    }
+
+    if (!senhaValida) {
+        errorMsg.innerText = "CPF ou Senha incorretos.";
+        errorMsg.style.display = 'block';
+        return;
+    }
+
+    waiter = user;
+    localStorage.setItem('acp_waiter', JSON.stringify(user));
     showAudioOverlay();
 }
 

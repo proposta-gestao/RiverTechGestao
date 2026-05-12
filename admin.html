@@ -672,6 +672,7 @@
                         <button class="subtab-btn active" data-subtab="config-dados-empresa">Dados da Empresa</button>
                         <button class="subtab-btn" data-subtab="config-visual">Personalização Visual</button>
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
+                        <button class="subtab-btn" data-subtab="config-equipe">Equipe / Atendentes</button>
                     </div>
                 </div>
 
@@ -936,6 +937,40 @@
                     </div>
                 </div>
                 </div> <!-- Fechamento da sub-aba config-frete -->
+                
+                <!-- Subtab: Equipe / Atendentes -->
+                <div class="subtab-content" id="subtab-config-equipe">
+                    <div class="config-card">
+                        <div class="config-card-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h2>👨‍💼 Gestão da Equipe</h2>
+                                <span class="badge" style="background: rgba(229,178,93,0.1); color: var(--primary); font-size: 0.75rem;">Acesso ao Painel de Pedidos</span>
+                            </div>
+                            <button class="btn-primary" onclick="abrirModalAtendente()">+ Novo Atendente</button>
+                        </div>
+                        <div class="config-card-body">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
+                                Cadastre os colaboradores que terão acesso ao painel de pedidos. Eles utilizarão o CPF e a senha definida aqui para entrar.
+                            </p>
+                            
+                            <div class="admin-table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>CPF (Login)</th>
+                                            <th>Criado em</th>
+                                            <th style="width: 150px; text-align: center;">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="atendentesListaBody">
+                                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum atendente cadastrado.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
             </div>
@@ -1677,6 +1712,40 @@
                         <label for="novaVarEstoque">Estoque Inicial</label>
                         <input type="number" id="novaVarEstoque" min="0" placeholder="0">
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Atendente -->
+    <div class="admin-modal-backdrop" id="modalAtendente">
+        <div class="admin-modal" style="max-width: 440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalAtendente')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="atendenteModalTitle">Novo Atendente</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" id="btnSalvarAtendente">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="atendenteId">
+                <div class="form-group">
+                    <label for="atendenteNome">Nome Completo *</label>
+                    <input type="text" id="atendenteNome" placeholder="Ex: João Silva">
+                </div>
+                <div class="form-group">
+                    <label for="atendenteCpf">CPF (Apenas números) *</label>
+                    <input type="text" id="atendenteCpf" placeholder="00000000000" maxlength="11">
+                    <small style="color: var(--text-muted); font-size: 0.7rem;">Este será o usuário de login.</small>
+                </div>
+                <div class="form-group">
+                    <label for="atendenteSenha">Senha de Acesso *</label>
+                    <input type="password" id="atendenteSenha" placeholder="••••••">
+                    <small id="atendenteSenhaDica" style="color: var(--text-muted); font-size: 0.7rem;">Para novos cadastros, a senha é obrigatória.</small>
                 </div>
             </div>
         </div>
