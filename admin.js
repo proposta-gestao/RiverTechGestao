@@ -3027,7 +3027,7 @@ window.abrirModalAtendente = (id = null) => {
         dicaSenha.textContent = 'Senha obrigatória para novos cadastros.';
     }
 
-    modal.style.display = 'flex';
+    abrirModal('modalAtendente');
 };
 
 document.getElementById('btnSalvarAtendente').onclick = async () => {
