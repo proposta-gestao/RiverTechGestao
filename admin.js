@@ -3079,8 +3079,17 @@ document.getElementById('btnSalvarAtendente').onclick = async () => {
                 showToast('Erro ao salvar: ' + res.error.message, 'error');
             }
         } else {
-            showToast('Atendente salvo com sucesso!', 'success');
-            fecharModal('modalAtendente');
+            showToast('Atendente salvo! Próximo...', 'success');
+            
+            // Limpa tudo para o próximo cadastro
+            document.getElementById('atendenteId').value = ''; 
+            document.getElementById('atendenteModalTitle').textContent = 'Novo Atendente';
+            document.getElementById('atendenteNome').value = '';
+            document.getElementById('atendenteCpf').value = '';
+            document.getElementById('atendenteSenha').value = '';
+            
+            document.getElementById('atendenteNome').focus();
+
             carregarAtendentesLista();
         }
     } catch (err) {
