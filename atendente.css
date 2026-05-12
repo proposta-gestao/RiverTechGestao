@@ -1,28 +1,33 @@
 :root {
-    /* === IDENTIDADE (personalizável pelo tenant) === */
-    --color-primary:        #E5B25D;
-    --color-primary-hover:  #d4a14c;
-    --color-secondary:      #1E90FF;
-    --color-primary-10:     rgba(229,178,93,0.10);
+    /* === IDENTIDADE (Herda do design-tokens.css se disponível) === */
+    --color-primary:        var(--accent-primary, #E5B25D);
+    --color-primary-hover:  var(--accent-primary-hover, #d4a14c);
+    --color-secondary:      var(--accent-info, #1E90FF);
+    --color-primary-10:     var(--opacity-brand-10, rgba(229,178,93,0.10));
 
     /* === BACKGROUNDS === */
-    --color-bg:             #0d0d0d;
-    --color-surface:        #1a1a1a;
+    --color-bg:             var(--bg-page, #0d0d0d);
+    --color-surface:        var(--bg-card, #1a1a1a);
+    --color-surface-hover:  var(--bg-card-hover, #222222);
 
     /* === TEXTO === */
-    --color-text:           #ffffff;
-    --color-text-muted:     #a0a0a0;
+    --color-text:           var(--text-primary, #ffffff);
+    --color-text-muted:     var(--text-muted, #a0a0a0);
 
     /* === BORDAS === */
-    --color-border:         rgba(229,178,93,0.2);
+    --color-border:         var(--border-default, rgba(229,178,93,0.2));
 
-    /* === STATUS (fixo) === */
-    --color-success:        #00B894;
-    --color-danger:         #FF4757;
-    --status-pendente:      #FF4757;
-    --status-pago:          #2ED573;
-    --status-cozinha:       #1E90FF;
-    --status-concluido:     #747D8C;
+    /* === STATUS (Sincronizado com design tokens) === */
+    --color-success:        var(--accent-success, #00B894);
+    --color-danger:         var(--accent-danger, #FF4757);
+    --status-pendente:      var(--accent-danger, #FF4757);
+    --status-pago:          var(--accent-success, #2ED573);
+    --status-cozinha:       var(--accent-info, #1E90FF);
+    --status-concluido:     var(--color-neutral-600, #747D8C);
+
+    /* === BOTÕES === */
+    --btn-waiter-bg:        var(--btn-primary-bg, var(--color-primary));
+    --btn-waiter-text:      var(--btn-primary-text, #000000);
 
     /* === ALIASES DE COMPATIBILIDADE === */
     --accent-waiter:        var(--color-primary);
@@ -32,7 +37,7 @@
 
 body {
     background-color: var(--bg-waiter);
-    color: #fff;
+    color: var(--color-text);
     font-family: 'Outfit', sans-serif;
     margin: 0;
     overflow-x: hidden;
@@ -44,7 +49,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+    background: var(--gradient-overlay, radial-gradient(circle at center, var(--color-surface) 0%, var(--color-bg) 100%));
 }
 
 .login-card {
@@ -53,8 +58,8 @@ body {
     border-radius: 20px;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    border: 1px solid #333;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--color-border);
     text-align: center;
 }
 
@@ -82,16 +87,16 @@ body {
     display: block;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
-    color: #888;
+    color: var(--color-text-muted);
 }
 
 .form-group input {
     width: 100%;
-    background: #252525;
-    border: 1px solid #333;
+    background: var(--color-surface-hover);
+    border: 1px solid var(--color-border);
     padding: 12px;
     border-radius: 10px;
-    color: #fff;
+    color: var(--color-text);
     box-sizing: border-box;
     font-size: 1rem;
 }
@@ -128,7 +133,7 @@ body {
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .dash-info h1 {
@@ -139,14 +144,14 @@ body {
 
 .dash-info p {
     margin: 5px 0 0;
-    color: #888;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
 }
 
 .btn-logout {
     background: transparent;
-    color: #ff4757;
-    border: 1px solid #ff4757;
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
     padding: 8px 15px;
     border-radius: 8px;
     cursor: pointer;
@@ -163,11 +168,11 @@ body {
 }
 
 .board-column {
-    background: #111;
+    background: var(--color-bg);
     border-radius: 15px;
     padding: 15px;
     min-height: 80vh;
-    border: 1px solid #222;
+    border: 1px solid var(--color-border);
 }
 
 .column-header {
@@ -189,8 +194,8 @@ body {
 }
 
 .badge-count {
-    background: #333;
-    color: #fff;
+    background: var(--color-surface-hover);
+    color: var(--color-text);
     padding: 2px 8px;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -201,9 +206,9 @@ body {
     border-radius: 12px;
     padding: 15px;
     margin-bottom: 15px;
-    border-left: 4px solid #333;
+    border-left: 4px solid var(--color-border);
     animation: slideIn 0.3s ease-out;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: var(--shadow-md);
 }
 
 @keyframes slideIn {
@@ -227,7 +232,7 @@ body {
 }
 
 .order-id {
-    color: #555;
+    color: var(--color-text-muted);
     font-size: 0.75rem;
     font-weight: 600;
 }
@@ -253,7 +258,7 @@ body {
     font-weight: 700;
     margin: 0;
     font-size: 1.15rem;
-    color: #fff;
+    color: var(--color-text);
 }
 
 .order-waiter {
@@ -267,8 +272,8 @@ body {
     list-style: none;
     padding: 0;
     margin: 15px 0;
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
     padding: 10px 0;
 }
 
@@ -277,7 +282,7 @@ body {
     margin-bottom: 5px;
     display: flex;
     justify-content: space-between;
-    color: #ccc;
+    color: var(--color-text-muted);
 }
 
 .item-obs {
@@ -320,9 +325,9 @@ body {
 }
 
 .btn-assume { background: var(--btn-waiter-bg); color: var(--btn-waiter-text, #000); }
-.btn-view { background: #333; color: #fff; }
-.btn-done { background: var(--status-concluido); color: #fff; }
-.btn-cancel { background: transparent; color: #ff4757; border: 1px solid #ff4757; }
+.btn-view { background: var(--color-surface-hover); color: var(--color-text); }
+.btn-done { background: var(--status-concluido); color: var(--color-text); }
+.btn-cancel { background: transparent; color: var(--color-danger); border: 1px solid var(--color-danger); }
 
 .btn-action:hover:not(:disabled) {
     filter: brightness(1.2);
@@ -350,9 +355,9 @@ body {
     flex: 1;
     padding: 12px 5px;
     border-radius: 10px;
-    background: #1a1a1a;
-    color: #888;
-    border: 1px solid #333;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
     font-size: 0.8rem;
     font-weight: 700;
     text-align: center;
@@ -365,17 +370,17 @@ body {
 }
 
 .tab-item .tab-badge {
-    background: #333;
-    color: #fff;
+    background: var(--color-surface-hover);
+    color: var(--color-text);
     padding: 2px 8px;
     border-radius: 10px;
     font-size: 0.7rem;
 }
 
 .tab-item.active {
-    color: #fff;
+    color: var(--color-text);
     border-color: var(--accent-waiter);
-    background: rgba(229, 178, 93, 0.1);
+    background: var(--color-primary-10);
 }
 
 .tab-item.active[data-tab="pendente"] { border-color: var(--status-pendente); color: var(--status-pendente); }
@@ -428,8 +433,8 @@ body {
     width: 100%;
     max-width: 450px;
     border-radius: 20px;
-    border: 1px solid #333;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-xl);
     overflow: hidden;
     animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -441,7 +446,7 @@ body {
 
 .modal-header {
     padding: 20px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--color-border);
     text-align: center;
 }
 
@@ -459,7 +464,7 @@ body {
 
 .modal-footer {
     padding: 20px;
-    background: #111;
+    background: var(--color-bg);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -467,7 +472,7 @@ body {
 
 .btn-modal-kitchen {
     background: var(--status-cozinha);
-    color: #fff;
+    color: var(--color-text);
     padding: 16px;
     border-radius: 12px;
     border: none;
@@ -483,7 +488,7 @@ body {
 
 .btn-modal-close {
     background: transparent;
-    color: #888;
+    color: var(--color-text-muted);
     padding: 10px;
     border: none;
     font-weight: 600;
@@ -498,14 +503,14 @@ body {
 
 /* Popup de Confirmação Customizado */
 .modal-aviso-card {
-    background: #1a1a1a;
+    background: var(--color-surface);
     width: 90%;
     max-width: 380px;
     border-radius: 24px;
     padding: 30px;
     text-align: center;
-    border: 1px solid #333;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-xl);
     animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -519,12 +524,12 @@ body {
     font-size: 1.4rem;
     font-weight: 700;
     margin-bottom: 10px;
-    color: #fff;
+    color: var(--color-text);
 }
 
 .modal-aviso-text {
     font-size: 1rem;
-    color: #aaa;
+    color: var(--color-text-muted);
     margin-bottom: 25px;
     line-height: 1.5;
 }
@@ -537,7 +542,7 @@ body {
 
 .btn-confirm-pop {
     background: var(--status-pago);
-    color: #000;
+    color: var(--btn-waiter-text);
     padding: 15px;
     border-radius: 12px;
     border: none;
@@ -549,7 +554,7 @@ body {
 
 .btn-cancel-pop {
     background: transparent;
-    color: #777;
+    color: var(--color-text-muted);
     padding: 10px;
     border: none;
     font-weight: 600;
@@ -566,7 +571,7 @@ body {
 #soundAlertBar {
     display: none;
     background: var(--status-pendente);
-    color: #fff;
+    color: var(--color-text);
     text-align: center;
     padding: 10px;
     font-size: 0.9rem;
@@ -623,9 +628,9 @@ body {
 }
 
 .status-offline {
-    background: rgba(116, 125, 140, 0.1);
-    color: #a4b0be;
-    border-color: rgba(116, 125, 140, 0.2);
+    background: var(--color-surface-hover);
+    color: var(--color-text-muted);
+    border-color: var(--color-border);
     font-size: 0.65rem;
 }
 

@@ -413,13 +413,13 @@ function abrirModalDetalhes(orderId) {
             <span>${item.quantity}x ${item.product_name}</span>
             <span style="color:var(--accent-waiter); font-weight:700;">${formatCurrency(item.unit_price * item.quantity)}</span>
         </div>
-        ${item.observations ? `<div style="font-size:0.8rem; color:#FF7F50; margin-top:-5px; margin-bottom:10px;">Obs: ${item.observations}</div>` : ''}
+        ${item.observations ? `<div style="font-size:0.8rem; color:var(--color-secondary); margin-top:-5px; margin-bottom:10px;">Obs: ${item.observations}</div>` : ''}
     `).join('');
 
     itemsList.innerHTML = `
         <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:15px;">
             ${itemsHtml}
-            <div style="border-top:1px solid #333; margin-top:10px; padding-top:10px; display:flex; justify-content:space-between; font-weight:700;">
+            <div style="border-top:1px solid var(--color-border); margin-top:10px; padding-top:10px; display:flex; justify-content:space-between; font-weight:700;">
                 <span>Total</span>
                 <span>${formatCurrency(order.total)}</span>
             </div>
@@ -565,7 +565,7 @@ function createOrderCard(order) {
             <div class="order-location" style="margin-top:5px; margin-bottom:5px;">MESA ${localizacao.mesa || '??'} | POS ${localizacao.posicao || '??'}</div>
             <div class="card-footer" style="margin-top:10px; flex-wrap: wrap; gap: 8px;">
                 <div style="flex: 1;">
-                    <span style="color:#888; font-size: 0.8rem">Total</span><br>
+                    <span style="color:var(--color-text-muted); font-size: 0.8rem">Total</span><br>
                     <span class="order-total" style="font-size:1rem;">${formatCurrency(order.total)}</span>
                 </div>
                 <div class="payment-badge-status">
