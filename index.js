@@ -189,8 +189,8 @@ async function carregarConfiguracoesPublicas() {
 function aplicarFiltrosDeModulosPublico() {
     console.log('[Modules] Filtrando funcionalidades públicas...');
 
-    // 1. Frete
-    if (!isModuloAtivo('frete')) {
+    // 1. Módulo de Frete e Entrega (Permissão SaaS)
+    if (!isModuloAtivo('config_frete')) {
         state.freteHabilitado = false;
         const optE = document.getElementById('optEntrega')?.closest('.delivery-option');
         if (optE) optE.style.display = 'none';
@@ -201,13 +201,25 @@ function aplicarFiltrosDeModulosPublico() {
         const secEnd = document.getElementById('secaoEndereco');
         if (secEnd) secEnd.style.display = 'none';
 
-        // Garante que a opção ativa seja 'mesa' (se módulo ativo) ou 'retirada'
+        // Garante que a opção ativa seja 'mesa' (se módulo ativo) ou 'retirada' (fallback)
         if (isModuloAtivo('pedido_mesa')) {
             toggleTipoEntrega('mesa');
         } else {
-            const optR = document.getElementById('optRetirada');
-            if (optR) optR.checked = true;
             toggleTipoEntrega('retirada');
+        }
+    } else {
+        // Se o módulo MASTER está ativo, verificamos a configuração específica da LOJA (frete_ativo)
+        if (!state.freteHabilitado) {
+            // Se a loja desativou o frete, escondemos apenas a opção de "Entrega"
+            const optE = document.getElementById('optEntrega')?.closest('.delivery-option');
+            if (optE) optE.style.display = 'none';
+            
+            // Se por acaso 'entrega' estiver selecionado, muda para 'retirada'
+            if (state.tipoEntrega === 'entrega') {
+                const optR = document.getElementById('optRetirada');
+                if (optR) optR.checked = true;
+                toggleTipoEntrega('retirada');
+            }
         }
     }
 
