@@ -626,10 +626,10 @@ window.copyToClipboard = (elementId) => {
 };
 
 window.copyAllUrls = () => {
-    const menu = document.getElementById('urlMenu').textContent;
-    const admin = document.getElementById('urlAdmin').textContent;
-    const aten = document.getElementById('urlAtendente').textContent;
-    const agendamento = document.getElementById('urlAgendamento') ? document.getElementById('urlAgendamento').textContent : '';
+    const menu = document.getElementById('urlMenu').href;
+    const admin = document.getElementById('urlAdmin').href;
+    const aten = document.getElementById('urlAtendente').href;
+    const agendamento = document.getElementById('urlAgendamento') ? document.getElementById('urlAgendamento').href : '';
 
     const fullText = `🚀 *Acessos da sua Loja - RiverTech Gestão*
 
