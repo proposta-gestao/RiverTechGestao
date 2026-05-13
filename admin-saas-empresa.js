@@ -911,7 +911,22 @@ window.testarConexaoPix = async () => {
             const msg = edgeData?.error || 'Token inválido ou expirado.';
             resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
             resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
-            resultEl.innerHTML = `❌ <strong>Falha na conexão:</strong> ${msg}`;
+            
+            // Detectar erro específico de Public Key usada no lugar do Access Token
+            const isUnauthorizedPolicyError = msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('policy');
+            
+            if (isUnauthorizedPolicyError) {
+                resultEl.innerHTML = `
+                    ❌ <strong>Falha na conexão:</strong> ${msg}<br><br>
+                    <span style="font-size: 0.8rem; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); padding: 8px 10px; border-radius: 6px; display: block; line-height: 1.6;">
+                        ⚠️ <strong style="color: var(--accent-gold);">Causa provável:</strong> Você pode ter inserido a <strong>Public Key</strong> em vez do <strong>Access Token</strong>.<br>
+                        Ambas começam com <code style="background:#111; padding:1px 4px; border-radius:3px;">APP_USR-</code>, mas o <strong>Access Token</strong> tem ~70 caracteres (muito mais longo).<br>
+                        Acesse <strong>Mercado Pago Developers → Seu App → Credenciais de Produção</strong> e copie o campo <strong>Access Token</strong>.
+                    </span>
+                `;
+            } else {
+                resultEl.innerHTML = `❌ <strong>Falha na conexão:</strong> ${msg}`;
+            }
         }
         
     } catch (err) {
