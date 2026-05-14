@@ -3047,7 +3047,9 @@ function renderWaTemplateToEditor(templateStr) {
 
     // Substituir placeholders por botões visuais
     Object.keys(waPhMap).forEach(ph => {
-        const regex = new RegExp(ph.replace(/\{/g, '\\{').replace(/\}/g, '\\}'), 'g');
+        // Fazer o escape seguro de todos os caracteres especiais do placeholder para o RegExp
+        const escapedPh = ph.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escapedPh, 'g');
         const tagHtml = `<span class="wa-inserted-tag" contenteditable="false" data-ph="${ph}">${waPhMap[ph]}</span>`;
         html = html.replace(regex, tagHtml);
     });
