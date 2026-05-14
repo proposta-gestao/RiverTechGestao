@@ -426,6 +426,18 @@ async function showAdmin() {
     }
 
     await carregarTudo();
+
+    // Restaurar última aba ativa do localStorage
+    try {
+        const savedTab = localStorage.getItem('admin_active_tab');
+        if (savedTab) {
+            const tabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+            // Só restaura se o botão existir e estiver visível (módulo ativo)
+            if (tabBtn && tabBtn.style.display !== 'none' && !tabBtn.classList.contains('module-hidden')) {
+                switchTab(savedTab, tabBtn);
+            }
+        }
+    } catch(e) {}
 }
 
 // --- Tabs ---
@@ -491,6 +503,9 @@ function switchTab(tabId, btn) {
         };
         document.body.appendChild(scriptLoja);
     }
+
+    // Persistir aba ativa no localStorage para restaurar após reload
+    try { localStorage.setItem('admin_active_tab', tabId); } catch(e) {}
 }
 
 
