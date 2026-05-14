@@ -333,12 +333,62 @@
 }
 
 /* Template Editor (ContentEditable) */
+.wa-editor-container {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(229,178,93,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+.wa-editor-container:focus-within {
+    border-color: var(--color-primary, #E5B25D);
+}
+
+.wa-editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.wa-format-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-text, #fff);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.wa-format-btn:hover {
+    background: rgba(229,178,93,0.15);
+    color: var(--color-primary, #E5B25D);
+}
+
+.wa-toolbar-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255,255,255,0.1);
+    margin: 0 8px;
+}
+
+.wa-toolbar-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted, #888);
+}
+
 .wa-template-editor {
     width: 100%;
     min-height: 220px;
-    background: rgba(0,0,0,0.2) !important;
-    border: 1px solid rgba(229,178,93,0.1) !important;
-    border-radius: 10px !important;
     padding: 1rem !important;
     font-family: 'Inter', sans-serif !important;
     font-size: 0.9rem !important;
@@ -346,18 +396,6 @@
     color: var(--color-text, #fff) !important;
     overflow-y: auto;
     white-space: pre-wrap;
-    transition: border-color 0.2s ease;
-}
-
-.wa-template-editor:empty::before {
-    content: attr(data-placeholder);
-    color: var(--text-muted, #888);
-    opacity: 0.7;
-    pointer-events: none;
-}
-
-.wa-template-editor:focus {
-    border-color: var(--color-primary, #E5B25D) !important;
     outline: none;
 }
 

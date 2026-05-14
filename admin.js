@@ -3038,31 +3038,75 @@ const waPhMap = {
 
 function renderWaTemplateToEditor(templateStr) {
     let html = templateStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Converter markdown do WhatsApp para HTML
+    html = html.replace(/\*([^\*]+)\*/g, '<b>$1</b>');
+    html = html.replace(/_([^_]+)_/g, '<i>$1</i>');
+    html = html.replace(/~([^~]+)~/g, '<s>$1</s>');
+    html = html.replace(/```([^`]+)```/g, '<code>$1</code>');
+
+    // Substituir placeholders por botões visuais
     Object.keys(waPhMap).forEach(ph => {
         const regex = new RegExp(ph.replace(/\{/g, '\\{').replace(/\}/g, '\\}'), 'g');
         const tagHtml = `<span class="wa-inserted-tag" contenteditable="false" data-ph="${ph}">${waPhMap[ph]}</span>`;
         html = html.replace(regex, tagHtml);
     });
+    
+    // Suporte a múltiplas quebras de linha no contenteditable
+    // Mas white-space: pre-wrap cuida das \n sozinhas se inserirmos como texto puro,
+    // porém como estamos usando innerHTML, precisamos garantir que o DOM entenda (opcional, vamos confiar no pre-wrap).
+    
     document.getElementById('confWhatsappTemplate').innerHTML = html;
 }
 
 function getWaEditorText() {
     const editor = document.getElementById('confWhatsappTemplate');
     if (!editor) return '';
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = editor.innerHTML;
-    // Substituir tags HTML pelos placeholders originais
-    tempDiv.querySelectorAll('.wa-inserted-tag').forEach(tag => {
-        tag.outerHTML = tag.dataset.ph;
-    });
-    // Extrair texto convertendo divs/brs para quebras de linha reais
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.whiteSpace = 'pre-wrap';
-    document.body.appendChild(tempDiv);
-    const text = tempDiv.innerText;
-    document.body.removeChild(tempDiv);
-    return text;
+    
+    let result = '';
+    
+    function traverse(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return node.textContent.replace(/\u00A0/g, ' '); // Replace NBSP por espaço
+        }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            // Se for nossa tag de variável, retorna o código original
+            if (node.classList && node.classList.contains('wa-inserted-tag')) {
+                return node.dataset.ph;
+            }
+            
+            let innerText = '';
+            for (let child of node.childNodes) {
+                innerText += traverse(child);
+            }
+            
+            const tag = node.tagName.toLowerCase();
+            
+            if (tag === 'br') return '\n';
+            if (tag === 'div' || tag === 'p') {
+                return '\n' + innerText;
+            }
+            
+            if (innerText === '') return '';
+            
+            // Converter tags HTML de volta para markdown do WhatsApp
+            if (tag === 'b' || tag === 'strong') return '*' + innerText + '*';
+            if (tag === 'i' || tag === 'em') return '_' + innerText + '_';
+            if (tag === 's' || tag === 'strike' || tag === 'del') return '~' + innerText + '~';
+            if (tag === 'code') return '```' + innerText + '```';
+            
+            return innerText;
+        }
+        return '';
+    }
+    
+    for (let child of editor.childNodes) {
+        result += traverse(child);
+    }
+    
+    if (result.startsWith('\n')) result = result.substring(1);
+    
+    return result;
 }
 
 function insertWaTag(ph) {

@@ -1085,8 +1085,17 @@
                                     </div>
                                 </div>
 
-                                <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..."></div>
-                                <small class="wa-msg-hint">💡 Dica: Clique nos botões acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
+                                <div class="wa-editor-container">
+                                    <div class="wa-editor-toolbar">
+                                        <button type="button" class="wa-format-btn" onclick="document.execCommand('bold', false, null)" title="Negrito (Ctrl+B)"><b>B</b></button>
+                                        <button type="button" class="wa-format-btn" onclick="document.execCommand('italic', false, null)" title="Itálico (Ctrl+I)"><i>I</i></button>
+                                        <button type="button" class="wa-format-btn" onclick="document.execCommand('strikeThrough', false, null)" title="Riscado"><s>S</s></button>
+                                        <div class="wa-toolbar-divider"></div>
+                                        <span class="wa-toolbar-hint">Selecione o texto e clique para formatar</span>
+                                    </div>
+                                    <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..."></div>
+                                </div>
+                                <small class="wa-msg-hint">💡 Dica: Clique nos botões azuis acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
                             </div>
                         </div>
                     </div>
