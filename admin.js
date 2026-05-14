@@ -3033,7 +3033,9 @@ document.querySelectorAll('.wa-placeholder-tag').forEach(tag => {
         textarea.value = text.substring(0, start) + ph + text.substring(end);
         textarea.focus();
         textarea.selectionStart = textarea.selectionEnd = start + ph.length;
-        showToast(`Variável ${ph} inserida!`, 'success');
+        // Usar o texto amigável do botão ao invés do código técnico
+        const label = tag.textContent.trim();
+        showToast(`"${label}" inserido na mensagem ✅`, 'success');
     };
 });
 

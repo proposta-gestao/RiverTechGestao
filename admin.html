@@ -1058,35 +1058,35 @@
                                 </div>
                             </div>
 
-                            <!-- Mensagem Personalizada — Layout Premium -->
+                            <!-- Mensagem Personalizada — Layout Amigável -->
                             <div class="wa-msg-section">
                                 <div class="wa-msg-header">
                                     <div>
-                                        <h3>✍️ Mensagem Personalizada</h3>
-                                        <p>Personalize o texto que será enviado ao seu WhatsApp com cada pedido.</p>
+                                        <h3>✍️ Mensagem do Pedido</h3>
+                                        <p>Monte o texto que será enviado no WhatsApp quando um cliente fizer um pedido. Use os botões abaixo para inserir os dados do pedido automaticamente.</p>
                                     </div>
                                     <button class="btn-secondary" id="btnResetWaTemplate" style="font-size: 0.8rem; white-space: nowrap;">🔄 Restaurar Padrão</button>
                                 </div>
 
-                                <!-- Variáveis disponíveis -->
+                                <!-- Dados do Pedido — Botões amigáveis -->
                                 <div class="wa-vars-bar">
-                                    <span class="wa-vars-label">Variáveis:</span>
+                                    <span class="wa-vars-label">📋 Dados do pedido — clique para inserir no texto:</span>
                                     <div class="wa-placeholders-grid">
-                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" title="Nome do cliente">{{cliente_nome}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" title="Telefone do cliente">{{cliente_telefone}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" title="Mesa / Retirada / Entrega">{{tipo_entrega}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}" title="Endereço completo">{{endereco}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{itens}}" title="Lista de itens do pedido">{{itens}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}" title="Subtotal do pedido">{{subtotal}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}" title="Desconto aplicado">{{desconto}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{frete}}" title="Valor do frete">{{frete}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{total}}" title="Total final">{{total}}</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}" title="Forma de pagamento">{{pagamento}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}">👤 Nome do cliente</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}">📱 Telefone</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}">📍 Tipo de retirada</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}">🏠 Endereço</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{itens}}">🛒 Lista de itens</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}">💵 Subtotal</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}">🎟️ Desconto</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{frete}}">📦 Frete</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{total}}">💰 Total</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}">💳 Forma de pagamento</button>
                                     </div>
                                 </div>
 
-                                <textarea id="confWhatsappTemplate" rows="14" placeholder="Monte sua mensagem usando as variáveis acima..." class="wa-template-editor"></textarea>
-                                <small class="wa-msg-hint">💡 Clique nas variáveis acima para inseri-las na posição do cursor.</small>
+                                <textarea id="confWhatsappTemplate" rows="14" placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..." class="wa-template-editor"></textarea>
+                                <small class="wa-msg-hint">💡 Os textos entre {{ }} serão substituídos automaticamente pelos dados reais do pedido do cliente.</small>
                             </div>
                         </div>
                     </div>
