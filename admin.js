@@ -2448,7 +2448,12 @@ async function carregarConfiguracoes() {
         const waMesa = document.getElementById('confWaMesa');
         const waRetirada = document.getElementById('confWaRetirada');
         const waEntrega = document.getElementById('confWaEntrega');
-        if (waNumero) waNumero.value = d.whatsapp_numero || '';
+        if (waNumero) {
+            // Remover prefixo 55 do banco para exibir apenas DDD+número
+            let num = (d.whatsapp_numero || '').replace(/\D/g, '');
+            if (num.startsWith('55')) num = num.substring(2);
+            waNumero.value = num;
+        }
         if (waTemplate) waTemplate.value = d.whatsapp_msg_template || getWhatsappTemplateDefault();
         if (waMesa) waMesa.checked = !!d.whatsapp_ativo_mesa;
         if (waRetirada) waRetirada.checked = !!d.whatsapp_ativo_retirada;
@@ -3052,7 +3057,8 @@ if (btnSalvarWa) {
         btn.disabled = true;
         btn.textContent = 'Salvando...';
 
-        const numero = (document.getElementById('confWhatsappNumero')?.value || '').replace(/\D/g, '');
+        const numeroCru = (document.getElementById('confWhatsappNumero')?.value || '').replace(/\D/g, '');
+        const numero = numeroCru ? '55' + numeroCru : ''; // Adiciona prefixo +55 automaticamente
         const template = document.getElementById('confWhatsappTemplate')?.value || '';
         const ativoMesa = !!document.getElementById('confWaMesa')?.checked;
         const ativoRetirada = !!document.getElementById('confWaRetirada')?.checked;

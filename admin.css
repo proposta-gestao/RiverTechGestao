@@ -245,6 +245,124 @@
     transform: translateY(-1px);
 }
 
+/* Phone Input com Prefixo +55 */
+.wa-phone-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-border, rgba(229,178,93,0.15));
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-surface, #1a1a1a);
+    transition: border-color 0.2s ease;
+}
+
+.wa-phone-input:focus-within {
+    border-color: var(--color-primary, #E5B25D);
+}
+
+.wa-phone-prefix {
+    padding: 0.7rem 1rem;
+    background: rgba(229, 178, 93, 0.08);
+    color: var(--color-text, #fff);
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-right: 1px solid var(--color-border, rgba(229,178,93,0.15));
+    white-space: nowrap;
+    user-select: none;
+}
+
+.wa-phone-input input {
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    flex: 1;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.wa-phone-input input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Mensagem Section Premium */
+.wa-msg-section {
+    background: var(--color-surface, #1a1a1a);
+    border: 1px solid var(--color-border, rgba(229,178,93,0.15));
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.wa-msg-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.wa-msg-header h3 {
+    font-size: 1.05rem;
+    color: var(--color-text, #fff);
+    margin: 0 0 0.25rem;
+}
+
+.wa-msg-header p {
+    font-size: 0.85rem;
+    color: var(--text-muted, #888);
+    margin: 0;
+}
+
+/* Barra de variáveis */
+.wa-vars-bar {
+    background: rgba(229, 178, 93, 0.04);
+    border: 1px solid rgba(229, 178, 93, 0.1);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.wa-vars-label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted, #888);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Template Editor */
+.wa-template-editor {
+    width: 100%;
+    min-height: 220px;
+    background: rgba(0,0,0,0.2) !important;
+    border: 1px solid rgba(229,178,93,0.1) !important;
+    border-radius: 10px !important;
+    padding: 1rem !important;
+    font-family: 'Courier New', 'Fira Code', monospace !important;
+    font-size: 0.88rem !important;
+    line-height: 1.6 !important;
+    color: var(--color-text, #fff) !important;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+}
+
+.wa-template-editor:focus {
+    border-color: var(--color-primary, #E5B25D) !important;
+    outline: none;
+}
+
+.wa-msg-hint {
+    display: block;
+    color: var(--text-muted, #888);
+    font-size: 0.78rem;
+    margin-top: 0.5rem;
+    opacity: 0.7;
+}
+
 /* Sortable Styles */
 .motivo-estoque-row {
     user-select: none;

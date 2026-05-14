@@ -1003,9 +1003,12 @@
 
                             <!-- Número do WhatsApp -->
                             <div class="form-group">
-                                <label for="confWhatsappNumero">Número do WhatsApp (com DDI)</label>
-                                <input type="text" id="confWhatsappNumero" placeholder="5531999999999" maxlength="15">
-                                <small style="color:var(--text-muted);">Exemplo: 5531999999999 (sem espaços, parênteses ou traços)</small>
+                                <label for="confWhatsappNumero">Número do WhatsApp</label>
+                                <div class="wa-phone-input">
+                                    <span class="wa-phone-prefix">🇧🇷 +55</span>
+                                    <input type="text" id="confWhatsappNumero" placeholder="31999999999" maxlength="11" inputmode="numeric">
+                                </div>
+                                <small style="color:var(--text-muted);">Digite apenas DDD + número. Ex: 31999999999</small>
                             </div>
 
                             <!-- Toggles por tipo de retirada -->
@@ -1055,32 +1058,35 @@
                                 </div>
                             </div>
 
-                            <!-- Template da mensagem -->
-                            <div class="form-group" style="margin-top: 1.5rem;">
-                                <label for="confWhatsappTemplate">Mensagem Personalizada</label>
-                                <textarea id="confWhatsappTemplate" rows="12" placeholder="Monte sua mensagem usando as variáveis abaixo..."></textarea>
-                            </div>
-
-                            <!-- Placeholders disponíveis -->
-                            <div class="wa-placeholders-box">
-                                <h4>📌 Variáveis disponíveis <small>(clique para copiar)</small></h4>
-                                <div class="wa-placeholders-grid">
-                                    <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" title="Nome do cliente">{{cliente_nome}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" title="Telefone do cliente">{{cliente_telefone}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" title="Mesa / Retirada / Entrega">{{tipo_entrega}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{endereco}}" title="Endereço completo">{{endereco}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{itens}}" title="Lista de itens do pedido">{{itens}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{subtotal}}" title="Subtotal do pedido">{{subtotal}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{desconto}}" title="Desconto aplicado">{{desconto}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{frete}}" title="Valor do frete">{{frete}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{total}}" title="Total final">{{total}}</button>
-                                    <button class="wa-placeholder-tag" data-ph="{{pagamento}}" title="Forma de pagamento">{{pagamento}}</button>
+                            <!-- Mensagem Personalizada — Layout Premium -->
+                            <div class="wa-msg-section">
+                                <div class="wa-msg-header">
+                                    <div>
+                                        <h3>✍️ Mensagem Personalizada</h3>
+                                        <p>Personalize o texto que será enviado ao seu WhatsApp com cada pedido.</p>
+                                    </div>
+                                    <button class="btn-secondary" id="btnResetWaTemplate" style="font-size: 0.8rem; white-space: nowrap;">🔄 Restaurar Padrão</button>
                                 </div>
-                            </div>
 
-                            <!-- Botão restaurar padrão -->
-                            <div style="margin-top: 1rem; text-align: right;">
-                                <button class="btn-secondary" id="btnResetWaTemplate" style="font-size: 0.85rem;">🔄 Restaurar Mensagem Padrão</button>
+                                <!-- Variáveis disponíveis -->
+                                <div class="wa-vars-bar">
+                                    <span class="wa-vars-label">Variáveis:</span>
+                                    <div class="wa-placeholders-grid">
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" title="Nome do cliente">{{cliente_nome}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" title="Telefone do cliente">{{cliente_telefone}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" title="Mesa / Retirada / Entrega">{{tipo_entrega}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}" title="Endereço completo">{{endereco}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{itens}}" title="Lista de itens do pedido">{{itens}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}" title="Subtotal do pedido">{{subtotal}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}" title="Desconto aplicado">{{desconto}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{frete}}" title="Valor do frete">{{frete}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{total}}" title="Total final">{{total}}</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}" title="Forma de pagamento">{{pagamento}}</button>
+                                    </div>
+                                </div>
+
+                                <textarea id="confWhatsappTemplate" rows="14" placeholder="Monte sua mensagem usando as variáveis acima..." class="wa-template-editor"></textarea>
+                                <small class="wa-msg-hint">💡 Clique nas variáveis acima para inseri-las na posição do cursor.</small>
                             </div>
                         </div>
                     </div>
