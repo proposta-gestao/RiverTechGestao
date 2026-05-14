@@ -386,6 +386,34 @@
     color: var(--text-muted, #888);
 }
 
+.wa-premium-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text, #fff);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.wa-premium-btn:hover {
+    background: rgba(229, 178, 93, 0.1);
+    border-color: rgba(229, 178, 93, 0.3);
+    color: var(--color-primary, #E5B25D);
+    transform: translateY(-1px);
+}
+
+.wa-premium-btn:active {
+    transform: translateY(1px);
+}
+
 .wa-template-editor {
     width: 100%;
     min-height: 220px;
