@@ -3185,55 +3185,61 @@ if (btnResetWa) {
 
 // Salvar configurações de WhatsApp
 const btnSalvarWa = document.getElementById('btnSalvarWhatsapp');
-if (btnSalvarWa) {
-    btnSalvarWa.onclick = async () => {
-        const btn = btnSalvarWa;
-        btn.disabled = true;
-        btn.textContent = 'Salvando...';
+const btnSalvarWaFooter = document.getElementById('btnSalvarWhatsappFooter');
 
-        const numeroCru = (document.getElementById('confWhatsappNumero')?.value || '').replace(/\D/g, '');
-        const numero = numeroCru ? '55' + numeroCru : ''; // Adiciona prefixo +55 automaticamente
-        const template = getWaEditorText();
-        const ativoMesa = !!document.getElementById('confWaMesa')?.checked;
-        const ativoRetirada = !!document.getElementById('confWaRetirada')?.checked;
-        const ativoEntrega = !!document.getElementById('confWaEntrega')?.checked;
+const salvarWhatsapp = async (btn) => {
+    btn.disabled = true;
+    const oldText = btn.textContent;
+    btn.textContent = 'Salvando...';
 
-        if (!numero && (ativoMesa || ativoRetirada || ativoEntrega)) {
-            showToast('Informe o número do WhatsApp para ativar o envio.', 'error');
-            btn.disabled = false;
-            btn.textContent = 'Salvar WhatsApp';
-            return;
-        }
+    const numeroCru = (document.getElementById('confWhatsappNumero')?.value || '').replace(/\D/g, '');
+    const numero = numeroCru ? '55' + numeroCru : ''; // Adiciona prefixo +55 automaticamente
+    const template = getWaEditorText();
+    const ativoMesa = !!document.getElementById('confWaMesa')?.checked;
+    const ativoRetirada = !!document.getElementById('confWaRetirada')?.checked;
+    const ativoEntrega = !!document.getElementById('confWaEntrega')?.checked;
 
-        const payload = {
-            whatsapp_numero: numero || null,
-            whatsapp_msg_template: template || null,
-            whatsapp_ativo_mesa: ativoMesa,
-            whatsapp_ativo_retirada: ativoRetirada,
-            whatsapp_ativo_entrega: ativoEntrega,
-            updated_at: new Date().toISOString()
-        };
-
-        let error;
-        if (currentSettingsId) {
-            const res = await sb.from('store_settings').update(payload).eq('id', currentSettingsId);
-            error = res.error;
-        } else {
-            payload.empresa_id = getTenantId();
-            const res = await sb.from('store_settings').insert(payload).select();
-            error = res.error;
-            if (res.data && res.data[0]) currentSettingsId = res.data[0].id;
-        }
-
-        if (error) {
-            showToast('Erro ao salvar WhatsApp: ' + error.message, 'error');
-        } else {
-            showToast('Configurações de WhatsApp salvas! ✅', 'success');
-        }
+    if (!numero && (ativoMesa || ativoRetirada || ativoEntrega)) {
+        showToast('Informe o número do WhatsApp para ativar o envio.', 'error');
         btn.disabled = false;
-        btn.textContent = 'Salvar WhatsApp';
+        btn.textContent = oldText;
+        return;
+    }
+
+    const payload = {
+        whatsapp_numero: numero || null,
+        whatsapp_msg_template: template || null,
+        whatsapp_ativo_mesa: ativoMesa,
+        whatsapp_ativo_retirada: ativoRetirada,
+        whatsapp_ativo_entrega: ativoEntrega,
+        updated_at: new Date().toISOString()
     };
-}
+
+    let error;
+    if (currentSettingsId) {
+        const res = await sb.from('store_settings').update(payload).eq('id', currentSettingsId);
+        error = res.error;
+    } else {
+        const res = await sb.from('store_settings').insert([{ ...payload, empresa_id: getTenantId() }]);
+        error = res.error;
+    }
+
+    btn.disabled = false;
+    btn.textContent = oldText;
+
+    if (error) {
+        showToast('Erro ao salvar WhatsApp', 'error');
+        console.error(error);
+    } else {
+        showToast('WhatsApp salvo com sucesso!', 'success');
+        // Recarregar configurações globalmente para refletir o novo número
+        carregarConfiguracoes();
+    }
+};
+
+if (btnSalvarWa) btnSalvarWa.onclick = () => salvarWhatsapp(btnSalvarWa);
+if (btnSalvarWaFooter) btnSalvarWaFooter.onclick = () => salvarWhatsapp(btnSalvarWaFooter);
+
 
 // --- Gestão de Atendentes ---
 let listaAtendentesLocal = [];
