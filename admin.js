@@ -2454,7 +2454,9 @@ async function carregarConfiguracoes() {
             if (num.startsWith('55')) num = num.substring(2);
             waNumero.value = num;
         }
-        if (waTemplate) waTemplate.value = d.whatsapp_msg_template || getWhatsappTemplateDefault();
+        if (waTemplate) {
+            renderWaTemplateToEditor(d.whatsapp_msg_template || getWhatsappTemplateDefault());
+        }
         if (waMesa) waMesa.checked = !!d.whatsapp_ativo_mesa;
         if (waRetirada) waRetirada.checked = !!d.whatsapp_ativo_retirada;
         if (waEntrega) waEntrega.checked = d.whatsapp_ativo_entrega !== false; // default true
@@ -3020,34 +3022,118 @@ function getWhatsappTemplateDefault() {
 *💳 Pagamento:* {{pagamento}}`;
 }
 
-// Placeholder tags — clique para inserir no textarea
+// Mapa de variáveis para labels visuais
+const waPhMap = {
+    '{{cliente_nome}}': '👤 Nome do cliente',
+    '{{cliente_telefone}}': '📱 Telefone',
+    '{{tipo_entrega}}': '📍 Tipo de retirada',
+    '{{endereco}}': '🏠 Endereço',
+    '{{itens}}': '🛒 Lista de itens',
+    '{{subtotal}}': '💵 Subtotal',
+    '{{desconto}}': '🎟️ Desconto',
+    '{{frete}}': '📦 Frete',
+    '{{total}}': '💰 Total',
+    '{{pagamento}}': '💳 Forma de pagamento'
+};
+
+function renderWaTemplateToEditor(templateStr) {
+    let html = templateStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    Object.keys(waPhMap).forEach(ph => {
+        const regex = new RegExp(ph.replace(/\{/g, '\\{').replace(/\}/g, '\\}'), 'g');
+        const tagHtml = `<span class="wa-inserted-tag" contenteditable="false" data-ph="${ph}">${waPhMap[ph]}</span>`;
+        html = html.replace(regex, tagHtml);
+    });
+    document.getElementById('confWhatsappTemplate').innerHTML = html;
+}
+
+function getWaEditorText() {
+    const editor = document.getElementById('confWhatsappTemplate');
+    if (!editor) return '';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = editor.innerHTML;
+    // Substituir tags HTML pelos placeholders originais
+    tempDiv.querySelectorAll('.wa-inserted-tag').forEach(tag => {
+        tag.outerHTML = tag.dataset.ph;
+    });
+    // Extrair texto convertendo divs/brs para quebras de linha reais
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.whiteSpace = 'pre-wrap';
+    document.body.appendChild(tempDiv);
+    const text = tempDiv.innerText;
+    document.body.removeChild(tempDiv);
+    return text;
+}
+
+function insertWaTag(ph) {
+    const editor = document.getElementById('confWhatsappTemplate');
+    editor.focus();
+    const tagHtml = `<span class="wa-inserted-tag" contenteditable="false" data-ph="${ph}">${waPhMap[ph]}</span>`;
+    
+    // Tenta inserir via comando nativo para respeitar o cursor
+    if (document.queryCommandSupported('insertHTML')) {
+        document.execCommand('insertHTML', false, tagHtml + '&nbsp;');
+    } else {
+        // Fallback
+        editor.innerHTML += tagHtml + '&nbsp;';
+    }
+}
+
+// Drag & Drop e Clique nas tags
 document.querySelectorAll('.wa-placeholder-tag').forEach(tag => {
+    // Clique
     tag.onclick = (e) => {
         e.preventDefault();
         const ph = tag.dataset.ph;
-        const textarea = document.getElementById('confWhatsappTemplate');
-        if (!textarea) return;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const text = textarea.value;
-        textarea.value = text.substring(0, start) + ph + text.substring(end);
-        textarea.focus();
-        textarea.selectionStart = textarea.selectionEnd = start + ph.length;
-        // Usar o texto amigável do botão ao invés do código técnico
-        const label = tag.textContent.trim();
-        showToast(`"${label}" inserido na mensagem ✅`, 'success');
+        insertWaTag(ph);
+        showToast(`"${tag.textContent.trim()}" inserido! ✅`, 'success');
     };
+
+    // Início do Drag
+    tag.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('application/x-wa-tag', tag.dataset.ph);
+        e.dataTransfer.effectAllowed = 'copy';
+    });
 });
+
+// Eventos de Drop no Editor
+const waEditor = document.getElementById('confWhatsappTemplate');
+if (waEditor) {
+    waEditor.addEventListener('dragover', e => {
+        e.preventDefault(); // Necessário para permitir o drop
+        e.dataTransfer.dropEffect = 'copy';
+    });
+
+    waEditor.addEventListener('drop', e => {
+        e.preventDefault();
+        const ph = e.dataTransfer.getData('application/x-wa-tag');
+        if (!ph) return;
+
+        // Tentar posicionar o cursor no local do drop
+        let range;
+        if (document.caretRangeFromPoint) {
+            range = document.caretRangeFromPoint(e.clientX, e.clientY);
+        } else if (e.rangeParent) {
+            range = document.createRange();
+            range.setStart(e.rangeParent, e.rangeOffset);
+        }
+
+        if (range) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+
+        insertWaTag(ph);
+    });
+}
 
 // Restaurar template padrão
 const btnResetWa = document.getElementById('btnResetWaTemplate');
 if (btnResetWa) {
     btnResetWa.onclick = () => {
-        const textarea = document.getElementById('confWhatsappTemplate');
-        if (textarea) {
-            textarea.value = getWhatsappTemplateDefault();
-            showToast('Mensagem restaurada para o padrão!', 'success');
-        }
+        renderWaTemplateToEditor(getWhatsappTemplateDefault());
+        showToast('Mensagem restaurada para o padrão!', 'success');
     };
 }
 
@@ -3061,7 +3147,7 @@ if (btnSalvarWa) {
 
         const numeroCru = (document.getElementById('confWhatsappNumero')?.value || '').replace(/\D/g, '');
         const numero = numeroCru ? '55' + numeroCru : ''; // Adiciona prefixo +55 automaticamente
-        const template = document.getElementById('confWhatsappTemplate')?.value || '';
+        const template = getWaEditorText();
         const ativoMesa = !!document.getElementById('confWaMesa')?.checked;
         const ativoRetirada = !!document.getElementById('confWaRetirada')?.checked;
         const ativoEntrega = !!document.getElementById('confWaEntrega')?.checked;

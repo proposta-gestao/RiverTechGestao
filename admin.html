@@ -1072,21 +1072,21 @@
                                 <div class="wa-vars-bar">
                                     <span class="wa-vars-label">📋 Dados do pedido — clique para inserir no texto:</span>
                                     <div class="wa-placeholders-grid">
-                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}">👤 Nome do cliente</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}">📱 Telefone</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}">📍 Tipo de retirada</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}">🏠 Endereço</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{itens}}">🛒 Lista de itens</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}">💵 Subtotal</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}">🎟️ Desconto</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{frete}}">📦 Frete</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{total}}">💰 Total</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}">💳 Forma de pagamento</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" draggable="true">👤 Nome do cliente</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" draggable="true">📱 Telefone</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" draggable="true">📍 Tipo de retirada</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}" draggable="true">🏠 Endereço</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{itens}}" draggable="true">🛒 Lista de itens</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}" draggable="true">💵 Subtotal</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}" draggable="true">🎟️ Desconto</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{frete}}" draggable="true">📦 Frete</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{total}}" draggable="true">💰 Total</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}" draggable="true">💳 Forma de pagamento</button>
                                     </div>
                                 </div>
 
-                                <textarea id="confWhatsappTemplate" rows="14" placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..." class="wa-template-editor"></textarea>
-                                <small class="wa-msg-hint">💡 Os textos entre {{ }} serão substituídos automaticamente pelos dados reais do pedido do cliente.</small>
+                                <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..."></div>
+                                <small class="wa-msg-hint">💡 Dica: Clique nos botões acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
                             </div>
                         </div>
                     </div>
