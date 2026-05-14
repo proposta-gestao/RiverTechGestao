@@ -3039,10 +3039,10 @@ const waPhMap = {
 function renderWaTemplateToEditor(templateStr) {
     let html = templateStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
-    // Converter markdown do WhatsApp para HTML
-    html = html.replace(/\*([^\*]+)\*/g, '<b>$1</b>');
-    html = html.replace(/_([^_]+)_/g, '<i>$1</i>');
-    html = html.replace(/~([^~]+)~/g, '<s>$1</s>');
+    // Converter markdown do WhatsApp para HTML (apenas na mesma linha)
+    html = html.replace(/\*([^\*\n]+)\*/g, '<b>$1</b>');
+    html = html.replace(/_([^\_\n]+)_/g, '<i>$1</i>');
+    html = html.replace(/~([^\~\n]+)~/g, '<s>$1</s>');
     html = html.replace(/```([^`]+)```/g, '<code>$1</code>');
 
     // Substituir placeholders por botões visuais
