@@ -59,7 +59,7 @@
         const bar = document.getElementById('soundAlertBar');
         if (!bar) return;
         const isReady = audioCtx && audioCtx.state === 'running';
-        bar.style.display = isReady ? 'none' : 'block';
+        bar.style.display = isReady ? 'none' : 'flex';
     }
 
     async function resumeAudio() {
@@ -102,9 +102,15 @@
             // Inicializa áudio
             initAudio();
             const bar = document.getElementById('soundAlertBar');
-            if (bar) bar.onclick = () => {
-                resumeAudio();
+            const btnAtivar = document.getElementById('btnAtivarSom');
+            if (btnAtivar) btnAtivar.onclick = async () => {
+                await resumeAudio();
                 playBell(); // Teste inicial
+                // Animar saída do overlay
+                if (bar) {
+                    bar.style.animation = 'soundOverlayIn 0.25s ease-in reverse forwards';
+                    setTimeout(() => { bar.style.display = 'none'; }, 250);
+                }
             };
 
             // Botão de Teste de Alerta (Persistent para o usuário verificar)

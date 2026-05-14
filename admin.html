@@ -98,9 +98,17 @@
                 </div>
             </header>
 
-            <!-- Barra de Alerta Sonoro (Invisível por padrão) -->
-            <div id="soundAlertBar" style="display: none; background: var(--accent-gold); color: #000; text-align: center; padding: 10px; font-size: 0.85rem; font-weight: 700; cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.1);">
-                🔔 Clique aqui para ativar alertas sonoros de novos agendamentos
+            <!-- Popup de Ativacao de Alertas Sonoros (fullscreen overlay) -->
+            <div id="soundAlertBar" class="sound-alert-overlay" style="display: none;">
+                <div class="sound-alert-card">
+                    <div class="sound-alert-icon">🔔</div>
+                    <h2 class="sound-alert-title">Ativar Alertas Sonoros</h2>
+                    <p class="sound-alert-desc">Para receber notificações sonoras quando um novo agendamento for realizado, clique no botão abaixo.</p>
+                    <button class="sound-alert-btn" id="btnAtivarSom">
+                        <span>🔊</span> Ativar Alertas
+                    </button>
+                    <p class="sound-alert-hint">Seu navegador precisa de uma interação para permitir sons.</p>
+                </div>
             </div>
 
 
