@@ -396,9 +396,8 @@ function renderSlots(slots) {
             if (dInicio <= agoraAbs) return;
         }
 
-        // Extrair hora nominal (UTC do banco) para exibir "09:00" etc
-        // Isso garante que o usuário veja exatamente o que foi cadastrado
-        const horaNominal = s.slot_inicio.split('T')[1].slice(0, 5);
+        // Extrair hora local (Brasília) para exibir "09:00" etc
+        const horaNominal = String(dInicio.getHours()).padStart(2, '0') + ':' + String(dInicio.getMinutes()).padStart(2, '0');
         
         html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaNominal}')">${horaNominal}</div>`;
         count++;
@@ -483,10 +482,8 @@ async function confirmarAgendamento() {
     document.getElementById('btnConfirmar').disabled = true;
 
     try {
-        const duracao = parseInt(state.servico.duracao_min || state.servico.duracao_minutos || 30);
-        const dataInicio = new Date(state.slotInicio);
-        const dataFim = new Date(dataInicio.getTime() + duracao * 60000);
-
+        // Usar diretamente os valores de slotInicio/slotFim recebidos da RPC
+        // que já contêm os timestamps corretos com timezone de Brasília
         const payload = {
             empresa_id: state.empresaId,
             profissional_id: state.profissional.id,
@@ -494,8 +491,8 @@ async function confirmarAgendamento() {
             cliente_nome: nome,
             cliente_telefone: tel,
             observacao: obs,
-            data_hora_inicio: dataInicio.toISOString(),
-            data_hora_fim: dataFim.toISOString(),
+            data_hora_inicio: state.slotInicio,
+            data_hora_fim: state.slotFim,
             status: 'pendente'
         };
 

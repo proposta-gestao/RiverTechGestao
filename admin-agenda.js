@@ -423,10 +423,11 @@
             const dInicio = new Date(ag.data_hora_inicio);
             const dFim = ag.data_hora_fim ? new Date(ag.data_hora_fim) : null;
             
-            const hInicio = dInicio.toISOString().split('T')[1].slice(0, 5);
-            const hFim = dFim ? dFim.toISOString().split('T')[1].slice(0, 5) : '--:--';
+            // Usar hora local (Brasília) para exibição correta
+            const hInicio = String(dInicio.getHours()).padStart(2, '0') + ':' + String(dInicio.getMinutes()).padStart(2, '0');
+            const hFim = dFim ? String(dFim.getHours()).padStart(2, '0') + ':' + String(dFim.getMinutes()).padStart(2, '0') : '--:--';
             
-            const dataLabel = `${String(dInicio.getUTCDate()).padStart(2, '0')}/${String(dInicio.getUTCMonth() + 1).padStart(2, '0')}`;
+            const dataLabel = `${String(dInicio.getDate()).padStart(2, '0')}/${String(dInicio.getMonth() + 1).padStart(2, '0')}`;
             const cor = ag.profissional?.cor_agenda || '#E5B25D';
             const statusLabel = STATUS_LABELS[ag.status] || ag.status;
 
@@ -788,9 +789,11 @@
         selProf.innerHTML = profissionais.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
         selServ.innerHTML = servicos.map(s => `<option value="${s.id}" data-dur="${s.duracao_min}">${s.nome} (${s.duracao_min}min)</option>`).join('');
 
-        // Data padrão = data selecionada
-        const dataStr = dataSelecionada.toISOString().split('T')[0];
-        document.getElementById('agendaModalData').value = dataStr;
+        // Data padrão = data selecionada (formato local)
+        const y = dataSelecionada.getFullYear();
+        const m = String(dataSelecionada.getMonth() + 1).padStart(2, '0');
+        const d = String(dataSelecionada.getDate()).padStart(2, '0');
+        document.getElementById('agendaModalData').value = `${y}-${m}-${d}`;
         document.getElementById('agendaModalHora').value = '09:00';
         document.getElementById('agendaModalCliente').value = '';
         document.getElementById('agendaModalTelefone').value = '';
@@ -819,11 +822,15 @@
         document.getElementById('agendaModalProfissional').value = ag.profissional_id;
         document.getElementById('agendaModalServico').value = ag.servico_id;
         
-        // Data e Hora (UTC nominal)
+        // Data e Hora (local Brasília)
         const dInicio = new Date(ag.data_hora_inicio);
-        const isoStr = dInicio.toISOString();
-        document.getElementById('agendaModalData').value = isoStr.split('T')[0];
-        document.getElementById('agendaModalHora').value = isoStr.split('T')[1].slice(0, 5);
+        const yr = dInicio.getFullYear();
+        const mo = String(dInicio.getMonth() + 1).padStart(2, '0');
+        const dy = String(dInicio.getDate()).padStart(2, '0');
+        const hr = String(dInicio.getHours()).padStart(2, '0');
+        const mi = String(dInicio.getMinutes()).padStart(2, '0');
+        document.getElementById('agendaModalData').value = `${yr}-${mo}-${dy}`;
+        document.getElementById('agendaModalHora').value = `${hr}:${mi}`;
         
         document.getElementById('agendaModalCliente').value = ag.cliente_nome;
         document.getElementById('agendaModalTelefone').value = ag.cliente_telefone;
@@ -869,8 +876,8 @@
         const serv = servicos.find(s => s.id === servId);
         const durMin = serv?.duracao_min || 30;
         
-        // Criamos datas forçando UTC (Z) para salvar o valor nominal
-        const inicio = new Date(`${data}T${hora}:00Z`);
+        // Criar data em horário local (Brasília) - sem 'Z' para não forçar UTC
+        const inicio = new Date(`${data}T${hora}:00`);
         const fim = new Date(inicio.getTime() + durMin * 60000);
 
         const payload = {
