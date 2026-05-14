@@ -1801,10 +1801,16 @@ body {
 
 /* Stats cards */
 .stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
     margin-bottom: 2rem;
+}
+
+.stats-row .stat-card {
+    flex: 1 1 200px;
+    max-width: 300px;
 }
 
 .stat-card {
@@ -2186,6 +2192,7 @@ body {
     }
 
     .stats-row {
+        display: grid;
         grid-template-columns: 1fr 1fr;
     }
 }
