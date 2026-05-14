@@ -1117,6 +1117,56 @@ document.getElementById("btnEnviar").onclick = async () => {
         } else if (state.formaPagamento === 'cartao') {
             await iniciarFluxoCartaoCheckoutPro(orderId, msg);
         } else {
+            // Função auxiliar para gerar mensagem do WhatsApp
+            const buildWhatsappMsg = (dados) => {
+                let template = state.whatsappTemplate;
+                if (!template) {
+                    template = `*📦 NOVO PEDIDO*\n\n*👤 Cliente:* {{cliente_nome}}\n*📱 Telefone:* {{cliente_telefone}}\n\n*📍 Tipo:* {{tipo_entrega}}\n{{endereco}}\n\n*🛒 Itens:*\n{{itens}}\n\n*💵 Subtotal:* {{subtotal}}\n{{desconto}}{{frete}}*💰 TOTAL:* {{total}}\n\n*💳 Pagamento:* {{pagamento}}`;
+                }
+
+                let itensStr = '';
+                if (dados.carrinho && dados.carrinho.length > 0) {
+                    itensStr = dados.carrinho.map(item => {
+                        const obs = item.obs ? `\n   _Obs: ${item.obs}_` : '';
+                        return `• ${item.qnt}x ${item.nome} - ${formatCurrency(item.preco * item.qnt)}${obs}`;
+                    }).join('\n');
+                }
+
+                let enderecoStr = '';
+                if (dados.tipoEntrega === 'entrega' && dados.camposEndereco) {
+                    const d = dados.camposEndereco;
+                    enderecoStr = `*Endereço de Entrega:*\n${d.rua}, ${d.numero}${d.complemento ? ' - ' + d.complemento : ''}\nBairro: ${d.bairro}`;
+                } else if (dados.tipoEntrega === 'mesa') {
+                    const m = dados.camposEndereco;
+                    enderecoStr = `*Mesa:* ${m.rua}\n*Posição:* ${m.numero}`;
+                }
+
+                const descontoStr = dados.desconto > 0 ? `*🎟️ Desconto:* -${formatCurrency(dados.desconto)}\n` : '';
+                const freteStr = dados.tipoEntrega === 'entrega' ? `*📦 Frete:* ${formatCurrency(dados.freteValor)}\n` : '';
+                const pgtMap = { 'dinheiro': '💵 Dinheiro', 'pix': '💠 PIX', 'cartao': '💳 Cartão' };
+
+                const mapVars = {
+                    '{{cliente_nome}}': dados.nomeCliente || '',
+                    '{{cliente_telefone}}': dados.telefoneCliente || '',
+                    '{{tipo_entrega}}': dados.tipoEntrega === 'entrega' ? '🛵 Entrega' : (dados.tipoEntrega === 'mesa' ? '🍽️ Na Mesa' : '🛍️ Retirada'),
+                    '{{endereco}}': enderecoStr,
+                    '{{itens}}': itensStr,
+                    '{{subtotal}}': formatCurrency(dados.subtotal),
+                    '{{desconto}}': descontoStr,
+                    '{{frete}}': freteStr,
+                    '{{total}}': formatCurrency(dados.totalFinal),
+                    '{{pagamento}}': pgtMap[dados.formaPagamento] || dados.formaPagamento
+                };
+
+                let result = template;
+                Object.keys(mapVars).forEach(key => {
+                    const safeKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    result = result.replace(new RegExp(safeKey, 'g'), mapVars[key]);
+                });
+
+                return encodeURIComponent(result);
+            };
+
             // WhatsApp dinâmico — verifica toggle por tipo de retirada
             const waAtivo = state.whatsappAtivo && state.whatsappAtivo[state.tipoEntrega] && state.whatsappNumero;
 
