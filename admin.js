@@ -854,7 +854,9 @@ function aplicarFiltrosDeModulos() {
     toggleElement(document.getElementById('prodEstoqueMin')?.closest('.form-group'), mProdEstoque);
 
     const mQualquerProduto = mProdGerenciar || mProdCategorias || mProdEstoque;
-    toggleElement(document.getElementById('nav-produtos'), mQualquerProduto, 'flex');
+    const navProdutos = document.getElementById('nav-produtos');
+    toggleElement(navProdutos, mQualquerProduto, 'flex');
+    if (navProdutos) navProdutos.classList.toggle('module-visible', mQualquerProduto);
 
     // 2. VENDAS (Operacional)
     const mVendasHoje = isModuloAtivo('vendas_hoje_op');
@@ -884,7 +886,9 @@ function aplicarFiltrosDeModulos() {
     toggleSubtab('dashboard-metricas', mQualquerMetrica);
 
     const mQualquerDashboard = mQualquerVendaOp || mQualquerMetrica;
-    toggleElement(document.getElementById('nav-dashboard'), mQualquerDashboard, 'flex');
+    const navDashboard = document.getElementById('nav-dashboard');
+    toggleElement(navDashboard, mQualquerDashboard, 'flex');
+    if (navDashboard) navDashboard.classList.toggle('module-visible', mQualquerDashboard);
 
     // 4. CONFIGURAÇÕES
     const mConfigEnd = isModuloAtivo('config_endereco');
@@ -898,11 +902,15 @@ function aplicarFiltrosDeModulos() {
     toggleSubtab('config-cancelamento', mConfigCanc);
 
     const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc;
-    toggleElement(document.getElementById('nav-configuracoes'), mQualquerConfig, 'flex');
+    const navConfig = document.getElementById('nav-configuracoes');
+    toggleElement(navConfig, mQualquerConfig, 'flex');
+    if (navConfig) navConfig.classList.toggle('module-visible', mQualquerConfig);
 
     // 5. CUPONS
     const mCupons = isModuloAtivo('cupons');
-    toggleElement(document.getElementById('nav-cupons'), mCupons, 'flex');
+    const navCupons = document.getElementById('nav-cupons');
+    toggleElement(navCupons, mCupons, 'flex');
+    if (navCupons) navCupons.classList.toggle('module-visible', mCupons);
     toggleElement(document.getElementById('side-nav-cupons'), mCupons, 'flex');
 
     // 6. AGENDAMENTO
