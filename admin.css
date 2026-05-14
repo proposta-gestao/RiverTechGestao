@@ -103,6 +103,148 @@
     opacity: 0.7;
 }
 
+/* ============================================================
+   Configurações WhatsApp — Toggles e Formulário
+   ============================================================ */
+.wa-toggles-section {
+    background: var(--color-surface, #1a1a1a);
+    border: 1px solid var(--color-border, rgba(229,178,93,0.15));
+    border-radius: 14px;
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.wa-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.wa-toggle-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.wa-toggle-row:first-child {
+    padding-top: 0;
+}
+
+.wa-toggle-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wa-toggle-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+.wa-toggle-info strong {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--color-text, #fff);
+}
+
+.wa-toggle-info small {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--text-muted, #888);
+    margin-top: 2px;
+}
+
+/* Toggle Switch */
+.wa-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.wa-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.wa-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 28px;
+    transition: all 0.3s ease;
+}
+
+.wa-slider::before {
+    content: '';
+    position: absolute;
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.wa-switch input:checked + .wa-slider {
+    background: var(--color-primary, #25D366);
+}
+
+.wa-switch input:checked + .wa-slider::before {
+    transform: translateX(24px);
+}
+
+/* Placeholders Box */
+.wa-placeholders-box {
+    background: var(--color-surface, #1a1a1a);
+    border: 1px solid var(--color-border, rgba(229,178,93,0.15));
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+}
+
+.wa-placeholders-box h4 {
+    font-size: 0.9rem;
+    color: var(--color-text, #fff);
+    margin: 0 0 0.75rem;
+}
+
+.wa-placeholders-box h4 small {
+    color: var(--text-muted, #888);
+    font-weight: 400;
+}
+
+.wa-placeholders-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.wa-placeholder-tag {
+    background: rgba(229, 178, 93, 0.1);
+    border: 1px solid rgba(229, 178, 93, 0.25);
+    color: var(--color-primary, #E5B25D);
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.wa-placeholder-tag:hover {
+    background: rgba(229, 178, 93, 0.2);
+    transform: translateY(-1px);
+}
+
 /* Sortable Styles */
 .motivo-estoque-row {
     user-select: none;

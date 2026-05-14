@@ -34,7 +34,10 @@ let state = {
     tipoEntrega: 'mesa',   // 'mesa' | 'retirada' | 'entrega'
     formaPagamento: 'dinheiro', // 'pix', 'dinheiro', 'cartao'
     freteAtivo: 0,         // valor em R$ do frete calculado
-    freteHabilitado: false // controlado pelo Admin via store_settings
+    freteHabilitado: false, // controlado pelo Admin via store_settings
+    whatsappNumero: null,   // número do WhatsApp da empresa
+    whatsappTemplate: null, // template customizado de mensagem
+    whatsappAtivo: { mesa: false, retirada: false, entrega: true } // toggles por tipo
 };
 
 // --- Seletores DOM ---
@@ -171,6 +174,15 @@ async function carregarConfiguracoesPublicas() {
         if (state.freteHabilitado) {
             state.tipoEntrega = 'retirada'; // padrão quando frete habilitado
         }
+
+        // WhatsApp dinâmico
+        state.whatsappNumero = CONFIG_LOJA.whatsapp_numero || null;
+        state.whatsappTemplate = CONFIG_LOJA.whatsapp_msg_template || null;
+        state.whatsappAtivo = {
+            mesa: !!CONFIG_LOJA.whatsapp_ativo_mesa,
+            retirada: !!CONFIG_LOJA.whatsapp_ativo_retirada,
+            entrega: CONFIG_LOJA.whatsapp_ativo_entrega !== false // default true
+        };
     }
 
     if (!zonesRes.error) {
@@ -1105,11 +1117,26 @@ document.getElementById("btnEnviar").onclick = async () => {
         } else if (state.formaPagamento === 'cartao') {
             await iniciarFluxoCartaoCheckoutPro(orderId, msg);
         } else {
+            // WhatsApp dinâmico — verifica toggle por tipo de retirada
+            const waAtivo = state.whatsappAtivo && state.whatsappAtivo[state.tipoEntrega] && state.whatsappNumero;
+
             const concluir = () => {
-                if (state.freteHabilitado) {
-                    window.open(`https://wa.me/${CONFIG.telefone}?text=${msg}`);
+                if (waAtivo) {
+                    const waMsg = buildWhatsappMsg({
+                        nomeCliente,
+                        telefoneCliente,
+                        tipoEntrega: state.tipoEntrega,
+                        camposEndereco,
+                        carrinho: state.carrinho.length > 0 ? state.carrinho : itemsPayload.map(i => ({ nome: i.product_name, qnt: i.quantity, preco: i.unit_price, obs: i.observations })),
+                        subtotal,
+                        desconto,
+                        freteValor,
+                        totalFinal,
+                        formaPagamento: state.formaPagamento
+                    });
+                    window.open(`https://wa.me/${state.whatsappNumero}?text=${waMsg}`);
                 }
-                mostrarConfirmacaoPedido(nomeCliente, state.formaPagamento, state.freteHabilitado);
+                mostrarConfirmacaoPedido(nomeCliente, state.formaPagamento, waAtivo);
             };
 
             if (state.formaPagamento === 'dinheiro') {

@@ -2441,6 +2441,18 @@ async function carregarConfiguracoes() {
         }
         cancellationReasons = Array.isArray(cr) ? cr : [];
         renderJustificativas();
+
+        // WhatsApp
+        const waNumero = document.getElementById('confWhatsappNumero');
+        const waTemplate = document.getElementById('confWhatsappTemplate');
+        const waMesa = document.getElementById('confWaMesa');
+        const waRetirada = document.getElementById('confWaRetirada');
+        const waEntrega = document.getElementById('confWaEntrega');
+        if (waNumero) waNumero.value = d.whatsapp_numero || '';
+        if (waTemplate) waTemplate.value = d.whatsapp_msg_template || getWhatsappTemplateDefault();
+        if (waMesa) waMesa.checked = !!d.whatsapp_ativo_mesa;
+        if (waRetirada) waRetirada.checked = !!d.whatsapp_ativo_retirada;
+        if (waEntrega) waEntrega.checked = d.whatsapp_ativo_entrega !== false; // default true
     }
 
     if (!zonasRes.error) {
@@ -2982,6 +2994,106 @@ document.getElementById('btnSalvarConfig').onclick = async () => {
     btn.disabled = false;
     btn.textContent = 'Salvar Configurações';
 };
+
+// --- WhatsApp Config ---
+
+function getWhatsappTemplateDefault() {
+    return `*📦 NOVO PEDIDO*
+
+*👤 Cliente:* {{cliente_nome}}
+*📱 Telefone:* {{cliente_telefone}}
+
+*📍 Tipo:* {{tipo_entrega}}
+{{endereco}}
+
+*🛒 Itens:*
+{{itens}}
+
+*💵 Subtotal:* {{subtotal}}
+{{desconto}}{{frete}}*💰 TOTAL:* {{total}}
+
+*💳 Pagamento:* {{pagamento}}`;
+}
+
+// Placeholder tags — clique para inserir no textarea
+document.querySelectorAll('.wa-placeholder-tag').forEach(tag => {
+    tag.onclick = (e) => {
+        e.preventDefault();
+        const ph = tag.dataset.ph;
+        const textarea = document.getElementById('confWhatsappTemplate');
+        if (!textarea) return;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        textarea.value = text.substring(0, start) + ph + text.substring(end);
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + ph.length;
+        showToast(`Variável ${ph} inserida!`, 'success');
+    };
+});
+
+// Restaurar template padrão
+const btnResetWa = document.getElementById('btnResetWaTemplate');
+if (btnResetWa) {
+    btnResetWa.onclick = () => {
+        const textarea = document.getElementById('confWhatsappTemplate');
+        if (textarea) {
+            textarea.value = getWhatsappTemplateDefault();
+            showToast('Mensagem restaurada para o padrão!', 'success');
+        }
+    };
+}
+
+// Salvar configurações de WhatsApp
+const btnSalvarWa = document.getElementById('btnSalvarWhatsapp');
+if (btnSalvarWa) {
+    btnSalvarWa.onclick = async () => {
+        const btn = btnSalvarWa;
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        const numero = (document.getElementById('confWhatsappNumero')?.value || '').replace(/\D/g, '');
+        const template = document.getElementById('confWhatsappTemplate')?.value || '';
+        const ativoMesa = !!document.getElementById('confWaMesa')?.checked;
+        const ativoRetirada = !!document.getElementById('confWaRetirada')?.checked;
+        const ativoEntrega = !!document.getElementById('confWaEntrega')?.checked;
+
+        if (!numero && (ativoMesa || ativoRetirada || ativoEntrega)) {
+            showToast('Informe o número do WhatsApp para ativar o envio.', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Salvar WhatsApp';
+            return;
+        }
+
+        const payload = {
+            whatsapp_numero: numero || null,
+            whatsapp_msg_template: template || null,
+            whatsapp_ativo_mesa: ativoMesa,
+            whatsapp_ativo_retirada: ativoRetirada,
+            whatsapp_ativo_entrega: ativoEntrega,
+            updated_at: new Date().toISOString()
+        };
+
+        let error;
+        if (currentSettingsId) {
+            const res = await sb.from('store_settings').update(payload).eq('id', currentSettingsId);
+            error = res.error;
+        } else {
+            payload.empresa_id = getTenantId();
+            const res = await sb.from('store_settings').insert(payload).select();
+            error = res.error;
+            if (res.data && res.data[0]) currentSettingsId = res.data[0].id;
+        }
+
+        if (error) {
+            showToast('Erro ao salvar WhatsApp: ' + error.message, 'error');
+        } else {
+            showToast('Configurações de WhatsApp salvas! ✅', 'success');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Salvar WhatsApp';
+    };
+}
 
 // --- Gestão de Atendentes ---
 let listaAtendentesLocal = [];

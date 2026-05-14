@@ -688,6 +688,7 @@
                         <button class="subtab-btn" data-subtab="config-visual">Personalização Visual</button>
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
                         <button class="subtab-btn" data-subtab="config-equipe">Equipe / Atendentes</button>
+                        <button class="subtab-btn" data-subtab="config-whatsapp">WhatsApp</button>
                     </div>
                 </div>
 
@@ -982,6 +983,104 @@
                                         <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum atendente cadastrado.</td></tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtab: WhatsApp -->
+                <div class="subtab-content" id="subtab-config-whatsapp">
+                    <div class="config-card">
+                        <div class="config-card-header">
+                            <h2>💬 Configurações do WhatsApp</h2>
+                            <button class="btn-primary" id="btnSalvarWhatsapp">Salvar WhatsApp</button>
+                        </div>
+                        <div class="config-card-body">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
+                                Configure o redirecionamento do cliente ao WhatsApp após finalizar o pedido.
+                                Você pode ativar/desativar por tipo de retirada e personalizar a mensagem.
+                            </p>
+
+                            <!-- Número do WhatsApp -->
+                            <div class="form-group">
+                                <label for="confWhatsappNumero">Número do WhatsApp (com DDI)</label>
+                                <input type="text" id="confWhatsappNumero" placeholder="5531999999999" maxlength="15">
+                                <small style="color:var(--text-muted);">Exemplo: 5531999999999 (sem espaços, parênteses ou traços)</small>
+                            </div>
+
+                            <!-- Toggles por tipo de retirada -->
+                            <div class="wa-toggles-section">
+                                <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--color-text);">Enviar WhatsApp quando o cliente escolher:</h3>
+                                
+                                <div class="wa-toggle-row">
+                                    <div class="wa-toggle-info">
+                                        <span class="wa-toggle-icon">🍽️</span>
+                                        <div>
+                                            <strong>Pedido na Mesa</strong>
+                                            <small>Cliente está no local e pediu na mesa</small>
+                                        </div>
+                                    </div>
+                                    <label class="wa-switch">
+                                        <input type="checkbox" id="confWaMesa">
+                                        <span class="wa-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="wa-toggle-row">
+                                    <div class="wa-toggle-info">
+                                        <span class="wa-toggle-icon">🏪</span>
+                                        <div>
+                                            <strong>Retirada no Local</strong>
+                                            <small>Cliente vai buscar o pedido</small>
+                                        </div>
+                                    </div>
+                                    <label class="wa-switch">
+                                        <input type="checkbox" id="confWaRetirada">
+                                        <span class="wa-slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="wa-toggle-row">
+                                    <div class="wa-toggle-info">
+                                        <span class="wa-toggle-icon">🚚</span>
+                                        <div>
+                                            <strong>Entrega</strong>
+                                            <small>Pedido será entregue no endereço do cliente</small>
+                                        </div>
+                                    </div>
+                                    <label class="wa-switch">
+                                        <input type="checkbox" id="confWaEntrega" checked>
+                                        <span class="wa-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Template da mensagem -->
+                            <div class="form-group" style="margin-top: 1.5rem;">
+                                <label for="confWhatsappTemplate">Mensagem Personalizada</label>
+                                <textarea id="confWhatsappTemplate" rows="12" placeholder="Monte sua mensagem usando as variáveis abaixo..."></textarea>
+                            </div>
+
+                            <!-- Placeholders disponíveis -->
+                            <div class="wa-placeholders-box">
+                                <h4>📌 Variáveis disponíveis <small>(clique para copiar)</small></h4>
+                                <div class="wa-placeholders-grid">
+                                    <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" title="Nome do cliente">{{cliente_nome}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" title="Telefone do cliente">{{cliente_telefone}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" title="Mesa / Retirada / Entrega">{{tipo_entrega}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{endereco}}" title="Endereço completo">{{endereco}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{itens}}" title="Lista de itens do pedido">{{itens}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{subtotal}}" title="Subtotal do pedido">{{subtotal}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{desconto}}" title="Desconto aplicado">{{desconto}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{frete}}" title="Valor do frete">{{frete}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{total}}" title="Total final">{{total}}</button>
+                                    <button class="wa-placeholder-tag" data-ph="{{pagamento}}" title="Forma de pagamento">{{pagamento}}</button>
+                                </div>
+                            </div>
+
+                            <!-- Botão restaurar padrão -->
+                            <div style="margin-top: 1rem; text-align: right;">
+                                <button class="btn-secondary" id="btnResetWaTemplate" style="font-size: 0.85rem;">🔄 Restaurar Mensagem Padrão</button>
                             </div>
                         </div>
                     </div>
