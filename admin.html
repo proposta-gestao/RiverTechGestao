@@ -34,6 +34,14 @@
             inset: 0 !important;
             z-index: 99999 !important;
         }
+        /* Esconder tabs dependentes de modulo por padrao para evitar flash */
+        .admin-tabs .tab-btn[data-tab="agenda"],
+        .admin-tabs .tab-btn[data-tab="loja"] {
+            display: none !important;
+        }
+        .admin-tabs .tab-btn.module-visible {
+            display: flex !important;
+        }
     </style>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1760,8 +1768,8 @@
         </div>
         <nav class="sidebar-nav">
             <button class="nav-item active" data-tab="produtos">📦 Produtos</button>
-            <button class="nav-item" data-tab="dashboard">📊 Vendas & Performance</button>
             <button class="nav-item" data-tab="agenda" id="side-nav-agenda" style="display:none;">📅 Agenda</button>
+            <button class="nav-item" data-tab="dashboard">📊 Vendas & Performance</button>
             <button class="nav-item" data-tab="loja" id="side-nav-loja" style="display:none;">👗 Loja</button>
             <button class="nav-item" data-tab="cupons" id="side-nav-cupons">🎫 Cupons</button>
             <button class="nav-item" data-tab="configuracoes">⚙️ Configurações</button>

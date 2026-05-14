@@ -432,16 +432,19 @@ async function showAdmin() {
         const savedTab = localStorage.getItem('admin_active_tab');
         if (savedTab) {
             const tabBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
-            // Só restaura se o botão existir e estiver visível (módulo ativo)
-            if (tabBtn && tabBtn.style.display !== 'none' && !tabBtn.classList.contains('module-hidden')) {
-                switchTab(savedTab, tabBtn);
+            if (tabBtn) {
+                const isVisible = tabBtn.style.display !== 'none' && !tabBtn.classList.contains('module-hidden');
+                console.log('[Tabs] Restaurando aba salva:', savedTab, '| Visível:', isVisible);
+                if (isVisible) {
+                    switchTab(savedTab, tabBtn);
+                }
             }
         }
-    } catch(e) {}
+    } catch(e) { console.warn('[Tabs] Erro ao restaurar aba:', e); }
 }
 
 // --- Tabs ---
-function switchTab(tabId, btn) {
+function switchTab(tabId, btn, persist = true) {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -505,7 +508,9 @@ function switchTab(tabId, btn) {
     }
 
     // Persistir aba ativa no localStorage para restaurar após reload
-    try { localStorage.setItem('admin_active_tab', tabId); } catch(e) {}
+    if (persist) {
+        try { localStorage.setItem('admin_active_tab', tabId); } catch(e) {}
+    }
 }
 
 
@@ -902,7 +907,9 @@ function aplicarFiltrosDeModulos() {
 
     // 6. AGENDAMENTO
     const mAgendamento = isModuloAtivo('agendamento_ativo');
-    toggleElement(document.getElementById('nav-agenda'), mAgendamento, 'flex');
+    const navAgenda = document.getElementById('nav-agenda');
+    toggleElement(navAgenda, mAgendamento, 'flex');
+    if (navAgenda) navAgenda.classList.toggle('module-visible', mAgendamento);
     toggleElement(document.getElementById('side-nav-agenda'), mAgendamento, 'flex');
     if (mAgendamento) {
         const cssEl = document.getElementById('agenda-css');
@@ -916,7 +923,9 @@ function aplicarFiltrosDeModulos() {
 
     // 8. LOJA DE ROUPAS
     const mLoja = isModuloAtivo('loja_roupas');
-    toggleElement(document.getElementById('nav-loja'), mLoja, 'flex');
+    const navLoja = document.getElementById('nav-loja');
+    toggleElement(navLoja, mLoja, 'flex');
+    if (navLoja) navLoja.classList.toggle('module-visible', mLoja);
     toggleElement(document.getElementById('side-nav-loja'), mLoja, 'flex');
     if (mLoja) {
         const cssLoja = document.getElementById('loja-css');
@@ -924,13 +933,14 @@ function aplicarFiltrosDeModulos() {
     }
 
     // --- Redirecionamento Automático (Segurança e UX) ---
+    // NOTA: persist=false para não sobrescrever a aba salva pelo usuário
     
     // 1. Redirecionamento de Abas Principais
     const abaAtiva = document.querySelector('.tab-btn.active')?.dataset.tab;
-    if (abaAtiva === 'dashboard' && !mQualquerDashboard) document.getElementById('nav-produtos')?.click();
-    else if (abaAtiva === 'produtos' && !mQualquerProduto) document.getElementById('nav-dashboard')?.click();
-    else if (abaAtiva === 'cupons' && !mCupons) document.getElementById('nav-produtos')?.click();
-    else if (abaAtiva === 'configuracoes' && !mQualquerConfig) document.getElementById('nav-produtos')?.click();
+    if (abaAtiva === 'dashboard' && !mQualquerDashboard) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
+    else if (abaAtiva === 'produtos' && !mQualquerProduto) { const b = document.getElementById('nav-dashboard'); if(b) switchTab('dashboard', b, false); }
+    else if (abaAtiva === 'cupons' && !mCupons) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
+    else if (abaAtiva === 'configuracoes' && !mQualquerConfig) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
 
     // 2. Redirecionamento de Sub-Abas (dentro da aba atual)
     const activeTabContent = document.querySelector('.tab-content.active');
