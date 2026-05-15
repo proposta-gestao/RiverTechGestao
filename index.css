@@ -200,7 +200,8 @@
             .product-img-wrap, .product-card > img {
                 width: 110px !important;
                 min-width: 110px !important;
-                height: 110px !important;
+                height: 100% !important;
+                min-height: 110px !important;
             }
             .product-info {
                 padding: 0.5rem 0.6rem;
@@ -411,7 +412,8 @@
             position: relative;
             width: 135px;
             min-width: 135px;
-            height: 135px;
+            height: 100%;
+            min-height: 135px;
             flex-shrink: 0;
             overflow: hidden;
         }
