@@ -395,10 +395,10 @@ document.getElementById('btnNovaEmpresa').addEventListener('click', () => {
     document.querySelectorAll('[id^="n_master_"]').forEach(cb => cb.checked = false);
     document.querySelectorAll('.grupo-content').forEach(g => g.classList.add('disabled'));
 
-    // Reset Tema
     _setColorField('n_editTemaCorPrimaria',   'n_editTemaCorPrimariaHex',   '#E5B25D');
     _setColorField('n_editTemaCorSecundaria', 'n_editTemaCorSecundariaHex', '#1E90FF');
     _setColorField('n_editTemaCorBotao',      'n_editTemaCorBotaoHex',      '#E5B25D');
+    _setColorField('n_editTemaCorHover',      'n_editTemaCorHoverHex',      '#d4a14c');
     _setColorField('n_editTemaCorBg',         'n_editTemaCorBgHex',         '#0d0d0d');
     _setColorField('n_editTemaCorSurface',    'n_editTemaCorSurfaceHex',    '#1a1a1a');
     _setColorField('n_editTemaCorBorda',      'n_editTemaCorBordaHex',      '#333333');
@@ -480,6 +480,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
         primaria:   document.getElementById('n_editTemaCorPrimaria').value,
         secundaria: document.getElementById('n_editTemaCorSecundaria').value,
         botao:      document.getElementById('n_editTemaCorBotao').value,
+        hover:      document.getElementById('n_editTemaCorHover').value,
         bg:         document.getElementById('n_editTemaCorBg').value,
         surface:    document.getElementById('n_editTemaCorSurface').value,
         borda:      document.getElementById('n_editTemaCorBorda').value,
@@ -519,6 +520,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
                 tema_cor_primaria: tema.primaria,
                 tema_cor_secundaria: tema.secundaria,
                 tema_cor_botao: tema.botao,
+                tema_cor_hover: tema.hover,
                 tema_cor_bg: tema.bg,
                 tema_cor_surface: tema.surface,
                 tema_cor_borda: tema.borda,
@@ -559,6 +561,7 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
     const tema_cor_primaria   = document.getElementById('editTemaCorPrimaria').value;
     const tema_cor_secundaria = document.getElementById('editTemaCorSecundaria').value;
     const tema_cor_botao      = document.getElementById('editTemaCorBotao').value;
+    const tema_cor_hover      = document.getElementById('editTemaCorHover').value;
     const tema_cor_bg         = document.getElementById('editTemaCorBg').value;
     const tema_cor_surface    = document.getElementById('editTemaCorSurface').value;
     const tema_cor_borda      = document.getElementById('editTemaCorBorda').value;
@@ -574,7 +577,7 @@ document.getElementById('btnSalvarEdicaoEmpresa').addEventListener('click', asyn
             .update({
                 nome, plano, status, cor_primaria,
                 tema_cor_primaria, tema_cor_secundaria,
-                tema_cor_botao, tema_cor_bg, tema_cor_surface,
+                tema_cor_botao, tema_cor_hover, tema_cor_bg, tema_cor_surface,
                 tema_cor_borda, tema_cor_texto
             })
             .eq('id', id);
@@ -619,9 +622,10 @@ window.previewTema = () => {
     const bg       = document.getElementById('editTemaCorBg')?.value       || '#0d0d0d';
     const surface  = document.getElementById('editTemaCorSurface')?.value  || '#1a1a1a';
     const botao    = document.getElementById('editTemaCorBotao')?.value     || primaria;
+    const hover    = document.getElementById('editTemaCorHover')?.value     || '#d4a14c';
 
     // Sync hex fields
-    ['editTemaCorPrimaria','editTemaCorSecundaria','editTemaCorBotao','editTemaCorBg','editTemaCorSurface','editTemaCorBorda','editTemaCorTexto'].forEach(id => {
+    ['editTemaCorPrimaria','editTemaCorSecundaria','editTemaCorBotao','editTemaCorHover','editTemaCorBg','editTemaCorSurface','editTemaCorBorda','editTemaCorTexto'].forEach(id => {
         const picker = document.getElementById(id);
         const hexEl  = document.getElementById(id + 'Hex');
         if (picker && hexEl) hexEl.value = picker.value;
@@ -636,7 +640,12 @@ window.previewTema = () => {
     if (preview) preview.style.background = bg;
     if (card)    card.style.background    = surface;
     if (price)   price.style.color        = primaria;
-    if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
+    if (btn)   { 
+        btn.style.background     = botao;  
+        btn.style.color = '#000'; 
+        btn.onmouseenter = () => btn.style.background = hover;
+        btn.onmouseleave = () => btn.style.background = botao;
+    }
     if (badge) { badge.style.background   = primaria; badge.style.color = '#000'; }
 };
 
@@ -666,15 +675,15 @@ window.toggleAccordionNovo = (id) => {
     }
 };
 
-// Preview para o modal de NOVA empresa
 window.previewTemaNovo = () => {
     const primaria = document.getElementById('n_editTemaCorPrimaria')?.value || '#E5B25D';
     const bg       = document.getElementById('n_editTemaCorBg')?.value       || '#0d0d0d';
     const surface  = document.getElementById('n_editTemaCorSurface')?.value  || '#1a1a1a';
     const botao    = document.getElementById('n_editTemaCorBotao')?.value     || primaria;
+    const hover    = document.getElementById('n_editTemaCorHover')?.value     || '#d4a14c';
 
     // Sync hex fields
-    ['n_editTemaCorPrimaria','n_editTemaCorSecundaria','n_editTemaCorBotao','n_editTemaCorBg','n_editTemaCorSurface','n_editTemaCorBorda','n_editTemaCorTexto'].forEach(id => {
+    ['n_editTemaCorPrimaria','n_editTemaCorSecundaria','n_editTemaCorBotao','n_editTemaCorHover','n_editTemaCorBg','n_editTemaCorSurface','n_editTemaCorBorda','n_editTemaCorTexto'].forEach(id => {
         const picker = document.getElementById(id);
         const hexEl  = document.getElementById(id + 'Hex');
         if (picker && hexEl) hexEl.value = picker.value;
@@ -688,7 +697,12 @@ window.previewTemaNovo = () => {
     if (preview) preview.style.background = bg;
     if (card)    card.style.background    = surface;
     if (price)   price.style.color        = primaria;
-    if (btn)   { btn.style.background     = botao;  btn.style.color = '#000'; }
+    if (btn)   { 
+        btn.style.background     = botao;  
+        btn.style.color = '#000'; 
+        btn.onmouseenter = () => btn.style.background = hover;
+        btn.onmouseleave = () => btn.style.background = botao;
+    }
 };
 
 // ==========================================
@@ -800,6 +814,7 @@ window.aplicarPresetSegmento = (segmento) => {
     _setColorField('n_editTemaCorPrimaria',  'n_editTemaCorPrimariaHex',  t.primaria);
     _setColorField('n_editTemaCorSecundaria','n_editTemaCorSecundariaHex',t.secundaria);
     _setColorField('n_editTemaCorBotao',     'n_editTemaCorBotaoHex',     t.botao);
+    _setColorField('n_editTemaCorHover',     'n_editTemaCorHoverHex',     _darkenHex(t.botao, 8));
     _setColorField('n_editTemaCorBg',        'n_editTemaCorBgHex',        t.bg);
     _setColorField('n_editTemaCorSurface',   'n_editTemaCorSurfaceHex',   t.surface);
     _setColorField('n_editTemaCorBorda',     'n_editTemaCorBordaHex',     t.borda);
@@ -819,6 +834,7 @@ window.restaurarTemapadrao = () => {
     _setColorField('editTemaCorPrimaria',   'editTemaCorPrimariaHex',   '#E5B25D');
     _setColorField('editTemaCorSecundaria', 'editTemaCorSecundariaHex', '#1E90FF');
     _setColorField('editTemaCorBotao',      'editTemaCorBotaoHex',      '#E5B25D');
+    _setColorField('editTemaCorHover',      'editTemaCorHoverHex',      '#d4a14c');
     _setColorField('editTemaCorBg',         'editTemaCorBgHex',         '#0d0d0d');
     _setColorField('editTemaCorSurface',    'editTemaCorSurfaceHex',    '#1a1a1a');
     previewTema();

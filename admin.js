@@ -2375,6 +2375,7 @@ async function carregarConfiguracoes() {
         _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   e.tema_cor_primaria   || '#E5B25D');
         _setThemeField('confTemaBotao',      'confTemaBotaoHex',      e.tema_cor_botao      || '#E5B25D');
         _setThemeField('confTemaTexto',      'confTemaTextoHex',      e.tema_cor_texto      || '#ffffff');
+        _setThemeField('confTemaHover',      'confTemaHoverHex',      e.tema_cor_hover      || _darkenHex(e.tema_cor_botao || '#E5B25D', 8));
         previewTemaEmpresa();
 
         // Atualizar títulos dinâmicos
@@ -2494,11 +2495,13 @@ function previewTemaEmpresa() {
     const primaria = document.getElementById('confTemaPrimaria').value;
     const botao    = document.getElementById('confTemaBotao').value;
     const texto    = document.getElementById('confTemaTexto').value;
+    const hover    = document.getElementById('confTemaHover').value;
 
     // Sincroniza campos hex
     document.getElementById('confTemaPrimariaHex').value = primaria;
     document.getElementById('confTemaBotaoHex').value    = botao;
     document.getElementById('confTemaTextoHex').value    = texto;
+    document.getElementById('confTemaHoverHex').value    = hover;
 
     // Aplica no preview local (Mockup Premium)
     const previewArea  = document.getElementById('empLivePreview');
@@ -2525,6 +2528,10 @@ function previewTemaEmpresa() {
             return (r * 0.299 + g * 0.587 + b * 0.114) > 186;
         };
         previewBtn.style.color = isLight(botao) ? '#000' : '#fff';
+
+        // Eventos de hover para o preview local
+        previewBtn.onmouseenter = () => previewBtn.style.backgroundColor = hover;
+        previewBtn.onmouseleave = () => previewBtn.style.backgroundColor = botao;
     }
 
     if (previewPrice) {
@@ -2547,6 +2554,7 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
     const tema_cor_primaria = document.getElementById('confTemaPrimaria').value;
     const tema_cor_botao    = document.getElementById('confTemaBotao').value;
     const tema_cor_texto    = document.getElementById('confTemaTexto').value;
+    const tema_cor_hover    = document.getElementById('confTemaHover').value;
 
     try {
         btn.disabled = true;
@@ -2556,6 +2564,7 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
             tema_cor_primaria,
             tema_cor_botao,
             tema_cor_texto,
+            tema_cor_hover,
             // Resetamos os fundos caso o usuário tenha clicado em restaurar (que preencheu os campos internos mas eles não aparecem no DOM)
             // Se o valor no DOM for o padrão, salvamos o padrão. 
             // Como removemos os campos do DOM, vamos enviar os valores padrão caso o usuário salve após restaurar.
@@ -2574,7 +2583,8 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
             window.TENANT.tema_cor_primaria = tema_cor_primaria;
             window.TENANT.tema_cor_botao = tema_cor_botao;
             window.TENANT.tema_cor_texto = tema_cor_texto;
-            window.TENANT.tema_cor_bg = tema_cor_bg;
+            window.TENANT.tema_cor_hover = tema_cor_hover;
+            window.TENANT.tema_cor_bg = tema_cor_primaria === '#E5B25D' ? '#0d0d0d' : window.TENANT.tema_cor_bg;
             window.TENANT.cor_primaria = tema_cor_primaria;
         }
 
@@ -2583,7 +2593,8 @@ document.getElementById('btnSalvarTemaEmpresa').addEventListener('click', async 
                 tema_cor_primaria,
                 tema_cor_botao,
                 tema_cor_texto,
-                tema_cor_bg,
+                tema_cor_hover,
+                tema_cor_bg: window.TENANT?.tema_cor_bg || '#0d0d0d',
                 tema_cor_surface: window.TENANT?.tema_cor_surface || '#1a1a1a',
                 nome: window.TENANT.nome,
                 logo_url: window.TENANT.logo_url,
@@ -2609,6 +2620,7 @@ document.getElementById('btnRestaurarTemaEmpresa').addEventListener('click', () 
         primaria: '#E5B25D',
         botao:    '#E5B25D',
         texto:    '#ffffff',
+        hover:    '#d4a14c',
         bg:       '#0d0d0d',
         surface:  '#1a1a1a'
     };
@@ -2616,6 +2628,7 @@ document.getElementById('btnRestaurarTemaEmpresa').addEventListener('click', () 
     _setThemeField('confTemaPrimaria',   'confTemaPrimariaHex',   defaults.primaria);
     _setThemeField('confTemaBotao',      'confTemaBotaoHex',      defaults.botao);
     _setThemeField('confTemaTexto',      'confTemaTextoHex',      defaults.texto);
+    _setThemeField('confTemaHover',      'confTemaHoverHex',      defaults.hover);
     
     // Atualiza preview local
     previewTemaEmpresa();

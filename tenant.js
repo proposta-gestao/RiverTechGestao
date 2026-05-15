@@ -172,6 +172,7 @@ window.TENANT = {
     tema_cor_surface: null,
     tema_cor_borda: null,
     tema_cor_texto: null,
+    tema_cor_hover: null,
 };
 
 // window.empresa — alias para compatibilidade com código legado
@@ -198,6 +199,7 @@ function invalidateTenantCache() {
     window.TENANT.tema_cor_surface = null;
     window.TENANT.tema_cor_borda = null;
     window.TENANT.tema_cor_texto = null;
+    window.TENANT.tema_cor_hover = null;
     window.empresa = null;
     console.info('[Tenant] Cache do tenant invalidado.');
 }
@@ -243,11 +245,12 @@ function _aplicarWhiteLabel(data) {
     const bg         = data.tema_cor_bg          || '#0d0d0d';
     const surface    = data.tema_cor_surface      || '#1a1a1a';
     const borda      = data.tema_cor_borda        || _hexToRgba(primaria, 0.2);
+    const hover      = data.tema_cor_hover        || _darkenHex(botao, 8);
     const brandName  = data.brand_name || data.nome || 'RiverTech';
     const brandSubtitle = data.brand_subtitle || '';
 
     set('--color-primary',        primaria);
-    set('--color-primary-hover',  _darkenHex(primaria, 8));
+    set('--color-primary-hover',  hover);
     set('--color-primary-10',     _hexToRgba(primaria, 0.10));
     set('--color-primary-30',     _hexToRgba(primaria, 0.30));
     set('--color-bg',             bg);
@@ -261,7 +264,8 @@ function _aplicarWhiteLabel(data) {
     set('--btn-bg',               botao);
     set('--color-button-text',    texto);
     set('--btn-text',             texto);
-    set('--color-button-hover',   _darkenHex(botao, 8));
+    set('--color-button-hover',   hover);
+    set('--btn-hover',            hover);
 
     // Variáveis Semânticas (Arquitetura Premium)
     set('--bg-page',              bg);
@@ -269,13 +273,14 @@ function _aplicarWhiteLabel(data) {
     set('--bg-input',             surface);
     set('--text-primary',         texto);
     set('--accent-primary',       primaria);
-    set('--accent-primary-hover', _darkenHex(primaria, 8));
+    set('--accent-primary-hover', data.tema_cor_hover || _darkenHex(primaria, 8));
     set('--border-default',       borda);
     set('--btn-primary-bg',       botao);
     set('--btn-primary-text',     texto);
+    set('--btn-primary-hover',    hover);
 
     set('--primary',       primaria);
-    set('--primary-hover', _darkenHex(primaria, 8));
+    set('--primary-hover', data.tema_cor_hover || _darkenHex(primaria, 8));
     set('--bg-body',       bg);
     set('--border-color',  borda);
 
@@ -389,7 +394,7 @@ async function initTenantPublico(supabaseClient, forceRefresh = false) {
         // Usamos .ilike para ser case-insensitive no slug (evita erros de digitação)
         let query = supabaseClient
             .from('empresas')
-            .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto')
+            .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto, tema_cor_hover')
             .ilike('slug', slug);
 
         // Se estiver em produção, só permitimos empresas ativas
@@ -436,6 +441,7 @@ async function initTenantPublico(supabaseClient, forceRefresh = false) {
         window.TENANT.tema_cor_surface    = data.tema_cor_surface;
         window.TENANT.tema_cor_borda      = data.tema_cor_borda;
         window.TENANT.tema_cor_texto      = data.tema_cor_texto;
+        window.TENANT.tema_cor_hover      = data.tema_cor_hover;
         window.TENANT.pronto           = true;
 
         // Alias window.empresa para compatibilidade
@@ -466,7 +472,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     // Tentamos primeiro com o tema completo
     let { data, error } = await supabaseClient
         .from('usuarios')
-        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto)')
+        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto, tema_cor_hover)')
         .eq('id', userId)
         .single();
 
@@ -529,6 +535,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     window.TENANT.tema_cor_bg         = emp.tema_cor_bg        || null;
     window.TENANT.tema_cor_surface    = emp.tema_cor_surface   || null;
     window.TENANT.tema_cor_borda      = emp.tema_cor_borda     || null;
+    window.TENANT.tema_cor_hover      = emp.tema_cor_hover     || null;
     window.TENANT.pronto             = true;
 
     window.empresa = {
@@ -547,6 +554,7 @@ async function initTenantAdmin(supabaseClient, userId) {
         tema_cor_bg:         emp.tema_cor_bg,
         tema_cor_surface:    emp.tema_cor_surface,
         tema_cor_borda:      emp.tema_cor_borda,
+        tema_cor_hover:      emp.tema_cor_hover,
     });
 
     console.info('[Tenant] ✅ Admin autenticado:', data.email, '| Empresa:', emp.nome);
@@ -563,7 +571,7 @@ async function initTenantById(supabaseClient, empresaId, forceRefresh = false) {
 
     const { data, error } = await supabaseClient
         .from('empresas')
-        .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda')
+        .select('id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_hover')
         .eq('id', empresaId)
         .single();
 
@@ -585,6 +593,7 @@ async function initTenantById(supabaseClient, empresaId, forceRefresh = false) {
     window.TENANT.tema_cor_bg         = data.tema_cor_bg;
     window.TENANT.tema_cor_surface    = data.tema_cor_surface;
     window.TENANT.tema_cor_borda      = data.tema_cor_borda;
+    window.TENANT.tema_cor_hover      = data.tema_cor_hover;
     window.TENANT.pronto             = true;
 
     _aplicarWhiteLabel(data);

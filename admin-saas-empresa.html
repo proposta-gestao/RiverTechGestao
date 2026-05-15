@@ -562,32 +562,51 @@
 
                     <h3 style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">🎨 Identidade Visual</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
+                        <div class="theme-color-field" style="grid-column: 1 / -1; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">Destaques e Botões</span>
+                        </div>
                         <div class="theme-color-field">
                             <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">PRIMÁRIA</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Preços, destaques e badges</span>
                             <input type="color" id="editTemaCorPrimaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                         <div class="theme-color-field">
                             <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">SECUNDÁRIA</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Detalhes secundários</span>
                             <input type="color" id="editTemaCorSecundaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                         <div class="theme-color-field">
                             <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">BOTÕES</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Fundo de botões principais</span>
                             <input type="color" id="editTemaCorBotao" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                         <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">FUNDO</label>
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">HOVER (BOTÕES)</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Cor ao passar o mouse</span>
+                            <input type="color" id="editTemaCorHover" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        </div>
+
+                        <div class="theme-color-field" style="grid-column: 1 / -1; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; margin-top: 10px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">Estrutura e Fundo</span>
+                        </div>
+                        <div class="theme-color-field">
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">FUNDO GERAL</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Fundo principal da página</span>
                             <input type="color" id="editTemaCorBg" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                         <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">CARDS</label>
+                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">CARDS / SURFACE</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Fundo de caixas e modais</span>
                             <input type="color" id="editTemaCorSurface" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                         <div class="theme-color-field">
                             <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">BORDAS</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Divisórias e linhas</span>
                             <input type="color" id="editTemaCorBorda" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                         <div class="theme-color-field">
                             <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">TEXTO</label>
+                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Cor principal das letras</span>
                             <input type="color" id="editTemaCorTexto" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
                         </div>
                     </div>

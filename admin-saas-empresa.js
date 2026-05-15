@@ -129,6 +129,7 @@ function renderDadosBasicos(emp) {
     if(document.getElementById('editTemaCorPrimaria'))   document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
     if(document.getElementById('editTemaCorSecundaria')) document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
     if(document.getElementById('editTemaCorBotao'))      document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
+    if(document.getElementById('editTemaCorHover'))      document.getElementById('editTemaCorHover').value = emp.tema_cor_hover || _darkenHex(emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D', 8);
     if(document.getElementById('editTemaCorBg'))         document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
     if(document.getElementById('editTemaCorSurface'))    document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
     if(document.getElementById('editTemaCorBorda'))      document.getElementById('editTemaCorBorda').value = emp.tema_cor_borda || 'rgba(229,178,93,0.2)';
@@ -378,6 +379,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const tema_cor_surface    = document.getElementById('editTemaCorSurface')?.value || '#1a1a1a';
     const tema_cor_borda      = document.getElementById('editTemaCorBorda')?.value || 'rgba(229,178,93,0.2)';
     const tema_cor_texto      = document.getElementById('editTemaCorTexto')?.value || '#ffffff';
+    const tema_cor_hover      = document.getElementById('editTemaCorHover')?.value || _darkenHex(tema_cor_botao, 8);
  
     try {
         btn.disabled = true;
@@ -404,6 +406,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 tema_cor_surface,
                 tema_cor_borda,
                 tema_cor_texto,
+                tema_cor_hover,
                 cor_primaria: tema_cor_primaria // Legado
             })
             .eq('id', EMPRESA_ID);
@@ -657,6 +660,7 @@ _Use este painel para receber e gerenciar os pedidos em tempo real._`;
 window.previewTema = () => {
     const primaria = document.getElementById('editTemaCorPrimaria').value;
     const botao = document.getElementById('editTemaCorBotao').value;
+    const hover = document.getElementById('editTemaCorHover').value;
     const bg = document.getElementById('editTemaCorBg').value;
     const surface = document.getElementById('editTemaCorSurface').value;
     const texto = document.getElementById('editTemaCorTexto')?.value || '#ffffff';
@@ -673,6 +677,8 @@ window.previewTema = () => {
     if (btn) {
         btn.style.background = botao;
         btn.style.color = '#000';
+        btn.onmouseenter = () => btn.style.background = hover;
+        btn.onmouseleave = () => btn.style.background = botao;
     }
 };
 
@@ -684,6 +690,7 @@ window.restaurarTemaPadrao = () => {
     document.getElementById('editTemaCorSurface').value = '#1a1a1a';
     document.getElementById('editTemaCorBorda').value = 'rgba(229,178,93,0.2)';
     document.getElementById('editTemaCorTexto').value = '#ffffff';
+    document.getElementById('editTemaCorHover').value = '#d4a14c';
     previewTema();
     showToast('Padrão restaurado (não esqueça de salvar)');
 };

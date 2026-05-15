@@ -1,0 +1,1 @@
+ALTER TABLE empresas ADD COLUMN IF NOT EXISTS tema_cor_hover TEXT;

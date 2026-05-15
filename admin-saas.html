@@ -496,6 +496,13 @@
                             </div>
                         </div>
                         <div class="theme-color-field">
+                            <label>🖱️ Hover (Botões)</label>
+                            <div class="color-input-wrap">
+                                <input type="color" id="n_editTemaCorHover" value="#d4a14c" oninput="previewTemaNovo()">
+                                <input type="text" id="n_editTemaCorHoverHex" value="#d4a14c" oninput="syncColorPicker('n_editTemaCorHover','n_editTemaCorHoverHex')">
+                            </div>
+                        </div>
+                        <div class="theme-color-field">
                             <label>🌑 Fundo</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorBg" value="#0d0d0d" oninput="previewTemaNovo()">
@@ -619,7 +626,15 @@
                             <input type="color" id="editTemaCorBotao" value="#E5B25D" oninput="previewTema()">
                             <input type="text" id="editTemaCorBotaoHex" value="#E5B25D" oninput="syncColorPicker('editTemaCorBotao','editTemaCorBotaoHex')">
                         </div>
-                        <small>Botão de comprar, confirmar</small>
+                        <small>Botão de comprar, confirmar e ações</small>
+                    </div>
+                    <div class="theme-color-field">
+                        <label>🖱️ Hover (Botões)</label>
+                        <div class="color-input-wrap">
+                            <input type="color" id="editTemaCorHover" value="#d4a14c" oninput="previewTema()">
+                            <input type="text" id="editTemaCorHoverHex" value="#d4a14c" oninput="syncColorPicker('editTemaCorHover','editTemaCorHoverHex')">
+                        </div>
+                        <small>Cor do botão ao passar o mouse</small>
                     </div>
                     <div class="theme-color-field">
                         <label>🌑 Fundo Geral</label>
