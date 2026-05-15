@@ -953,6 +953,7 @@
                                 <thead>
                                     <tr>
                                         <th>Nome da Zona</th>
+                                        <th>Cidade</th>
                                         <th>Bairros Atendidos</th>
                                         <th>Taxa (R$)</th>
                                         <th>Status</th>
@@ -1554,9 +1555,15 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="zonaId">
-                <div class="form-group">
-                    <label for="zonaNome">Identificação da Zona</label>
-                    <input type="text" id="zonaNome" placeholder="Ex: Zona Norte, Região Central...">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="zonaNome">Identificação da Zona</label>
+                        <input type="text" id="zonaNome" placeholder="Ex: Zona Norte, Região Central...">
+                    </div>
+                    <div class="form-group">
+                        <label for="zonaCidade">Cidade Atendida</label>
+                        <input type="text" id="zonaCidade" placeholder="Ex: Belo Horizonte">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="zonaNeighborhoods">Bairros Atendidos (separados por vírgula)</label>

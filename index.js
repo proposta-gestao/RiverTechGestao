@@ -466,15 +466,22 @@ function normalizar(str) {
         .trim();
 }
 
-function calcularFrete(bairro) {
+function calcularFrete(bairro, cidadeCliente) {
     if (!state.freteHabilitado) return 0;
     if (!bairro) return -1;
 
     const normalizarInterno = (s) => (s || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const bairroClienteNorm = normalizarInterno(bairro);
+    const cidadeClienteNorm = normalizarInterno(cidadeCliente);
 
     const zona = ZONAS_FRETE.find(z => {
         if (!z.neighborhoods) return false;
+        
+        // Validação de segurança: se a zona exigir uma cidade específica, verifica se bate com a do CEP
+        if (z.cidade && normalizarInterno(z.cidade) !== cidadeClienteNorm) {
+            return false;
+        }
+
         const listaBairros = z.neighborhoods.split(',').map(b => normalizarInterno(b));
         return listaBairros.includes(bairroClienteNorm);
     });
@@ -614,7 +621,7 @@ async function buscarCepAuto() {
         if (baiEl) baiEl.value = data.bairro || '';
         if (camposExtras) camposExtras.style.display = 'block';
 
-        const frete = calcularFrete(data.bairro);
+        const frete = calcularFrete(data.bairro, data.localidade);
         state.freteAtivo = frete;
 
         if (frete === -1) {

@@ -2812,6 +2812,7 @@ function renderZonasFrete() {
     tbody.innerHTML = zonasEntrega.map(z => `
         <tr>
             <td><strong>${z.name}</strong></td>
+            <td><span style="font-size:0.85rem; color:var(--text-muted);">${z.cidade || '-'}</span></td>
             <td><span style="font-size:0.85rem; color:var(--text-muted);">${truncateNeighborhoods(z.neighborhoods)}</span></td>
             <td>
                 <div class="fee-editable" onclick="window.tornarFeeEditavel(this, '${z.id}')" title="Clique para editar taxa">
@@ -2867,6 +2868,7 @@ document.getElementById('btnNovaZona').onclick = () => {
     document.getElementById('modalZonaTitulo').textContent = 'Nova Zona de Entrega';
     document.getElementById('zonaId').value = '';
     document.getElementById('zonaNome').value = '';
+    document.getElementById('zonaCidade').value = '';
     document.getElementById('zonaNeighborhoods').value = '';
     document.getElementById('zonaFee').value = '';
     document.getElementById('zonaAtivo').value = 'true';
@@ -2879,6 +2881,7 @@ window.editarZona = (id) => {
     document.getElementById('modalZonaTitulo').textContent = 'Editar Zona';
     document.getElementById('zonaId').value = z.id;
     document.getElementById('zonaNome').value = z.name;
+    document.getElementById('zonaCidade').value = z.cidade || '';
     document.getElementById('zonaNeighborhoods').value = z.neighborhoods || '';
     document.getElementById('zonaFee').value = z.fee;
     document.getElementById('zonaAtivo').value = String(z.active);
@@ -2892,6 +2895,7 @@ document.getElementById('btnSalvarZona').onclick = async () => {
     const btn = document.getElementById('btnSalvarZona');
     const id = document.getElementById('zonaId').value;
     const nome = document.getElementById('zonaNome').value.trim();
+    const cidade = document.getElementById('zonaCidade').value.trim();
     const neighborhoods = document.getElementById('zonaNeighborhoods').value.trim();
     const fee = parseFloat(document.getElementById('zonaFee').value);
     const ativo = document.getElementById('zonaAtivo').value === 'true';
@@ -2903,6 +2907,7 @@ document.getElementById('btnSalvarZona').onclick = async () => {
 
     const payload = {
         name: nome,
+        cidade: cidade,
         neighborhoods: neighborhoods,
         fee,
         active: ativo
