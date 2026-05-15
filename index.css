@@ -2005,9 +2005,9 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.16);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: color-mix(in srgb, var(--btn-bg) 40%, transparent);
+    color: var(--btn-text);
+    border: 1px solid color-mix(in srgb, var(--btn-bg) 60%, transparent);
     cursor: pointer;
     z-index: 25;
     display: flex;
@@ -2028,10 +2028,10 @@
 }
 
 .carousel-nav:hover {
-    background: var(--primary);
-    color: #fff;
+    background: var(--btn-hover);
+    color: var(--btn-text);
     transform: translateY(-50%) scale(1.05);
-    border-color: var(--primary);
+    border-color: var(--btn-hover);
 }
 
 .carousel-dots {
