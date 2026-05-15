@@ -11,6 +11,22 @@ let STORE_SETTINGS_DATA = null; // Armazena o ID e dados atuais do branding
 // ==========================================
 // 1. Inicialização e Segurança
 // ==========================================
+
+function _darkenHex(hex, percent) {
+    if (!hex) return '#000000';
+    let r = parseInt(hex.substring(1,3), 16);
+    let g = parseInt(hex.substring(3,5), 16);
+    let b = parseInt(hex.substring(5,7), 16);
+    r = Math.floor(r * (100 - percent) / 100);
+    g = Math.floor(g * (100 - percent) / 100);
+    b = Math.floor(b * (100 - percent) / 100);
+    const toHex = (n) => {
+        const h = n.toString(16);
+        return h.length === 1 ? '0' + h : h;
+    };
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
 async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     EMPRESA_ID = urlParams.get('id');
