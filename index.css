@@ -2027,9 +2027,17 @@
     right: 15px;
 }
 
-        .carousel-nav:hover {
-            background: var(--accent-primary);
-            color: var(--color-neutral-950);
+.carousel-nav:hover {
+    background: var(--primary);
+    color: #fff;
+    transform: translateY(-50%) scale(1.05);
+    border-color: var(--primary);
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
