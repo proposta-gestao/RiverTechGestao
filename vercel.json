@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/apresentacao/:slug",
+      "destination": "/apresentacoes/:slug/index.html"
+    },
+    {
       "source": "/master-saas",
       "destination": "/admin-saas.html"
     },

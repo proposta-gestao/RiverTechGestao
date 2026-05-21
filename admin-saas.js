@@ -370,6 +370,7 @@ function renderizarEmpresas() {
             <td class="action-links">
                 <button onclick="abrirModalEdicao('${emp.id}')">Editar</button>
                 <a href="/admin.html?tenant=${emp.slug}" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.9rem">Painel Admin ↗</a>
+                <a href="/apresentacao/${emp.slug}" target="_blank" style="color:var(--accent-gold);text-decoration:none;font-size:0.85rem;opacity:0.8" title="Apresentação comercial">🎴 Proposta ↗</a>
             </td>
         `;
         tbody.appendChild(tr);
@@ -448,6 +449,9 @@ function atualizarPreviewsURL() {
         document.getElementById('previewAdmin').textContent = `${baseUrl}/painel-gestao`;
         if (document.getElementById('previewAtendente')) {
             document.getElementById('previewAtendente').textContent = `${baseUrl}/atendente`;
+        }
+        if (document.getElementById('previewApresentacao')) {
+            document.getElementById('previewApresentacao').textContent = `https://river-tech-gestao.vercel.app/apresentacao/${slug}`;
         }
     } else {
         container.style.display = 'none';
