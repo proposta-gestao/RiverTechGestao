@@ -2764,36 +2764,8 @@ body {
         display: table-cell !important;
     }
 
-    /* ===== Table Mobile Refinement: Products List ===== */
-    #subtab-lista-produtos .admin-table th:nth-child(1),
-    #subtab-lista-produtos .admin-table td:nth-child(1),
-    #subtab-lista-produtos .admin-table th:nth-child(2),
-    #subtab-lista-produtos .admin-table td:nth-child(2),
-    #subtab-lista-produtos .admin-table th:nth-child(4),
-    #subtab-lista-produtos .admin-table td:nth-child(4),
-    #subtab-lista-produtos .admin-table th:nth-child(6),
-    #subtab-lista-produtos .admin-table td:nth-child(6),
-    #subtab-lista-produtos .admin-table th:nth-child(7),
-    #subtab-lista-produtos .admin-table td:nth-child(7) {
-        display: none !important;
-    }
-
-    #subtab-lista-produtos .admin-table th:nth-child(3),
-    #subtab-lista-produtos .admin-table td:nth-child(3) {
-        /* Nome */
-        width: 70% !important;
-        display: table-cell !important;
-    }
-
-    .mobile-price-hint {
-        display: block !important;
-    }
-
-    #subtab-lista-produtos .admin-table th:nth-child(5),
-    #subtab-lista-produtos .admin-table td:nth-child(5) {
-        /* Preço (agora escondido porque está no nome) */
-        display: none !important;
-    }
+    /* ===== Tabela de Produtos: colunas definidas no bloco mobile 768px abaixo ===== */
+    /* (Regras movidas para o bloco @media max-width:768px no final do arquivo) */
 }
 
 #subtab-lista-produtos .admin-table th:nth-child(8),
@@ -3598,4 +3570,161 @@ input[type=number] {
 
 .btn-remove-img:hover {
     background: #ff2e3d;
+}
+
+/* ================================================================
+   MELHORIAS DE RESPONSIVIDADE MOBILE
+   ================================================================ */
+
+@media (max-width: 768px) {
+    /* ---- 1. Nome da loja: mostrar apenas a primeira palavra ---- */
+    .header-brand-name[data-short]::before {
+        content: attr(data-short);
+    }
+    .header-brand-name[data-short] {
+        color: transparent !important;
+        font-size: 0 !important;
+        position: relative;
+        display: inline-block;
+    }
+    .header-brand-name[data-short]::before {
+        font-size: 1.1rem !important;
+        color: white !important;
+        font-weight: 800;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 130px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    /* Fallback se data-short ainda não foi definido */
+    .header-brand-name:not([data-short]) {
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    /* ---- 2. Ocultar o badge "Admin" ---- */
+    .admin-header .admin-header-label {
+        display: none !important;
+    }
+
+    /* ---- 3. Modais: z-index acima do topbar, sem corte no topo ---- */
+    .admin-modal-backdrop {
+        z-index: 1100 !important;
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+        padding: 0 !important;
+    }
+    .admin-modal {
+        margin: 10px auto !important;
+        max-height: calc(100dvh - 20px) !important;
+        width: 98% !important;
+        border-radius: 18px !important;
+    }
+
+    /* ---- 4. Tabela de Produtos (módulo padrão): Imagem + Preço + Ações ---- */
+    /* Esconder: handle(1), nome(3), categoria(4), estoque(6), toggle(7) */
+    #subtab-lista-produtos .admin-table th:nth-child(1),
+    #subtab-lista-produtos .admin-table td:nth-child(1),
+    #subtab-lista-produtos .admin-table th:nth-child(3),
+    #subtab-lista-produtos .admin-table td:nth-child(3),
+    #subtab-lista-produtos .admin-table th:nth-child(4),
+    #subtab-lista-produtos .admin-table td:nth-child(4),
+    #subtab-lista-produtos .admin-table th:nth-child(6),
+    #subtab-lista-produtos .admin-table td:nth-child(6),
+    #subtab-lista-produtos .admin-table th:nth-child(7),
+    #subtab-lista-produtos .admin-table td:nth-child(7) {
+        display: none !important;
+    }
+    /* Imagem (2) */
+    #subtab-lista-produtos .admin-table th:nth-child(2),
+    #subtab-lista-produtos .admin-table td:nth-child(2) {
+        display: table-cell !important;
+        width: 60px !important;
+        text-align: center !important;
+    }
+    /* Preço (5) */
+    #subtab-lista-produtos .admin-table th:nth-child(5),
+    #subtab-lista-produtos .admin-table td:nth-child(5) {
+        display: table-cell !important;
+        width: auto !important;
+        text-align: center !important;
+        font-weight: 800 !important;
+        color: var(--primary) !important;
+    }
+    /* Ações (8) */
+    #subtab-lista-produtos .admin-table th:nth-child(8),
+    #subtab-lista-produtos .admin-table td:nth-child(8) {
+        display: table-cell !important;
+        width: 80px !important;
+        text-align: right !important;
+    }
+    #subtab-lista-produtos .admin-table {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    /* ---- 5. Tabela Loja: Imagem + Nome + Ações ---- */
+    /* Esconder: handle(1), categoria(4), variações(5), estoque(6), status(7) */
+    #subtab-loja-produtos .admin-table th:nth-child(1),
+    #subtab-loja-produtos .admin-table td:nth-child(1),
+    #subtab-loja-produtos .admin-table th:nth-child(4),
+    #subtab-loja-produtos .admin-table td:nth-child(4),
+    #subtab-loja-produtos .admin-table th:nth-child(5),
+    #subtab-loja-produtos .admin-table td:nth-child(5),
+    #subtab-loja-produtos .admin-table th:nth-child(6),
+    #subtab-loja-produtos .admin-table td:nth-child(6),
+    #subtab-loja-produtos .admin-table th:nth-child(7),
+    #subtab-loja-produtos .admin-table td:nth-child(7) {
+        display: none !important;
+    }
+    /* Imagem (2) */
+    #subtab-loja-produtos .admin-table th:nth-child(2),
+    #subtab-loja-produtos .admin-table td:nth-child(2) {
+        display: table-cell !important;
+        width: 60px !important;
+    }
+    /* Nome (3) */
+    #subtab-loja-produtos .admin-table th:nth-child(3),
+    #subtab-loja-produtos .admin-table td:nth-child(3) {
+        display: table-cell !important;
+        width: auto !important;
+        max-width: 160px !important;
+        white-space: normal !important;
+        word-break: break-word;
+    }
+    /* Ações (8) */
+    #subtab-loja-produtos .admin-table th:nth-child(8),
+    #subtab-loja-produtos .admin-table td:nth-child(8) {
+        display: table-cell !important;
+        width: 70px !important;
+        text-align: right !important;
+    }
+    #subtab-loja-produtos .admin-table {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    /* ---- 6. Botão Salvar Configurações: fixo no rodapé ---- */
+    .config-card-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--bg-card);
+    }
+
+    /* Adicionar espaço no final da tab de configurações */
+    #tab-configuracoes .subtab-content.active {
+        padding-bottom: 90px !important;
+    }
+
+    /* ---- 7. Garantia extra: Botão salvar do header dos config-cards ---- */
+    #tab-configuracoes .config-card:first-of-type .config-card-header {
+        top: 0;
+    }
 }

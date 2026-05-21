@@ -306,8 +306,12 @@ function _aplicarWhiteLabel(data) {
     }
 
     if (brandName) {
+        const firstWord = brandName.split(/\s/)[0];
         const nomes = document.querySelectorAll('.brand-name, #brandName');
-        nomes.forEach(el => { el.textContent = brandName; });
+        nomes.forEach(el => {
+            el.textContent = brandName;
+            el.setAttribute('data-short', firstWord);
+        });
         document.title = `${brandName} | Sistema`;
     }
 
