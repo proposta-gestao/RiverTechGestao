@@ -275,6 +275,8 @@ function switchTab(tabName) {
 
 // --- Dados ---
 async function loadOrders() {
+    if (!waiter || !waiter.empresa_id) return;
+
     // Busca pedidos das últimas 12 horas que não estão 'finalizados' ou 'cancelados'
     const dozeHorasAtras = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
 
@@ -284,6 +286,7 @@ async function loadOrders() {
             *,
             order_items (*)
         `)
+        .eq('empresa_id', waiter.empresa_id)
         .gte('created_at', dozeHorasAtras)
         .not('status', 'in', '("concluido","cancelado")')
         .order('created_at', { ascending: false });
@@ -299,14 +302,16 @@ async function loadOrders() {
 
 function setupRealtime() {
     if (realtimeChannel) sb.removeChannel(realtimeChannel);
+    if (!waiter || !waiter.empresa_id) return;
 
-    console.log("Iniciando conexão Realtime...");
+    console.log("Iniciando conexão Realtime para empresa:", waiter.empresa_id);
 
     realtimeChannel = sb.channel('orders-realtime')
         .on('postgres_changes', { 
             event: 'INSERT', 
             schema: 'public', 
-            table: 'orders' 
+            table: 'orders',
+            filter: `empresa_id=eq.${waiter.empresa_id}`
         }, payload => {
             console.log("Evento INSERT recebido!", payload);
             handleNewOrder(payload);
@@ -314,7 +319,8 @@ function setupRealtime() {
         .on('postgres_changes', { 
             event: 'UPDATE', 
             schema: 'public', 
-            table: 'orders' 
+            table: 'orders',
+            filter: `empresa_id=eq.${waiter.empresa_id}`
         }, payload => {
             console.log("Evento UPDATE recebido!", payload);
             handleUpdatedOrder(payload);
@@ -338,8 +344,11 @@ document.addEventListener('visibilitychange', () => {
 
 async function handleNewOrder(payload) {
     console.log("Novo pedido recebido!", payload.new);
+
+    // Segurança extra: verifica se é da empresa do atendente
+    if (payload.new.empresa_id !== waiter.empresa_id) return;
     
-    // Para pegar os itens, precisamos buscar novamente (ou o payload teria que ser mais complexo)
+    // Para pegar os itens, precisamos buscar novamente
     const { data, error } = await sb
         .from('orders')
         .select('*, order_items(*)')
@@ -348,12 +357,15 @@ async function handleNewOrder(payload) {
 
     if (!error && data) {
         orders.unshift(data);
-        playBell(); // Toca via AudioContext (só funciona se já desbloqueado)
+        playBell();
         renderBoard();
     }
 }
 
 function handleUpdatedOrder(payload) {
+    // Segurança extra: verifica se é da empresa do atendente
+    if (payload.new.empresa_id !== waiter.empresa_id) return;
+
     const idx = orders.findIndex(o => o.id === payload.new.id);
     if (idx !== -1) {
         // Se mudou para um status que não mostramos mais, removemos da lista
