@@ -277,8 +277,8 @@ function switchTab(tabName) {
 async function loadOrders() {
     if (!waiter || !waiter.empresa_id) return;
 
-    // Busca pedidos das últimas 12 horas que não estão 'finalizados' ou 'cancelados'
-    const dozeHorasAtras = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+    // Busca pedidos das últimas 24 horas que não estão 'finalizados' ou 'cancelados'
+    const dozeHorasAtras = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     const { data, error } = await sb
         .from('orders')

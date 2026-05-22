@@ -864,6 +864,32 @@
                     </div>
                 </div>
 
+                <!-- Grupo: Clientes Premium 🆕 -->
+                <div class="module-card">
+                    <div class="module-header" onclick="toggleAccordionNovo('grupo_premium')">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="accordion-icon" id="icon_grupo_premium">▼</span>
+                            <div>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">👑 CLIENTES PREMIUM</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Login VIP, Comanda e Teto de Gastos</small>
+                            </div>
+                        </div>
+                        <label class="switch" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="master_premium" onchange="toggleGrupoModulo('grupo_premium', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="grupo-content collapsed" id="grupo_premium">
+                        <div class="module-item">
+                            <span>👑 Módulo Clientes Premium</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mod_clientes_premium" onchange="atualizarModulo('clientes_premium', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 

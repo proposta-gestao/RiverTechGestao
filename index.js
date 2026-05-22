@@ -37,7 +37,8 @@ let state = {
     freteHabilitado: false, // controlado pelo Admin via store_settings
     whatsappNumero: null,   // número do WhatsApp da empresa
     whatsappTemplate: null, // template customizado de mensagem
-    whatsappAtivo: { mesa: false, retirada: false, entrega: true } // toggles por tipo
+    whatsappAtivo: { mesa: false, retirada: false, entrega: true }, // toggles por tipo
+    premiumUser: null // Usuário premium logado (VIP, funcionário)
 };
 
 // --- Seletores DOM ---
@@ -96,6 +97,7 @@ async function inicializar() {
             carregarConfiguracoesPublicas()
         ]);
         aplicarFiltrosDeModulosPublico(); // Novo: Filtra funcionalidades no cardápio
+        inicializarLoginPremium(); // Inicializa o modal VIP e o estado (se salvo)
         vincularRadiosEntrega();
         vincularCupom();
     } catch (e) {
@@ -137,7 +139,8 @@ async function carregarProdutos() {
             imgs: imgs,         // Todas as fotos
             stock: p.stock,
             cat: p.categories?.name || '',
-            catSlug: p.categories?.slug || ''
+            catSlug: p.categories?.slug || '',
+            category_id: p.category_id
         };
     });
     renderMenu();
@@ -267,7 +270,15 @@ function aplicarFiltrosDeModulosPublico() {
         }
     }
 
-
+    // 3. Clientes Premium
+    const btnLoginPremium = document.getElementById('btnLoginPremium');
+    if (btnLoginPremium) {
+        if (isModuloAtivo('clientes_premium')) {
+            btnLoginPremium.style.display = 'flex';
+        } else {
+            btnLoginPremium.style.display = 'none';
+        }
+    }
 }
 
 function aplicarPersonalizacaoVisual(config) {
@@ -302,21 +313,41 @@ function aplicarPersonalizacaoVisual(config) {
 // =============================================
 
 function renderCategorias() {
+    let cats = CATEGORIAS;
+    if (state.premiumUser && state.premiumUser.categoriasPermitidas) {
+        cats = cats.filter(c => state.premiumUser.categoriasPermitidas.includes(c.id));
+    }
+
     dom.categoriesList.innerHTML = '<button class="cat-btn active" data-cat="todos">Todos</button>';
-    CATEGORIAS.forEach(cat => {
+    cats.forEach(c => {
         const btn = document.createElement('button');
         btn.className = 'cat-btn';
-        btn.dataset.cat = cat.name;
-        btn.textContent = cat.name;
+        btn.dataset.cat = c.slug;
+        btn.innerText = c.name;
         dom.categoriesList.appendChild(btn);
     });
-    vincularFiltros();
+
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            state.categoriaAtiva = e.target.dataset.cat;
+            renderMenu();
+        });
+    });
 }
 
 function renderMenu() {
-    const filtrados = PRODUTOS.filter(p => {
+    let filtrados = PRODUTOS;
+
+    // Filtro Premium (somente categorias permitidas)
+    if (state.premiumUser && state.premiumUser.categoriasPermitidas) {
+        filtrados = filtrados.filter(p => state.premiumUser.categoriasPermitidas.includes(p.category_id));
+    }
+
+    filtrados = filtrados.filter(p => {
         const matchBusca = p.nome.toLowerCase().includes(state.termoBusca.toLowerCase());
-        const matchCat = state.categoriaAtiva === 'todos' || p.cat === state.categoriaAtiva;
+        const matchCat = state.categoriaAtiva === 'todos' || p.catSlug === state.categoriaAtiva || p.cat === state.categoriaAtiva;
         return matchBusca && matchCat;
     });
 
@@ -1045,7 +1076,8 @@ document.getElementById("btnEnviar").onclick = async () => {
             payment_method: state.formaPagamento,
             payment_status: 'pendente',
             delivery_type: state.tipoEntrega,
-            shipping_fee: freteValor
+            shipping_fee: freteValor,
+            cliente_premium_id: state.premiumUser ? state.premiumUser.id : null
         };
 
         const { error: orderError } = await sb.from('orders').insert(orderPayload);
@@ -1457,6 +1489,185 @@ async function iniciarFluxoCartaoCheckoutPro(orderId, whatsappMsg) {
         btn.disabled = false;
         btn.innerHTML = `<span>Tentar novamente</span>`;
     }
+}
+
+// =============================================
+// LOGIN VIP PREMIUM
+// =============================================
+
+function inicializarLoginPremium() {
+    const btnLogin = document.getElementById('btnLoginPremium');
+    const modal = document.getElementById('modalLoginPremium');
+    const btnClose = document.getElementById('closeModalLoginPremium');
+    const btnEntrar = document.getElementById('btnEntrarPremium');
+    const inputCpf = document.getElementById('loginPremiumCpf');
+    const inputPin = document.getElementById('loginPremiumPin');
+    const btnSair = document.getElementById('btnLogoutPremium');
+
+    if (!btnLogin || !modal) return;
+
+    // Verificar se já tem login salvo no sessionStorage
+    const savedUser = sessionStorage.getItem('premiumUser');
+    if (savedUser) {
+        try {
+            state.premiumUser = JSON.parse(savedUser);
+            atualizarBarraPremium();
+            // A filtragem acontecerá automaticamente após o carregarCategorias pq inicializarLoginPremium será chamado após o load
+        } catch(e) {}
+    }
+
+    btnLogin.onclick = () => {
+        if (state.premiumUser) return; // Já logado
+        inputCpf.value = '';
+        inputPin.value = '';
+        document.getElementById('loginPremiumError').style.display = 'none';
+        modal.style.display = 'flex';
+    };
+
+    btnClose.onclick = () => modal.style.display = 'none';
+    
+    // Máscara simples CPF
+    inputCpf.addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length > 11) v = v.substring(0, 11);
+        if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+        else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+        this.value = v;
+    });
+
+    btnEntrar.onclick = async () => {
+        const cpf = inputCpf.value.replace(/\D/g, '');
+        const pin = inputPin.value;
+        const errDiv = document.getElementById('loginPremiumError');
+
+        if (cpf.length !== 11 || !pin) {
+            errDiv.textContent = 'Preencha o CPF e o PIN corretamenta.';
+            errDiv.style.display = 'block';
+            return;
+        }
+
+        btnEntrar.disabled = true;
+        btnEntrar.textContent = 'Verificando...';
+        errDiv.style.display = 'none';
+
+        try {
+            // Hash simples do PIN (mesmo algoritmo do admin)
+            const msgBuffer = new TextEncoder().encode(pin);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const pinHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const { data, error } = await sb.from('clientes_premium')
+                .select('id, nome, cpf, tipo, teto_mensal, pin, perfil_cardapio_id')
+                .eq('empresa_id', getTenantId())
+                .eq('cpf', cpf)
+                .single();
+
+            if (error || !data) {
+                throw new Error('Credenciais inválidas.');
+            }
+
+            if (data.pin !== pinHash) {
+                throw new Error('Credenciais inválidas.');
+            }
+
+            // Buscar categorias permitidas se houver perfil
+            let categoriasPermitidas = null;
+            if (data.perfil_cardapio_id) {
+                const { data: catData } = await sb.from('perfil_cardapio_categorias')
+                    .select('category_id')
+                    .eq('perfil_id', data.perfil_cardapio_id);
+                categoriasPermitidas = (catData || []).map(c => c.category_id);
+            }
+
+            // Buscar gasto atual no mês
+            const mesAtual = new Date();
+            const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
+            const { data: orders } = await sb.from('orders')
+                .select('total')
+                .eq('cliente_premium_id', data.id)
+                .gte('created_at', inicioMes)
+                .not('status', 'eq', 'cancelado');
+            
+            const gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+
+            // Sucesso!
+            state.premiumUser = {
+                id: data.id,
+                nome: data.nome.split(' ')[0],
+                nomeCompleto: data.nome,
+                telefone: data.telefone,
+                cpf: data.cpf,
+                tipo: data.tipo,
+                teto: parseFloat(data.teto_mensal) || 0,
+                gasto: gastoMes,
+                categoriasPermitidas: categoriasPermitidas
+            };
+
+            sessionStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+            
+            modal.style.display = 'none';
+            atualizarBarraPremium();
+            aplicarFiltroCardapioPremium();
+
+            // Preencher form
+            const n = document.getElementById('clienteNome');
+            if (n) n.value = data.nome;
+
+        } catch (err) {
+            console.error('Login VIP:', err);
+            errDiv.textContent = 'CPF ou PIN incorretos.';
+            errDiv.style.display = 'block';
+        } finally {
+            btnEntrar.disabled = false;
+            btnEntrar.textContent = 'Entrar';
+        }
+    };
+
+    if (btnSair) {
+        btnSair.onclick = () => {
+            state.premiumUser = null;
+            sessionStorage.removeItem('premiumUser');
+            atualizarBarraPremium();
+            aplicarFiltroCardapioPremium();
+        };
+    }
+}
+
+function atualizarBarraPremium() {
+    const bar = document.getElementById('premiumStatusBar');
+    const btn = document.getElementById('btnLoginPremium');
+    if (!bar) return;
+
+    if (state.premiumUser) {
+        document.getElementById('premiumUserFirstName').textContent = state.premiumUser.nome;
+        
+        const teto = state.premiumUser.teto;
+        const disp = teto > 0 ? (teto - state.premiumUser.gasto) : -1;
+        const tetoEl = document.getElementById('premiumUserTeto');
+        
+        if (disp >= 0) {
+            tetoEl.textContent = `Disp: R$ ${formatNumber(disp)}`;
+            tetoEl.style.display = 'inline';
+            tetoEl.style.background = disp < (teto * 0.1) ? '#FF4757' : 'var(--accent-gold)';
+            tetoEl.style.color = disp < (teto * 0.1) ? '#fff' : '#000';
+        } else {
+            tetoEl.style.display = 'none';
+        }
+
+        bar.style.display = 'flex';
+        if (btn) btn.style.display = 'none';
+    } else {
+        bar.style.display = 'none';
+        if (btn && isModuloAtivo('clientes_premium')) btn.style.display = 'flex';
+    }
+}
+
+function aplicarFiltroCardapioPremium() {
+    // Re-render categories and products
+    renderCategorias();
+    renderProdutos();
 }
 
 // Inicializar

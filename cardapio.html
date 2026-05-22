@@ -98,6 +98,11 @@
                     </div>
                 </div>
                 <div class="nav-actions">
+                    <!-- Login Premium Button -->
+                    <button class="cart-toggle" id="btnLoginPremium" aria-label="Login Premium" style="display:none; background:rgba(229,178,93,0.1); color:var(--accent-gold);">
+                        <span class="cart-icon">👑</span>
+                        <span class="cart-label">VIP</span>
+                    </button>
                     <button class="cart-toggle" id="btnCart" aria-label="Ver carrinho">
                         <span class="cart-icon">🛒</span>
                         <span class="cart-label">Carrinho</span>
@@ -105,6 +110,16 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Premium Status Bar -->
+            <div id="premiumStatusBar" style="display:none; background: linear-gradient(90deg, var(--bg-card), rgba(229,178,93,0.1)); padding: 8px 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span>👑 Olá, <strong id="premiumUserFirstName">Usuário</strong></span>
+                    <span id="premiumUserTeto" style="background:var(--accent-gold); color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem;">Lim: R$ 0,00</span>
+                </div>
+                <button id="btnLogoutPremium" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; text-decoration:underline;">Sair</button>
+            </div>
+
             <div class="search-bar-container">
                 <div class="search-wrapper">
                     <span class="search-icon">🔍</span>
@@ -410,6 +425,35 @@
                 <div id="pixStatusMessage">Aguardando pagamento...</div>
 
                 <button class="close-modal" id="closeModalPix">&times;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Premium Modal -->
+    <div class="modal" id="modalLoginPremium" aria-modal="true" role="dialog">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-body" style="padding:2rem 1.5rem;">
+                <div style="text-align:center; margin-bottom:1.5rem;">
+                    <div style="font-size:3rem; margin-bottom:0.5rem;">👑</div>
+                    <h3 style="margin:0; color:var(--accent-gold);">Acesso VIP</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">Identifique-se para acessar seu cardápio exclusivo e limites de gastos.</p>
+                </div>
+
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label for="loginPremiumCpf">CPF</label>
+                    <input type="text" id="loginPremiumCpf" placeholder="000.000.000-00" maxlength="14" style="text-align:center; letter-spacing:1px; font-size:1.1rem; padding:12px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom:1.5rem;">
+                    <label for="loginPremiumPin">PIN (Senha)</label>
+                    <input type="password" id="loginPremiumPin" placeholder="****" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:4px; font-size:1.5rem; padding:12px;">
+                </div>
+
+                <button class="btn-primary" id="btnEntrarPremium" style="width:100%; padding:14px; font-size:1rem; margin-bottom:1rem;">Entrar</button>
+
+                <div id="loginPremiumError" style="color:#FF4757; text-align:center; font-size:0.85rem; display:none; margin-bottom:1rem;"></div>
+
+                <button class="close-modal" id="closeModalLoginPremium" style="top:10px; right:10px;">&times;</button>
             </div>
         </div>
     </div>

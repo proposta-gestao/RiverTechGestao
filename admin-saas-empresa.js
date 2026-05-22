@@ -102,7 +102,9 @@ const LISTA_MODULOS = [
     'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
     'agendamento_mensagens', 'agendamento_fidelidade',
     // Módulo de Loja de Roupas
-    'loja_roupas'
+    'loja_roupas',
+    // Módulo de Clientes Premium
+    'clientes_premium'
 ];
 
 function renderDadosBasicos(emp) {
@@ -129,7 +131,7 @@ function renderDadosBasicos(emp) {
     });
 
     // Sincronizar Master Toggles e Estado dos Containers
-    ['produtos', 'vendas', 'ops', 'agendamento'].forEach(g => {
+    ['produtos', 'vendas', 'ops', 'agendamento', 'premium'].forEach(g => {
         const container = document.getElementById(`grupo_${g}`);
         const master = document.getElementById(`master_${g}`);
         if (container && master) {

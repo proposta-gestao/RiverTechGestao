@@ -950,6 +950,15 @@ function aplicarFiltrosDeModulos() {
     else if (abaAtiva === 'cupons' && !mCupons) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
     else if (abaAtiva === 'configuracoes' && !mQualquerConfig) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
 
+    // 9. CLIENTES PREMIUM
+    const mClientesPremium = isModuloAtivo('clientes_premium');
+    toggleSubtab('config-clientes-premium', mClientesPremium);
+    toggleSubtab('config-perfis-cardapio', mClientesPremium);
+
+    if (typeof initModuloClientesPremium === 'function') {
+        initModuloClientesPremium();
+    }
+
     // 2. Redirecionamento de Sub-Abas (dentro da aba atual)
     const activeTabContent = document.querySelector('.tab-content.active');
     if (activeTabContent) {
@@ -3830,3 +3839,349 @@ window.removerJustificativa = async (index) => {
     await salvarJustificativasNoBanco();
     showToast('Justificativa removida!', 'success');
 };
+
+// ============================================================
+// MÓDULO CLIENTES PREMIUM E PERFIS DE CARDÁPIO
+// ============================================================
+
+let listaClientesPremium = [];
+let listaPerfisCardapio = [];
+
+// --- Perfis de Cardápio ---
+
+async function carregarPerfisCardapio() {
+    try {
+        const { data, error } = await sb.from('perfis_cardapio')
+            .select('*, perfil_cardapio_categorias(category_id)')
+            .eq('empresa_id', getTenantId())
+            .order('nome');
+        if (error) throw error;
+        listaPerfisCardapio = data || [];
+        renderPerfisCardapio();
+        atualizarSelectPerfis();
+    } catch (err) {
+        console.error('Erro ao carregar perfis:', err);
+    }
+}
+
+function renderPerfisCardapio() {
+    const container = document.getElementById('perfisCardapioLista');
+    if (!container) return;
+
+    if (listaPerfisCardapio.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>';
+        return;
+    }
+
+    container.innerHTML = listaPerfisCardapio.map(p => {
+        const cats = (p.perfil_cardapio_categorias || []).map(pc => {
+            const cat = (window.__categoriasList || []).find(c => c.id === pc.category_id);
+            return cat ? cat.name : '?';
+        });
+        return `
+            <div class="config-card" style="margin-bottom: 1rem; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${p.nome}</strong>
+                        ${p.descricao ? `<span style="color:var(--text-muted); margin-left:10px; font-size:0.85rem;">${p.descricao}</span>` : ''}
+                        <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+                            ${cats.length > 0 ? cats.map(c => `<span style="background:rgba(229,178,93,0.1); color:var(--primary); padding:2px 10px; border-radius:50px; font-size:0.75rem;">${c}</span>`).join('') : '<span style="color:var(--text-muted); font-size:0.8rem;">Nenhuma categoria selecionada</span>'}
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-primary btn-sm" onclick="abrirModalPerfilCardapio('${p.id}')" title="Editar">✏️</button>
+                        <button class="btn-cancel btn-sm" onclick="excluirPerfilCardapio('${p.id}', '${p.nome}')" title="Excluir">🗑️</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+window.abrirModalPerfilCardapio = async (id = null) => {
+    const inputId = document.getElementById('perfilCardapioId');
+    const inputNome = document.getElementById('pcNome');
+    const inputDesc = document.getElementById('pcDescricao');
+    const title = document.getElementById('perfilCardapioModalTitle');
+    const checkboxContainer = document.getElementById('pcCategoriasCheckboxes');
+
+    inputId.value = id || '';
+    inputNome.value = '';
+    inputDesc.value = '';
+
+    // Carregar categorias para os checkboxes
+    const { data: cats } = await sb.from('categories').select('id, name').eq('empresa_id', getTenantId()).order('name');
+    window.__categoriasList = cats || [];
+
+    let selectedCats = [];
+    if (id) {
+        title.textContent = 'Editar Perfil de Cardápio';
+        const perfil = listaPerfisCardapio.find(p => p.id === id);
+        if (perfil) {
+            inputNome.value = perfil.nome;
+            inputDesc.value = perfil.descricao || '';
+            selectedCats = (perfil.perfil_cardapio_categorias || []).map(pc => pc.category_id);
+        }
+    } else {
+        title.textContent = 'Novo Perfil de Cardápio';
+    }
+
+    checkboxContainer.innerHTML = (cats || []).map(c => `
+        <label style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; cursor:pointer; font-size:0.9rem;">
+            <input type="checkbox" value="${c.id}" ${selectedCats.includes(c.id) ? 'checked' : ''}>
+            ${c.name}
+        </label>
+    `).join('');
+
+    abrirModal('modalPerfilCardapio');
+};
+
+document.getElementById('btnSalvarPerfilCardapio').onclick = async () => {
+    const id = document.getElementById('perfilCardapioId').value;
+    const nome = document.getElementById('pcNome').value.trim();
+    const descricao = document.getElementById('pcDescricao').value.trim();
+
+    if (!nome) { showToast('Nome do perfil é obrigatório', 'warning'); return; }
+
+    const btn = document.getElementById('btnSalvarPerfilCardapio');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try {
+        const payload = { nome, descricao, empresa_id: getTenantId() };
+        let perfilId = id;
+
+        if (id) {
+            const { error } = await sb.from('perfis_cardapio').update(payload).eq('id', id);
+            if (error) throw error;
+        } else {
+            const { data, error } = await sb.from('perfis_cardapio').insert(payload).select().single();
+            if (error) throw error;
+            perfilId = data.id;
+        }
+
+        // Sync categorias: delete all then insert selected
+        await sb.from('perfil_cardapio_categorias').delete().eq('perfil_id', perfilId);
+
+        const checkboxes = document.querySelectorAll('#pcCategoriasCheckboxes input[type=checkbox]:checked');
+        if (checkboxes.length > 0) {
+            const catPayload = Array.from(checkboxes).map(cb => ({
+                perfil_id: perfilId,
+                category_id: cb.value
+            }));
+            const { error: catError } = await sb.from('perfil_cardapio_categorias').insert(catPayload);
+            if (catError) throw catError;
+        }
+
+        showToast('Perfil salvo com sucesso!', 'success');
+        fecharModal('modalPerfilCardapio');
+        carregarPerfisCardapio();
+    } catch (err) {
+        showToast('Erro ao salvar: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar';
+    }
+};
+
+window.excluirPerfilCardapio = async (id, nome) => {
+    if (!await customConfirm('Excluir Perfil', `Deseja remover o perfil "${nome}"? Clientes vinculados ficarão sem perfil.`)) return;
+    const { error } = await sb.from('perfis_cardapio').delete().eq('id', id);
+    if (error) { showToast('Erro ao excluir: ' + error.message, 'error'); }
+    else { showToast('Perfil removido!', 'success'); carregarPerfisCardapio(); }
+};
+
+function atualizarSelectPerfis() {
+    const select = document.getElementById('cpPerfil');
+    if (!select) return;
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">Cardápio completo (sem restrição)</option>';
+    listaPerfisCardapio.forEach(p => {
+        select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+    });
+    if (currentVal) select.value = currentVal;
+}
+
+// --- Clientes Premium ---
+
+async function carregarClientesPremium() {
+    try {
+        const { data, error } = await sb.from('clientes_premium')
+            .select('*, perfis_cardapio(nome)')
+            .eq('empresa_id', getTenantId())
+            .order('nome');
+        if (error) throw error;
+        listaClientesPremium = data || [];
+
+        // Calcular gastos do mês para cada cliente
+        const mesAtual = new Date();
+        const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
+        
+        for (const cliente of listaClientesPremium) {
+            const { data: orders } = await sb.from('orders')
+                .select('total')
+                .eq('cliente_premium_id', cliente.id)
+                .gte('created_at', inicioMes)
+                .not('status', 'eq', 'cancelado');
+            cliente._gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+        }
+
+        renderClientesPremium();
+    } catch (err) {
+        console.error('Erro ao carregar clientes premium:', err);
+    }
+}
+
+function renderClientesPremium() {
+    const tbody = document.getElementById('clientesPremiumBody');
+    if (!tbody) return;
+
+    if (listaClientesPremium.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum cliente premium cadastrado.</td></tr>';
+        return;
+    }
+
+    const tipoLabels = { premium: '⭐ Premium', funcionario: '👤 Funcionário', vip_diretoria: '👑 VIP Diretoria' };
+
+    tbody.innerHTML = listaClientesPremium.map(c => {
+        const teto = parseFloat(c.teto_mensal) || 0;
+        const gasto = c._gastoMes || 0;
+        const pct = teto > 0 ? Math.min(100, (gasto / teto) * 100) : 0;
+        const barColor = pct > 90 ? '#FF4757' : pct > 70 ? '#FFA502' : '#00B894';
+
+        return `
+            <tr>
+                <td><strong>${c.nome}</strong></td>
+                <td><code>${c.cpf}</code></td>
+                <td>${tipoLabels[c.tipo] || c.tipo}</td>
+                <td>${c.perfis_cardapio?.nome || '<span style="color:var(--text-muted)">Completo</span>'}</td>
+                <td>${teto > 0 ? 'R$ ' + teto.toLocaleString('pt-BR', {minimumFractionDigits:2}) : '∞'}</td>
+                <td>
+                    <div style="font-size:0.85rem; font-weight:700;">R$ ${gasto.toLocaleString('pt-BR', {minimumFractionDigits:2})}</div>
+                    ${teto > 0 ? `<div style="background:rgba(255,255,255,0.1); border-radius:50px; height:6px; margin-top:4px; overflow:hidden;"><div style="width:${pct}%; height:100%; background:${barColor}; border-radius:50px;"></div></div>` : ''}
+                </td>
+                <td style="text-align:center;">
+                    <div style="display:flex; gap:8px; justify-content:center;">
+                        <button class="btn-primary btn-sm" onclick="abrirModalClientePremium('${c.id}')" title="Editar">✏️</button>
+                        <button class="btn-cancel btn-sm" onclick="excluirClientePremium('${c.id}', '${c.nome}')" title="Excluir">🗑️</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+window.abrirModalClientePremium = async (id = null) => {
+    const title = document.getElementById('clientePremiumModalTitle');
+    const inputId = document.getElementById('clientePremiumId');
+    const inputNome = document.getElementById('cpNome');
+    const inputCpf = document.getElementById('cpCpf');
+    const inputTelefone = document.getElementById('cpTelefone');
+    const inputPin = document.getElementById('cpPin');
+    const inputTipo = document.getElementById('cpTipo');
+    const inputPerfil = document.getElementById('cpPerfil');
+    const inputTeto = document.getElementById('cpTeto');
+    const dicaPin = document.getElementById('cpPinDica');
+
+    // Garantir que os perfis estejam carregados
+    await carregarPerfisCardapio();
+
+    inputId.value = id || '';
+    inputNome.value = '';
+    inputCpf.value = '';
+    inputTelefone.value = '';
+    inputPin.value = '';
+    inputTipo.value = 'premium';
+    inputPerfil.value = '';
+    inputTeto.value = '';
+
+    if (id) {
+        title.textContent = 'Editar Cliente Premium';
+        const c = listaClientesPremium.find(x => x.id === id);
+        if (c) {
+            inputNome.value = c.nome;
+            inputCpf.value = c.cpf;
+            inputTelefone.value = c.telefone || '';
+            inputTipo.value = c.tipo || 'premium';
+            inputPerfil.value = c.perfil_cardapio_id || '';
+            inputTeto.value = c.teto_mensal || '';
+        }
+        dicaPin.textContent = 'Deixe em branco para manter o PIN atual.';
+    } else {
+        title.textContent = 'Novo Cliente Premium';
+        dicaPin.textContent = 'PIN obrigatório para novos cadastros.';
+    }
+
+    abrirModal('modalClientePremium');
+};
+
+document.getElementById('btnSalvarClientePremium').onclick = async () => {
+    const id = document.getElementById('clientePremiumId').value;
+    const nome = document.getElementById('cpNome').value.trim();
+    const cpf = document.getElementById('cpCpf').value.trim().replace(/\D/g, '');
+    const telefone = document.getElementById('cpTelefone').value.trim();
+    const pinRaw = document.getElementById('cpPin').value;
+    const tipo = document.getElementById('cpTipo').value;
+    const perfilId = document.getElementById('cpPerfil').value || null;
+    const teto = parseFloat(document.getElementById('cpTeto').value) || 0;
+
+    if (!nome || !cpf) { showToast('Nome e CPF são obrigatórios', 'warning'); return; }
+    if (cpf.length !== 11) { showToast('CPF deve ter 11 dígitos', 'warning'); return; }
+    if (!id && !pinRaw) { showToast('O PIN é obrigatório para novos cadastros', 'warning'); return; }
+    if (pinRaw && (pinRaw.length < 4 || pinRaw.length > 6)) { showToast('O PIN deve ter entre 4 e 6 dígitos', 'warning'); return; }
+
+    const btn = document.getElementById('btnSalvarClientePremium');
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+
+    try {
+        const payload = {
+            nome, cpf, telefone, tipo,
+            perfil_cardapio_id: perfilId,
+            teto_mensal: teto,
+            empresa_id: getTenantId(),
+            pin_hash: true
+        };
+
+        if (pinRaw) {
+            payload.pin = await hashSenha(pinRaw);
+        }
+
+        let res;
+        if (id) {
+            res = await sb.from('clientes_premium').update(payload).eq('id', id);
+        } else {
+            res = await sb.from('clientes_premium').insert(payload);
+        }
+
+        if (res.error) {
+            if (res.error.message.includes('unique') || res.error.message.includes('duplicate')) {
+                showToast('Este CPF já está cadastrado como cliente premium', 'error');
+            } else {
+                showToast('Erro ao salvar: ' + res.error.message, 'error');
+            }
+        } else {
+            showToast('Cliente premium salvo!', 'success');
+            fecharModal('modalClientePremium');
+            carregarClientesPremium();
+        }
+    } catch (err) {
+        showToast('Erro: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Salvar';
+    }
+};
+
+window.excluirClientePremium = async (id, nome) => {
+    if (!await customConfirm('Excluir Cliente Premium', `Deseja remover ${nome}? As comandas associadas também serão afetadas.`)) return;
+    const { error } = await sb.from('clientes_premium').delete().eq('id', id);
+    if (error) { showToast('Erro ao excluir: ' + error.message, 'error'); }
+    else { showToast('Cliente removido!', 'success'); carregarClientesPremium(); }
+};
+
+function initModuloClientesPremium() {
+    if (!isModuloAtivo('clientes_premium')) return;
+    carregarPerfisCardapio();
+    carregarClientesPremium();
+}

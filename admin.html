@@ -689,6 +689,8 @@
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
                         <button class="subtab-btn" data-subtab="config-equipe">Equipe / Atendentes</button>
                         <button class="subtab-btn" data-subtab="config-whatsapp">WhatsApp</button>
+                        <button class="subtab-btn" data-subtab="config-clientes-premium" id="nav-sub-clientes-premium">👑 Clientes Premium</button>
+                        <button class="subtab-btn" data-subtab="config-perfis-cardapio" id="nav-sub-perfis-cardapio">📋 Perfis de Cardápio</button>
                     </div>
                 </div>
 
@@ -1115,6 +1117,62 @@
                                     <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..."></div>
                                 </div>
                                 <small class="wa-msg-hint">💡 Dica: Clique nos botões azuis acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtab: Clientes Premium -->
+                <div class="subtab-content" id="subtab-config-clientes-premium">
+                    <div class="config-card">
+                        <div class="config-card-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h2>👑 Clientes Premium</h2>
+                                <span class="badge" style="background: rgba(229,178,93,0.1); color: var(--primary); font-size: 0.75rem;">Login VIP + Teto de Gastos</span>
+                            </div>
+                            <button class="btn-primary" onclick="abrirModalClientePremium()">+ Novo Cliente</button>
+                        </div>
+                        <div class="config-card-body">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
+                                Cadastre clientes especiais (VIP, funcionários, diretoria) com acesso a cardápios personalizados e limites de gastos.
+                            </p>
+                            <div class="admin-table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>CPF</th>
+                                            <th>Tipo</th>
+                                            <th>Perfil</th>
+                                            <th>Teto Mensal</th>
+                                            <th>Consumido</th>
+                                            <th style="width: 120px; text-align: center;">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clientesPremiumBody">
+                                        <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum cliente premium cadastrado.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtab: Perfis de Cardápio -->
+                <div class="subtab-content" id="subtab-config-perfis-cardapio">
+                    <div class="config-card">
+                        <div class="config-card-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h2>📋 Perfis de Cardápio</h2>
+                            </div>
+                            <button class="btn-primary" onclick="abrirModalPerfilCardapio()">+ Novo Perfil</button>
+                        </div>
+                        <div class="config-card-body">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
+                                Crie perfis de acesso ao cardápio. Cada perfil define quais categorias de produtos o cliente premium pode visualizar.
+                            </p>
+                            <div id="perfisCardapioLista">
+                                <p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>
                             </div>
                         </div>
                     </div>
@@ -1924,6 +1982,113 @@
             <button class="btn-logout" id="btnLogoutMobile">Sair da Conta</button>
         </div>
     </aside>
+
+    <!-- =============================================================== -->
+    <!-- MODAL: Novo/Editar Cliente Premium                              -->
+    <!-- =============================================================== -->
+    <div class="admin-modal-backdrop" id="modalClientePremium">
+        <div class="admin-modal" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalClientePremium')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="clientePremiumModalTitle">👑 Novo Cliente Premium</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" id="btnSalvarClientePremium">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="clientePremiumId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="cpNome">Nome completo</label>
+                        <input type="text" id="cpNome" placeholder="Nome do cliente">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="cpCpf">CPF (login)</label>
+                        <input type="text" id="cpCpf" placeholder="000.000.000-00" maxlength="14">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="cpTelefone">Telefone</label>
+                        <input type="text" id="cpTelefone" placeholder="(31) 99999-9999">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="cpPin">PIN de Acesso (4-6 dígitos)</label>
+                        <input type="password" id="cpPin" placeholder="****" maxlength="6" inputmode="numeric">
+                        <small id="cpPinDica" style="color:var(--text-muted); margin-top:4px; display:block;">PIN obrigatório para novos cadastros.</small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="cpTipo">Tipo</label>
+                        <select id="cpTipo">
+                            <option value="premium">⭐ Premium</option>
+                            <option value="funcionario">👤 Funcionário</option>
+                            <option value="vip_diretoria">👑 VIP Diretoria</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="cpPerfil">Perfil de Cardápio</label>
+                        <select id="cpPerfil">
+                            <option value="">Cardápio completo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="cpTeto">Teto de Gastos Mensal (R$)</label>
+                        <input type="number" id="cpTeto" placeholder="0 = sem limite" step="0.01" min="0">
+                        <small style="color:var(--text-muted); margin-top:4px; display:block;">Valor 0 ou vazio = sem limite de gastos.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- MODAL: Novo/Editar Perfil de Cardápio                           -->
+    <!-- =============================================================== -->
+    <div class="admin-modal-backdrop" id="modalPerfilCardapio">
+        <div class="admin-modal" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalPerfilCardapio')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="perfilCardapioModalTitle">📋 Novo Perfil de Cardápio</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" id="btnSalvarPerfilCardapio">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="perfilCardapioId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="pcNome">Nome do Perfil</label>
+                        <input type="text" id="pcNome" placeholder="Ex: VIP Diretoria, Funcionários">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="pcDescricao">Descrição</label>
+                        <input type="text" id="pcDescricao" placeholder="Descrição opcional">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Categorias permitidas neste perfil:</label>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom: 10px;">Marque as categorias de produtos que este perfil poderá visualizar no cardápio.</p>
+                    <div id="pcCategoriasCheckboxes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Supabase & SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
