@@ -1516,114 +1516,133 @@ function inicializarLoginPremium() {
         } catch(e) {}
     }
 
-    btnLogin.onclick = () => {
+    btnLogin.onclick = (e) => {
+        if (e) e.preventDefault();
         if (state.premiumUser) return; // Já logado
         inputCpf.value = '';
         inputPin.value = '';
-        document.getElementById('loginPremiumError').style.display = 'none';
-        modal.style.display = 'flex';
+        const errDiv = document.getElementById('loginPremiumError');
+        if (errDiv) errDiv.style.display = 'none';
+        
+        modal.classList.add('active');
+        if (dom.backdrop) dom.backdrop.classList.add('active');
+        document.body.classList.add('no-scroll');
     };
 
-    btnClose.onclick = () => modal.style.display = 'none';
+    const fecharModalLogin = () => {
+        modal.classList.remove('active');
+        if (dom.backdrop) dom.backdrop.classList.remove('active');
+        document.body.classList.remove('no-scroll');
+    };
+
+    if (btnClose) btnClose.onclick = fecharModalLogin;
     
     // Máscara simples CPF
-    inputCpf.addEventListener('input', function() {
-        let v = this.value.replace(/\D/g, '');
-        if (v.length > 11) v = v.substring(0, 11);
-        if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-        else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
-        else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
-        this.value = v;
-    });
+    if (inputCpf) {
+        inputCpf.addEventListener('input', function() {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
+            else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, "$1.$2");
+            this.value = v;
+        });
+    }
 
-    btnEntrar.onclick = async () => {
-        const cpf = inputCpf.value.replace(/\D/g, '');
-        const pin = inputPin.value;
-        const errDiv = document.getElementById('loginPremiumError');
+    if (btnEntrar) {
+        btnEntrar.onclick = async () => {
+            const cpf = inputCpf.value.replace(/\D/g, '');
+            const pin = inputPin.value;
+            const errDiv = document.getElementById('loginPremiumError');
 
-        if (cpf.length !== 11 || !pin) {
-            errDiv.textContent = 'Preencha o CPF e o PIN corretamenta.';
-            errDiv.style.display = 'block';
-            return;
-        }
-
-        btnEntrar.disabled = true;
-        btnEntrar.textContent = 'Verificando...';
-        errDiv.style.display = 'none';
-
-        try {
-            // Hash simples do PIN (mesmo algoritmo do admin)
-            const msgBuffer = new TextEncoder().encode(pin);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const pinHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-            const { data, error } = await sb.from('clientes_premium')
-                .select('id, nome, cpf, tipo, teto_mensal, pin, perfil_cardapio_id')
-                .eq('empresa_id', getTenantId())
-                .eq('cpf', cpf)
-                .single();
-
-            if (error || !data) {
-                throw new Error('Credenciais inválidas.');
+            if (cpf.length !== 11 || !pin) {
+                if (errDiv) {
+                    errDiv.textContent = 'Preencha o CPF e o PIN corretamenta.';
+                    errDiv.style.display = 'block';
+                }
+                return;
             }
 
-            if (data.pin !== pinHash) {
-                throw new Error('Credenciais inválidas.');
+            btnEntrar.disabled = true;
+            btnEntrar.textContent = 'Verificando...';
+            if (errDiv) errDiv.style.display = 'none';
+
+            try {
+                // Hash simples do PIN (mesmo algoritmo do admin)
+                const msgBuffer = new TextEncoder().encode(pin);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const pinHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+                const { data, error } = await sb.from('clientes_premium')
+                    .select('id, nome, cpf, tipo, teto_mensal, pin, perfil_cardapio_id')
+                    .eq('empresa_id', getTenantId())
+                    .eq('cpf', cpf)
+                    .single();
+
+                if (error || !data) {
+                    throw new Error('Credenciais inválidas.');
+                }
+
+                if (data.pin !== pinHash) {
+                    throw new Error('Credenciais inválidas.');
+                }
+
+                // Buscar categorias permitidas se houver perfil
+                let categoriasPermitidas = null;
+                if (data.perfil_cardapio_id) {
+                    const { data: catData } = await sb.from('perfil_cardapio_categorias')
+                        .select('category_id')
+                        .eq('perfil_id', data.perfil_cardapio_id);
+                    categoriasPermitidas = (catData || []).map(c => c.category_id);
+                }
+
+                // Buscar gasto atual no mês
+                const mesAtual = new Date();
+                const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
+                const { data: orders } = await sb.from('orders')
+                    .select('total')
+                    .eq('cliente_premium_id', data.id)
+                    .gte('created_at', inicioMes)
+                    .not('status', 'eq', 'cancelado');
+                
+                const gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+
+                // Sucesso!
+                state.premiumUser = {
+                    id: data.id,
+                    nome: data.nome.split(' ')[0],
+                    nomeCompleto: data.nome,
+                    telefone: data.telefone,
+                    cpf: data.cpf,
+                    tipo: data.tipo,
+                    teto: parseFloat(data.teto_mensal) || 0,
+                    gasto: gastoMes,
+                    categoriasPermitidas: categoriasPermitidas
+                };
+
+                sessionStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+                
+                fecharModalLogin();
+                atualizarBarraPremium();
+                aplicarFiltroCardapioPremium();
+
+                // Preencher form
+                const n = document.getElementById('clienteNome');
+                if (n) n.value = data.nome;
+
+            } catch (err) {
+                console.error('Login VIP:', err);
+                if (errDiv) {
+                    errDiv.textContent = 'CPF ou PIN incorretos.';
+                    errDiv.style.display = 'block';
+                }
+            } finally {
+                btnEntrar.disabled = false;
+                btnEntrar.textContent = 'Entrar';
             }
-
-            // Buscar categorias permitidas se houver perfil
-            let categoriasPermitidas = null;
-            if (data.perfil_cardapio_id) {
-                const { data: catData } = await sb.from('perfil_cardapio_categorias')
-                    .select('category_id')
-                    .eq('perfil_id', data.perfil_cardapio_id);
-                categoriasPermitidas = (catData || []).map(c => c.category_id);
-            }
-
-            // Buscar gasto atual no mês
-            const mesAtual = new Date();
-            const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
-            const { data: orders } = await sb.from('orders')
-                .select('total')
-                .eq('cliente_premium_id', data.id)
-                .gte('created_at', inicioMes)
-                .not('status', 'eq', 'cancelado');
-            
-            const gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
-
-            // Sucesso!
-            state.premiumUser = {
-                id: data.id,
-                nome: data.nome.split(' ')[0],
-                nomeCompleto: data.nome,
-                telefone: data.telefone,
-                cpf: data.cpf,
-                tipo: data.tipo,
-                teto: parseFloat(data.teto_mensal) || 0,
-                gasto: gastoMes,
-                categoriasPermitidas: categoriasPermitidas
-            };
-
-            sessionStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
-            
-            modal.style.display = 'none';
-            atualizarBarraPremium();
-            aplicarFiltroCardapioPremium();
-
-            // Preencher form
-            const n = document.getElementById('clienteNome');
-            if (n) n.value = data.nome;
-
-        } catch (err) {
-            console.error('Login VIP:', err);
-            errDiv.textContent = 'CPF ou PIN incorretos.';
-            errDiv.style.display = 'block';
-        } finally {
-            btnEntrar.disabled = false;
-            btnEntrar.textContent = 'Entrar';
-        }
-    };
+        };
+    }
 
     if (btnSair) {
         btnSair.onclick = () => {

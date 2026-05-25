@@ -19,9 +19,13 @@ CREATE TABLE IF NOT EXISTS perfis_cardapio (
 CREATE TABLE IF NOT EXISTS perfil_cardapio_categorias (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     perfil_id UUID NOT NULL REFERENCES perfis_cardapio(id) ON DELETE CASCADE,
-    category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+    category_id UUID NOT NULL, -- Suporta IDs de categories (cardápio) ou loja_categorias (loja)
     UNIQUE(perfil_id, category_id)
 );
+
+-- Garantir que a FK foi removida se a tabela já existir no banco do cliente
+ALTER TABLE public.perfil_cardapio_categorias DROP CONSTRAINT IF EXISTS perfil_cardapio_categorias_category_id_fkey;
+
 
 -- 3. Clientes Premium
 -- Cadastro de clientes com acesso especial (VIP, funcionários, diretoria)

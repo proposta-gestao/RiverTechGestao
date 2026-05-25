@@ -3849,8 +3849,35 @@ let listaPerfisCardapio = [];
 
 // --- Perfis de Cardápio ---
 
+async function obterCategoriasDisponiveis() {
+    let cats = [];
+    try {
+        if (isModuloAtivo('loja_roupas')) {
+            const { data, error } = await sb.from('loja_categorias')
+                .select('id, nome')
+                .eq('empresa_id', getTenantId())
+                .order('nome');
+            if (error) throw error;
+            cats = (data || []).map(c => ({ id: c.id, name: c.nome }));
+        } else {
+            const { data, error } = await sb.from('categories')
+                .select('id, name')
+                .eq('empresa_id', getTenantId())
+                .order('name');
+            if (error) throw error;
+            cats = data || [];
+        }
+    } catch (err) {
+        console.error('[Perfil Cardapio] Erro ao carregar categorias:', err);
+    }
+    return cats;
+}
+
+// --- Perfis de Cardápio ---
+
 async function carregarPerfisCardapio() {
     try {
+        window.__categoriasList = await obterCategoriasDisponiveis();
         const { data, error } = await sb.from('perfis_cardapio')
             .select('*, perfil_cardapio_categorias(category_id)')
             .eq('empresa_id', getTenantId())
@@ -3909,9 +3936,9 @@ window.abrirModalPerfilCardapio = async (id = null) => {
     inputNome.value = '';
     inputDesc.value = '';
 
-    // Carregar categorias para os checkboxes
-    const { data: cats } = await sb.from('categories').select('id, name').eq('empresa_id', getTenantId()).order('name');
-    window.__categoriasList = cats || [];
+    // Garantir que as categorias estejam carregadas
+    const cats = await obterCategoriasDisponiveis();
+    window.__categoriasList = cats;
 
     let selectedCats = [];
     if (id) {
