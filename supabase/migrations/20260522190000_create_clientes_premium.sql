@@ -1,10 +1,10 @@
 -- ============================================================
--- MÓDULO CLIENTES PREMIUM — Script de Criação de Tabelas
--- RiverTech Gestão SaaS
+-- MÃ“DULO CLIENTES PREMIUM â€” Script de CriaÃ§Ã£o de Tabelas
+-- RiverTech GestÃ£o SaaS
 -- ============================================================
 
--- 1. Perfis de Cardápio
--- Define grupos de acesso ao cardápio (ex: "VIP Diretoria", "Funcionários")
+-- 1. Perfis de CardÃ¡pio
+-- Define grupos de acesso ao cardÃ¡pio (ex: "VIP Diretoria", "FuncionÃ¡rios")
 CREATE TABLE IF NOT EXISTS perfis_cardapio (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
@@ -18,16 +18,16 @@ CREATE TABLE IF NOT EXISTS perfis_cardapio (
 CREATE TABLE IF NOT EXISTS perfil_cardapio_categorias (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     perfil_id UUID NOT NULL REFERENCES perfis_cardapio(id) ON DELETE CASCADE,
-    category_id UUID NOT NULL, -- Suporta IDs de categories (cardápio) ou loja_categorias (loja)
+    category_id UUID NOT NULL, -- Suporta IDs de categories (cardÃ¡pio) ou loja_categorias (loja)
     UNIQUE(perfil_id, category_id)
 );
 
--- Garantir que a FK foi removida se a tabela já existir no banco do cliente
+-- Garantir que a FK foi removida se a tabela jÃ¡ existir no banco do cliente
 ALTER TABLE public.perfil_cardapio_categorias DROP CONSTRAINT IF EXISTS perfil_cardapio_categorias_category_id_fkey;
 
 
 -- 3. Clientes Premium
--- Cadastro de clientes com acesso especial (VIP, funcionários, diretoria)
+-- Cadastro de clientes com acesso especial (VIP, funcionÃ¡rios, diretoria)
 CREATE TABLE IF NOT EXISTS clientes_premium (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS clientes_premium (
 );
 
 -- 4. Comandas
--- Sessões de consumo abertas para clientes premium
+-- SessÃµes de consumo abertas para clientes premium
 CREATE TABLE IF NOT EXISTS comandas (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS comandas (
     observacoes TEXT
 );
 
--- 5. Adicionar colunas em orders (vinculação opcional com comanda/cliente premium)
+-- 5. Adicionar colunas em orders (vinculaÃ§Ã£o opcional com comanda/cliente premium)
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS comanda_id UUID REFERENCES comandas(id) ON DELETE SET NULL;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS cliente_premium_id UUID REFERENCES clientes_premium(id) ON DELETE SET NULL;
 
@@ -87,7 +87,7 @@ DROP POLICY IF EXISTS "anon_all_comandas" ON comandas;
 CREATE POLICY "anon_all_comandas" ON comandas FOR ALL USING (true) WITH CHECK (true);
 
 -- ============================================================
--- ÍNDICES DE PERFORMANCE
+-- ÃNDICES DE PERFORMANCE
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_clientes_premium_empresa ON clientes_premium(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_clientes_premium_cpf ON clientes_premium(empresa_id, cpf);

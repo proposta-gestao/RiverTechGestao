@@ -1,8 +1,8 @@
 -- ============================================================
 -- Migration: Habilitar Realtime para tabelas de agendamento
 -- Data: 2026-05-14
--- Problema: As tabelas agendamentos e lista_espera não estavam
--- na publicação supabase_realtime, impedindo atualizações em
+-- Problema: As tabelas agendamentos e lista_espera nÃ£o estavam
+-- na publicaÃ§Ã£o supabase_realtime, impedindo atualizaÃ§Ãµes em
 -- tempo real no painel admin.
 -- ============================================================
 

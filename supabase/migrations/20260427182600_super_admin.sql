@@ -13,12 +13,12 @@ CREATE TABLE IF NOT EXISTS public.super_admins (
 -- Habilitar RLS
 ALTER TABLE public.super_admins ENABLE ROW LEVEL SECURITY;
 
--- Política de RLS: apenas super admins podem ver a tabela
+-- PolÃ­tica de RLS: apenas super admins podem ver a tabela
 CREATE POLICY "Super admins podem ver super_admins"
   ON public.super_admins FOR SELECT TO authenticated
   USING (id = auth.uid());
 
--- 2. Função para verificar se o usuário é super admin
+-- 2. FunÃ§Ã£o para verificar se o usuÃ¡rio Ã© super admin
 CREATE OR REPLACE FUNCTION public.is_super_admin(_user_id UUID)
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -31,7 +31,7 @@ AS $$
   );
 $$;
 
--- 3. Função para Super Admin criar a empresa e usuário em um só fluxo (RPC)
+-- 3. FunÃ§Ã£o para Super Admin criar a empresa e usuÃ¡rio em um sÃ³ fluxo (RPC)
 -- Isso evita usar a API de SignUp no frontend, o que deslogaria o Super Admin
 CREATE OR REPLACE FUNCTION public.create_tenant_with_admin(
     p_nome text,
@@ -51,7 +51,7 @@ DECLARE
     v_new_user_id uuid;
     v_encrypted_pw text;
 BEGIN
-    -- Verificar se quem chama é super admin
+    -- Verificar se quem chama Ã© super admin
     IF NOT public.is_super_admin(auth.uid()) THEN
         RAISE EXCEPTION 'Apenas Super Admins podem criar novas empresas.';
     END IF;
@@ -66,7 +66,7 @@ BEGIN
     INSERT INTO public.store_settings (id, empresa_id, store_name)
     VALUES (COALESCE((SELECT MAX(id) FROM public.store_settings), 0) + 1, v_empresa_id, p_nome);
 
-    -- Criar o Usuário no Auth do Supabase
+    -- Criar o UsuÃ¡rio no Auth do Supabase
     v_new_user_id := gen_random_uuid();
     v_encrypted_pw := crypt(p_admin_password, gen_salt('bf'));
 
@@ -81,11 +81,11 @@ BEGIN
         '', '', '', ''
     );
 
-    -- Vincular o usuário à empresa na tabela public.usuarios
+    -- Vincular o usuÃ¡rio Ã  empresa na tabela public.usuarios
     INSERT INTO public.usuarios (id, email, empresa_id, role)
     VALUES (v_new_user_id, p_admin_email, v_empresa_id, 'admin');
 
-    -- Vincular o usuário à tabela legada admin_users para compatibilidade com o painel e RLS
+    -- Vincular o usuÃ¡rio Ã  tabela legada admin_users para compatibilidade com o painel e RLS
     INSERT INTO public.admin_users (user_id, empresa_id)
     VALUES (v_new_user_id, v_empresa_id);
 
@@ -94,7 +94,7 @@ END;
 $$;
 
 
--- 4. Atualizar as Políticas RLS (Adicionar acesso global para super admins)
+-- 4. Atualizar as PolÃ­ticas RLS (Adicionar acesso global para super admins)
 -- Como o RLS permite a linha se QUALQUER UMA das policies for true,
 -- apenas criamos uma nova policy paralela autorizando o super admin.
 

@@ -6,6 +6,6 @@ ADD COLUMN IF NOT EXISTS mp_payment_id TEXT,
 ADD COLUMN IF NOT EXISTS pix_qr_code TEXT,
 ADD COLUMN IF NOT EXISTS pix_qr_code_base64 TEXT;
 
--- Comentários das colunas
+-- ComentÃ¡rios das colunas
 COMMENT ON COLUMN public.orders.payment_status IS 'pendente, pago, cancelado, estornado';
 COMMENT ON COLUMN public.orders.payment_method IS 'pix, cartao, dinheiro';

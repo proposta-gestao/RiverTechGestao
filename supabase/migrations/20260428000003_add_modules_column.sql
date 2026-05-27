@@ -1,4 +1,4 @@
--- Migration: Sistema de Módulos (Feature Flags)
+-- Migration: Sistema de MÃ³dulos (Feature Flags)
 -- Data: 2026-04-28
 
 ALTER TABLE public.empresas

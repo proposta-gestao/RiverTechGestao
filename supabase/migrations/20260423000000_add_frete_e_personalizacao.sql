@@ -1,10 +1,10 @@
 -- ============================================================
--- Migration: Frete + Personalização Visual
+-- Migration: Frete + PersonalizaÃ§Ã£o Visual
 -- Adiciona campos faltantes em store_settings e garante
--- que shipping_zones tem RLS adequada para leitura pública.
+-- que shipping_zones tem RLS adequada para leitura pÃºblica.
 -- ============================================================
 
--- 1. Campos de endereço que faltavam na store_settings
+-- 1. Campos de endereÃ§o que faltavam na store_settings
 ALTER TABLE public.store_settings
   ADD COLUMN IF NOT EXISTS address_neighborhood TEXT,
   ADD COLUMN IF NOT EXISTS address_city         TEXT,
@@ -14,14 +14,14 @@ ALTER TABLE public.store_settings
 ALTER TABLE public.store_settings
   ADD COLUMN IF NOT EXISTS frete_ativo BOOLEAN DEFAULT false;
 
--- 3. Personalização visual
+-- 3. PersonalizaÃ§Ã£o visual
 ALTER TABLE public.store_settings
   ADD COLUMN IF NOT EXISTS brand_name     TEXT,
   ADD COLUMN IF NOT EXISTS brand_subtitle TEXT,
   ADD COLUMN IF NOT EXISTS banner_url     TEXT,
   ADD COLUMN IF NOT EXISTS logo_url       TEXT;
 
--- 4. Garantir que shipping_zones existe e tem RLS pública de leitura
+-- 4. Garantir que shipping_zones existe e tem RLS pÃºblica de leitura
 CREATE TABLE IF NOT EXISTS public.shipping_zones (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name        TEXT NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS public.shipping_zones (
 
 ALTER TABLE public.shipping_zones ENABLE ROW LEVEL SECURITY;
 
--- Leitura pública (necessário para o front calcular frete sem login)
+-- Leitura pÃºblica (necessÃ¡rio para o front calcular frete sem login)
 DO $$
 BEGIN
   IF NOT EXISTS (

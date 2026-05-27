@@ -23,8 +23,8 @@ ALTER TABLE public.empresas ENABLE ROW LEVEL SECURITY;
 
 
 -- ============================================================
--- PASSO 2: TABELA DE USUÁRIOS VINCULADOS À EMPRESA
--- id = mesmo UUID do auth.users (sem FK explícita para evitar dependência de schema)
+-- PASSO 2: TABELA DE USUÃRIOS VINCULADOS Ã€ EMPRESA
+-- id = mesmo UUID do auth.users (sem FK explÃ­cita para evitar dependÃªncia de schema)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.usuarios (
@@ -41,8 +41,8 @@ CREATE INDEX IF NOT EXISTS idx_usuarios_empresa_id ON public.usuarios(empresa_id
 
 
 -- ============================================================
--- PASSO 3: FUNÇÃO HELPER — RETORNA empresa_id DO USUÁRIO LOGADO
--- SECURITY DEFINER: roda como dono (sem recursão de RLS)
+-- PASSO 3: FUNÃ‡ÃƒO HELPER â€” RETORNA empresa_id DO USUÃRIO LOGADO
+-- SECURITY DEFINER: roda como dono (sem recursÃ£o de RLS)
 -- Uso nas policies: public.get_empresa_id()
 -- ============================================================
 
@@ -120,7 +120,7 @@ CREATE INDEX IF NOT EXISTS idx_stock_reasons_empresa_id ON public.stock_reasons(
 
 
 -- ============================================================
--- PASSO 5: RLS — RECRIAR TODAS AS POLICIES COM ISOLAMENTO
+-- PASSO 5: RLS â€” RECRIAR TODAS AS POLICIES COM ISOLAMENTO
 -- ============================================================
 
 -- ---------- EMPRESAS ----------
@@ -205,7 +205,7 @@ DROP POLICY IF EXISTS "Admins can view orders"   ON public.orders;
 DROP POLICY IF EXISTS "Admins can update orders" ON public.orders;
 DROP POLICY IF EXISTS "Admins can delete orders" ON public.orders;
 
--- Clientes (anônimos) inserem pedidos — empresa_id deve vir do frontend via slug
+-- Clientes (anÃ´nimos) inserem pedidos â€” empresa_id deve vir do frontend via slug
 CREATE POLICY "Publico pode inserir pedidos"
   ON public.orders FOR INSERT WITH CHECK (true);
 
@@ -300,7 +300,7 @@ CREATE POLICY "Admin gerencia motivos de estoque da sua empresa"
 
 
 -- ============================================================
--- PASSO 6: ÍNDICES COMPOSTOS PARA PERFORMANCE
+-- PASSO 6: ÃNDICES COMPOSTOS PARA PERFORMANCE
 -- ============================================================
 
 CREATE INDEX IF NOT EXISTS idx_products_empresa_active
@@ -320,17 +320,17 @@ CREATE INDEX IF NOT EXISTS idx_atendentes_empresa_cpf
 
 
 -- ============================================================
--- REFERÊNCIA: COMO REGISTRAR UM NOVO USUÁRIO NA EMPRESA
--- Execute após criar o usuário via Supabase Auth:
+-- REFERÃŠNCIA: COMO REGISTRAR UM NOVO USUÃRIO NA EMPRESA
+-- Execute apÃ³s criar o usuÃ¡rio via Supabase Auth:
 --
 -- INSERT INTO public.usuarios (id, email, empresa_id, role)
 -- VALUES (auth.uid(), 'email@exemplo.com', '<empresa_uuid>', 'admin');
 --
--- REFERÊNCIA: COMO BUSCAR empresa_id NO BACKEND/TRIGGER:
--- SELECT public.get_empresa_id();  -- retorna UUID da empresa do usuário logado
+-- REFERÃŠNCIA: COMO BUSCAR empresa_id NO BACKEND/TRIGGER:
+-- SELECT public.get_empresa_id();  -- retorna UUID da empresa do usuÃ¡rio logado
 --
--- REFERÊNCIA: POLÍTICA OBRIGATÓRIA NO FRONTEND:
--- Todo INSERT de pedido (anônimo) DEVE enviar empresa_id
+-- REFERÃŠNCIA: POLÃTICA OBRIGATÃ“RIA NO FRONTEND:
+-- Todo INSERT de pedido (anÃ´nimo) DEVE enviar empresa_id
 -- buscado previamente via slug da empresa (rota da URL).
 -- Exemplo: SELECT id FROM empresas WHERE slug = 'nome-da-loja';
 -- ============================================================

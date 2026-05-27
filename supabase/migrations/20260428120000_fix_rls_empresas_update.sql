@@ -1,11 +1,11 @@
 -- Migration: Corrigir RLS para Update em Empresas
 -- Data: 2026-04-28
 
--- 1. Limpar políticas existentes que podem estar incompletas ou conflituosas
+-- 1. Limpar polÃ­ticas existentes que podem estar incompletas ou conflituosas
 DROP POLICY IF EXISTS "Super admin acesso total em empresas" ON public.empresas;
 DROP POLICY IF EXISTS "Usuario ve apenas sua empresa" ON public.empresas;
 
--- 2. Criar Política Global de Leitura (Admins da empresa ou Super Admins)
+-- 2. Criar PolÃ­tica Global de Leitura (Admins da empresa ou Super Admins)
 CREATE POLICY "Empresas - Leitura"
   ON public.empresas FOR SELECT TO authenticated
   USING (
@@ -13,8 +13,8 @@ CREATE POLICY "Empresas - Leitura"
     public.is_super_admin(auth.uid())
   );
 
--- 3. Criar Política Global de Update
--- Permite update se for Super Admin OU se for o Admin da própria empresa
+-- 3. Criar PolÃ­tica Global de Update
+-- Permite update se for Super Admin OU se for o Admin da prÃ³pria empresa
 CREATE POLICY "Empresas - Update"
   ON public.empresas FOR UPDATE TO authenticated
   USING (

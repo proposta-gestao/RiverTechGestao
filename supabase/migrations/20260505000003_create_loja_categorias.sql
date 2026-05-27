@@ -1,7 +1,7 @@
 -- ============================================================
 -- Migration: Tabela de Categorias da Loja de Roupas
 -- Data: 2026-05-05
--- Categorias independentes da tabela categories (cardápio)
+-- Categorias independentes da tabela categories (cardÃ¡pio)
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS public.loja_categorias (
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.loja_categorias (
 ALTER TABLE public.loja_categorias ENABLE ROW LEVEL SECURITY;
 CREATE INDEX IF NOT EXISTS idx_loja_categorias_empresa ON public.loja_categorias(empresa_id);
 
--- Leitura pública (para storefront)
+-- Leitura pÃºblica (para storefront)
 CREATE POLICY "loja_categorias_public_read" ON public.loja_categorias
     FOR SELECT USING (true);
 

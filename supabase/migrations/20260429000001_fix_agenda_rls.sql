@@ -1,5 +1,5 @@
--- Correção de RLS para o módulo de Agendamento (SaaS multi-tenant)
--- Permite que Super Admins gerenciem todas as tabelas, além dos admins normais
+-- CorreÃ§Ã£o de RLS para o mÃ³dulo de Agendamento (SaaS multi-tenant)
+-- Permite que Super Admins gerenciem todas as tabelas, alÃ©m dos admins normais
 
 -- 1. profissionais
 DROP POLICY IF EXISTS "profissionais_admin_all" ON public.profissionais;

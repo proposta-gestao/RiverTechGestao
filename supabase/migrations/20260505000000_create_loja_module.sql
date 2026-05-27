@@ -1,5 +1,5 @@
 -- ============================================================
--- Migration: Módulo de Loja de Roupas
+-- Migration: MÃ³dulo de Loja de Roupas
 -- Data: 2026-05-05
 -- Inclui: loja_produtos, loja_variacoes,
 --         RPCs de SKU e estoque, RLS multi-tenant
@@ -7,14 +7,14 @@
 
 
 -- ============================================================
--- PRÉ-REQUISITO: Extensão unaccent (para normalizar acentos)
+-- PRÃ‰-REQUISITO: ExtensÃ£o unaccent (para normalizar acentos)
 -- ============================================================
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
 
 -- ============================================================
 -- TABELA: loja_produtos
--- Produto principal (ex: "Camiseta Básica")
+-- Produto principal (ex: "Camiseta BÃ¡sica")
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.loja_produtos (
     id            UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -35,8 +35,8 @@ CREATE INDEX IF NOT EXISTS idx_loja_produtos_categoria ON public.loja_produtos(c
 
 -- ============================================================
 -- TABELA: loja_variacoes
--- Cada variação (tamanho + cor) de um produto
--- SEM empresa_id — herda via JOIN com loja_produtos
+-- Cada variaÃ§Ã£o (tamanho + cor) de um produto
+-- SEM empresa_id â€” herda via JOIN com loja_produtos
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.loja_variacoes (
     id            UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -53,9 +53,9 @@ ALTER TABLE public.loja_variacoes ENABLE ROW LEVEL SECURITY;
 CREATE INDEX IF NOT EXISTS idx_loja_variacoes_produto ON public.loja_variacoes(produto_id);
 CREATE INDEX IF NOT EXISTS idx_loja_variacoes_sku ON public.loja_variacoes(sku);
 
--- Constraint: SKU único por produto (garante unicidade combinada)
+-- Constraint: SKU Ãºnico por produto (garante unicidade combinada)
 -- Usamos um unique composto com produto_id para permitir que empresas diferentes
--- possam ter o mesmo padrão de SKU
+-- possam ter o mesmo padrÃ£o de SKU
 ALTER TABLE public.loja_variacoes
     ADD CONSTRAINT uq_loja_variacoes_produto_sku UNIQUE (produto_id, sku);
 
@@ -64,7 +64,7 @@ ALTER TABLE public.loja_variacoes
 -- RLS: loja_produtos
 -- ============================================================
 
--- Leitura pública (para a página da loja)
+-- Leitura pÃºblica (para a pÃ¡gina da loja)
 CREATE POLICY "loja_produtos_public_read" ON public.loja_produtos
     FOR SELECT USING (true);
 
@@ -87,11 +87,11 @@ CREATE POLICY "loja_produtos_admin_delete" ON public.loja_produtos
 -- Baseada no JOIN com loja_produtos para herdar empresa_id
 -- ============================================================
 
--- Leitura pública (para a página da loja)
+-- Leitura pÃºblica (para a pÃ¡gina da loja)
 CREATE POLICY "loja_variacoes_public_read" ON public.loja_variacoes
     FOR SELECT USING (true);
 
--- Admin pode inserir variação se o produto pertence à empresa
+-- Admin pode inserir variaÃ§Ã£o se o produto pertence Ã  empresa
 CREATE POLICY "loja_variacoes_admin_insert" ON public.loja_variacoes
     FOR INSERT TO authenticated
     WITH CHECK (
@@ -102,7 +102,7 @@ CREATE POLICY "loja_variacoes_admin_insert" ON public.loja_variacoes
         )
     );
 
--- Admin pode atualizar variação se o produto pertence à empresa
+-- Admin pode atualizar variaÃ§Ã£o se o produto pertence Ã  empresa
 CREATE POLICY "loja_variacoes_admin_update" ON public.loja_variacoes
     FOR UPDATE TO authenticated
     USING (
@@ -113,7 +113,7 @@ CREATE POLICY "loja_variacoes_admin_update" ON public.loja_variacoes
         )
     );
 
--- Admin pode deletar variação se o produto pertence à empresa
+-- Admin pode deletar variaÃ§Ã£o se o produto pertence Ã  empresa
 CREATE POLICY "loja_variacoes_admin_delete" ON public.loja_variacoes
     FOR DELETE TO authenticated
     USING (
@@ -148,17 +148,17 @@ DECLARE
     seq INT;
     novo_sku TEXT;
 BEGIN
-    -- 3 primeiras letras do nome (sem acento, maiúsculo)
+    -- 3 primeiras letras do nome (sem acento, maiÃºsculo)
     prefixo := UPPER(LEFT(unaccent(TRIM(p_nome)), 3));
-    -- 2 primeiras letras da cor (sem acento, maiúsculo)
+    -- 2 primeiras letras da cor (sem acento, maiÃºsculo)
     cor_abrev := UPPER(LEFT(unaccent(TRIM(p_cor)), 2));
-    -- Tamanho em maiúsculo
+    -- Tamanho em maiÃºsculo
     tam_upper := UPPER(TRIM(p_tamanho));
 
-    -- Padrão de busca: CAM-PR-M-
+    -- PadrÃ£o de busca: CAM-PR-M-
     padrao := prefixo || '-' || cor_abrev || '-' || tam_upper || '-';
 
-    -- Buscar próximo sequencial para esse padrão na empresa
+    -- Buscar prÃ³ximo sequencial para esse padrÃ£o na empresa
     SELECT COALESCE(MAX(
         CAST(NULLIF(SUBSTRING(v.sku FROM '[0-9]{4}$'), '') AS INT)
     ), 0) + 1
@@ -177,7 +177,7 @@ $$;
 
 -- ============================================================
 -- RPC: loja_adicionar_estoque
--- Adiciona quantidade ao estoque de uma variação
+-- Adiciona quantidade ao estoque de uma variaÃ§Ã£o
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.loja_adicionar_estoque(
     p_variacao_id UUID,
@@ -197,7 +197,7 @@ BEGIN
     WHERE id = p_variacao_id;
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'Variação não encontrada';
+        RAISE EXCEPTION 'VariaÃ§Ã£o nÃ£o encontrada';
     END IF;
 END;
 $$;
@@ -228,11 +228,11 @@ BEGIN
     FOR UPDATE; -- Lock para evitar race condition
 
     IF NOT FOUND THEN
-        RAISE EXCEPTION 'Variação não encontrada';
+        RAISE EXCEPTION 'VariaÃ§Ã£o nÃ£o encontrada';
     END IF;
 
     IF estoque_atual < p_quantidade THEN
-        RAISE EXCEPTION 'Estoque insuficiente. Disponível: %, Solicitado: %', estoque_atual, p_quantidade;
+        RAISE EXCEPTION 'Estoque insuficiente. DisponÃ­vel: %, Solicitado: %', estoque_atual, p_quantidade;
     END IF;
 
     UPDATE loja_variacoes
@@ -243,20 +243,20 @@ $$;
 
 
 -- ============================================================
--- REFERÊNCIA DE USO:
+-- REFERÃŠNCIA DE USO:
 --
 -- Gerar SKU:
 --   SELECT public.gerar_sku('uuid-empresa', 'Camiseta', 'Preto', 'M');
---   → Retorna: 'CAM-PR-M-0001'
+--   â†’ Retorna: 'CAM-PR-M-0001'
 --
 -- Adicionar estoque:
 --   SELECT public.loja_adicionar_estoque('uuid-variacao', 10);
 --
 -- Remover estoque (venda):
 --   SELECT public.loja_remover_estoque('uuid-variacao', 1);
---   → Lança exceção se estoque insuficiente
+--   â†’ LanÃ§a exceÃ§Ã£o se estoque insuficiente
 --
--- Consultar produtos com variações:
+-- Consultar produtos com variaÃ§Ãµes:
 --   SELECT p.*, v.*
 --   FROM loja_produtos p
 --   LEFT JOIN loja_variacoes v ON v.produto_id = p.id
