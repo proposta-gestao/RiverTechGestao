@@ -2121,6 +2121,18 @@ body {
 }
 
 /* ===== Modal Header (Premium) ===== */
+.premium-modal {
+    border: 2px solid var(--accent-gold, #e5b25d) !important;
+    box-shadow: 0 0 30px rgba(229, 178, 93, 0.2) !important;
+}
+.premium-modal .modal-header {
+    background: linear-gradient(135deg, rgba(26,26,26,0.98) 0%, rgba(36,28,14,0.98) 100%);
+    border-bottom: 1px solid rgba(229, 178, 93, 0.2);
+}
+.premium-modal h3 {
+    color: var(--accent-gold, #e5b25d);
+}
+
 .modal-header {
     display: flex;
     align-items: center;

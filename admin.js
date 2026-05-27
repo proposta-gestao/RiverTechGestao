@@ -1296,6 +1296,9 @@ function setupAdminRealtime() {
             table: 'orders' 
         }, payload => {
             carregarDashboard(); // Recarrega tudo para garantir sincronia total (métricas + lista)
+            if (typeof carregarClientesPremium === 'function' && isModuloAtivo('clientes_premium')) {
+                carregarClientesPremium(); // Atualiza valor consumido em tempo real
+            }
         })
         .on('postgres_changes', { 
             event: '*', 

@@ -118,6 +118,7 @@
                 <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">📊 Vendas & Performance</button>
                 <button class="tab-btn" data-tab="loja" id="nav-loja" style="display:none;">👗 Loja</button>
                 <button class="tab-btn" data-tab="cupons" id="nav-cupons">🎫 Cupons</button>
+                <button class="tab-btn" data-tab="area-premium" id="nav-area-premium">👑 Área Premium</button>
                 <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">⚙️ Configurações</button>
             </nav>
         </div>
@@ -689,8 +690,6 @@
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
                         <button class="subtab-btn" data-subtab="config-equipe">Equipe / Atendentes</button>
                         <button class="subtab-btn" data-subtab="config-whatsapp">WhatsApp</button>
-                        <button class="subtab-btn" data-subtab="config-clientes-premium" id="nav-sub-clientes-premium">👑 Clientes Premium</button>
-                        <button class="subtab-btn" data-subtab="config-perfis-cardapio" id="nav-sub-perfis-cardapio">📋 Perfis de Cardápio</button>
                     </div>
                 </div>
 
@@ -1114,16 +1113,24 @@
                                         <div class="wa-toolbar-divider"></div>
                                         <span class="wa-toolbar-hint">Selecione o texto e clique para formatar</span>
                                     </div>
-                                    <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..."></div>
-                                </div>
-                                <small class="wa-msg-hint">💡 Dica: Clique nos botões azuis acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
-                            </div>
-                        </div>
+                                    <div id="confWhatsappTemplate" class                <!-- Subtabs de Premium movidos para Area Premium -->
+
+            </div>
+
+            <!-- Area Premium Tab -->
+            <div class="tab-content" id="tab-area-premium">
+                <div class="admin-toolbar" style="margin-bottom: 1rem; justify-content: center;">
+                    <h2>Área Premium</h2>
+                </div>
+                <div class="produtos-toolbar" style="margin-bottom: 1.5rem; overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding-bottom: 4px;">
+                    <div class="admin-subtabs" style="margin-bottom: 0; min-width: max-content;">
+                        <button class="subtab-btn active" data-subtab="area-clientes-premium" id="nav-sub-clientes-premium">👑 Clientes Premium</button>
+                        <button class="subtab-btn" data-subtab="area-perfis-cardapio" id="nav-sub-perfis-cardapio">📋 Perfis de Cardápio</button>
                     </div>
                 </div>
 
                 <!-- Subtab: Clientes Premium -->
-                <div class="subtab-content" id="subtab-config-clientes-premium">
+                <div class="subtab-content active" id="subtab-area-clientes-premium">
                     <div class="config-card">
                         <div class="config-card-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -1159,7 +1166,7 @@
                 </div>
 
                 <!-- Subtab: Perfis de Cardápio -->
-                <div class="subtab-content" id="subtab-config-perfis-cardapio">
+                <div class="subtab-content" id="subtab-area-perfis-cardapio">
                     <div class="config-card">
                         <div class="config-card-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -1170,6 +1177,14 @@
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
                                 Crie perfis de acesso ao cardápio. Cada perfil define quais categorias de produtos o cliente premium pode visualizar.
+                            </p>
+                            <div id="perfisCardapioLista">
+                                <p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>egorias de produtos o cliente premium pode visualizar.
                             </p>
                             <div id="perfisCardapioLista">
                                 <p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>
@@ -1987,7 +2002,7 @@
     <!-- MODAL: Novo/Editar Cliente Premium                              -->
     <!-- =============================================================== -->
     <div class="admin-modal-backdrop" id="modalClientePremium">
-        <div class="admin-modal" style="max-width:520px;">
+        <div class="admin-modal premium-modal" style="max-width:520px;">
             <div class="modal-header">
                 <div class="modal-header-left">
                     <button class="btn-modal-back" onclick="fecharModal('modalClientePremium')" title="Voltar">
@@ -2055,7 +2070,7 @@
     <!-- MODAL: Novo/Editar Perfil de Cardápio                           -->
     <!-- =============================================================== -->
     <div class="admin-modal-backdrop" id="modalPerfilCardapio">
-        <div class="admin-modal" style="max-width:520px;">
+        <div class="admin-modal premium-modal" style="max-width:520px;">
             <div class="modal-header">
                 <div class="modal-header-left">
                     <button class="btn-modal-back" onclick="fecharModal('modalPerfilCardapio')" title="Voltar">
