@@ -1,9 +1,7 @@
 /**
          * RiverTech - Admin Panel
          */
-const SUPABASE_URL = 'https://bpwwdnmhryblhsnywyoz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwd3dkbm1ocnlibGhzbnl3eW96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTM4NTksImV4cCI6MjA5MTMyOTg1OX0.AKJAzeYdbiiUyGxiWS4QeU5m3URel6kwsLnP6eGbXLg';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY);
 window.sb = sb;
 
 // --- Configurações Cloudinary ---
@@ -940,6 +938,21 @@ function aplicarFiltrosDeModulos() {
         if (cssLoja) cssLoja.disabled = false;
     }
 
+    // 9. CLIENTES PREMIUM
+    const mClientesPremium = isModuloAtivo('clientes_premium');
+    toggleSubtab('config-clientes-premium', mClientesPremium);
+    toggleSubtab('config-perfis-cardapio', mClientesPremium);
+
+    // Nova aba principal Área Premium
+    const navAreaPremium = document.getElementById('nav-area-premium');
+    toggleElement(navAreaPremium, mClientesPremium, 'flex');
+    if (navAreaPremium) navAreaPremium.classList.toggle('module-visible', mClientesPremium);
+    toggleElement(document.getElementById('side-nav-area-premium'), mClientesPremium, 'flex');
+
+    if (typeof initModuloClientesPremium === 'function') {
+        initModuloClientesPremium();
+    }
+
     // --- Redirecionamento Automático (Segurança e UX) ---
     // NOTA: persist=false para não sobrescrever a aba salva pelo usuário
     
@@ -949,15 +962,7 @@ function aplicarFiltrosDeModulos() {
     else if (abaAtiva === 'produtos' && !mQualquerProduto) { const b = document.getElementById('nav-dashboard'); if(b) switchTab('dashboard', b, false); }
     else if (abaAtiva === 'cupons' && !mCupons) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
     else if (abaAtiva === 'configuracoes' && !mQualquerConfig) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
-
-    // 9. CLIENTES PREMIUM
-    const mClientesPremium = isModuloAtivo('clientes_premium');
-    toggleSubtab('config-clientes-premium', mClientesPremium);
-    toggleSubtab('config-perfis-cardapio', mClientesPremium);
-
-    if (typeof initModuloClientesPremium === 'function') {
-        initModuloClientesPremium();
-    }
+    else if (abaAtiva === 'area-premium' && !mClientesPremium) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
 
     // 2. Redirecionamento de Sub-Abas (dentro da aba atual)
     const activeTabContent = document.querySelector('.tab-content.active');

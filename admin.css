@@ -1409,6 +1409,102 @@ body {
     }
 }
 
+/* === Área Premium — Tab Button VIP (dourado mesmo inativo) === */
+.tab-btn--premium {
+    color: var(--primary) !important;
+}
+
+.tab-btn--premium:hover:not(.active) {
+    color: var(--primary) !important;
+    background: rgba(229, 178, 93, 0.05);
+}
+
+/* === Área Premium — Sidebar Mobile VIP === */
+.nav-item--premium {
+    color: var(--primary) !important;
+}
+
+/* === Área Premium — Banner Header VIP === */
+.premium-area-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    margin-top: 1.5rem;
+    background: linear-gradient(135deg, rgba(229, 178, 93, 0.08) 0%, rgba(229, 178, 93, 0.02) 100%);
+    border: 1px solid rgba(229, 178, 93, 0.25);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-area-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--primary) 50%, transparent 100%);
+}
+
+.premium-area-header-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 14px rgba(229, 178, 93, 0.55));
+    animation: premiumGlow 3s ease-in-out infinite;
+}
+
+@keyframes premiumGlow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(229, 178, 93, 0.4)); }
+    50%       { filter: drop-shadow(0 0 20px rgba(229, 178, 93, 0.7)); }
+}
+
+.premium-area-header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.premium-area-header-text h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-main);
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
+}
+
+.premium-area-header-text p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.premium-area-header-badge {
+    padding: 6px 16px;
+    background: rgba(229, 178, 93, 0.12);
+    border: 1px solid rgba(229, 178, 93, 0.4);
+    border-radius: 20px;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    flex-shrink: 0;
+    text-shadow: 0 0 8px rgba(229, 178, 93, 0.4);
+}
+
+/* Responsivo para o banner premium */
+@media (max-width: 600px) {
+    .premium-area-header {
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.2rem 1.2rem;
+    }
+    .premium-area-header-badge {
+        order: -1;
+    }
+}
+
 /* Sub-tabs inside Produtos */
 .admin-subtabs {
     display: flex;
