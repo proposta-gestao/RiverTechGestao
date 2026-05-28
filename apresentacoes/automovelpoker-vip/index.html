@@ -23,7 +23,7 @@
         <button class="nav-toggle" aria-label="Menu">☰</button>
         <div class="nav-links">
             <a href="#inicio">Início</a>
-            <a href="#premium" style="color: var(--accent-gold);">O Módulo</a>
+            <a href="#premium" style="color: var(--color-primary);">O Módulo</a>
             <a href="#tecnologia">Infraestrutura</a>
             <a href="#contato" class="nav-cta">Ativar Módulo</a>
         </div>
@@ -39,13 +39,13 @@
             <div class="hero-float hero-float-2"></div>
 
             <div class="hero-content">
-                <div class="hero-for" style="border-color: rgba(147, 51, 234, 0.3); background: rgba(147, 51, 234, 0.05); color: #c084fc;">
+                <div class="hero-for" style="border-color: var(--color-primary-30); background: var(--color-primary-10); color: var(--color-primary);">
                     👑 Módulo Exclusivo para <strong>Automóvel Poker Clube</strong>
                 </div>
 
                 <h1 class="hero-title">
                     <span class="line">Gestão de Clientes</span>
-                    <span class="line"><span style="color: #c084fc;">Premium</span></span>
+                    <span class="line"><span class="gold">Premium</span></span>
                 </h1>
 
                 <p class="hero-subtitle">
@@ -54,7 +54,7 @@
                 </p>
 
                 <div class="hero-actions">
-                    <a href="#premium" class="btn-hero-primary" style="background: #9333ea; border-color: #9333ea; color: white;">
+                    <a href="#premium" class="btn-hero-primary">
                         Ver na Prática ↓
                     </a>
                     <a href="#contato" class="btn-hero-secondary">
@@ -69,65 +69,84 @@
              ============================================================ -->
         <section class="section mockup-section" id="premium">
             <div class="section-inner">
-                <div class="section-badge reveal" style="background: rgba(147, 51, 234, 0.15); color: #c084fc;">👑 Novo Módulo Exclusivo</div>
-                <h2 class="section-title reveal">O que há de novo no Módulo Premium?</h2>
-                <p class="section-desc reveal" style="margin-bottom: 3rem;">
+                <div class="section-badge reveal" style="background: var(--color-primary-15); color: var(--color-primary);">👑 Novo Módulo Exclusivo</div>
+                <h2 class="section-title reveal">O que há de novo no <span class="highlight">Módulo Premium?</span></h2>
+                <p class="section-desc reveal" style="margin-bottom: 3rem; color: var(--color-text-muted); font-size: 1.15rem; max-width: 700px;">
                     Criamos um sistema avançado para lidar com clientes fiéis e comandas limite. 
                     Login VIP, controle financeiro seguro e perfis de cardápio personalizados para Diretoria, Funcionários e Convidados.
                 </p>
 
                 <!-- MOCKUP 1: ADMIN LIST -->
-                <div class="mockup-container reveal" style="margin-bottom: 4rem;">
-                    <div class="mockup-frame browser-frame">
-                        <div class="browser-header">
-                            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                            <div class="browser-address">dashboard.rivertech.com.br/admin/premium</div>
+                <div class="mockup-showcase reveal" style="grid-template-columns: 1fr; margin-bottom: 4rem;">
+                    <div class="mockup-browser">
+                        <div class="mockup-browser-bar">
+                            <div class="mockup-dot red"></div>
+                            <div class="mockup-dot yellow"></div>
+                            <div class="mockup-dot green"></div>
+                            <div class="mockup-url">dashboard.rivertech.com.br/admin/premium</div>
                         </div>
-                        <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_list.png" alt="Admin - Lista de Clientes Premium" class="mockup-img">
+                        <div class="mockup-screen" style="min-height: 200px;">
+                            <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_list.png" alt="Admin - Lista de Clientes Premium">
+                        </div>
                     </div>
-                    <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Visão Geral e Controle de Consumo Mensal</p>
+                    <p style="text-align: center; color: var(--color-text-muted); margin-top: 1rem; font-weight: 600;">Visão Geral e Controle de Consumo Mensal</p>
                 </div>
 
                 <!-- MOCKUP 2: ADMIN FORM & PROFILES (GRID) -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem;">
-                    <div class="mockup-container reveal">
-                        <div class="mockup-frame browser-frame">
-                            <div class="browser-header">
-                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                <div class="mockup-showcase reveal" style="margin-bottom: 4rem; align-items: stretch;">
+                    <div>
+                        <div class="mockup-browser" style="height: 100%;">
+                            <div class="mockup-browser-bar">
+                                <div class="mockup-dot red"></div>
+                                <div class="mockup-dot yellow"></div>
+                                <div class="mockup-dot green"></div>
                             </div>
-                            <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_form.png" alt="Admin - Cadastro de Cliente" class="mockup-img">
+                            <div class="mockup-screen" style="min-height: 200px;">
+                                <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_form.png" alt="Admin - Cadastro de Cliente">
+                            </div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Definição de Limites por Cliente</p>
+                        <p style="text-align: center; color: var(--color-text-muted); margin-top: 1rem; font-weight: 600;">Definição de Limites por Cliente</p>
                     </div>
-                    <div class="mockup-container reveal" style="transition-delay: 0.2s;">
-                        <div class="mockup-frame browser-frame">
-                            <div class="browser-header">
-                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                    <div>
+                        <div class="mockup-browser" style="height: 100%;">
+                            <div class="mockup-browser-bar">
+                                <div class="mockup-dot red"></div>
+                                <div class="mockup-dot yellow"></div>
+                                <div class="mockup-dot green"></div>
                             </div>
-                            <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_profiles.png" alt="Admin - Perfis de Cardápio" class="mockup-img">
+                            <div class="mockup-screen" style="min-height: 200px;">
+                                <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_profiles.png" alt="Admin - Perfis de Cardápio">
+                            </div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Restrições de Visualização de Cardápio</p>
+                        <p style="text-align: center; color: var(--color-text-muted); margin-top: 1rem; font-weight: 600;">Restrições de Visualização de Cardápio</p>
                     </div>
                 </div>
 
                 <!-- MOCKUP 3: ATENDENTE E MOBILE (GRID) -->
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: center;">
-                    <div class="mockup-container reveal">
-                        <div class="mockup-frame browser-frame">
-                            <div class="browser-header">
-                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                <div class="mockup-showcase reveal" style="grid-template-columns: 2fr 1fr; align-items: center;">
+                    <div>
+                        <div class="mockup-browser">
+                            <div class="mockup-browser-bar">
+                                <div class="mockup-dot red"></div>
+                                <div class="mockup-dot yellow"></div>
+                                <div class="mockup-dot green"></div>
                             </div>
-                            <img src="/apresentacoes/automovelpoker-vip/images/attendant_pos_panel.png" alt="Painel do Atendente PDV" class="mockup-img">
+                            <div class="mockup-screen" style="min-height: 200px;">
+                                <img src="/apresentacoes/automovelpoker-vip/images/attendant_pos_panel.png" alt="Painel do Atendente PDV">
+                            </div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Operação Ágil no Caixa/Garçom</p>
+                        <p style="text-align: center; color: var(--color-text-muted); margin-top: 1rem; font-weight: 600;">Operação Ágil no Caixa/Garçom</p>
                     </div>
                     
-                    <div class="mockup-container reveal" style="transition-delay: 0.2s; max-width: 300px; margin: 0 auto;">
-                        <div class="mockup-frame mobile-frame">
-                            <div class="mobile-notch"></div>
-                            <img src="/apresentacoes/automovelpoker-vip/images/client_mobile_menu.png" alt="App Mobile do Cliente" class="mockup-img">
+                    <div style="max-width: 320px; margin: 0 auto;">
+                        <div class="mockup-browser" style="border-radius: 40px; padding: 0.5rem; background: var(--color-surface-2);">
+                            <!-- iPhone notch simulation -->
+                            <div style="width: 120px; height: 25px; background: #000; margin: 0 auto; border-radius: 0 0 15px 15px; position: absolute; left: 50%; transform: translateX(-50%); z-index: 10;"></div>
+                            <div class="mockup-screen" style="border-radius: 32px; overflow: hidden; min-height: 200px; position: relative;">
+                                <img src="/apresentacoes/automovelpoker-vip/images/client_mobile_menu.png" alt="App Mobile do Cliente" style="padding-top: 10px;">
+                            </div>
                         </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Experiência VIP para o Cliente</p>
+                        <p style="text-align: center; color: var(--color-text-muted); margin-top: 1rem; font-weight: 600;">Experiência VIP para o Cliente</p>
                     </div>
                 </div>
 
@@ -139,9 +158,9 @@
              ============================================================ -->
         <section class="section tech-section" id="tecnologia">
             <div class="section-inner">
-                <div class="section-badge reveal" style="background: rgba(147, 51, 234, 0.15); color: #c084fc;">🔧 Tecnologia e Segurança</div>
+                <div class="section-badge reveal" style="background: var(--color-primary-15); color: var(--color-primary);">🔧 Tecnologia e Segurança</div>
                 <h2 class="section-title reveal reveal-delay-1">
-                    Controle financeiro <span style="color: #c084fc;">seguro</span>
+                    Controle financeiro <span class="highlight">seguro</span>
                 </h2>
                 <p class="section-subtitle reveal reveal-delay-2">
                     A gestão de limites de gastos exige uma arquitetura robusta. Todas as transações do Módulo VIP são auditadas e protegidas.
@@ -179,17 +198,17 @@
              CTA — PRÓXIMOS PASSOS
              ============================================================ -->
         <section class="section cta-section" id="contato">
-            <div class="section-inner">
+            <div class="section-inner" style="text-align: center;">
                 <div class="cta-content reveal">
-                    <div class="section-badge" style="margin: 0 auto 1.5rem; background: rgba(147, 51, 234, 0.15); color: #c084fc;">🚀 Ativação</div>
-                    <h2 class="cta-title">
-                        Pronto para adicionar o <span style="color: #c084fc;">Módulo Premium</span>?
+                    <div class="section-badge" style="margin: 0 auto 1.5rem; background: var(--color-primary-15); color: var(--color-primary);">🚀 Ativação</div>
+                    <h2 class="section-title reveal" style="font-size: 3rem;">
+                        Pronto para adicionar o <span class="highlight">Módulo Premium</span>?
                     </h2>
-                    <p class="cta-desc">
+                    <p class="section-subtitle reveal" style="margin: 0 auto 3rem;">
                         O módulo pode ser integrado perfeitamente ao seu ecossistema atual. Fale conosco para realizarmos a liberação e o treinamento da equipe.
                     </p>
                     <a href="https://wa.me/5531987086192?text=Ol%C3%A1%20Gostaria%20de%20ativar%20o%20M%C3%B3dulo%20VIP%20de%20Clientes%20Premium" 
-                       class="cta-btn" target="_blank" style="background: #9333ea; border-color: #9333ea; color: white;">
+                       class="btn-hero-primary reveal">
                         💬 Solicitar Ativação
                     </a>
                 </div>
@@ -199,7 +218,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="presentation-footer">
+    <footer style="text-align: center; padding: 2rem; color: var(--color-text-muted); border-top: 1px solid var(--color-border); font-size: 0.9rem;">
         <p class="footer-text">
             © 2026 <strong>RiverTech Gestão</strong> — Proposta Comercial Confidencial<br>
             Elaborado exclusivamente para o Automóvel Poker Clube
