@@ -71,11 +71,14 @@ async function carregarDadosEmpresa() {
     // 3. Administradores
     await carregarAdmins();
 
-    // 4. ConfiguraÃ§Ãµes da Loja (Branding)
+    // 4. ConfiguraÃ§Ãµes EspecÃ­ficas
     await carregarConfiguracoesLoja();
 
     // 5. Status do PIX
     carregarStatusPix();
+
+    // 6. Propostas Comerciais
+    carregarPropostas();
 }
 
 async function carregarConfiguracoesLoja() {
@@ -979,3 +982,52 @@ window.toggleTokenVisibility = () => {
 
 // Iniciar
 init();
+
+// ==========================================
+// PROPOSTAS COMERCIAIS
+// ==========================================
+function carregarPropostas() {
+    const container = document.getElementById('propostasContainer');
+    if (!container) return;
+
+    // Apenas renderizamos se houver uma proposta configurada ou a padrão
+    // No caso, sabemos que o slug 'automovelpoker' e 'TesteRiverTech' existem, mas podemos puxar direto do EMPRESA_SLUG.
+    // Vamos listar as propostas disponíveis (mockadas ou lidas de uma tabela de propostas futuramente).
+    // Por enquanto, criamos um card fixo com o link dinâmico da empresa.
+
+    const html = \
+        <div style="background: rgba(229,178,93,0.05); border: 1px solid rgba(229,178,93,0.3); border-radius: 12px; padding: 20px; transition: all 0.3s;" class="proposta-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <div>
+                    <span class="status-badge" style="background: rgba(229,178,93,0.15); color: var(--accent-gold); margin-bottom: 8px; display: inline-block;">Novo Módulo VIP</span>
+                    <h4 style="margin:0; font-size: 1.1rem;">Gestão de Clientes Premium</h4>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px;">??</div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.4;">
+                Apresentação comercial com mockups da funcionalidade de Clientes VIP com limite de gastos e perfis restritos de cardápio.
+            </p>
+            <a href="/apresentacao/\#premium" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
+                Ver Apresentação
+            </a>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <div>
+                    <span class="status-badge" style="background: rgba(255,255,255,0.1); color: var(--text-secondary); margin-bottom: 8px; display: inline-block;">Completa</span>
+                    <h4 style="margin:0; font-size: 1.1rem;">Sistema Gestão V1</h4>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px;">??</div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.4;">
+                Apresentação completa do sistema de gestão com cardápio digital, QR Code e painel administrativo master.
+            </p>
+            <a href="/apresentacao/\" target="_blank" class="btn-outline" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
+                Ver Apresentação
+            </a>
+        </div>
+    \;
+
+    container.innerHTML = html;
+}
