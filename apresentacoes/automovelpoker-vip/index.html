@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Automóvel Poker Clube — Módulo Premium | RiverTech</title>
+    <title>Módulo Premium — Automóvel Poker Clube | RiverTech</title>
     <meta name="description" content="Apresentação exclusiva do novo Módulo de Gestão de Clientes Premium para o Automóvel Poker Clube.">
-    <link rel="stylesheet" href="/apresentacoes/automovelpoker/style.css">
+    <!-- Google Fonts: Inter para visual moderno e premium -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/apresentacoes/automovelpoker-vip/style.css">
 </head>
 
 <body>
@@ -19,12 +21,11 @@
             <div class="nav-logo-icon">RT</div>
             <div class="nav-logo-text">River<span>Tech</span></div>
         </a>
-        <button class="nav-toggle" aria-label="Menu">☰</button>
         <div class="nav-links">
             <a href="#inicio">Visão Geral</a>
-            <a href="#premium" style="color: var(--accent-gold);">O Módulo</a>
-            <a href="#tecnologia">Tecnologia</a>
-            <a href="#contato" class="nav-cta">Ativar Módulo</a>
+            <a href="#premium">O Módulo</a>
+            <a href="#tecnologia">Infraestrutura</a>
+            <a href="#contato" class="btn-primary">Ativar Módulo</a>
         </div>
     </nav>
 
@@ -34,178 +35,168 @@
              HERO — COVER SLIDE
              ============================================================ -->
         <section class="hero" id="inicio">
-            <div class="hero-float hero-float-1"></div>
-            <div class="hero-float hero-float-2"></div>
-
             <div class="hero-content">
-                <div class="hero-for">
-                    👑 Módulo exclusivo para <strong>Automóvel Poker Clube</strong>
+                <div class="hero-badge">
+                    👑 Módulo Exclusivo — Automóvel Poker Clube
                 </div>
 
                 <h1 class="hero-title">
-                    <span class="line">Gestão de Clientes</span>
-                    <span class="line"><span class="gold">Premium</span></span>
+                    <span class="line">Gestão de Clientes</span><br>
+                    <span class="line gradient-text">Premium</span>
                 </h1>
 
                 <p class="hero-subtitle">
                     Assuma o controle total sobre limites de gastos, consumo mensal e acesso personalizado aos cardápios. 
-                    Uma experiência VIP desenvolvida sob medida para a sua operação.
+                    Uma experiência VIP em tons elegantes, desenvolvida sob medida para a sua operação.
                 </p>
 
                 <div class="hero-actions">
-                    <a href="#premium" class="btn-hero-primary">
+                    <a href="#premium" class="btn-primary" style="margin-right: 1rem;">
                         Ver na Prática ↓
                     </a>
-                    <a href="#contato" class="btn-hero-secondary">
-                        Falar com a Equipe
-                    </a>
                 </div>
             </div>
         </section>
 
         <!-- ============================================================
-             MOCKUP – NOVO MÓDULO PREMIUM
+             MOCKUPS — O MÓDULO
              ============================================================ -->
-        <section class="section mockup-section" id="premium">
-            <div class="section-inner">
-                <div class="section-badge reveal" style="background: rgba(147, 51, 234, 0.15); color: #c084fc;">👑 Novo Módulo Exclusivo</div>
-                <h2 class="section-title reveal">O que há de novo no Módulo Premium?</h2>
-                <p class="section-desc reveal" style="margin-bottom: 3rem;">
-                    Criamos um sistema avançado para lidar com clientes fiéis e comandas limite. 
-                    Login VIP, controle financeiro seguro e perfis de cardápio personalizados para Diretoria, Funcionários e Convidados.
+        <section class="section" id="premium">
+            <div class="section-header">
+                <h2>O que há de novo no Módulo Premium?</h2>
+                <p>
+                    Um ecossistema visual de alta performance para gerenciar a elite dos seus clientes. 
+                    Telas desenhadas para uso administrativo fluido, operação ágil no caixa e experiência VIP no celular do cliente.
                 </p>
-
-                <!-- MOCKUP 1: ADMIN LIST -->
-                <div class="mockup-container reveal" style="margin-bottom: 4rem;">
-                    <div class="mockup-frame browser-frame">
-                        <div class="browser-header">
-                            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                            <div class="browser-address">dashboard.rivertech.com.br/admin/premium</div>
-                        </div>
-                        <img src="images/admin_premium_list.png" alt="Admin - Lista de Clientes Premium" class="mockup-img">
-                    </div>
-                    <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Visão Geral e Controle de Consumo Mensal</p>
-                </div>
-
-                <!-- MOCKUP 2: ADMIN FORM & PROFILES (GRID) -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem;">
-                    <div class="mockup-container reveal">
-                        <div class="mockup-frame browser-frame">
-                            <div class="browser-header">
-                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                            </div>
-                            <img src="images/admin_premium_form.png" alt="Admin - Cadastro de Cliente" class="mockup-img">
-                        </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Definição de Limites por Cliente</p>
-                    </div>
-                    <div class="mockup-container reveal" style="transition-delay: 0.2s;">
-                        <div class="mockup-frame browser-frame">
-                            <div class="browser-header">
-                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                            </div>
-                            <img src="images/admin_premium_profiles.png" alt="Admin - Perfis de Cardápio" class="mockup-img">
-                        </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Restrições de Visualização de Cardápio</p>
-                    </div>
-                </div>
-
-                <!-- MOCKUP 3: ATENDENTE E MOBILE (GRID) -->
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: center;">
-                    <div class="mockup-container reveal">
-                        <div class="mockup-frame browser-frame">
-                            <div class="browser-header">
-                                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-                            </div>
-                            <img src="images/attendant_pos_panel.png" alt="Painel do Atendente PDV" class="mockup-img">
-                        </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Operação Ágil no Caixa/Garçom</p>
-                    </div>
-                    
-                    <div class="mockup-container reveal" style="transition-delay: 0.2s; max-width: 300px; margin: 0 auto;">
-                        <div class="mockup-frame mobile-frame">
-                            <div class="mobile-notch"></div>
-                            <img src="images/client_mobile_menu.png" alt="App Mobile do Cliente" class="mockup-img">
-                        </div>
-                        <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">Experiência VIP para o Cliente</p>
-                    </div>
-                </div>
-
             </div>
+
+            <!-- MOCKUP 1: ADMIN LIST -->
+            <div class="grid-1">
+                <div>
+                    <div class="mockup-wrapper">
+                        <div class="browser-bar">
+                            <div class="browser-dot dot-red"></div>
+                            <div class="browser-dot dot-yellow"></div>
+                            <div class="browser-dot dot-green"></div>
+                        </div>
+                        <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_list.png" alt="Admin - Lista de Clientes Premium">
+                    </div>
+                    <div class="mockup-caption">Dashboard Administrativo: Visão Geral e Controle de Consumo Mensal</div>
+                </div>
+            </div>
+
+            <!-- MOCKUP 2: ADMIN FORM & PROFILES -->
+            <div class="grid-2">
+                <div>
+                    <div class="mockup-wrapper">
+                        <div class="browser-bar">
+                            <div class="browser-dot dot-red"></div>
+                            <div class="browser-dot dot-yellow"></div>
+                            <div class="browser-dot dot-green"></div>
+                        </div>
+                        <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_form.png" alt="Admin - Cadastro de Cliente">
+                    </div>
+                    <div class="mockup-caption">Cadastro Inteligente e Definição de Limites de Gastos</div>
+                </div>
+                <div>
+                    <div class="mockup-wrapper">
+                        <div class="browser-bar">
+                            <div class="browser-dot dot-red"></div>
+                            <div class="browser-dot dot-yellow"></div>
+                            <div class="browser-dot dot-green"></div>
+                        </div>
+                        <img src="/apresentacoes/automovelpoker-vip/images/admin_premium_profiles.png" alt="Admin - Perfis de Cardápio">
+                    </div>
+                    <div class="mockup-caption">Restrições Personalizadas de Visualização de Cardápio (Ex: Diretoria vs Funcionários)</div>
+                </div>
+            </div>
+
+            <!-- MOCKUP 3: ATENDENTE & MOBILE -->
+            <div class="grid-2-mobile">
+                <div>
+                    <div class="mockup-wrapper">
+                        <div class="browser-bar">
+                            <div class="browser-dot dot-red"></div>
+                            <div class="browser-dot dot-yellow"></div>
+                            <div class="browser-dot dot-green"></div>
+                        </div>
+                        <img src="/apresentacoes/automovelpoker-vip/images/attendant_pos_panel.png" alt="Painel do Atendente PDV">
+                    </div>
+                    <div class="mockup-caption">Painel do Atendente (Caixa/Garçom) para Lançamento Rápido na Comanda</div>
+                </div>
+                <div>
+                    <div class="mockup-wrapper" style="max-width: 350px; margin: 0 auto; border-radius: 40px; padding: 0.5rem; background: #fff;">
+                        <!-- iPhone notch simulation -->
+                        <div style="width: 120px; height: 25px; background: #000; margin: 0 auto; border-radius: 0 0 15px 15px;"></div>
+                        <img src="/apresentacoes/automovelpoker-vip/images/client_mobile_menu.png" alt="App Mobile do Cliente" style="border-radius: 30px; margin-top: -15px;">
+                    </div>
+                    <div class="mockup-caption">Interface VIP Mobile: Acesso ao Saldo e Cardápio Restrito</div>
+                </div>
+            </div>
+
         </section>
 
         <!-- ============================================================
-             TECHNOLOGY — TECNOLOGIA POR TRÁS
+             TECHNOLOGY
              ============================================================ -->
-        <section class="section tech-section" id="tecnologia">
-            <div class="section-inner">
-                <div class="section-badge reveal">🔧 Segurança e Robustez</div>
-                <h2 class="section-title reveal reveal-delay-1">
-                    Controle financeiro <span class="highlight">seguro</span>
-                </h2>
-                <p class="section-subtitle reveal reveal-delay-2">
-                    A gestão de limites de gastos exige uma arquitetura robusta. Todas as transações do Módulo VIP são auditadas e protegidas.
+        <section class="section" id="tecnologia" style="background: white; border-radius: var(--radius-lg); margin-bottom: 4rem;">
+            <div class="section-header">
+                <h2>Segurança e Robustez</h2>
+                <p>
+                    A gestão de limites de gastos e faturamentos requer uma arquitetura impecável. Todas as transações do Módulo VIP são auditadas em tempo real.
                 </p>
+            </div>
 
-                <div class="tech-grid">
-                    <div class="tech-card reveal reveal-delay-1">
-                        <div class="tech-icon">🔒</div>
-                        <div class="tech-name">Autenticação Dupla</div>
-                        <div class="tech-desc">
-                            Acesso dos clientes protegido via CPF e Senha Pessoal para evitar fraudes ou uso indevido da comanda.
-                        </div>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">🔒</div>
+                    <div class="tech-title">Autenticação Dupla</div>
+                    <div class="tech-desc">
+                        O acesso aos perfis VIP é rigorosamente protegido via CPF e Senha Pessoal para evitar fraudes no uso da comanda.
                     </div>
+                </div>
 
-                    <div class="tech-card reveal reveal-delay-2">
-                        <div class="tech-icon">⚡</div>
-                        <div class="tech-name">Atualização em Tempo Real</div>
-                        <div class="tech-desc">
-                            Assim que um pedido é feito, o limite do cliente é recalculado na nuvem instantaneamente.
-                        </div>
+                <div class="tech-card">
+                    <div class="tech-icon">⚡</div>
+                    <div class="tech-title">Cloud em Tempo Real</div>
+                    <div class="tech-desc">
+                        Instantaneidade: Assim que um pedido é computado no salão, o limite disponível do cliente é recalculado na nuvem.
                     </div>
+                </div>
 
-                    <div class="tech-card reveal reveal-delay-3">
-                        <div class="tech-icon">📜</div>
-                        <div class="tech-name">Histórico e Auditoria</div>
-                        <div class="tech-desc">
-                            Registro completo de todas as movimentações de limite, recargas e abatimentos, visível tanto para a administração quanto para o cliente.
-                        </div>
+                <div class="tech-card">
+                    <div class="tech-icon">📜</div>
+                    <div class="tech-title">Histórico de Auditoria</div>
+                    <div class="tech-desc">
+                        Rastreabilidade total. Cada centavo de recarga, consumo e abatimento de limite fica registrado para o cliente e para a gerência.
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ============================================================
-             CTA — PRÓXIMOS PASSOS
+             CTA
              ============================================================ -->
-        <section class="section cta-section" id="contato">
-            <div class="section-inner">
-                <div class="cta-content reveal">
-                    <div class="section-badge" style="margin: 0 auto 1.5rem;">🚀 Ativação</div>
-                    <h2 class="cta-title">
-                        Pronto para adicionar o <span class="highlight">Módulo Premium</span>?
-                    </h2>
-                    <p class="cta-desc">
-                        O módulo pode ser integrado perfeitamente ao seu ecossistema atual. Fale conosco para realizarmos a liberação e o treinamento da equipe.
-                    </p>
-                    <a href="https://wa.me/5531987086192?text=Ol%C3%A1%20Gostaria%20de%20ativar%20o%20M%C3%B3dulo%20VIP%20de%20Clientes%20Premium" 
-                       class="cta-btn" target="_blank">
-                        💬 Solicitar Ativação
-                    </a>
-                </div>
-            </div>
+        <section class="cta-section" id="contato">
+            <h2>Eleve a experiência do seu Clube</h2>
+            <p>
+                O Módulo Premium se integra de forma invisível à sua operação atual. Agende a liberação para começar a cadastrar a Diretoria e seus clientes Vips.
+            </p>
+            <a href="https://wa.me/5531987086192?text=Ol%C3%A1%20Gostaria%20de%20ativar%20o%20M%C3%B3dulo%20VIP%20de%20Clientes%20Premium" 
+               class="btn-white" target="_blank">
+                💬 Solicitar Ativação do Módulo
+            </a>
         </section>
 
     </div>
 
     <!-- Footer -->
-    <footer class="presentation-footer">
-        <p class="footer-text">
-            © 2026 <strong>RiverTech Gestão</strong> — Proposta Comercial Confidencial<br>
-            Elaborado exclusivamente para o Automóvel Poker Clube
+    <footer>
+        <p>
+            © 2026 <strong>RiverTech Gestão SaaS</strong> — Proposta Comercial Confidencial<br>
+            Design e desenvolvimento exclusivo para o Automóvel Poker Clube
         </p>
     </footer>
-
-    <script src="/apresentacoes/automovelpoker/script.js"></script>
 
 </body>
 
