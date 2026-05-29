@@ -2107,12 +2107,18 @@
                     </div>
                 </div>
 
+                <!-- Abas: Categorias | Produtos -->
+                <div class="pc-tabs">
+                    <button type="button" class="pc-tab active" data-tab="categorias">📂 Categorias</button>
+                    <button type="button" class="pc-tab" data-tab="produtos">🍔 Produtos Individuais</button>
+                </div>
+
                 <!-- Layout de duas colunas: Seletor | Selecionados -->
                 <div class="pc-two-col">
 
-                    <!-- Coluna esquerda: lista de categorias -->
+                    <!-- Coluna esquerda: lista de itens -->
                     <div class="pc-col-left">
-                        <label class="pc-col-label">📂 Categorias disponíveis</label>
+                        <label class="pc-col-label" id="pcLeftLabel">📂 Categorias disponíveis</label>
                         <p class="pc-col-hint">Clique para adicionar ao perfil</p>
                         <div class="pc-list-panel" id="pcCategoriasCheckboxes"></div>
                     </div>
@@ -2124,7 +2130,7 @@
 
                     <!-- Coluna direita: selecionados -->
                     <div class="pc-col-right">
-                        <label class="pc-col-label">✅ Permitidas neste perfil</label>
+                        <label class="pc-col-label" id="pcRightLabel">✅ Categorias permitidas</label>
                         <p class="pc-col-hint">Clique no × para remover</p>
                         <div id="pcCategoriasSelected" class="pc-selected-list">
                             <span class="pc-selected-placeholder">Nenhuma categoria adicionada</span>

@@ -2230,6 +2230,36 @@ body {
     width: 96% !important;
 }
 
+/* Abas (Categorias / Produtos) */
+.pc-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: -1px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    padding: 0 4px;
+}
+.pc-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+.pc-tab:hover {
+    color: white;
+    opacity: 1;
+}
+.pc-tab.active {
+    color: var(--primary, #e5b25d);
+    border-bottom-color: var(--primary, #e5b25d);
+    opacity: 1;
+}
+
 /* Container das duas colunas */
 .pc-two-col {
     display: grid;

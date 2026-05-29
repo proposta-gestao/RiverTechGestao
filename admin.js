@@ -3885,7 +3885,7 @@ async function carregarPerfisCardapio() {
     try {
         window.__categoriasList = await obterCategoriasDisponiveis();
         const { data, error } = await sb.from('perfis_cardapio')
-            .select('*, perfil_cardapio_categorias(category_id)')
+            .select('*, perfil_cardapio_categorias(category_id), perfil_cardapio_produtos(product_id)')
             .eq('empresa_id', getTenantId())
             .order('nome');
         if (error) throw error;
@@ -3932,12 +3932,16 @@ function renderPerfisCardapio() {
 }
 
 window.abrirModalPerfilCardapio = async (id = null) => {
-    const inputId    = document.getElementById('perfilCardapioId');
-    const inputNome  = document.getElementById('pcNome');
-    const inputDesc  = document.getElementById('pcDescricao');
-    const title      = document.getElementById('perfilCardapioModalTitle');
-    const listEl     = document.getElementById('pcCategoriasCheckboxes');
+    const inputId = document.getElementById('perfilCardapioId');
+    const inputNome = document.getElementById('pcNome');
+    const inputDesc = document.getElementById('pcDescricao');
+    const title = document.getElementById('perfilCardapioModalTitle');
+    const listEl = document.getElementById('pcCategoriasCheckboxes');
     const selectedEl = document.getElementById('pcCategoriasSelected');
+    const tabCats = document.querySelector('.pc-tab[data-tab="categorias"]');
+    const tabProds = document.querySelector('.pc-tab[data-tab="produtos"]');
+    const leftLabel = document.getElementById('pcLeftLabel');
+    const rightLabel = document.getElementById('pcRightLabel');
 
     inputId.value   = id || '';
     inputNome.value = '';
@@ -3945,8 +3949,15 @@ window.abrirModalPerfilCardapio = async (id = null) => {
 
     const cats = await obterCategoriasDisponiveis();
     window.__categoriasList = cats;
+    
+    // Fetch products
+    const { data: prodsData } = await sb.from('products').select('id, name').eq('empresa_id', getTenantId()).order('name');
+    const prods = prodsData || [];
+    window.__produtosList = prods;
 
     let selectedCats = [];
+    let selectedProds = [];
+
     if (id) {
         title.textContent = '📋 Editar Perfil de Cardápio';
         const perfil = listaPerfisCardapio.find(p => p.id === id);
@@ -3954,45 +3965,56 @@ window.abrirModalPerfilCardapio = async (id = null) => {
             inputNome.value = perfil.nome;
             inputDesc.value = perfil.descricao || '';
             selectedCats = (perfil.perfil_cardapio_categorias || []).map(pc => pc.category_id);
+            selectedProds = (perfil.perfil_cardapio_produtos || []).map(pp => pp.product_id);
         }
     } else {
         title.textContent = '📋 Novo Perfil de Cardápio';
     }
 
-    const selected = new Set(selectedCats);
+    const selectedCatsSet = new Set(selectedCats);
+    const selectedProdsSet = new Set(selectedProds);
+    let activeTab = 'categorias';
 
     function syncSelectedPanel() {
-        if (selected.size === 0) {
-            selectedEl.innerHTML = '<span class="pc-selected-placeholder">Nenhuma categoria adicionada</span>';
+        const isCat = activeTab === 'categorias';
+        const currentSet = isCat ? selectedCatsSet : selectedProdsSet;
+        const currentSource = isCat ? cats : prods;
+
+        if (currentSet.size === 0) {
+            selectedEl.innerHTML = `<span class="pc-selected-placeholder">Nenhum${isCat ? 'a categoria' : ' produto'} adicionado</span>`;
             return;
         }
-        selectedEl.innerHTML = [...selected].map(catId => {
-            const cat = (cats || []).find(c => c.id === catId);
-            const name = cat ? cat.name : catId;
+        selectedEl.innerHTML = [...currentSet].map(itemId => {
+            const item = currentSource.find(c => c.id === itemId);
+            const name = item ? item.name : itemId;
             return `<div class="pc-selected-row">
                 <span>${name}</span>
-                <button class="pc-remove-btn" type="button" data-id="${catId}" title="Remover">×</button>
+                <button class="pc-remove-btn" type="button" data-id="${itemId}" title="Remover">×</button>
             </div>`;
         }).join('');
 
         selectedEl.querySelectorAll('.pc-remove-btn').forEach(btn => {
             btn.onclick = () => {
-                selected.delete(btn.dataset.id);
+                currentSet.delete(btn.dataset.id);
                 // Reativar item na lista esquerda
-                const item = listEl.querySelector(`.pc-check-item[data-id="${btn.dataset.id}"]`);
-                if (item) item.classList.remove('checked');
+                const itemNode = listEl.querySelector(`.pc-check-item[data-id="${btn.dataset.id}"]`);
+                if (itemNode) itemNode.classList.remove('checked');
                 syncSelectedPanel();
             };
         });
     }
 
     function renderLeftList() {
-        if (!cats || cats.length === 0) {
-            listEl.innerHTML = '<div class="pc-cat-empty">Nenhuma categoria encontrada.</div>';
+        const isCat = activeTab === 'categorias';
+        const currentSource = isCat ? cats : prods;
+        const currentSet = isCat ? selectedCatsSet : selectedProdsSet;
+
+        if (!currentSource || currentSource.length === 0) {
+            listEl.innerHTML = `<div class="pc-cat-empty">Nenhum${isCat ? 'a categoria encontrada' : ' produto encontrado'}.</div>`;
             return;
         }
-        listEl.innerHTML = cats.map(c => `
-            <div class="pc-check-item ${selected.has(c.id) ? 'checked' : ''}" data-id="${c.id}">
+        listEl.innerHTML = currentSource.map(c => `
+            <div class="pc-check-item ${currentSet.has(c.id) ? 'checked' : ''}" data-id="${c.id}">
                 <span class="pc-check-box">✓</span>
                 <span>${c.name}</span>
             </div>
@@ -4000,12 +4022,12 @@ window.abrirModalPerfilCardapio = async (id = null) => {
 
         listEl.querySelectorAll('.pc-check-item').forEach(item => {
             item.onclick = () => {
-                const catId = item.dataset.id;
-                if (selected.has(catId)) {
-                    selected.delete(catId);
+                const itemId = item.dataset.id;
+                if (currentSet.has(itemId)) {
+                    currentSet.delete(itemId);
                     item.classList.remove('checked');
                 } else {
-                    selected.add(catId);
+                    currentSet.add(itemId);
                     item.classList.add('checked');
                 }
                 syncSelectedPanel();
@@ -4013,8 +4035,31 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         });
     }
 
-    renderLeftList();
-    syncSelectedPanel();
+    function setActiveTab(tab) {
+        activeTab = tab;
+        if (tab === 'categorias') {
+            tabCats.classList.add('active');
+            tabProds.classList.remove('active');
+            leftLabel.textContent = '📂 Categorias disponíveis';
+            rightLabel.textContent = '✅ Categorias permitidas';
+        } else {
+            tabCats.classList.remove('active');
+            tabProds.classList.add('active');
+            leftLabel.textContent = '🍔 Produtos disponíveis';
+            rightLabel.textContent = '✅ Produtos permitidos';
+        }
+        renderLeftList();
+        syncSelectedPanel();
+    }
+
+    tabCats.onclick = () => setActiveTab('categorias');
+    tabProds.onclick = () => setActiveTab('produtos');
+
+    // Store sets globally for saving
+    window.__pcSelectedCats = selectedCatsSet;
+    window.__pcSelectedProds = selectedProdsSet;
+
+    setActiveTab('categorias');
     abrirModal('modalPerfilCardapio');
 };
 
@@ -4042,17 +4087,26 @@ document.getElementById('btnSalvarPerfilCardapio').onclick = async () => {
             perfilId = data.id;
         }
 
-        // Sync categorias: delete all then insert selected
+        // Sync categorias
         await sb.from('perfil_cardapio_categorias').delete().eq('perfil_id', perfilId);
-
-        const checkedItems = document.querySelectorAll('#pcCategoriasCheckboxes .pc-check-item.checked');
-        if (checkedItems.length > 0) {
-            const catPayload = Array.from(checkedItems).map(item => ({
+        if (window.__pcSelectedCats && window.__pcSelectedCats.size > 0) {
+            const catPayload = [...window.__pcSelectedCats].map(catId => ({
                 perfil_id: perfilId,
-                category_id: item.dataset.id
+                category_id: catId
             }));
             const { error: catError } = await sb.from('perfil_cardapio_categorias').insert(catPayload);
             if (catError) throw catError;
+        }
+
+        // Sync produtos
+        await sb.from('perfil_cardapio_produtos').delete().eq('perfil_id', perfilId);
+        if (window.__pcSelectedProds && window.__pcSelectedProds.size > 0) {
+            const prodPayload = [...window.__pcSelectedProds].map(prodId => ({
+                perfil_id: perfilId,
+                product_id: prodId
+            }));
+            const { error: prodError } = await sb.from('perfil_cardapio_produtos').insert(prodPayload);
+            if (prodError) throw prodError;
         }
 
         showToast('Perfil salvo com sucesso!', 'success');
