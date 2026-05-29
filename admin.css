@@ -2403,6 +2403,7 @@ body {
     .pc-two-col {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto auto;
+        min-height: auto;
     }
     .pc-col-divider {
         width: 100%;
@@ -2413,8 +2414,24 @@ body {
         border-top: 1px solid rgba(255,255,255,0.06);
         border-bottom: 1px solid rgba(255,255,255,0.06);
     }
+    .pc-list-panel, .pc-selected-list {
+        max-height: 200px; /* Menor no mobile para não ocupar a tela toda */
+    }
+    .pc-modal-wide {
+        width: 100% !important;
+        border-radius: 12px !important;
+    }
+    .modal-body {
+        padding: 0 1rem 1rem 1rem !important;
+    }
+    .modal-header {
+        padding: 1rem !important;
+    }
+    .form-row {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
 }
-
 /* ===== Modal Header (Premium) ===== */
 .premium-modal {
     border: 2px solid var(--accent-gold, #e5b25d) !important;
