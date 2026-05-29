@@ -2216,6 +2216,117 @@ body {
     flex: 1;
 }
 
+/* ===== Categorias Premium Checkboxes ===== */
+.premium-cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.premium-cat-item {
+    position: relative;
+}
+
+.premium-cat-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.premium-cat-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-align: center;
+    transition: all 0.25s ease;
+    user-select: none;
+    min-height: 72px;
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-cat-label::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(229,178,93,0.06) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    border-radius: inherit;
+}
+
+.premium-cat-label:hover {
+    border-color: rgba(229, 178, 93, 0.35);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.premium-cat-label:hover::before {
+    opacity: 1;
+}
+
+.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label {
+    background: rgba(229, 178, 93, 0.12);
+    border-color: var(--primary, #e5b25d);
+    color: var(--primary, #e5b25d);
+    box-shadow: 0 0 0 1px rgba(229,178,93,0.3), 0 6px 20px rgba(229,178,93,0.15);
+    transform: translateY(-2px);
+}
+
+.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label::before {
+    opacity: 1;
+}
+
+.premium-cat-check {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.04);
+}
+
+.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label .premium-cat-check {
+    background: var(--primary, #e5b25d);
+    border-color: var(--primary, #e5b25d);
+    color: #000;
+    font-weight: 900;
+}
+
+.premium-cat-name {
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.premium-cat-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 1.5rem;
+    border: 1.5px dashed rgba(255,255,255,0.08);
+    border-radius: 12px;
+}
+
 /* ===== Modal Header (Premium) ===== */
 .premium-modal {
     border: 2px solid var(--accent-gold, #e5b25d) !important;

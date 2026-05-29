@@ -3959,12 +3959,21 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         title.textContent = 'Novo Perfil de Cardápio';
     }
 
-    checkboxContainer.innerHTML = (cats || []).map(c => `
-        <label style="display:flex; align-items:center; gap:8px; padding:8px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; cursor:pointer; font-size:0.9rem;">
-            <input type="checkbox" value="${c.id}" ${selectedCats.includes(c.id) ? 'checked' : ''}>
-            ${c.name}
-        </label>
-    `).join('');
+    if (!cats || cats.length === 0) {
+        checkboxContainer.className = 'premium-cat-grid';
+        checkboxContainer.innerHTML = `<div class="premium-cat-empty">Nenhuma categoria encontrada. Crie categorias primeiro no cardápio.</div>`;
+    } else {
+        checkboxContainer.className = 'premium-cat-grid';
+        checkboxContainer.innerHTML = cats.map(c => `
+            <div class="premium-cat-item">
+                <input type="checkbox" id="pcat-${c.id}" value="${c.id}" ${selectedCats.includes(c.id) ? 'checked' : ''}>
+                <label class="premium-cat-label" for="pcat-${c.id}">
+                    <span class="premium-cat-check">✓</span>
+                    <span class="premium-cat-name">${c.name}</span>
+                </label>
+            </div>
+        `).join('');
+    }
 
     abrirModal('modalPerfilCardapio');
 };
