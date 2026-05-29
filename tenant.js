@@ -478,7 +478,15 @@ async function initTenantAdmin(supabaseClient, userId) {
         .from('usuarios')
         .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto, tema_cor_hover)')
         .eq('id', userId)
-        .single();
+        .limit(1);
+    
+    // Transforma array em single
+    if (data && data.length > 0) {
+        data = data[0];
+    } else if (data && data.length === 0) {
+        error = { code: 'PGRST116', message: 'Result contains 0 rows' };
+        data = null;
+    }
 
     if (error && error.code === 'PGRST204') {
         console.warn('[Tenant-Admin] Falha ao carregar colunas de tema, tentando busca básica...');
@@ -486,9 +494,15 @@ async function initTenantAdmin(supabaseClient, userId) {
             .from('usuarios')
             .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos)')
             .eq('id', userId)
-            .single();
-        data = retry.data;
-        error = retry.error;
+            .limit(1);
+        
+        if (retry.data && retry.data.length > 0) {
+            data = retry.data[0];
+            error = null;
+        } else {
+            data = null;
+            error = retry.error || { code: 'PGRST116', message: 'Result contains 0 rows' };
+        }
     }
 
     if (error || !data) {
