@@ -2114,6 +2114,12 @@ body {
     justify-content: center;
 }
 
+@media (min-width: 1024px) {
+    .admin-modal-backdrop {
+        padding-left: 280px; /* Desloca o centro do modal para não sobrepor a sidebar de 280px */
+    }
+}
+
 .admin-modal-backdrop.active {
     display: flex;
 }
