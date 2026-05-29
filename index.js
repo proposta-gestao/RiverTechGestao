@@ -1506,18 +1506,32 @@ function inicializarLoginPremium() {
 
     // Verificar se já tem login salvo no localStorage
     const savedUser = localStorage.getItem('premiumUser');
+    let restaurouSessao = false;
     if (savedUser) {
         try {
             const parsed = JSON.parse(savedUser);
             if (parsed.expiry && Date.now() < parsed.expiry) {
+                console.log('[Premium] Sessão restaurada do localStorage para:', parsed.nome);
                 state.premiumUser = parsed;
-                atualizarBarraPremium();
-                aplicarFiltroCardapioPremium();
+                restaurouSessao = true;
             } else {
+                console.log('[Premium] Sessão expirada. Limpando localStorage.');
                 localStorage.removeItem('premiumUser');
+                state.premiumUser = null;
             }
-        } catch(e) {}
+        } catch(e) {
+            console.warn('[Premium] Erro ao ler sessão do localStorage:', e);
+            localStorage.removeItem('premiumUser');
+            state.premiumUser = null;
+        }
+    } else {
+        state.premiumUser = null;
     }
+
+    // Atualizar UI com o estado correto (logado ou não)
+    atualizarBarraPremium();
+    aplicarFiltroCardapioPremium();
+    console.log('[Premium] Estado final -> premiumUser:', state.premiumUser ? state.premiumUser.nome : 'NULL (cardápio completo)');
 
     btnLogin.onclick = (e) => {
         if (e) e.preventDefault();

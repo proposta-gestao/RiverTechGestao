@@ -953,13 +953,14 @@ function aplicarFiltrosDeModulos() {
     // 9. CLIENTES PREMIUM
     const mClientesPremium = isModuloAtivo('clientes_premium');
     const navAreaPremium = document.getElementById('nav-area-premium');
-    if (typeof toggleElement === 'function') {
-        toggleElement(navAreaPremium, mClientesPremium, 'flex');
-    }
+    const sideNavAreaPremium = document.getElementById('side-nav-area-premium');
+    toggleElement(navAreaPremium, mClientesPremium, 'flex');
+    if (navAreaPremium) navAreaPremium.classList.toggle('module-visible', mClientesPremium);
+    toggleElement(sideNavAreaPremium, mClientesPremium, 'flex');
     toggleSubtab('config-clientes-premium', mClientesPremium);
     toggleSubtab('config-perfis-cardapio', mClientesPremium);
 
-    if (typeof initModuloClientesPremium === 'function') {
+    if (mClientesPremium && typeof initModuloClientesPremium === 'function') {
         initModuloClientesPremium();
     }
 
