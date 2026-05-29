@@ -2372,10 +2372,8 @@ body {
     color: white;
 }
 .pc-check-item.checked {
-    background: rgba(229, 178, 93, 0.08);
-    color: rgba(229, 178, 93, 0.6);
-    opacity: 0.5;
-    pointer-events: none;
+    background: rgba(229, 178, 93, 0.15);
+    color: var(--primary, #e5b25d);
 }
 .pc-check-box {
     width: 16px;

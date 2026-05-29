@@ -4001,8 +4001,13 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         listEl.querySelectorAll('.pc-check-item').forEach(item => {
             item.onclick = () => {
                 const catId = item.dataset.id;
-                selected.add(catId);
-                item.classList.add('checked');
+                if (selected.has(catId)) {
+                    selected.delete(catId);
+                    item.classList.remove('checked');
+                } else {
+                    selected.add(catId);
+                    item.classList.add('checked');
+                }
                 syncSelectedPanel();
             };
         });
