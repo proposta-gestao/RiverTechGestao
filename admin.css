@@ -2216,12 +2216,77 @@ body {
     flex: 1;
 }
 
-/* ===== Categorias Premium Checkboxes ===== */
-.premium-cat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 10px;
-    margin-top: 8px;
+/* ===== Categorias Premium — Pills Compactas + Zona de Selecionados ===== */
+
+/* Zona de selecionados (chips no topo) */
+.pc-selected-zone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 40px;
+    padding: 8px 10px;
+    background: rgba(229, 178, 93, 0.05);
+    border: 1.5px solid rgba(229, 178, 93, 0.2);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    align-items: center;
+    transition: border-color 0.2s;
+}
+
+.pc-selected-zone:has(.pc-chip) {
+    border-color: rgba(229, 178, 93, 0.4);
+}
+
+.pc-selected-placeholder {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-style: italic;
+}
+
+/* Chip individual na zona de selecionados */
+.pc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(229, 178, 93, 0.15);
+    border: 1px solid rgba(229, 178, 93, 0.4);
+    color: var(--primary, #e5b25d);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px 4px 10px;
+    border-radius: 50px;
+    animation: chipIn 0.18s ease;
+}
+
+@keyframes chipIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.pc-chip-remove {
+    background: none;
+    border: none;
+    color: var(--primary, #e5b25d);
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity 0.15s, transform 0.15s;
+    display: flex;
+    align-items: center;
+}
+
+.pc-chip-remove:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Grid de pills de seleção */
+.premium-cat-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
 }
 
 .premium-cat-item {
@@ -2236,95 +2301,64 @@ body {
     pointer-events: none;
 }
 
+/* Pill compacta — horizontal, baixa altura */
 .premium-cat-label {
-    display: flex;
-    flex-direction: column;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1.5px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
+    gap: 6px;
+    padding: 5px 12px 5px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
-    text-align: center;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
     user-select: none;
-    min-height: 72px;
-    position: relative;
-    overflow: hidden;
-}
-
-.premium-cat-label::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(229,178,93,0.06) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    border-radius: inherit;
+    white-space: nowrap;
 }
 
 .premium-cat-label:hover {
-    border-color: rgba(229, 178, 93, 0.35);
+    border-color: rgba(229, 178, 93, 0.4);
     color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background: rgba(229, 178, 93, 0.06);
 }
 
-.premium-cat-label:hover::before {
-    opacity: 1;
-}
-
-.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label {
-    background: rgba(229, 178, 93, 0.12);
-    border-color: var(--primary, #e5b25d);
-    color: var(--primary, #e5b25d);
-    box-shadow: 0 0 0 1px rgba(229,178,93,0.3), 0 6px 20px rgba(229,178,93,0.15);
-    transform: translateY(-2px);
-}
-
-.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label::before {
-    opacity: 1;
-}
-
+/* Bolinha de check dentro da pill */
 .premium-cat-check {
-    width: 22px;
-    height: 22px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    transition: all 0.2s ease;
+    font-size: 0.55rem;
+    font-weight: 900;
     flex-shrink: 0;
-    background: rgba(255,255,255,0.04);
+    transition: all 0.15s ease;
+    color: transparent;
+}
+
+/* Estado: selecionada */
+.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label {
+    background: rgba(229, 178, 93, 0.14);
+    border-color: var(--primary, #e5b25d);
+    color: var(--primary, #e5b25d);
 }
 
 .premium-cat-item input[type="checkbox"]:checked + .premium-cat-label .premium-cat-check {
     background: var(--primary, #e5b25d);
     border-color: var(--primary, #e5b25d);
     color: #000;
-    font-weight: 900;
-}
-
-.premium-cat-name {
-    line-height: 1.3;
-    word-break: break-word;
 }
 
 .premium-cat-empty {
-    grid-column: 1 / -1;
-    text-align: center;
     color: var(--text-muted);
-    font-size: 0.85rem;
-    padding: 1.5rem;
-    border: 1.5px dashed rgba(255,255,255,0.08);
-    border-radius: 12px;
+    font-size: 0.82rem;
+    padding: 6px 2px;
+    font-style: italic;
 }
 
 /* ===== Modal Header (Premium) ===== */

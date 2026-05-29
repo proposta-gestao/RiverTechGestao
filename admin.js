@@ -3937,6 +3937,7 @@ window.abrirModalPerfilCardapio = async (id = null) => {
     const inputDesc = document.getElementById('pcDescricao');
     const title = document.getElementById('perfilCardapioModalTitle');
     const checkboxContainer = document.getElementById('pcCategoriasCheckboxes');
+    const selectedZone = document.getElementById('pcCategoriasSelected');
 
     inputId.value = id || '';
     inputNome.value = '';
@@ -3948,7 +3949,7 @@ window.abrirModalPerfilCardapio = async (id = null) => {
 
     let selectedCats = [];
     if (id) {
-        title.textContent = 'Editar Perfil de Cardápio';
+        title.textContent = '📋 Editar Perfil de Cardápio';
         const perfil = listaPerfisCardapio.find(p => p.id === id);
         if (perfil) {
             inputNome.value = perfil.nome;
@@ -3956,24 +3957,54 @@ window.abrirModalPerfilCardapio = async (id = null) => {
             selectedCats = (perfil.perfil_cardapio_categorias || []).map(pc => pc.category_id);
         }
     } else {
-        title.textContent = 'Novo Perfil de Cardápio';
+        title.textContent = '📋 Novo Perfil de Cardápio';
     }
 
+    // --- Funções de sincronização entre pills e chips ---
+    function syncSelectedZone() {
+        const checked = Array.from(checkboxContainer.querySelectorAll('input[type=checkbox]:checked'));
+        if (checked.length === 0) {
+            selectedZone.innerHTML = '<span class="pc-selected-placeholder">Nenhuma categoria selecionada</span>';
+            return;
+        }
+        selectedZone.innerHTML = checked.map(cb => {
+            const cat = (cats || []).find(c => c.id === cb.value);
+            const name = cat ? cat.name : cb.value;
+            return `<span class="pc-chip" data-id="${cb.value}">${name}<button class="pc-chip-remove" data-id="${cb.value}" title="Remover">×</button></span>`;
+        }).join('');
+
+        // Evento de remoção nos chips
+        selectedZone.querySelectorAll('.pc-chip-remove').forEach(btn => {
+            btn.onclick = () => {
+                const cbx = checkboxContainer.querySelector(`input[value="${btn.dataset.id}"]`);
+                if (cbx) { cbx.checked = false; cbx.dispatchEvent(new Event('change')); }
+            };
+        });
+    }
+
+    // --- Renderizar pills ---
     if (!cats || cats.length === 0) {
-        checkboxContainer.className = 'premium-cat-grid';
-        checkboxContainer.innerHTML = `<div class="premium-cat-empty">Nenhuma categoria encontrada. Crie categorias primeiro no cardápio.</div>`;
+        checkboxContainer.innerHTML = `<span class="premium-cat-empty">Nenhuma categoria encontrada.</span>`;
     } else {
-        checkboxContainer.className = 'premium-cat-grid';
+        checkboxContainer.className = 'premium-cat-pills';
         checkboxContainer.innerHTML = cats.map(c => `
             <div class="premium-cat-item">
                 <input type="checkbox" id="pcat-${c.id}" value="${c.id}" ${selectedCats.includes(c.id) ? 'checked' : ''}>
                 <label class="premium-cat-label" for="pcat-${c.id}">
                     <span class="premium-cat-check">✓</span>
-                    <span class="premium-cat-name">${c.name}</span>
+                    ${c.name}
                 </label>
             </div>
         `).join('');
+
+        // Listener em cada checkbox para sincronizar chips
+        checkboxContainer.querySelectorAll('input[type=checkbox]').forEach(cb => {
+            cb.addEventListener('change', syncSelectedZone);
+        });
     }
+
+    // Sincronizar zona inicial (ao editar, já vem com selecionados)
+    syncSelectedZone();
 
     abrirModal('modalPerfilCardapio');
 };
