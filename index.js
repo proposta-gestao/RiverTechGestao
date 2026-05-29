@@ -1521,7 +1521,14 @@ function inicializarLoginPremium() {
 
     btnLogin.onclick = (e) => {
         if (e) e.preventDefault();
-        if (state.premiumUser) return; // Já logado
+        if (state.premiumUser) {
+            // Logoff
+            state.premiumUser = null;
+            localStorage.removeItem('premiumUser');
+            atualizarBarraPremium();
+            aplicarFiltroCardapioPremium();
+            return;
+        }
         inputCpf.value = '';
         inputPin.value = '';
         const errDiv = document.getElementById('loginPremiumError');
@@ -1648,15 +1655,6 @@ function inicializarLoginPremium() {
             }
         };
     }
-
-    if (btnSair) {
-        btnSair.onclick = () => {
-            state.premiumUser = null;
-            localStorage.removeItem('premiumUser');
-            atualizarBarraPremium();
-            aplicarFiltroCardapioPremium();
-        };
-    }
 }
 
 function atualizarBarraPremium() {
@@ -1681,10 +1679,29 @@ function atualizarBarraPremium() {
         }
 
         bar.style.display = 'flex';
-        if (btn) btn.style.display = 'none';
+        
+        if (btn) {
+            btn.style.display = 'flex';
+            btn.style.background = 'transparent';
+            btn.style.color = 'var(--text-muted)';
+            const icon = document.getElementById('iconLoginPremium');
+            const label = document.getElementById('labelLoginPremium');
+            if (icon) icon.innerText = '🚪';
+            if (label) label.innerText = 'Sair';
+        }
     } else {
         bar.style.display = 'none';
-        if (btn && isModuloAtivo('clientes_premium')) btn.style.display = 'flex';
+        if (btn && isModuloAtivo('clientes_premium')) {
+            btn.style.display = 'flex';
+            btn.style.background = 'rgba(229,178,93,0.1)';
+            btn.style.color = 'var(--accent-gold)';
+            const icon = document.getElementById('iconLoginPremium');
+            const label = document.getElementById('labelLoginPremium');
+            if (icon) icon.innerText = '👑';
+            if (label) label.innerText = 'Login';
+        } else if (btn) {
+            btn.style.display = 'none';
+        }
     }
 }
 

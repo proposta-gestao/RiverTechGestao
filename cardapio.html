@@ -100,8 +100,8 @@
                 <div class="nav-actions" style="display: flex; flex-direction: column; gap: 5px;">
                     <!-- Login Premium Button -->
                     <button class="cart-toggle" id="btnLoginPremium" aria-label="Login Premium" style="display:none; background:rgba(229,178,93,0.1); color:var(--accent-gold);">
-                        <span class="cart-icon">👑</span>
-                        <span class="cart-label">Acesso VIP</span>
+                        <span class="cart-icon" id="iconLoginPremium">👑</span>
+                        <span class="cart-label" id="labelLoginPremium">Login</span>
                     </button>
                     <button class="cart-toggle" id="btnCart" aria-label="Ver carrinho">
                         <span class="cart-icon">🛒</span>
@@ -117,7 +117,6 @@
                     <span>👑 Olá, <strong id="premiumUserFirstName">Usuário</strong></span>
                     <span id="premiumUserTeto" style="background:var(--accent-gold); color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem;">Lim: R$ 0,00</span>
                 </div>
-                <button id="btnLogoutPremium" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; text-decoration:underline;">Sair</button>
             </div>
 
             <div class="search-bar-container">
