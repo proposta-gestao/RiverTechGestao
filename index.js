@@ -1708,7 +1708,7 @@ function atualizarBarraPremium() {
 function aplicarFiltroCardapioPremium() {
     // Re-render categories and products
     renderCategorias();
-    renderProdutos();
+    renderMenu();
 }
 
 // Inicializar

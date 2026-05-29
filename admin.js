@@ -952,6 +952,10 @@ function aplicarFiltrosDeModulos() {
 
     // 9. CLIENTES PREMIUM
     const mClientesPremium = isModuloAtivo('clientes_premium');
+    const navAreaPremium = document.getElementById('nav-area-premium');
+    if (typeof toggleElement === 'function') {
+        toggleElement(navAreaPremium, mClientesPremium, 'flex');
+    }
     toggleSubtab('config-clientes-premium', mClientesPremium);
     toggleSubtab('config-perfis-cardapio', mClientesPremium);
 
