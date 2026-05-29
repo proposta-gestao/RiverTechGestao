@@ -1504,13 +1504,18 @@ function inicializarLoginPremium() {
 
     if (!btnLogin || !modal) return;
 
-    // Verificar se já tem login salvo no sessionStorage
-    const savedUser = sessionStorage.getItem('premiumUser');
+    // Verificar se já tem login salvo no localStorage
+    const savedUser = localStorage.getItem('premiumUser');
     if (savedUser) {
         try {
-            state.premiumUser = JSON.parse(savedUser);
-            atualizarBarraPremium();
-            // A filtragem acontecerá automaticamente após o carregarCategorias pq inicializarLoginPremium será chamado após o load
+            const parsed = JSON.parse(savedUser);
+            if (parsed.expiry && Date.now() < parsed.expiry) {
+                state.premiumUser = parsed;
+                atualizarBarraPremium();
+                aplicarFiltroCardapioPremium();
+            } else {
+                localStorage.removeItem('premiumUser');
+            }
         } catch(e) {}
     }
 
@@ -1607,6 +1612,7 @@ function inicializarLoginPremium() {
                 const gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
 
                 // Sucesso!
+                const expiry = Date.now() + 12 * 60 * 60 * 1000;
                 state.premiumUser = {
                     id: data.id,
                     nome: data.nome.split(' ')[0],
@@ -1616,10 +1622,11 @@ function inicializarLoginPremium() {
                     tipo: data.tipo,
                     teto: parseFloat(data.teto_mensal) || 0,
                     gasto: gastoMes,
-                    categoriasPermitidas: categoriasPermitidas
+                    categoriasPermitidas: categoriasPermitidas,
+                    expiry: expiry
                 };
 
-                sessionStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+                localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
                 
                 fecharModalLogin();
                 atualizarBarraPremium();
@@ -1645,7 +1652,7 @@ function inicializarLoginPremium() {
     if (btnSair) {
         btnSair.onclick = () => {
             state.premiumUser = null;
-            sessionStorage.removeItem('premiumUser');
+            localStorage.removeItem('premiumUser');
             atualizarBarraPremium();
             aplicarFiltroCardapioPremium();
         };
