@@ -2216,150 +2216,175 @@ body {
     flex: 1;
 }
 
-/* ===== Categorias Premium — Pills Compactas + Zona de Selecionados ===== */
+/* ===== Categorias Premium — Dropdown + Chips ===== */
 
-/* Zona de selecionados (chips no topo) */
+/* Chips de selecionados */
 .pc-selected-zone {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    min-height: 40px;
-    padding: 8px 10px;
-    background: rgba(229, 178, 93, 0.05);
-    border: 1.5px solid rgba(229, 178, 93, 0.2);
-    border-radius: 12px;
-    margin-bottom: 10px;
+    min-height: 38px;
+    padding: 7px 10px;
+    background: rgba(229, 178, 93, 0.04);
+    border: 1.5px solid rgba(229, 178, 93, 0.18);
+    border-radius: 10px;
+    margin-bottom: 8px;
     align-items: center;
     transition: border-color 0.2s;
 }
-
 .pc-selected-zone:has(.pc-chip) {
-    border-color: rgba(229, 178, 93, 0.4);
+    border-color: rgba(229, 178, 93, 0.35);
 }
-
 .pc-selected-placeholder {
     color: var(--text-muted);
     font-size: 0.78rem;
     font-style: italic;
 }
-
-/* Chip individual na zona de selecionados */
 .pc-chip {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    background: rgba(229, 178, 93, 0.15);
-    border: 1px solid rgba(229, 178, 93, 0.4);
+    gap: 4px;
+    background: rgba(229, 178, 93, 0.13);
+    border: 1px solid rgba(229, 178, 93, 0.35);
     color: var(--primary, #e5b25d);
-    font-size: 0.75rem;
+    font-size: 0.73rem;
     font-weight: 700;
-    padding: 4px 10px 4px 10px;
+    padding: 3px 8px 3px 10px;
     border-radius: 50px;
-    animation: chipIn 0.18s ease;
+    animation: chipIn 0.15s ease;
 }
-
 @keyframes chipIn {
-    from { opacity: 0; transform: scale(0.8); }
+    from { opacity: 0; transform: scale(0.85); }
     to   { opacity: 1; transform: scale(1); }
 }
-
 .pc-chip-remove {
     background: none;
     border: none;
-    color: var(--primary, #e5b25d);
+    color: inherit;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 1rem;
     line-height: 1;
-    padding: 0;
-    opacity: 0.7;
+    padding: 0 0 0 2px;
+    opacity: 0.6;
     transition: opacity 0.15s, transform 0.15s;
     display: flex;
     align-items: center;
 }
+.pc-chip-remove:hover { opacity: 1; transform: scale(1.25); }
 
-.pc-chip-remove:hover {
-    opacity: 1;
-    transform: scale(1.2);
-}
-
-/* Grid de pills de seleção */
-.premium-cat-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-}
-
-.premium-cat-item {
+/* Dropdown wrapper */
+.pc-dropdown-wrap {
     position: relative;
 }
 
-.premium-cat-item input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    pointer-events: none;
-}
-
-/* Pill compacta — horizontal, baixa altura */
-.premium-cat-label {
-    display: inline-flex;
+/* Botão que abre o dropdown */
+.pc-dropdown-trigger {
+    width: 100%;
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 12px 5px 8px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 600;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
     color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
     transition: all 0.2s ease;
-    user-select: none;
-    white-space: nowrap;
+    text-align: left;
 }
-
-.premium-cat-label:hover {
-    border-color: rgba(229, 178, 93, 0.4);
+.pc-dropdown-trigger:hover {
+    border-color: var(--primary, #e5b25d);
     color: white;
-    background: rgba(229, 178, 93, 0.06);
+}
+.pc-dropdown-trigger.open {
+    border-color: var(--primary, #e5b25d);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+.pc-dropdown-arrow {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+.pc-dropdown-trigger.open .pc-dropdown-arrow {
+    transform: rotate(180deg);
 }
 
-/* Bolinha de check dentro da pill */
-.premium-cat-check {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
+/* Painel suspenso */
+.pc-dropdown-panel {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: #1a1a1a;
+    border: 1.5px solid var(--primary, #e5b25d);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 200;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+}
+.pc-dropdown-panel.open {
+    display: block;
+}
+.pc-dropdown-panel::-webkit-scrollbar { width: 4px; }
+.pc-dropdown-panel::-webkit-scrollbar-thumb { background: rgba(229,178,93,0.3); border-radius: 4px; }
+
+/* Itens da lista */
+.pc-check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    user-select: none;
+}
+.pc-check-item:last-child { border-bottom: none; }
+.pc-check-item:hover {
+    background: rgba(229, 178, 93, 0.07);
+    color: white;
+}
+.pc-check-item.checked {
+    background: rgba(229, 178, 93, 0.1);
+    color: var(--primary, #e5b25d);
+}
+.pc-check-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
     border: 1.5px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.55rem;
+    font-size: 0.65rem;
     font-weight: 900;
-    flex-shrink: 0;
-    transition: all 0.15s ease;
     color: transparent;
+    transition: all 0.15s ease;
+    background: rgba(255,255,255,0.03);
 }
-
-/* Estado: selecionada */
-.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label {
-    background: rgba(229, 178, 93, 0.14);
-    border-color: var(--primary, #e5b25d);
-    color: var(--primary, #e5b25d);
-}
-
-.premium-cat-item input[type="checkbox"]:checked + .premium-cat-label .premium-cat-check {
+.pc-check-item.checked .pc-check-box {
     background: var(--primary, #e5b25d);
     border-color: var(--primary, #e5b25d);
     color: #000;
 }
-
-.premium-cat-empty {
+.pc-cat-empty {
+    padding: 14px;
+    text-align: center;
     color: var(--text-muted);
     font-size: 0.82rem;
-    padding: 6px 2px;
     font-style: italic;
 }
+
 
 /* ===== Modal Header (Premium) ===== */
 .premium-modal {
