@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public.stock_movements (
 -- Habilitar RLS
 ALTER TABLE public.stock_movements ENABLE ROW LEVEL SECURITY;
 
--- Políticas de acesso para administradores
+-- PolÃ­ticas de acesso para administradores
 CREATE POLICY "Admins podem ver movimentos de estoque" ON public.stock_movements
     FOR SELECT TO authenticated USING (true);
 

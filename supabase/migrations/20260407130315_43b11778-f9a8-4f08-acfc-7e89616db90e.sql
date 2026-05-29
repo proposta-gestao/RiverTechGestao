@@ -115,7 +115,7 @@ CREATE TRIGGER update_products_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- Storage bucket for product images
-INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true) ON CONFLICT (id) DO NOTHING;
 
 CREATE POLICY "Anyone can view product images" ON storage.objects
   FOR SELECT USING (bucket_id = 'product-images');

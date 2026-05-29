@@ -1,7 +1,7 @@
 -- Migration: Add Brand Name to Tenant Creation
 -- Data: 2026-04-28
 
--- 1. Atualizar a função RPC para aceitar p_brand_name
+-- 1. Atualizar a funÃ§Ã£o RPC para aceitar p_brand_name
 CREATE OR REPLACE FUNCTION public.create_tenant_with_admin(
     p_nome text,
     p_slug text,
@@ -21,7 +21,7 @@ DECLARE
     v_new_user_id uuid;
     v_encrypted_pw text;
 BEGIN
-    -- Verificar se quem chama é super admin
+    -- Verificar se quem chama Ã© super admin
     IF NOT public.is_super_admin(auth.uid()) THEN
         RAISE EXCEPTION 'Apenas Super Admins podem criar novas empresas.';
     END IF;
@@ -41,17 +41,17 @@ BEGIN
     )
     RETURNING id INTO v_empresa_id;
 
-    -- Inserir store_settings inicial com Brand Name e Subtítulo padrão
+    -- Inserir store_settings inicial com Brand Name e SubtÃ­tulo padrÃ£o
     INSERT INTO public.store_settings (id, empresa_id, store_name, brand_name, brand_subtitle)
     VALUES (
         COALESCE((SELECT MAX(id) FROM public.store_settings), 0) + 1, 
         v_empresa_id, 
         p_nome, 
         COALESCE(p_brand_name, p_nome), 
-        'Gestão sem Complicação'
+        'GestÃ£o sem ComplicaÃ§Ã£o'
     );
 
-    -- Criar o Usuário no Auth do Supabase
+    -- Criar o UsuÃ¡rio no Auth do Supabase
     v_new_user_id := gen_random_uuid();
     v_encrypted_pw := crypt(p_admin_password, gen_salt('bf'));
 
@@ -67,11 +67,11 @@ BEGIN
         '', '', '', ''
     );
 
-    -- Vincular o usuário à empresa na tabela public.usuarios
+    -- Vincular o usuÃ¡rio Ã  empresa na tabela public.usuarios
     INSERT INTO public.usuarios (id, email, empresa_id, role)
     VALUES (v_new_user_id, p_admin_email, v_empresa_id, 'admin');
 
-    -- Vincular o usuário à tabela legada admin_users para compatibilidade
+    -- Vincular o usuÃ¡rio Ã  tabela legada admin_users para compatibilidade
     INSERT INTO public.admin_users (user_id, empresa_id)
     VALUES (v_new_user_id, v_empresa_id);
 

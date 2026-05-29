@@ -3,5 +3,5 @@
 
 ALTER TABLE public.empresas ADD COLUMN IF NOT EXISTS segmento TEXT;
 
--- Força a atualização do cache do Supabase API
+-- ForÃ§a a atualizaÃ§Ã£o do cache do Supabase API
 NOTIFY pgrst, 'reload schema';

@@ -1,9 +1,9 @@
 -- ============================================================
--- Migration: Corrigir timezone na função get_slots_disponiveis
+-- Migration: Corrigir timezone na funÃ§Ã£o get_slots_disponiveis
 -- Data: 2026-05-14
--- Problema: A função gerava slots em UTC, mas os horários de
--- funcionamento são cadastrados pensando em horário de Brasília.
--- Isso causava divergência de 3 horas nos horários exibidos.
+-- Problema: A funÃ§Ã£o gerava slots em UTC, mas os horÃ¡rios de
+-- funcionamento sÃ£o cadastrados pensando em horÃ¡rio de BrasÃ­lia.
+-- Isso causava divergÃªncia de 3 horas nos horÃ¡rios exibidos.
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION public.get_slots_disponiveis(
@@ -29,14 +29,14 @@ DECLARE
     v_slot_fim      TIMESTAMPTZ;
     v_hora_atual    TIME;
 BEGIN
-    -- Duração do serviço
+    -- DuraÃ§Ã£o do serviÃ§o
     SELECT duracao_min INTO v_duracao_min FROM public.servicos WHERE id = p_servico_id;
     IF v_duracao_min IS NULL THEN RETURN; END IF;
 
     -- Dia da semana (0=domingo)
     v_dia_semana := EXTRACT(DOW FROM p_data);
 
-    -- Horário de funcionamento (profissional específico ou da loja)
+    -- HorÃ¡rio de funcionamento (profissional especÃ­fico ou da loja)
     SELECT hora_abertura, hora_fechamento, intervalo_min
     INTO v_abertura, v_fechamento, v_intervalo
     FROM public.horarios_funcionamento
@@ -44,21 +44,21 @@ BEGIN
       AND ativo = true
       AND dia_semana = v_dia_semana
       AND (profissional_id = p_profissional_id OR profissional_id IS NULL)
-    ORDER BY profissional_id NULLS LAST -- Preferir configuração específica do profissional
+    ORDER BY profissional_id NULLS LAST -- Preferir configuraÃ§Ã£o especÃ­fica do profissional
     LIMIT 1;
 
-    IF v_abertura IS NULL THEN RETURN; END IF; -- Não funciona neste dia
+    IF v_abertura IS NULL THEN RETURN; END IF; -- NÃ£o funciona neste dia
 
     -- Iterar pelos slots
     v_hora_atual := v_abertura;
     WHILE (v_hora_atual + (v_duracao_min || ' minutes')::INTERVAL <= v_fechamento) LOOP
-        -- CORREÇÃO: Interpretar horário como America/Sao_Paulo (Brasília)
-        -- Antes: (p_data::TEXT || ' ' || v_hora_atual::TEXT)::TIMESTAMPTZ → interpretava como UTC
-        -- Agora: usando AT TIME ZONE para converter corretamente de horário local para UTC
+        -- CORREÃ‡ÃƒO: Interpretar horÃ¡rio como America/Sao_Paulo (BrasÃ­lia)
+        -- Antes: (p_data::TEXT || ' ' || v_hora_atual::TEXT)::TIMESTAMPTZ â†’ interpretava como UTC
+        -- Agora: usando AT TIME ZONE para converter corretamente de horÃ¡rio local para UTC
         v_slot_inicio := ((p_data::TEXT || ' ' || v_hora_atual::TEXT)::TIMESTAMP AT TIME ZONE 'America/Sao_Paulo');
         v_slot_fim    := v_slot_inicio + (v_duracao_min || ' minutes')::INTERVAL;
 
-        -- Verificar se o slot está livre (não conflita com agendamentos existentes)
+        -- Verificar se o slot estÃ¡ livre (nÃ£o conflita com agendamentos existentes)
         IF NOT EXISTS (
             SELECT 1 FROM public.agendamentos
             WHERE profissional_id = p_profissional_id
@@ -71,7 +71,7 @@ BEGIN
             RETURN NEXT;
         END IF;
 
-        -- Avançar: duração do serviço + intervalo de descanso
+        -- AvanÃ§ar: duraÃ§Ã£o do serviÃ§o + intervalo de descanso
         v_hora_atual := v_hora_atual + ((v_duracao_min + COALESCE(v_intervalo, 0)) || ' minutes')::INTERVAL;
     END LOOP;
 END;

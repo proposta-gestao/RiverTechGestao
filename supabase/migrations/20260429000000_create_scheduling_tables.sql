@@ -1,9 +1,9 @@
 -- ============================================================
--- Migration: Módulos de Agendamento para Barbearia
+-- Migration: MÃ³dulos de Agendamento para Barbearia
 -- Data: 2026-04-29
--- Inclui: profissionais, serviços, agendamentos,
---         horários de funcionamento e lista de espera
--- Arquitetura: Multi-barbeiro desde o início
+-- Inclui: profissionais, serviÃ§os, agendamentos,
+--         horÃ¡rios de funcionamento e lista de espera
+-- Arquitetura: Multi-barbeiro desde o inÃ­cio
 -- ============================================================
 
 
@@ -19,14 +19,14 @@ CREATE TABLE IF NOT EXISTS public.profissionais (
     especialidade TEXT,
     bio         TEXT,
     ativo       BOOLEAN     NOT NULL DEFAULT true,
-    cor_agenda  TEXT        DEFAULT '#E5B25D', -- Cor para identificar no calendário
+    cor_agenda  TEXT        DEFAULT '#E5B25D', -- Cor para identificar no calendÃ¡rio
     criado_em   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 ALTER TABLE public.profissionais ENABLE ROW LEVEL SECURITY;
 CREATE INDEX IF NOT EXISTS idx_profissionais_empresa_id ON public.profissionais(empresa_id);
 
--- RLS: Leitura pública (para página de agendamento do cliente)
+-- RLS: Leitura pÃºblica (para pÃ¡gina de agendamento do cliente)
 CREATE POLICY "profissionais_public_read" ON public.profissionais
     FOR SELECT USING (ativo = true);
 
@@ -38,14 +38,14 @@ CREATE POLICY "profissionais_admin_all" ON public.profissionais
 
 -- ============================================================
 -- TABELA: servicos
--- Serviços oferecidos (corte, barba, progressiva, etc.)
+-- ServiÃ§os oferecidos (corte, barba, progressiva, etc.)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.servicos (
     id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
     empresa_id      UUID        NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
     nome            TEXT        NOT NULL,
     descricao       TEXT,
-    duracao_min     INTEGER     NOT NULL DEFAULT 30, -- Duração em minutos
+    duracao_min     INTEGER     NOT NULL DEFAULT 30, -- DuraÃ§Ã£o em minutos
     preco           NUMERIC(10,2) NOT NULL DEFAULT 0,
     foto_url        TEXT,
     ativo           BOOLEAN     NOT NULL DEFAULT true,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS public.servicos (
 ALTER TABLE public.servicos ENABLE ROW LEVEL SECURITY;
 CREATE INDEX IF NOT EXISTS idx_servicos_empresa_id ON public.servicos(empresa_id);
 
--- RLS: Leitura pública
+-- RLS: Leitura pÃºblica
 CREATE POLICY "servicos_public_read" ON public.servicos
     FOR SELECT USING (ativo = true);
 
@@ -68,7 +68,7 @@ CREATE POLICY "servicos_admin_all" ON public.servicos
 
 -- ============================================================
 -- TABELA: profissional_servicos
--- Quais serviços cada profissional realiza
+-- Quais serviÃ§os cada profissional realiza
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.profissional_servicos (
     profissional_id UUID NOT NULL REFERENCES public.profissionais(id) ON DELETE CASCADE,
@@ -92,8 +92,8 @@ CREATE POLICY "profissional_servicos_admin_all" ON public.profissional_servicos
 
 -- ============================================================
 -- TABELA: horarios_funcionamento
--- Horário de funcionamento por dia da semana
--- dia_semana: 0=Domingo, 1=Segunda ... 6=Sábado
+-- HorÃ¡rio de funcionamento por dia da semana
+-- dia_semana: 0=Domingo, 1=Segunda ... 6=SÃ¡bado
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.horarios_funcionamento (
     id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS public.agendamentos (
     cliente_email       TEXT,
     -- Dados do agendamento
     data_hora_inicio    TIMESTAMPTZ NOT NULL,
-    data_hora_fim       TIMESTAMPTZ NOT NULL, -- Calculado: início + duração do serviço
+    data_hora_fim       TIMESTAMPTZ NOT NULL, -- Calculado: inÃ­cio + duraÃ§Ã£o do serviÃ§o
     status              TEXT        NOT NULL DEFAULT 'pendente'
                             CHECK (status IN ('pendente','confirmado','em_andamento','concluido','cancelado','no_show')),
     observacao          TEXT,
@@ -163,12 +163,12 @@ CREATE TRIGGER trg_agendamentos_updated
     BEFORE UPDATE ON public.agendamentos
     FOR EACH ROW EXECUTE FUNCTION public.update_agendamento_timestamp();
 
--- RLS: Cliente anônimo pode criar e ver seus próprios agendamentos (via telefone)
+-- RLS: Cliente anÃ´nimo pode criar e ver seus prÃ³prios agendamentos (via telefone)
 CREATE POLICY "agendamentos_public_insert" ON public.agendamentos
     FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "agendamentos_public_read" ON public.agendamentos
-    FOR SELECT USING (true); -- Slots ocupados precisam ser visíveis publicamente para calcular disponibilidade
+    FOR SELECT USING (true); -- Slots ocupados precisam ser visÃ­veis publicamente para calcular disponibilidade
 
 -- RLS: Admin gerencia todos os agendamentos da sua empresa
 CREATE POLICY "agendamentos_admin_all" ON public.agendamentos
@@ -178,7 +178,7 @@ CREATE POLICY "agendamentos_admin_all" ON public.agendamentos
 
 -- ============================================================
 -- TABELA: lista_espera
--- Clientes aguardando um horário vago
+-- Clientes aguardando um horÃ¡rio vago
 -- status: aguardando | notificado | confirmado | expirado | cancelado
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.lista_espera (
@@ -189,13 +189,13 @@ CREATE TABLE IF NOT EXISTS public.lista_espera (
     cliente_nome            TEXT        NOT NULL,
     cliente_telefone        TEXT        NOT NULL,
     cliente_email           TEXT,
-    data_desejada           DATE,       -- NULL = qualquer data disponível
+    data_desejada           DATE,       -- NULL = qualquer data disponÃ­vel
     status                  TEXT        NOT NULL DEFAULT 'aguardando'
                                 CHECK (status IN ('aguardando','notificado','confirmado','expirado','cancelado')),
     notificado_em           TIMESTAMPTZ,
-    expira_em               TIMESTAMPTZ,-- Após este horário, passa para o próximo da fila
+    expira_em               TIMESTAMPTZ,-- ApÃ³s este horÃ¡rio, passa para o prÃ³ximo da fila
     agendamento_id          UUID        REFERENCES public.agendamentos(id), -- Preenchido ao confirmar
-    posicao                 INTEGER,    -- Posição na fila
+    posicao                 INTEGER,    -- PosiÃ§Ã£o na fila
     criado_em               TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -213,7 +213,7 @@ CREATE POLICY "lista_espera_admin_all" ON public.lista_espera
 
 -- ============================================================
 -- TABELA: mensagens_templates
--- Templates de mensagens configuráveis
+-- Templates de mensagens configurÃ¡veis
 -- tipos: confirmacao | lembrete | vaga_liberada | cancelamento | pos_atendimento
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.mensagens_templates (
@@ -233,13 +233,13 @@ CREATE POLICY "mensagens_templates_admin_all" ON public.mensagens_templates
     FOR ALL USING (empresa_id = public.get_empresa_id())
     WITH CHECK (empresa_id = public.get_empresa_id());
 
--- Templates padrão serão inseridos via função RPC ao criar a empresa
--- (para não poluir esta migração com dados específicos de tenant)
+-- Templates padrÃ£o serÃ£o inseridos via funÃ§Ã£o RPC ao criar a empresa
+-- (para nÃ£o poluir esta migraÃ§Ã£o com dados especÃ­ficos de tenant)
 
 
 -- ============================================================
--- FUNÇÃO RPC: Calcular slots disponíveis
--- Retorna horários livres para um profissional em uma data
+-- FUNÃ‡ÃƒO RPC: Calcular slots disponÃ­veis
+-- Retorna horÃ¡rios livres para um profissional em uma data
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.get_slots_disponiveis(
     p_empresa_id        UUID,
@@ -264,14 +264,14 @@ DECLARE
     v_slot_fim      TIMESTAMPTZ;
     v_hora_atual    TIME;
 BEGIN
-    -- Duração do serviço
+    -- DuraÃ§Ã£o do serviÃ§o
     SELECT duracao_min INTO v_duracao_min FROM public.servicos WHERE id = p_servico_id;
     IF v_duracao_min IS NULL THEN RETURN; END IF;
 
     -- Dia da semana (0=domingo)
     v_dia_semana := EXTRACT(DOW FROM p_data);
 
-    -- Horário de funcionamento (profissional específico ou da loja)
+    -- HorÃ¡rio de funcionamento (profissional especÃ­fico ou da loja)
     SELECT hora_abertura, hora_fechamento, intervalo_min
     INTO v_abertura, v_fechamento, v_intervalo
     FROM public.horarios_funcionamento
@@ -279,10 +279,10 @@ BEGIN
       AND ativo = true
       AND dia_semana = v_dia_semana
       AND (profissional_id = p_profissional_id OR profissional_id IS NULL)
-    ORDER BY profissional_id NULLS LAST -- Preferir configuração específica do profissional
+    ORDER BY profissional_id NULLS LAST -- Preferir configuraÃ§Ã£o especÃ­fica do profissional
     LIMIT 1;
 
-    IF v_abertura IS NULL THEN RETURN; END IF; -- Não funciona neste dia
+    IF v_abertura IS NULL THEN RETURN; END IF; -- NÃ£o funciona neste dia
 
     -- Iterar pelos slots
     v_hora_atual := v_abertura;
@@ -290,7 +290,7 @@ BEGIN
         v_slot_inicio := (p_data::TEXT || ' ' || v_hora_atual::TEXT)::TIMESTAMPTZ;
         v_slot_fim    := v_slot_inicio + (v_duracao_min || ' minutes')::INTERVAL;
 
-        -- Verificar se o slot está livre (não conflita com agendamentos existentes)
+        -- Verificar se o slot estÃ¡ livre (nÃ£o conflita com agendamentos existentes)
         IF NOT EXISTS (
             SELECT 1 FROM public.agendamentos
             WHERE profissional_id = p_profissional_id
@@ -303,7 +303,7 @@ BEGIN
             RETURN NEXT;
         END IF;
 
-        -- Avançar: duração do serviço + intervalo de descanso
+        -- AvanÃ§ar: duraÃ§Ã£o do serviÃ§o + intervalo de descanso
         v_hora_atual := v_hora_atual + ((v_duracao_min + COALESCE(v_intervalo, 0)) || ' minutes')::INTERVAL;
     END LOOP;
 END;

@@ -1,11 +1,11 @@
 -- ============================================================
 -- Migration: Fix RLS and Admin Permissions (v3 - Completo)
 -- Data: 2026-05-07
--- Objetivo: Corrigir erros de RLS em várias tabelas (categories, 
+-- Objetivo: Corrigir erros de RLS em vÃ¡rias tabelas (categories, 
 --           stock_reasons, etc) para Super Admins e Novos Admins.
 -- ============================================================
 
--- 1. Atualizar a função is_admin para reconhecer usuários de ambas as tabelas
+-- 1. Atualizar a funÃ§Ã£o is_admin para reconhecer usuÃ¡rios de ambas as tabelas
 CREATE OR REPLACE FUNCTION public.is_admin(_user_id UUID)
 RETURNS BOOLEAN
 LANGUAGE sql
@@ -52,7 +52,7 @@ CREATE POLICY "Admin gerencia motivos de estoque da sua empresa"
   WITH CHECK (empresa_id = public.get_empresa_id() OR public.is_super_admin(auth.uid()));
 
 
--- 5. Movimentações de Estoque (stock_movements)
+-- 5. MovimentaÃ§Ãµes de Estoque (stock_movements)
 DROP POLICY IF EXISTS "Admin ve movimentos da sua empresa" ON public.stock_movements;
 CREATE POLICY "Admin ve movimentos da sua empresa" ON public.stock_movements FOR SELECT TO authenticated
 USING (empresa_id = public.get_empresa_id() OR public.is_super_admin(auth.uid()));
@@ -62,7 +62,7 @@ CREATE POLICY "Admin insere movimentos da sua empresa" ON public.stock_movements
 WITH CHECK (empresa_id = public.get_empresa_id() OR public.is_super_admin(auth.uid()));
 
 
--- 6. Configurações da Loja (store_settings)
+-- 6. ConfiguraÃ§Ãµes da Loja (store_settings)
 DROP POLICY IF EXISTS "Admin gerencia config da sua empresa" ON public.store_settings;
 CREATE POLICY "Admin gerencia config da sua empresa"
   ON public.store_settings FOR ALL TO authenticated

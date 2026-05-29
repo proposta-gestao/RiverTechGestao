@@ -12,15 +12,15 @@ ALTER TABLE public.stock_reasons ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Admins podem tudo em stock_reasons" ON public.stock_reasons
     FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
--- Inserir motivos padrão
+-- Inserir motivos padrÃ£o
 INSERT INTO public.stock_reasons (name) VALUES 
 ('Produto Vencido'),
 ('Avaria'),
 ('Uso Interno'),
 ('Erro de Contagem'),
-('Devolução de Fornecedor')
+('DevoluÃ§Ã£o de Fornecedor')
 ON CONFLICT DO NOTHING;
 
--- Atualizar stock_movements para incluir motivo e observação se necessário
+-- Atualizar stock_movements para incluir motivo e observaÃ§Ã£o se necessÃ¡rio
 ALTER TABLE public.stock_movements ADD COLUMN IF NOT EXISTS reason_id UUID REFERENCES public.stock_reasons(id);
 ALTER TABLE public.stock_movements ADD COLUMN IF NOT EXISTS notes TEXT;
