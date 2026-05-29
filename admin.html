@@ -2080,7 +2080,7 @@
     <!-- MODAL: Novo/Editar Perfil de Cardápio                           -->
     <!-- =============================================================== -->
     <div class="admin-modal-backdrop" id="modalPerfilCardapio">
-        <div class="admin-modal premium-modal" style="max-width:520px;">
+        <div class="admin-modal premium-modal pc-modal-wide">
             <div class="modal-header">
                 <div class="modal-header-left">
                     <button class="btn-modal-back" onclick="fecharModal('modalPerfilCardapio')" title="Voltar">
@@ -2094,34 +2094,43 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="perfilCardapioId">
+
+                <!-- Campos de nome e descrição -->
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="pcNome">Nome do Perfil</label>
                         <input type="text" id="pcNome" placeholder="Ex: VIP Diretoria, Funcionários">
                     </div>
-                </div>
-                <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="pcDescricao">Descrição</label>
                         <input type="text" id="pcDescricao" placeholder="Descrição opcional">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Categorias permitidas neste perfil:</label>
-                    <!-- Zona de selecionados (chips) -->
-                    <div id="pcCategoriasSelected" class="pc-selected-zone">
-                        <span class="pc-selected-placeholder">Nenhuma categoria selecionada</span>
+
+                <!-- Layout de duas colunas: Seletor | Selecionados -->
+                <div class="pc-two-col">
+
+                    <!-- Coluna esquerda: lista de categorias -->
+                    <div class="pc-col-left">
+                        <label class="pc-col-label">📂 Categorias disponíveis</label>
+                        <p class="pc-col-hint">Clique para adicionar ao perfil</p>
+                        <div class="pc-list-panel" id="pcCategoriasCheckboxes"></div>
                     </div>
-                    <!-- Dropdown de seleção -->
-                    <div class="pc-dropdown-wrap">
-                        <button type="button" class="pc-dropdown-trigger" id="pcDropdownTrigger">
-                            <span id="pcDropdownLabel">Selecionar categorias...</span>
-                            <svg class="pc-dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
-                        </button>
-                        <div class="pc-dropdown-panel" id="pcDropdownPanel">
-                            <div id="pcCategoriasCheckboxes"></div>
+
+                    <!-- Divisor -->
+                    <div class="pc-col-divider">
+                        <span>→</span>
+                    </div>
+
+                    <!-- Coluna direita: selecionados -->
+                    <div class="pc-col-right">
+                        <label class="pc-col-label">✅ Permitidas neste perfil</label>
+                        <p class="pc-col-hint">Clique no × para remover</p>
+                        <div id="pcCategoriasSelected" class="pc-selected-list">
+                            <span class="pc-selected-placeholder">Nenhuma categoria adicionada</span>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

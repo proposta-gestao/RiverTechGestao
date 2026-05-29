@@ -3937,12 +3937,9 @@ window.abrirModalPerfilCardapio = async (id = null) => {
     const inputDesc  = document.getElementById('pcDescricao');
     const title      = document.getElementById('perfilCardapioModalTitle');
     const listEl     = document.getElementById('pcCategoriasCheckboxes');
-    const selectedZone = document.getElementById('pcCategoriasSelected');
-    const trigger    = document.getElementById('pcDropdownTrigger');
-    const panel      = document.getElementById('pcDropdownPanel');
-    const triggerLabel = document.getElementById('pcDropdownLabel');
+    const selectedEl = document.getElementById('pcCategoriasSelected');
 
-    inputId.value  = id || '';
+    inputId.value   = id || '';
     inputNome.value = '';
     inputDesc.value = '';
 
@@ -3954,47 +3951,42 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         title.textContent = '📋 Editar Perfil de Cardápio';
         const perfil = listaPerfisCardapio.find(p => p.id === id);
         if (perfil) {
-            inputNome.value  = perfil.nome;
-            inputDesc.value  = perfil.descricao || '';
+            inputNome.value = perfil.nome;
+            inputDesc.value = perfil.descricao || '';
             selectedCats = (perfil.perfil_cardapio_categorias || []).map(pc => pc.category_id);
         }
     } else {
         title.textContent = '📋 Novo Perfil de Cardápio';
     }
 
-    // Estado reativo de seleção (simples Set)
     const selected = new Set(selectedCats);
 
-    function updateTriggerLabel() {
-        triggerLabel.textContent = selected.size > 0
-            ? `${selected.size} categoria${selected.size > 1 ? 's' : ''} selecionada${selected.size > 1 ? 's' : ''}`
-            : 'Selecionar categorias...';
-    }
-
-    function syncChips() {
+    function syncSelectedPanel() {
         if (selected.size === 0) {
-            selectedZone.innerHTML = '<span class="pc-selected-placeholder">Nenhuma categoria selecionada</span>';
-        } else {
-            selectedZone.innerHTML = [...selected].map(catId => {
-                const cat = (cats || []).find(c => c.id === catId);
-                const name = cat ? cat.name : catId;
-                return `<span class="pc-chip">${name}<button class="pc-chip-remove" type="button" data-id="${catId}" title="Remover">×</button></span>`;
-            }).join('');
-            selectedZone.querySelectorAll('.pc-chip-remove').forEach(btn => {
-                btn.onclick = () => {
-                    selected.delete(btn.dataset.id);
-                    // Desmarcar item na lista
-                    const item = listEl.querySelector(`.pc-check-item[data-id="${btn.dataset.id}"]`);
-                    if (item) item.classList.remove('checked');
-                    syncChips();
-                    updateTriggerLabel();
-                };
-            });
+            selectedEl.innerHTML = '<span class="pc-selected-placeholder">Nenhuma categoria adicionada</span>';
+            return;
         }
-        updateTriggerLabel();
+        selectedEl.innerHTML = [...selected].map(catId => {
+            const cat = (cats || []).find(c => c.id === catId);
+            const name = cat ? cat.name : catId;
+            return `<div class="pc-selected-row">
+                <span>${name}</span>
+                <button class="pc-remove-btn" type="button" data-id="${catId}" title="Remover">×</button>
+            </div>`;
+        }).join('');
+
+        selectedEl.querySelectorAll('.pc-remove-btn').forEach(btn => {
+            btn.onclick = () => {
+                selected.delete(btn.dataset.id);
+                // Reativar item na lista esquerda
+                const item = listEl.querySelector(`.pc-check-item[data-id="${btn.dataset.id}"]`);
+                if (item) item.classList.remove('checked');
+                syncSelectedPanel();
+            };
+        });
     }
 
-    function renderList() {
+    function renderLeftList() {
         if (!cats || cats.length === 0) {
             listEl.innerHTML = '<div class="pc-cat-empty">Nenhuma categoria encontrada.</div>';
             return;
@@ -4009,35 +4001,15 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         listEl.querySelectorAll('.pc-check-item').forEach(item => {
             item.onclick = () => {
                 const catId = item.dataset.id;
-                if (selected.has(catId)) {
-                    selected.delete(catId);
-                    item.classList.remove('checked');
-                } else {
-                    selected.add(catId);
-                    item.classList.add('checked');
-                }
-                syncChips();
+                selected.add(catId);
+                item.classList.add('checked');
+                syncSelectedPanel();
             };
         });
     }
 
-    // Toggle dropdown
-    trigger.onclick = (e) => {
-        e.stopPropagation();
-        const isOpen = panel.classList.toggle('open');
-        trigger.classList.toggle('open', isOpen);
-    };
-    // Fechar ao clicar fora
-    document.addEventListener('click', function closePanel(e) {
-        if (!panel.contains(e.target) && e.target !== trigger) {
-            panel.classList.remove('open');
-            trigger.classList.remove('open');
-            document.removeEventListener('click', closePanel);
-        }
-    });
-
-    renderList();
-    syncChips();
+    renderLeftList();
+    syncSelectedPanel();
     abrirModal('modalPerfilCardapio');
 };
 
