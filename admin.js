@@ -4067,8 +4067,20 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         const grupo = document.getElementById(grupoId);
         const icon  = document.getElementById(`pcIcon_${grupoId}`);
         if (!grupo) return;
-        const collapsed = grupo.classList.toggle('collapsed');
-        icon.textContent = collapsed ? '▶' : '▼';
+        const isCollapsed = grupo.classList.contains('collapsed');
+
+        // Fechar todos os outros antes de abrir
+        container.querySelectorAll('.pc-grupo-content').forEach(el => {
+            if (el.id !== grupoId) {
+                el.classList.add('collapsed');
+                const otherIcon = document.getElementById(`pcIcon_${el.id}`);
+                if (otherIcon) otherIcon.textContent = '▶';
+            }
+        });
+
+        // Alternar o atual
+        grupo.classList.toggle('collapsed', !isCollapsed);
+        icon.textContent = isCollapsed ? '▼' : '▶';
     };
 };
 

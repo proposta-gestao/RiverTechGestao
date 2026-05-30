@@ -2265,12 +2265,13 @@ body {
    =============================== */
 
 #pcArvoreContainer {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
     max-height: 480px;
     overflow-y: auto;
     padding-right: 4px;
+    align-items: start;
 }
 #pcArvoreContainer::-webkit-scrollbar { width: 4px; }
 #pcArvoreContainer::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
@@ -2393,7 +2394,10 @@ body {
 
 /* Responsivo mobile */
 @media (max-width: 600px) {
-    #pcArvoreContainer { max-height: 360px; }
+    #pcArvoreContainer {
+        grid-template-columns: 1fr;
+        max-height: 360px;
+    }
     .pc-modal-wide {
         width: 100% !important;
         border-radius: 12px !important;
