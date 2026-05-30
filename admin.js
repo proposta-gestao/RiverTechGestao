@@ -3932,31 +3932,33 @@ function renderPerfisCardapio() {
 }
 
 window.abrirModalPerfilCardapio = async (id = null) => {
-    const inputId = document.getElementById('perfilCardapioId');
+    const inputId   = document.getElementById('perfilCardapioId');
     const inputNome = document.getElementById('pcNome');
     const inputDesc = document.getElementById('pcDescricao');
-    const title = document.getElementById('perfilCardapioModalTitle');
-    const listEl = document.getElementById('pcCategoriasCheckboxes');
-    const selectedEl = document.getElementById('pcCategoriasSelected');
-    const tabCats = document.querySelector('.pc-tab[data-tab="categorias"]');
-    const tabProds = document.querySelector('.pc-tab[data-tab="produtos"]');
-    const leftLabel = document.getElementById('pcLeftLabel');
-    const rightLabel = document.getElementById('pcRightLabel');
+    const title     = document.getElementById('perfilCardapioModalTitle');
+    const container = document.getElementById('pcArvoreContainer');
 
     inputId.value   = id || '';
     inputNome.value = '';
     inputDesc.value = '';
+    container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding: 2rem;">Carregando...</p>';
+    abrirModal('modalPerfilCardapio');
 
+    // Fetch categorias
     const cats = await obterCategoriasDisponiveis();
     window.__categoriasList = cats;
-    
-    // Fetch products
-    const { data: prodsData } = await sb.from('products').select('id, name').eq('empresa_id', getTenantId()).order('name');
+
+    // Fetch todos os produtos agrupados por categoria
+    const { data: prodsData } = await sb.from('products')
+        .select('id, name, category_id')
+        .eq('empresa_id', getTenantId())
+        .order('name');
     const prods = prodsData || [];
     window.__produtosList = prods;
 
-    let selectedCats = [];
-    let selectedProds = [];
+    // Fetch seleções salvas
+    let selectedCats = new Set();
+    let selectedProds = new Set();
 
     if (id) {
         title.textContent = '📋 Editar Perfil de Cardápio';
@@ -3964,119 +3966,126 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         if (perfil) {
             inputNome.value = perfil.nome;
             inputDesc.value = perfil.descricao || '';
-            selectedCats = (perfil.perfil_cardapio_categorias || []).map(pc => pc.category_id);
-            selectedProds = (perfil.perfil_cardapio_produtos || []).map(pp => pp.product_id);
+            (perfil.perfil_cardapio_categorias || []).forEach(pc => selectedCats.add(pc.category_id));
+            (perfil.perfil_cardapio_produtos   || []).forEach(pp => selectedProds.add(pp.product_id));
         }
     } else {
         title.textContent = '📋 Novo Perfil de Cardápio';
     }
 
-    const selectedCatsSet = new Set(selectedCats);
-    const selectedProdsSet = new Set(selectedProds);
-    let activeTab = 'categorias';
+    // Guarda os sets no escopo global para o salvar
+    window.__pcSelectedCats  = selectedCats;
+    window.__pcSelectedProds = selectedProds;
 
-    function syncSelectedPanel() {
-        const isCat = activeTab === 'categorias';
-        const currentSet = isCat ? selectedCatsSet : selectedProdsSet;
-        const currentSource = isCat ? cats : prods;
-
-        if (currentSet.size === 0) {
-            selectedEl.innerHTML = `<span class="pc-selected-placeholder">Nenhum${isCat ? 'a categoria' : ' produto'} adicionado</span>`;
+    function renderArvore() {
+        if (!cats || cats.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:2rem;">Nenhuma categoria cadastrada.</p>';
             return;
         }
-        selectedEl.innerHTML = [...currentSet].map(itemId => {
-            const item = currentSource.find(c => c.id === itemId);
-            const name = item ? item.name : itemId;
-            return `<div class="pc-selected-row">
-                <span>${name}</span>
-                <button class="pc-remove-btn" type="button" data-id="${itemId}" title="Remover">×</button>
+
+        container.innerHTML = cats.map(cat => {
+            const catProds = prods.filter(p => p.category_id === cat.id);
+            const catAtiva = selectedCats.has(cat.id);
+            const grupoId  = `pcGrupo_${cat.id.replace(/-/g, '')}`;
+
+            const produtosHTML = catProds.length === 0 ? '' : catProds.map(p => {
+                const prodAtivo = selectedProds.has(p.id);
+                return `<div class="pc-module-item" data-prod-id="${p.id}">
+                    <span>${p.name}</span>
+                    <label class="pc-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="pc-prod-toggle" data-prod-id="${p.id}" ${prodAtivo ? 'checked' : ''}>
+                        <span class="pc-slider"></span>
+                    </label>
+                </div>`;
+            }).join('');
+
+            return `<div class="pc-module-card">
+                <div class="pc-module-header" onclick="pcToggleAccordion('${grupoId}', '${cat.id}')">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="pc-accordion-icon" id="pcIcon_${grupoId}">▶</span>
+                        <div>
+                            <h4 class="pc-cat-title">📂 ${cat.name.toUpperCase()}</h4>
+                            ${catProds.length > 0 ? `<small class="pc-cat-subtitle">${catProds.length} produto(s)</small>` : ''}
+                        </div>
+                    </div>
+                    <label class="pc-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="pc-cat-toggle" data-cat-id="${cat.id}" ${catAtiva ? 'checked' : ''}>
+                        <span class="pc-slider"></span>
+                    </label>
+                </div>
+                <div class="pc-grupo-content collapsed" id="${grupoId}">
+                    ${catProds.length === 0
+                        ? '<p class="pc-no-prods">Nenhum produto nesta categoria.</p>'
+                        : `<div class="pc-grupo-intro">
+                               <span>Produtos individuais (opcional — deixe todos desmarcados para liberar toda a categoria)</span>
+                           </div>
+                           ${produtosHTML}`
+                    }
+                </div>
             </div>`;
         }).join('');
 
-        selectedEl.querySelectorAll('.pc-remove-btn').forEach(btn => {
-            btn.onclick = () => {
-                currentSet.delete(btn.dataset.id);
-                // Reativar item na lista esquerda
-                const itemNode = listEl.querySelector(`.pc-check-item[data-id="${btn.dataset.id}"]`);
-                if (itemNode) itemNode.classList.remove('checked');
-                syncSelectedPanel();
-            };
-        });
-    }
-
-    function renderLeftList() {
-        const isCat = activeTab === 'categorias';
-        const currentSource = isCat ? cats : prods;
-        const currentSet = isCat ? selectedCatsSet : selectedProdsSet;
-
-        if (!currentSource || currentSource.length === 0) {
-            listEl.innerHTML = `<div class="pc-cat-empty">Nenhum${isCat ? 'a categoria encontrada' : ' produto encontrado'}.</div>`;
-            return;
-        }
-        listEl.innerHTML = currentSource.map(c => `
-            <div class="pc-check-item ${currentSet.has(c.id) ? 'checked' : ''}" data-id="${c.id}">
-                <span class="pc-check-box">✓</span>
-                <span>${c.name}</span>
-            </div>
-        `).join('');
-
-        listEl.querySelectorAll('.pc-check-item').forEach(item => {
-            item.onclick = () => {
-                const itemId = item.dataset.id;
-                if (currentSet.has(itemId)) {
-                    currentSet.delete(itemId);
-                    item.classList.remove('checked');
-                } else {
-                    currentSet.add(itemId);
-                    item.classList.add('checked');
+        // Bind category toggle
+        container.querySelectorAll('.pc-cat-toggle').forEach(chk => {
+            chk.onchange = () => {
+                const catId = chk.dataset.catId;
+                if (chk.checked) selectedCats.add(catId);
+                else {
+                    selectedCats.delete(catId);
+                    // Desmarcar produtos desta categoria
+                    prods.filter(p => p.category_id === catId).forEach(p => {
+                        selectedProds.delete(p.id);
+                        const prodChk = container.querySelector(`.pc-prod-toggle[data-prod-id="${p.id}"]`);
+                        if (prodChk) prodChk.checked = false;
+                    });
                 }
-                syncSelectedPanel();
+            };
+        });
+
+        // Bind product toggle
+        container.querySelectorAll('.pc-prod-toggle').forEach(chk => {
+            chk.onchange = () => {
+                const prodId = chk.dataset.prodId;
+                if (chk.checked) {
+                    selectedProds.add(prodId);
+                    // Garantir que a categoria mãe está ativa
+                    const prod = prods.find(p => p.id === prodId);
+                    if (prod && !selectedCats.has(prod.category_id)) {
+                        selectedCats.add(prod.category_id);
+                        const catChk = container.querySelector(`.pc-cat-toggle[data-cat-id="${prod.category_id}"]`);
+                        if (catChk) catChk.checked = true;
+                    }
+                } else selectedProds.delete(prodId);
             };
         });
     }
 
-    function setActiveTab(tab) {
-        activeTab = tab;
-        if (tab === 'categorias') {
-            tabCats.classList.add('active');
-            tabProds.classList.remove('active');
-            leftLabel.textContent = '📂 Categorias disponíveis';
-            rightLabel.textContent = '✅ Categorias permitidas';
-        } else {
-            tabCats.classList.remove('active');
-            tabProds.classList.add('active');
-            leftLabel.textContent = '🍔 Produtos disponíveis';
-            rightLabel.textContent = '✅ Produtos permitidos';
-        }
-        renderLeftList();
-        syncSelectedPanel();
-    }
+    renderArvore();
 
-    tabCats.onclick = () => setActiveTab('categorias');
-    tabProds.onclick = () => setActiveTab('produtos');
-
-    // Store sets globally for saving
-    window.__pcSelectedCats = selectedCatsSet;
-    window.__pcSelectedProds = selectedProdsSet;
-
-    setActiveTab('categorias');
-    abrirModal('modalPerfilCardapio');
+    // Expor toggle accordion globalmente (precisa existir no momento do onclick inline)
+    window.pcToggleAccordion = (grupoId, catId) => {
+        const grupo = document.getElementById(grupoId);
+        const icon  = document.getElementById(`pcIcon_${grupoId}`);
+        if (!grupo) return;
+        const collapsed = grupo.classList.toggle('collapsed');
+        icon.textContent = collapsed ? '▶' : '▼';
+    };
 };
 
 document.getElementById('btnSalvarPerfilCardapio').onclick = async () => {
-    const id = document.getElementById('perfilCardapioId').value;
-    const nome = document.getElementById('pcNome').value.trim();
+    const id       = document.getElementById('perfilCardapioId').value;
+    const nome     = document.getElementById('pcNome').value.trim();
     const descricao = document.getElementById('pcDescricao').value.trim();
 
     if (!nome) { showToast('Nome do perfil é obrigatório', 'warning'); return; }
 
     const btn = document.getElementById('btnSalvarPerfilCardapio');
-    btn.disabled = true;
+    btn.disabled   = true;
     btn.textContent = 'Salvando...';
 
     try {
         const payload = { nome, descricao, empresa_id: getTenantId() };
-        let perfilId = id;
+        let perfilId  = id;
 
         if (id) {
             const { error } = await sb.from('perfis_cardapio').update(payload).eq('id', id);
@@ -4090,23 +4099,19 @@ document.getElementById('btnSalvarPerfilCardapio').onclick = async () => {
         // Sync categorias
         await sb.from('perfil_cardapio_categorias').delete().eq('perfil_id', perfilId);
         if (window.__pcSelectedCats && window.__pcSelectedCats.size > 0) {
-            const catPayload = [...window.__pcSelectedCats].map(catId => ({
-                perfil_id: perfilId,
-                category_id: catId
-            }));
-            const { error: catError } = await sb.from('perfil_cardapio_categorias').insert(catPayload);
-            if (catError) throw catError;
+            const { error } = await sb.from('perfil_cardapio_categorias').insert(
+                [...window.__pcSelectedCats].map(catId => ({ perfil_id: perfilId, category_id: catId }))
+            );
+            if (error) throw error;
         }
 
         // Sync produtos
         await sb.from('perfil_cardapio_produtos').delete().eq('perfil_id', perfilId);
         if (window.__pcSelectedProds && window.__pcSelectedProds.size > 0) {
-            const prodPayload = [...window.__pcSelectedProds].map(prodId => ({
-                perfil_id: perfilId,
-                product_id: prodId
-            }));
-            const { error: prodError } = await sb.from('perfil_cardapio_produtos').insert(prodPayload);
-            if (prodError) throw prodError;
+            const { error } = await sb.from('perfil_cardapio_produtos').insert(
+                [...window.__pcSelectedProds].map(prodId => ({ perfil_id: perfilId, product_id: prodId }))
+            );
+            if (error) throw error;
         }
 
         showToast('Perfil salvo com sucesso!', 'success');
@@ -4115,10 +4120,12 @@ document.getElementById('btnSalvarPerfilCardapio').onclick = async () => {
     } catch (err) {
         showToast('Erro ao salvar: ' + err.message, 'error');
     } finally {
-        btn.disabled = false;
+        btn.disabled    = false;
         btn.textContent = 'Salvar';
     }
 };
+
+
 
 window.excluirPerfilCardapio = async (id, nome) => {
     if (!await customConfirm('Excluir Perfil', `Deseja remover o perfil "${nome}"? Clientes vinculados ficarão sem perfil.`)) return;

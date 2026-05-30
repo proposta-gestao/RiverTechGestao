@@ -2107,36 +2107,14 @@
                     </div>
                 </div>
 
-                <!-- Abas: Categorias | Produtos -->
-                <div class="pc-tabs">
-                    <button type="button" class="pc-tab active" data-tab="categorias">📂 Categorias</button>
-                    <button type="button" class="pc-tab" data-tab="produtos">🍔 Produtos Individuais</button>
-                </div>
+                <!-- Instrução -->
+                <p style="font-size:0.82rem; color:var(--text-muted); margin: 0 0 1rem 0;">
+                    Ative as categorias que este perfil pode visualizar. Dentro de cada categoria, você pode liberar todos os produtos ou apenas os individuais desejados.
+                </p>
 
-                <!-- Layout de duas colunas: Seletor | Selecionados -->
-                <div class="pc-two-col">
-
-                    <!-- Coluna esquerda: lista de itens -->
-                    <div class="pc-col-left">
-                        <label class="pc-col-label" id="pcLeftLabel">📂 Categorias disponíveis</label>
-                        <p class="pc-col-hint">Clique para adicionar ao perfil</p>
-                        <div class="pc-list-panel" id="pcCategoriasCheckboxes"></div>
-                    </div>
-
-                    <!-- Divisor -->
-                    <div class="pc-col-divider">
-                        <span>→</span>
-                    </div>
-
-                    <!-- Coluna direita: selecionados -->
-                    <div class="pc-col-right">
-                        <label class="pc-col-label" id="pcRightLabel">✅ Categorias permitidas</label>
-                        <p class="pc-col-hint">Clique no × para remover</p>
-                        <div id="pcCategoriasSelected" class="pc-selected-list">
-                            <span class="pc-selected-placeholder">Nenhuma categoria adicionada</span>
-                        </div>
-                    </div>
-
+                <!-- Árvore de categorias + produtos -->
+                <div id="pcArvoreContainer">
+                    <p style="text-align:center; color:var(--text-muted); padding: 2rem;">Carregando categorias...</p>
                 </div>
             </div>
         </div>
