@@ -1518,24 +1518,47 @@ function inicializarLoginPremium() {
                 state.premiumUser = parsed;
                 restaurouSessao = true;
 
-                // Auto-atualizar cache de sessões antigas (que não tinham produtosPermitidos mapeados)
-                if (parsed.categoriasPermitidas !== undefined && parsed.produtosPermitidos === undefined) {
-                    console.log('[Premium] Atualizando cache de produtos da sessão antiga em background...');
-                    sb.from('clientes_premium').select('perfil_cardapio_id').eq('id', parsed.id).single()
-                        .then(({data: cli}) => {
-                            if (cli && cli.perfil_cardapio_id) {
-                                return sb.from('perfil_cardapio_produtos').select('product_id').eq('perfil_id', cli.perfil_cardapio_id);
+                // Sempre buscar os dados mais recentes em background para refletir mudanças do admin instantaneamente (limites e perfil)
+                console.log('[Premium] Sincronizando sessão em background com o banco...');
+                sb.from('clientes_premium')
+                    .select('teto_mensal, perfil_cardapio_id')
+                    .eq('id', parsed.id)
+                    .single()
+                    .then(async ({data: cli}) => {
+                        if (cli) {
+                            state.premiumUser.teto = parseFloat(cli.teto_mensal) || 0;
+                            
+                            if (cli.perfil_cardapio_id) {
+                                const [catsRes, prodsRes] = await Promise.all([
+                                    sb.from('perfil_cardapio_categorias').select('category_id').eq('perfil_id', cli.perfil_cardapio_id),
+                                    sb.from('perfil_cardapio_produtos').select('product_id').eq('perfil_id', cli.perfil_cardapio_id)
+                                ]);
+                                state.premiumUser.categoriasPermitidas = (catsRes.data || []).map(c => c.category_id);
+                                state.premiumUser.produtosPermitidos = (prodsRes.data || []).map(p => p.product_id);
+                            } else {
+                                state.premiumUser.categoriasPermitidas = null;
+                                state.premiumUser.produtosPermitidos = null;
                             }
-                            return { data: [] };
-                        })
-                        .then(({data: prods}) => {
-                            state.premiumUser.produtosPermitidos = (prods || []).map(p => p.product_id);
+                            
+                            // Atualizar gasto do mês
+                            const mesAtual = new Date();
+                            const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
+                            const { data: orders } = await sb.from('orders')
+                                .select('total')
+                                .eq('cliente_premium_id', parsed.id)
+                                .gte('created_at', inicioMes)
+                                .not('status', 'eq', 'cancelado');
+                            
+                            state.premiumUser.gasto = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
+
+                            // Atualiza cache e re-renderiza
                             localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+                            atualizarBarraPremium();
                             aplicarFiltroCardapioPremium();
-                            console.log('[Premium] Cache atualizado e cardápio re-renderizado!');
-                        })
-                        .catch(err => console.error('[Premium] Erro ao migrar sessão:', err));
-                }
+                            console.log('[Premium] Sessão sincronizada com sucesso e UI atualizada!');
+                        }
+                    })
+                    .catch(err => console.error('[Premium] Erro ao sincronizar sessão:', err));
 
             } else {
                 console.log('[Premium] Sessão expirada. Limpando localStorage.');
