@@ -4059,7 +4059,20 @@ window.abrirModalPerfilCardapio = async (id = null) => {
                         const catChk = container.querySelector(`.pc-cat-toggle[data-cat-id="${prod.category_id}"]`);
                         if (catChk) catChk.checked = true;
                     }
-                } else selectedProds.delete(prodId);
+                } else {
+                    selectedProds.delete(prodId);
+                    // Verificar se todos os produtos desta categoria foram desmarcados
+                    const prod = prods.find(p => p.id === prodId);
+                    if (prod && selectedCats.has(prod.category_id)) {
+                        const catProds = prods.filter(p => p.category_id === prod.category_id);
+                        const anyActive = catProds.some(p => selectedProds.has(p.id));
+                        if (!anyActive) {
+                            selectedCats.delete(prod.category_id);
+                            const catChk = container.querySelector(`.pc-cat-toggle[data-cat-id="${prod.category_id}"]`);
+                            if (catChk) catChk.checked = false;
+                        }
+                    }
+                }
             };
         });
     }
