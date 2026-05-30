@@ -1517,6 +1517,26 @@ function inicializarLoginPremium() {
                 console.log('[Premium] Sessão restaurada do localStorage para:', parsed.nome);
                 state.premiumUser = parsed;
                 restaurouSessao = true;
+
+                // Auto-atualizar cache de sessões antigas (que não tinham produtosPermitidos mapeados)
+                if (parsed.categoriasPermitidas !== undefined && parsed.produtosPermitidos === undefined) {
+                    console.log('[Premium] Atualizando cache de produtos da sessão antiga em background...');
+                    sb.from('clientes_premium').select('perfil_cardapio_id').eq('id', parsed.id).single()
+                        .then(({data: cli}) => {
+                            if (cli && cli.perfil_cardapio_id) {
+                                return sb.from('perfil_cardapio_produtos').select('product_id').eq('perfil_id', cli.perfil_cardapio_id);
+                            }
+                            return { data: [] };
+                        })
+                        .then(({data: prods}) => {
+                            state.premiumUser.produtosPermitidos = (prods || []).map(p => p.product_id);
+                            localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+                            aplicarFiltroCardapioPremium();
+                            console.log('[Premium] Cache atualizado e cardápio re-renderizado!');
+                        })
+                        .catch(err => console.error('[Premium] Erro ao migrar sessão:', err));
+                }
+
             } else {
                 console.log('[Premium] Sessão expirada. Limpando localStorage.');
                 localStorage.removeItem('premiumUser');
