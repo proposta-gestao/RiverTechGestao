@@ -338,8 +338,11 @@ function renderCategorias() {
 function renderMenu() {
     let filtrados = PRODUTOS;
 
-    // Filtro Premium (somente categorias permitidas)
-    if (state.premiumUser && state.premiumUser.categoriasPermitidas) {
+    // Filtro Premium (somente produtos e categorias permitidas)
+    if (state.premiumUser && state.premiumUser.produtosPermitidos) {
+        filtrados = filtrados.filter(p => state.premiumUser.produtosPermitidos.includes(p.id));
+    } else if (state.premiumUser && state.premiumUser.categoriasPermitidas) {
+        // Fallback para caso antigo onde só tinha categoria
         filtrados = filtrados.filter(p => state.premiumUser.categoriasPermitidas.includes(p.category_id));
     }
 
@@ -1614,11 +1617,17 @@ function inicializarLoginPremium() {
 
                 // Buscar categorias permitidas se houver perfil
                 let categoriasPermitidas = null;
+                let produtosPermitidos = null;
                 if (data.perfil_cardapio_id) {
                     const { data: catData } = await sb.from('perfil_cardapio_categorias')
                         .select('category_id')
                         .eq('perfil_id', data.perfil_cardapio_id);
                     categoriasPermitidas = (catData || []).map(c => c.category_id);
+
+                    const { data: prodData } = await sb.from('perfil_cardapio_produtos')
+                        .select('product_id')
+                        .eq('perfil_id', data.perfil_cardapio_id);
+                    produtosPermitidos = (prodData || []).map(p => p.product_id);
                 }
 
                 // Buscar gasto atual no mês
@@ -1644,6 +1653,7 @@ function inicializarLoginPremium() {
                     teto: parseFloat(data.teto_mensal) || 0,
                     gasto: gastoMes,
                     categoriasPermitidas: categoriasPermitidas,
+                    produtosPermitidos: produtosPermitidos,
                     expiry: expiry
                 };
 
