@@ -4016,10 +4016,7 @@ window.abrirModalPerfilCardapio = async (id = null) => {
                 <div class="pc-grupo-content collapsed" id="${grupoId}">
                     ${catProds.length === 0
                         ? '<p class="pc-no-prods">Nenhum produto nesta categoria.</p>'
-                        : `<div class="pc-grupo-intro">
-                               <span>Produtos individuais (opcional — deixe todos desmarcados para liberar toda a categoria)</span>
-                           </div>
-                           ${produtosHTML}`
+                        : produtosHTML
                     }
                 </div>
             </div>`;
@@ -4029,8 +4026,15 @@ window.abrirModalPerfilCardapio = async (id = null) => {
         container.querySelectorAll('.pc-cat-toggle').forEach(chk => {
             chk.onchange = () => {
                 const catId = chk.dataset.catId;
-                if (chk.checked) selectedCats.add(catId);
-                else {
+                if (chk.checked) {
+                    selectedCats.add(catId);
+                    // Marcar todos os produtos desta categoria
+                    prods.filter(p => p.category_id === catId).forEach(p => {
+                        selectedProds.add(p.id);
+                        const prodChk = container.querySelector(`.pc-prod-toggle[data-prod-id="${p.id}"]`);
+                        if (prodChk) prodChk.checked = true;
+                    });
+                } else {
                     selectedCats.delete(catId);
                     // Desmarcar produtos desta categoria
                     prods.filter(p => p.category_id === catId).forEach(p => {
