@@ -1732,9 +1732,7 @@ function atualizarBarraPremium() {
     if (state.premiumUser) {
         document.getElementById('premiumUserFirstName').textContent = state.premiumUser.nome;
         
-        const badge = document.getElementById('premiumUserProfile');
-        if (badge) badge.textContent = state.premiumUser.tipo ? state.premiumUser.tipo.toUpperCase() : 'VIP';
-        
+
         const teto = state.premiumUser.teto;
         const gasto = state.premiumUser.gasto || 0;
         const disp = teto > 0 ? (teto - gasto) : -1;
