@@ -416,7 +416,11 @@ function abrirModalDetalhes(orderId) {
     const itemsList = document.getElementById('modalOrderItems');
     const btnCozinha = document.getElementById('btnModalEnviarCozinha');
 
-    info.innerText = `Pedido #${order.id.slice(0, 8)} | ${order.customer_name}`;
+    const headerText = `Pedido #${order.id.slice(0, 8)} | ${order.customer_name}`;
+    const vipBadge = order.cliente_premium_id ? '<span style="color:var(--accent-gold); font-weight:800; font-size:1.2rem; margin-right:8px;">👑</span>' : '';
+    const comandaBadge = order.comanda_id ? '<span style="background:rgba(229,178,93,0.15); color:var(--accent-gold); border:1px solid rgba(229,178,93,0.3); padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700; margin-left:10px; vertical-align:middle;">📋 COMANDA VIP</span>' : '';
+    
+    info.innerHTML = `${vipBadge}${headerText}${comandaBadge}`;
 
     let itemsHtml = (order.order_items || []).map(item => `
         <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;">
@@ -571,7 +575,10 @@ function createOrderCard(order) {
             </div>
         </div>
         <div style="cursor:pointer" onclick="abrirModalDetalhes('${order.id}')">
-            <p class="customer-name">${order.customer_name}</p>
+            <p class="customer-name">
+                ${order.cliente_premium_id ? '<span style="color:var(--accent-gold); font-weight:800; font-size:1.1rem; margin-right:4px;">👑</span>' : ''}
+                ${order.customer_name}
+            </p>
             <div class="order-location" style="margin-top:5px; margin-bottom:5px;">MESA ${localizacao.mesa || '??'} | POS ${localizacao.posicao || '??'}</div>
             <div class="card-footer" style="margin-top:10px; flex-wrap: wrap; gap: 8px;">
                 <div style="flex: 1;">
@@ -579,13 +586,15 @@ function createOrderCard(order) {
                     <span class="order-total" style="font-size:1rem;">${formatCurrency(order.total)}</span>
                 </div>
                 <div class="payment-badge-status">
-                    ${order.payment_method === 'pix' ? `
+                    ${order.comanda_id ? `
+                        <span class="badge-status" style="background:rgba(229,178,93,0.15); color:var(--accent-gold); border:1px solid rgba(229,178,93,0.3);">📋 COMANDA VIP</span>
+                    ` : (order.payment_method === 'pix' ? `
                         ${order.payment_status === 'pago' 
                             ? '<span class="badge-status status-pago">✅ PAGAMENTO RECEBIDO</span>' 
                             : '<span class="badge-status status-pendente">⏳ AGUARDANDO PIX</span>'}
                     ` : `
                         <span class="badge-status status-offline">${order.payment_method?.toUpperCase()}</span>
-                    `}
+                    `)}
                 </div>
             </div>
         </div>
