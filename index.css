@@ -2388,16 +2388,18 @@
 }
 
 /* Premium Login Form Button */
-#btnEntrarPremium {
+.btn-primary {
     background: var(--btn-primary-bg) !important;
     color: var(--btn-primary-text) !important;
     border: none !important;
     font-weight: 800 !important;
+    border-radius: 16px !important;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-#btnEntrarPremium:hover {
+.btn-primary:hover {
     background: var(--btn-primary-hover) !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
