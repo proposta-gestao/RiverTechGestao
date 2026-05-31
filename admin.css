@@ -4067,3 +4067,33 @@ input[type=number] {
         background: #fff !important;
     }
 }
+
+/* ========================================= */
+/* PREMIUM DASHBOARD FILTERS OVERRIDES       */
+/* ========================================= */
+.premium-dashboard-filters .filter-row {
+    grid-template-columns: repeat(6, 1fr) !important;
+}
+.premium-dashboard-filters .filter-row>div {
+    display: flex !important;
+    flex-direction: column;
+}
+.premium-dashboard-filters .filter-row>div:nth-child(1) { grid-column: span 3 !important; }
+.premium-dashboard-filters .filter-row>div:nth-child(2) { grid-column: span 3 !important; }
+.premium-dashboard-filters .filter-row>div:nth-child(3) { grid-column: span 2 !important; }
+.premium-dashboard-filters .filter-row>div:nth-child(4) { grid-column: span 4 !important; }
+.premium-dashboard-filters .filter-row>div:nth-child(5) { display: none !important; }
+
+@media (max-width: 768px) {
+    .premium-dashboard-filters .filter-row {
+        grid-template-columns: 1fr !important;
+    }
+    .premium-dashboard-filters .filter-row>div:nth-child(1),
+    .premium-dashboard-filters .filter-row>div:nth-child(2),
+    .premium-dashboard-filters .filter-row>div:nth-child(3),
+    .premium-dashboard-filters .filter-row>div:nth-child(4) {
+        grid-column: span 1 !important;
+        display: flex !important;
+    }
+}
+
