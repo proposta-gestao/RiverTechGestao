@@ -4542,9 +4542,9 @@ window.__PREMIUM_DASH = {
             let query = sb.from('comandas')
                 .select('*, clientes_premium(nome, cpf, perfil_cardapio_id)')
                 .eq('empresa_id', getTenantId())
-                .gte('created_at', inicioAjustado)
-                .lte('created_at', fimAjustado)
-                .order('created_at', { ascending: false });
+                .gte('aberta_em', inicioAjustado)
+                .lte('aberta_em', fimAjustado)
+                .order('aberta_em', { ascending: false });
 
             if (status) {
                 query = query.eq('status', status);
@@ -4622,7 +4622,7 @@ window.__PREMIUM_DASH = {
             relatorioBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhuma comanda encontrada para o período.</td></tr>';
         } else {
             relatorioBody.innerHTML = comandas.map(c => {
-                const dataExibicao = new Date(c.created_at).toLocaleString('pt-BR');
+                const dataExibicao = new Date(c.aberta_em).toLocaleString('pt-BR');
                 const clienteNome = c.clientes_premium ? c.clientes_premium.nome : 'Desconhecido';
                 const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
                 
@@ -4655,7 +4655,7 @@ window.__PREMIUM_DASH = {
         csvContent += "Data/Hora;Cliente;CPF;Total;Status\r\n";
 
         comandas.forEach(c => {
-            const dataExibicao = new Date(c.created_at).toLocaleString('pt-BR');
+            const dataExibicao = new Date(c.aberta_em).toLocaleString('pt-BR');
             const clienteNome = c.clientes_premium ? c.clientes_premium.nome : '';
             const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
             const total = c.total_acumulado || 0;
