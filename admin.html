@@ -1219,37 +1219,55 @@
                         </div>
                         <div class="config-card-body">
                             <!-- Filtros -->
-                            <div class="admin-toolbar" style="margin-bottom: 2rem; background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
-                                <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
-                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
-                                        <label for="dashPremiumDataInicio" style="margin-bottom: 5px;">Data Início</label>
-                                        <input type="date" id="dashPremiumDataInicio">
+                            <div class="filtros-container premium-filtros" style="background: linear-gradient(135deg, rgba(229, 178, 93, 0.08) 0%, rgba(229, 178, 93, 0.02) 100%); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(229, 178, 93, 0.25); margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end;">
+                                    
+                                    <!-- Grupo 1: Período e Cliente -->
+                                    <div style="display: flex; gap: 15px; flex-direction: column;">
+                                        <div class="form-group" style="margin:0;">
+                                            <label style="color: var(--primary);">📅 Período</label>
+                                            <div style="display: flex; gap: 10px;">
+                                                <input type="date" id="dashPremiumDataInicio" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2); outline: none; width: 100%; color: var(--text-color);">
+                                                <span style="color: var(--primary); align-self: center;">até</span>
+                                                <input type="date" id="dashPremiumDataFim" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2); outline: none; width: 100%; color: var(--text-color);">
+                                            </div>
+                                        </div>
+                                        <div class="form-group" style="margin:0;">
+                                            <label for="dashPremiumFiltroCliente" style="color: var(--primary);">👑 Cliente VIP</label>
+                                            <select id="dashPremiumFiltroCliente" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2); outline: none; width: 100%; color: var(--text-color);">
+                                                <option value="">Todos os clientes</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
-                                        <label for="dashPremiumDataFim" style="margin-bottom: 5px;">Data Fim</label>
-                                        <input type="date" id="dashPremiumDataFim">
+                                    
+                                    <!-- Grupo 2: Perfil e Status -->
+                                    <div style="display: flex; gap: 15px; flex-direction: column;">
+                                        <div class="form-group" style="margin:0;">
+                                            <label for="dashPremiumFiltroPerfil" style="color: var(--primary);">📋 Perfil</label>
+                                            <select id="dashPremiumFiltroPerfil" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2); outline: none; width: 100%; color: var(--text-color);">
+                                                <option value="">Todos os perfis</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="margin:0;">
+                                            <label for="dashPremiumFiltroStatus" style="color: var(--primary);">📊 Status</label>
+                                            <select id="dashPremiumFiltroStatus" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2); outline: none; width: 100%; color: var(--text-color);">
+                                                <option value="">Todas (Abertas e Fechadas)</option>
+                                                <option value="aberta">Apenas Abertas</option>
+                                                <option value="fechada">Apenas Fechadas</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
-                                        <label for="dashPremiumFiltroPerfil" style="margin-bottom: 5px;">Perfil</label>
-                                        <select id="dashPremiumFiltroPerfil">
-                                            <option value="">Todos os perfis</option>
-                                        </select>
+
+                                    <!-- Grupo 3: Botões -->
+                                    <div style="display: flex; gap: 15px; flex-direction: column; justify-content: flex-end; height: 100%;">
+                                        <button class="wa-premium-btn" onclick="window.__PREMIUM_DASH.carregarDashboardPremium()" style="width: 100%; justify-content: center; padding: 12px; font-weight: bold; border-radius: 8px;">
+                                            <span class="wa-btn-icon">🔍</span> Filtrar Resultados
+                                        </button>
+                                        <button class="btn-cancel" onclick="document.getElementById('dashPremiumDataInicio').value=''; document.getElementById('dashPremiumDataFim').value=''; document.getElementById('dashPremiumFiltroPerfil').value=''; document.getElementById('dashPremiumFiltroCliente').value=''; document.getElementById('dashPremiumFiltroStatus').value=''; window.__PREMIUM_DASH.carregarDashboardPremium();" style="width: 100%; justify-content: center; padding: 12px; border-radius: 8px; border: 1px solid rgba(229, 178, 93, 0.3); color: var(--primary); background: rgba(229, 178, 93, 0.05);">
+                                            ✕ Limpar Filtros
+                                        </button>
                                     </div>
-                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
-                                        <label for="dashPremiumFiltroCliente" style="margin-bottom: 5px;">Cliente</label>
-                                        <select id="dashPremiumFiltroCliente">
-                                            <option value="">Todos os clientes</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
-                                        <label for="dashPremiumFiltroStatus" style="margin-bottom: 5px;">Status</label>
-                                        <select id="dashPremiumFiltroStatus">
-                                            <option value="">Todas (Abertas e Fechadas)</option>
-                                            <option value="aberta">Apenas Abertas</option>
-                                            <option value="fechada">Apenas Fechadas</option>
-                                        </select>
-                                    </div>
-                                    <button class="btn-primary" onclick="window.__PREMIUM_DASH.carregarDashboardPremium()" style="height: 42px; margin-bottom: 0;">Filtrar</button>
+
                                 </div>
                             </div>
 
