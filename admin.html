@@ -1229,6 +1229,26 @@
                                         <label for="dashPremiumDataFim" style="margin-bottom: 5px;">Data Fim</label>
                                         <input type="date" id="dashPremiumDataFim">
                                     </div>
+                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
+                                        <label for="dashPremiumFiltroPerfil" style="margin-bottom: 5px;">Perfil</label>
+                                        <select id="dashPremiumFiltroPerfil">
+                                            <option value="">Todos os perfis</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
+                                        <label for="dashPremiumFiltroCliente" style="margin-bottom: 5px;">Cliente</label>
+                                        <select id="dashPremiumFiltroCliente">
+                                            <option value="">Todos os clientes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
+                                        <label for="dashPremiumFiltroStatus" style="margin-bottom: 5px;">Status</label>
+                                        <select id="dashPremiumFiltroStatus">
+                                            <option value="">Todas (Abertas e Fechadas)</option>
+                                            <option value="aberta">Apenas Abertas</option>
+                                            <option value="fechada">Apenas Fechadas</option>
+                                        </select>
+                                    </div>
                                     <button class="btn-primary" onclick="window.__PREMIUM_DASH.carregarDashboardPremium()" style="height: 42px; margin-bottom: 0;">Filtrar</button>
                                 </div>
                             </div>
@@ -1271,16 +1291,16 @@
 
                                 <!-- Relatório de Comandas -->
                                 <div class="relatorio-section">
-                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🧾 Comandas Fechadas</h3>
+                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🧾 Relatório de Comandas</h3>
                                     <div class="admin-table-wrapper print-wrapper" style="max-height: 400px; overflow-y: auto;" id="printRelatorioContainer">
                                         <table class="admin-table" id="tabelaRelatorioPremium">
                                             <thead>
                                                 <tr>
-                                                    <th>Data Fechamento</th>
+                                                    <th>Data/Hora</th>
                                                     <th>Cliente</th>
                                                     <th>CPF</th>
                                                     <th>Total Acumulado</th>
-                                                    <th>Forma de Pagto</th>
+                                                    <th>Status</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="dashPremiumComandasBody">

@@ -4487,9 +4487,38 @@ window.__PREMIUM_DASH = {
         const tabDashboard = document.getElementById('nav-sub-premium-dashboard');
         if (tabDashboard) {
             tabDashboard.addEventListener('click', () => {
+                window.__PREMIUM_DASH.carregarFiltros();
                 // Pequeno atraso para garantir que a UI carregou a aba
                 setTimeout(() => window.__PREMIUM_DASH.carregarDashboardPremium(), 100);
             });
+        }
+    },
+
+    carregarFiltros: () => {
+        // Perfis
+        const selPerfil = document.getElementById('dashPremiumFiltroPerfil');
+        if (selPerfil) {
+            const val = selPerfil.value;
+            selPerfil.innerHTML = '<option value="">Todos os perfis</option>';
+            if (typeof listaPerfisCardapio !== 'undefined') {
+                listaPerfisCardapio.forEach(p => {
+                    selPerfil.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+                });
+            }
+            selPerfil.value = val;
+        }
+
+        // Clientes
+        const selCliente = document.getElementById('dashPremiumFiltroCliente');
+        if (selCliente) {
+            const val = selCliente.value;
+            selCliente.innerHTML = '<option value="">Todos os clientes</option>';
+            if (typeof listaClientesPremium !== 'undefined') {
+                listaClientesPremium.forEach(c => {
+                    selCliente.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+                });
+            }
+            selCliente.value = val;
         }
     },
 
@@ -4497,6 +4526,9 @@ window.__PREMIUM_DASH = {
         try {
             const dataInicio = document.getElementById('dashPremiumDataInicio').value;
             const dataFim = document.getElementById('dashPremiumDataFim').value;
+            const status = document.getElementById('dashPremiumFiltroStatus').value;
+            const clienteId = document.getElementById('dashPremiumFiltroCliente').value;
+            const perfilId = document.getElementById('dashPremiumFiltroPerfil').value;
             
             if (!dataInicio || !dataFim) {
                 showToast('Selecione as datas de início e fim.', 'warning');
@@ -4507,16 +4539,31 @@ window.__PREMIUM_DASH = {
             const inicioAjustado = dataInicio + 'T00:00:00.000Z';
             const fimAjustado = dataFim + 'T23:59:59.999Z';
 
-            const { data, error } = await sb.from('comandas')
-                .select('*, clientes_premium(nome, cpf)')
+            let query = sb.from('comandas')
+                .select('*, clientes_premium(nome, cpf, perfil_id)')
                 .eq('empresa_id', getTenantId())
-                .eq('status', 'fechada')
-                .gte('fechada_em', inicioAjustado)
-                .lte('fechada_em', fimAjustado)
-                .order('fechada_em', { ascending: false });
+                .gte('created_at', inicioAjustado)
+                .lte('created_at', fimAjustado)
+                .order('created_at', { ascending: false });
 
+            if (status) {
+                query = query.eq('status', status);
+            }
+            if (clienteId) {
+                query = query.eq('cliente_premium_id', clienteId);
+            }
+
+            const { data, error } = await query;
             if (error) throw error;
-            window.__PREMIUM_DASH.comandasFechadas = data || [];
+            
+            let comandas = data || [];
+            
+            // Filtrar perfil em JS
+            if (perfilId) {
+                comandas = comandas.filter(c => c.clientes_premium && c.clientes_premium.perfil_id === perfilId);
+            }
+
+            window.__PREMIUM_DASH.comandasFechadas = comandas;
             window.__PREMIUM_DASH.render();
         } catch (err) {
             console.error('Erro ao carregar dashboard premium:', err);
@@ -4575,16 +4622,21 @@ window.__PREMIUM_DASH = {
             relatorioBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhuma comanda encontrada para o período.</td></tr>';
         } else {
             relatorioBody.innerHTML = comandas.map(c => {
-                const dataFechamento = new Date(c.fechada_em).toLocaleString('pt-BR');
+                const dataExibicao = new Date(c.created_at).toLocaleString('pt-BR');
                 const clienteNome = c.clientes_premium ? c.clientes_premium.nome : 'Desconhecido';
                 const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
+                
+                const statusBadge = c.status === 'aberta' 
+                    ? '<span style="background:rgba(52,211,153,0.15); color:#34d399; padding:3px 8px; border-radius:4px; font-size:0.8rem;">Aberta</span>'
+                    : '<span style="background:rgba(229,178,93,0.1); color:var(--primary); padding:3px 8px; border-radius:4px; font-size:0.8rem;">Fechada</span>';
+
                 return `
                     <tr>
-                        <td>${dataFechamento}</td>
+                        <td>${dataExibicao}</td>
                         <td>${clienteNome}</td>
                         <td>${clienteCpf}</td>
                         <td style="font-weight:bold;">${formatCurrency(c.total_acumulado)}</td>
-                        <td><span style="background:rgba(229,178,93,0.1); color:var(--primary); padding:3px 8px; border-radius:4px; font-size:0.8rem;">Comanda Premium</span></td>
+                        <td>${statusBadge}</td>
                     </tr>
                 `;
             }).join('');
@@ -4600,14 +4652,15 @@ window.__PREMIUM_DASH = {
 
         // Usar ; para Excel PT-BR entender colunas facilmente
         let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
-        csvContent += "Data Fechamento;Cliente;CPF;Total\r\n";
+        csvContent += "Data/Hora;Cliente;CPF;Total;Status\r\n";
 
         comandas.forEach(c => {
-            const dataFechamento = new Date(c.fechada_em).toLocaleString('pt-BR');
+            const dataExibicao = new Date(c.created_at).toLocaleString('pt-BR');
             const clienteNome = c.clientes_premium ? c.clientes_premium.nome : '';
             const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
             const total = c.total_acumulado || 0;
-            const row = `"${dataFechamento}";"${clienteNome}";"${clienteCpf}";"${total.toFixed(2).replace('.', ',')}"`;
+            const status = c.status === 'aberta' ? 'Aberta' : 'Fechada';
+            const row = `"${dataExibicao}";"${clienteNome}";"${clienteCpf}";"${total.toFixed(2).replace('.', ',')}";"${status}"`;
             csvContent += row + "\r\n";
         });
 
