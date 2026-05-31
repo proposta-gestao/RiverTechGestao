@@ -1770,8 +1770,8 @@ function atualizarBarraPremium() {
         
         if (btn) {
             btn.style.display = 'flex';
-            btn.style.background = 'transparent';
-            btn.style.color = 'var(--text-muted)';
+            btn.classList.add('is-logout'); // Adiciona a classe de estilo "Sair" (danger)
+            
             const icon = document.getElementById('iconLoginPremium');
             const label = document.getElementById('labelLoginPremium');
             if (icon) icon.innerText = '🚪';
@@ -1781,8 +1781,8 @@ function atualizarBarraPremium() {
         bar.style.display = 'none';
         if (btn && isModuloAtivo('clientes_premium')) {
             btn.style.display = 'flex';
-            btn.style.background = 'rgba(229,178,93,0.1)';
-            btn.style.color = 'var(--accent-gold)';
+            btn.classList.remove('is-logout'); // Remove a classe de estilo "Sair" (volta pro gold)
+            
             const icon = document.getElementById('iconLoginPremium');
             const label = document.getElementById('labelLoginPremium');
             if (icon) icon.innerText = '👑';
