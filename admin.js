@@ -4509,16 +4509,14 @@ window.__PREMIUM_DASH = {
         }
 
         // Clientes
-        const selCliente = document.getElementById('dashPremiumFiltroCliente');
-        if (selCliente) {
-            const val = selCliente.value;
-            selCliente.innerHTML = '<option value="">Todos os clientes</option>';
+        const listCliente = document.getElementById('listaPremiumClientesVIP');
+        if (listCliente) {
+            listCliente.innerHTML = '';
             if (typeof listaClientesPremium !== 'undefined') {
                 listaClientesPremium.forEach(c => {
-                    selCliente.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
+                    listCliente.innerHTML += `<option value="${c.nome}"></option>`;
                 });
             }
-            selCliente.value = val;
         }
     },
 
@@ -4527,7 +4525,7 @@ window.__PREMIUM_DASH = {
             const dataInicio = document.getElementById('dashPremiumDataInicio').value;
             const dataFim = document.getElementById('dashPremiumDataFim').value;
             const status = document.getElementById('dashPremiumFiltroStatus').value;
-            const clienteId = document.getElementById('dashPremiumFiltroCliente').value;
+            const clienteStr = document.getElementById('dashPremiumFiltroCliente').value.trim().toLowerCase();
             const perfilId = document.getElementById('dashPremiumFiltroPerfil').value;
             
             if (!dataInicio || !dataFim) {
@@ -4549,9 +4547,6 @@ window.__PREMIUM_DASH = {
             if (status) {
                 query = query.eq('status', status);
             }
-            if (clienteId) {
-                query = query.eq('cliente_premium_id', clienteId);
-            }
 
             const { data, error } = await query;
             if (error) throw error;
@@ -4561,6 +4556,11 @@ window.__PREMIUM_DASH = {
             // Filtrar perfil em JS
             if (perfilId) {
                 comandas = comandas.filter(c => c.clientes_premium && c.clientes_premium.perfil_cardapio_id === perfilId);
+            }
+
+            // Filtrar cliente em JS (Busca parcial)
+            if (clienteStr) {
+                comandas = comandas.filter(c => c.clientes_premium && c.clientes_premium.nome.toLowerCase().includes(clienteStr));
             }
 
             window.__PREMIUM_DASH.comandasFechadas = comandas;
