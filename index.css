@@ -2181,7 +2181,7 @@
 ============================================= */
 #btnLoginPremium {
     background: linear-gradient(135deg, var(--bg-card), #111) !important;
-    border: 1px solid var(--accent-gold) !important;
+    border: 1.5px solid var(--btn-primary-bg) !important;
     color: var(--accent-gold) !important;
     box-shadow: 0 4px 12px rgba(229,178,93,0.15) !important;
     transition: all 0.3s ease;
@@ -2263,17 +2263,18 @@
 
 /* Premium Login Form Button */
 #btnEntrarPremium {
-    background: linear-gradient(135deg, var(--accent-gold), #b38841) !important;
-    color: #000 !important;
+    background: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
     border: none !important;
     font-weight: 800 !important;
-    box-shadow: 0 4px 12px rgba(229,178,93,0.3) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
     transition: all 0.3s ease;
 }
 
 #btnEntrarPremium:hover {
+    background: var(--btn-primary-hover) !important;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(229,178,93,0.4) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
 }
 
 /* Logout Premium Button State */
