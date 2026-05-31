@@ -460,6 +460,17 @@ function navegarStep(n) {
         if (line) line.style.background = 'var(--primary)';
         renderTotalBreakdown();
 
+        // Premium: esconde seção de pagamento e ajusta botão
+        const secaoPagamento = document.getElementById('secaoPagamento');
+        const btnEnviar = document.getElementById('btnEnviar');
+        if (state.premiumUser && state.premiumUser.comandaId) {
+            if (secaoPagamento) secaoPagamento.style.display = 'none';
+            if (btnEnviar) btnEnviar.innerHTML = `<span>Enviar pedido para o atendente</span><span class="atendente-icon">🛎️</span>`;
+        } else {
+            if (secaoPagamento) secaoPagamento.style.display = 'block';
+            if (btnEnviar) btnEnviar.innerHTML = `<span>Finalizar Pedido</span><span class="atendente-icon">💳</span>`;
+        }
+
         toggleTipoEntrega(state.tipoEntrega);
 
         if (state.freteHabilitado || true) { // Garante que os eventos onchange sejam sempre vinculados
@@ -1264,7 +1275,11 @@ document.getElementById("btnEnviar").onclick = async () => {
         mostrarToast('Houve um problema ao registrar o pedido. Tente novamente!', 'error');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = `<span>Enviar pedido para o atendente</span><span class="atendente-icon">🛎️</span>`;
+        if (state.premiumUser && state.premiumUser.comandaId) {
+            btn.innerHTML = `<span>Enviar pedido para o atendente</span><span class="atendente-icon">🛎️</span>`;
+        } else {
+            btn.innerHTML = `<span>Finalizar Pedido</span><span class="atendente-icon">💳</span>`;
+        }
     }
 };
 
