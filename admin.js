@@ -4643,34 +4643,39 @@ window.__PREMIUM_DASH = {
         }
     },
 
-    exportarRelatorioPremiumCSV: () => {
+    exportarRelatorioPremiumExcel: () => {
         const comandas = window.__PREMIUM_DASH.comandasFechadas;
         if (comandas.length === 0) {
             showToast('Sem dados para exportar.', 'warning');
             return;
         }
 
-        // Usar ; para Excel PT-BR entender colunas facilmente
-        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
-        csvContent += "Data/Hora;Cliente;CPF;Total;Status\r\n";
+        if (typeof XLSX === 'undefined') {
+            showToast('Biblioteca do Excel ainda está carregando. Tente novamente.', 'warning');
+            return;
+        }
 
-        comandas.forEach(c => {
+        const dadosExcel = comandas.map(c => {
             const dataExibicao = new Date(c.aberta_em).toLocaleString('pt-BR');
             const clienteNome = c.clientes_premium ? c.clientes_premium.nome : '';
             const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
-            const total = c.total_acumulado || 0;
+            const total = parseFloat(c.total_acumulado || 0);
             const status = c.status === 'aberta' ? 'Aberta' : 'Fechada';
-            const row = `"${dataExibicao}";"${clienteNome}";"${clienteCpf}";"${total.toFixed(2).replace('.', ',')}";"${status}"`;
-            csvContent += row + "\r\n";
+            
+            return {
+                "Data/Hora": dataExibicao,
+                "Cliente": clienteNome,
+                "CPF": clienteCpf,
+                "Total": total,
+                "Status": status
+            };
         });
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Relatorio_Premium_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const ws = XLSX.utils.json_to_sheet(dadosExcel);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Relatorio Premium");
+
+        XLSX.writeFile(wb, `Relatorio_Premium_${new Date().toISOString().split('T')[0]}.xlsx`);
     },
 
     imprimirRelatorioPremium: () => {
