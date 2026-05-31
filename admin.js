@@ -4540,7 +4540,7 @@ window.__PREMIUM_DASH = {
             const fimAjustado = dataFim + 'T23:59:59.999Z';
 
             let query = sb.from('comandas')
-                .select('*, clientes_premium(nome, cpf, perfil_id)')
+                .select('*, clientes_premium(nome, cpf, perfil_cardapio_id)')
                 .eq('empresa_id', getTenantId())
                 .gte('created_at', inicioAjustado)
                 .lte('created_at', fimAjustado)
@@ -4560,7 +4560,7 @@ window.__PREMIUM_DASH = {
             
             // Filtrar perfil em JS
             if (perfilId) {
-                comandas = comandas.filter(c => c.clientes_premium && c.clientes_premium.perfil_id === perfilId);
+                comandas = comandas.filter(c => c.clientes_premium && c.clientes_premium.perfil_cardapio_id === perfilId);
             }
 
             window.__PREMIUM_DASH.comandasFechadas = comandas;
