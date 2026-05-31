@@ -1883,32 +1883,15 @@ async function buscarOuCriarComanda(clienteId) {
 }
 
 async function carregarComandaUI() {
-    const secao = document.getElementById('psb-comanda');
-    if (!secao) return;
+    const tabsContainer = document.getElementById('premiumTabs');
+    if (!tabsContainer) return;
 
     if (!state.premiumUser || !state.premiumUser.comandaId) {
-        secao.style.display = 'none';
+        tabsContainer.style.display = 'none';
         return;
     }
 
-    secao.style.display = 'block';
-
-    // Toggle expand/collapse
-    const btnToggle = document.getElementById('btnToggleComanda');
-    if (btnToggle && !btnToggle._bound) {
-        btnToggle._bound = true;
-        btnToggle.onclick = () => {
-            const body = document.getElementById('psb-comanda-body');
-            const arrow = document.getElementById('psb-comanda-arrow');
-            if (body.style.display === 'none') {
-                body.style.display = 'block';
-                arrow.classList.add('open');
-            } else {
-                body.style.display = 'none';
-                arrow.classList.remove('open');
-            }
-        };
-    }
+    tabsContainer.style.display = 'flex';
 
     // Buscar pedidos da comanda
     try {
@@ -1967,6 +1950,36 @@ function mostrarConfirmacaoComanda(totalPedido) {
         setTimeout(() => overlay.remove(), 300);
     };
 }
+
+// =============================================
+// LOGIC FOR PREMIUM TABS
+// =============================================
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('premium-tab')) {
+        // Remove active from all tabs
+        document.querySelectorAll('.premium-tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+
+        const tab = e.target.getAttribute('data-tab');
+        const searchBar = document.querySelector('.search-bar-container');
+        const catNav = document.querySelector('.categories-nav');
+        const mainContent = document.querySelector('.main-content');
+        const tabComandaContent = document.getElementById('tabComandaContent');
+
+        if (tab === 'cardapio') {
+            if (searchBar) searchBar.style.display = 'block';
+            if (catNav) catNav.style.display = 'block';
+            if (mainContent) mainContent.style.display = 'block';
+            if (tabComandaContent) tabComandaContent.style.display = 'none';
+        } else if (tab === 'comanda') {
+            if (searchBar) searchBar.style.display = 'none';
+            if (catNav) catNav.style.display = 'none';
+            if (mainContent) mainContent.style.display = 'none';
+            if (tabComandaContent) tabComandaContent.style.display = 'block';
+            carregarComandaUI(); // Refresh comanda items when tab is clicked
+        }
+    }
+});
 
 // Inicializar
 inicializar();

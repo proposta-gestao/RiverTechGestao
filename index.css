@@ -2261,51 +2261,83 @@
     transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
 }
 
-/* Minha Comanda */
-.psb-comanda {
-    border-top: 1px solid rgba(229,178,93,0.15);
-    padding-top: 10px;
-}
-
-.psb-comanda-header {
+/* Premium Tabs Container */
+.premium-tabs-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
+    gap: 8px;
+    margin-top: 15px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.premium-tab {
+    flex: 1;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #a1a1aa;
+    padding: 8px 12px;
+    border-radius: 6px;
     font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.premium-tab.active {
+    background: rgba(229,178,93,0.15);
     color: var(--accent-gold);
-    font-weight: 700;
-    padding: 6px 0;
-    user-select: none;
+    border: 1px solid rgba(229,178,93,0.3);
 }
 
-.psb-comanda-arrow {
-    font-size: 0.7rem;
-    transition: transform 0.3s ease;
+/* Full Screen Comanda Panel */
+.tab-content-comanda {
+    padding: 20px;
+    animation: fadeSlideUp 0.3s ease;
+    min-height: 50vh;
 }
 
-.psb-comanda-arrow.open {
-    transform: rotate(180deg);
+.comanda-full-panel {
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(229,178,93,0.2);
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
-.psb-comanda-body {
-    margin-top: 8px;
-    animation: fadeSlideDown 0.3s ease;
+.cfp-header {
+    background: rgba(229,178,93,0.05);
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(229,178,93,0.15);
+    text-align: center;
 }
 
-@keyframes fadeSlideDown {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
+.cfp-header h2 {
+    color: var(--accent-gold);
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+}
+
+.cfp-header p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.cfp-body {
+    padding: 15px 20px;
+    max-height: 50vh;
+    overflow-y: auto;
 }
 
 .psb-comanda-item {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 8px 0;
+    padding: 12px 0;
     border-bottom: 1px solid rgba(255,255,255,0.05);
-    font-size: 0.82rem;
-    color: #d4d4d8;
+    font-size: 0.9rem;
+    color: #e4e4e7;
 }
 
 .psb-comanda-item:last-child {
@@ -2313,39 +2345,46 @@
 }
 
 .psb-comanda-item-hora {
-    font-size: 0.72rem;
-    color: #71717a;
-    margin-top: 2px;
+    font-size: 0.75rem;
+    color: #a1a1aa;
+    margin-top: 4px;
+    display: block;
 }
 
 .psb-comanda-item-valor {
     font-weight: 700;
     color: var(--accent-gold);
     white-space: nowrap;
-}
-
-.psb-comanda-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(229,178,93,0.2);
-    font-size: 0.9rem;
-    color: #f4f4f5;
-    font-weight: 600;
-}
-
-.psb-comanda-total strong {
-    color: var(--accent-gold);
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 
 .psb-comanda-vazia {
     text-align: center;
     color: #71717a;
-    font-size: 0.82rem;
-    padding: 12px 0;
+    font-size: 0.9rem;
+    padding: 20px 0;
+}
+
+.cfp-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(229,178,93,0.2);
+    font-size: 1rem;
+    color: #f4f4f5;
+    font-weight: 600;
+}
+
+.cfp-footer strong {
+    color: var(--accent-gold);
+    font-size: 1.2rem;
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Premium Login Form Button */

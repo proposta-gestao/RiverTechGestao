@@ -125,19 +125,10 @@
                         <div class="psb-progress-fill" id="premiumUserProgress"></div>
                     </div>
                 </div>
-                <!-- Minha Comanda -->
-                <div class="psb-comanda" id="psb-comanda" style="display:none;">
-                    <div class="psb-comanda-header" id="btnToggleComanda">
-                        <span>📋 Minha Comanda</span>
-                        <span class="psb-comanda-arrow" id="psb-comanda-arrow">▼</span>
-                    </div>
-                    <div class="psb-comanda-body" id="psb-comanda-body" style="display:none;">
-                        <div id="psb-comanda-itens"></div>
-                        <div class="psb-comanda-total">
-                            <span>Total acumulado:</span>
-                            <strong id="psb-comanda-total-valor">R$ 0,00</strong>
-                        </div>
-                    </div>
+                <!-- Premium Tabs -->
+                <div class="premium-tabs-container" id="premiumTabs" style="display:none;">
+                    <button class="premium-tab active" data-tab="cardapio">🍔 Cardápio</button>
+                    <button class="premium-tab" data-tab="comanda">📋 Comanda</button>
                 </div>
             </div>
 
@@ -167,6 +158,23 @@
             </div>
         </section>
     </main>
+
+    <!-- Tab Comanda Content -->
+    <section class="tab-content-comanda" id="tabComandaContent" style="display: none;">
+        <div class="comanda-full-panel">
+            <div class="cfp-header">
+                <h2>Minha Comanda VIP</h2>
+                <p>Acompanhe todos os seus pedidos nesta sessão.</p>
+            </div>
+            <div class="cfp-body" id="psb-comanda-itens">
+                <!-- Itens serão renderizados aqui -->
+            </div>
+            <div class="cfp-footer">
+                <span>Total Acumulado</span>
+                <strong id="psb-comanda-total-valor">R$ 0,00</strong>
+            </div>
+        </div>
+    </section>
 
     <!-- Shopping Cart Sidebar (Wizard 2 Etapas) -->
     <aside class="cart-sidebar" id="cart" aria-hidden="true">
