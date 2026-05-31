@@ -176,6 +176,14 @@
             .cart-label {
                 display: none;
             }
+            #btnLoginPremium .cart-label {
+                display: block;
+            }
+            #btnLoginPremium {
+                padding: 6px 10px;
+                width: 100%;
+                justify-content: center;
+            }
             .brand-container {
                 gap: 6px;
                 flex-shrink: 1;
@@ -2176,6 +2184,7 @@
     border: 1px solid var(--accent-gold) !important;
     color: var(--accent-gold) !important;
     box-shadow: 0 4px 12px rgba(229,178,93,0.15) !important;
+    transition: all 0.3s ease;
 }
 
 #btnLoginPremium:hover {
@@ -2218,213 +2227,6 @@
     color: var(--accent-gold);
     font-weight: 800;
     letter-spacing: 0.5px;
-}
-
-.psb-profile-badge {
-    background: linear-gradient(135deg, var(--accent-gold), #b38841);
-    color: #000;
-    font-size: 0.75rem;
-    font-weight: 800;
-    padding: 3px 10px;
-    border-radius: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 8px rgba(229,178,93,0.4);
-}
-
-.psb-limits {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.psb-limit-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: #a1a1aa;
-    font-weight: 600;
-}
-
-.psb-used span { color: #f87171; font-weight: 700; }
-.psb-available span { color: #34d399; font-weight: 700; }
-
-.psb-progress-bg {
-    width: 100%;
-    height: 6px;
-    transition: transform 0.25s ease, background 0.25s ease;
-    cursor: pointer;
-}
-
-.dot:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.7);
-}
-
-.dot.active {
-    background: #fff;
-    transform: scale(1.4);
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
-}
-
-@media (max-width: 600px) {
-    .carousel-item img {
-        height: 320px;
-    }
-    .carousel-nav {
-        top: 50%;
-        width: 38px;
-        height: 38px;
-    }
-}
-
-/* =============================================
-   MERCADO PAGO REDIRECT OVERLAY (PREMIUM)
-============================================= */
-.mp-redirect-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(10px);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
-
-.mp-redirect-overlay.active {
-    opacity: 1;
-}
-
-.mp-redirect-box {
-    background: linear-gradient(145deg, #1f2937, #111827);
-    border: 1px solid #374151;
-    border-radius: 24px;
-    padding: 3rem 2rem;
-    text-align: center;
-    max-width: 380px;
-    width: 90%;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.mp-secure-badge {
-    background: rgba(16, 185, 129, 0.15);
-    color: #10B981;
-    padding: 6px 14px;
-    border-radius: 50px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.mp-brand {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #009EE3; /* Mercado Pago Blue */
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.mp-redirect-text {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-}
-
-/* Spinner animado MP */
-.mp-spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid rgba(0, 158, 227, 0.2);
-    border-top-color: #009EE3;
-    border-radius: 50%;
-    animation: mpSpin 1s linear infinite;
-}
-
-@keyframes mpSpin {
-    to { transform: rotate(360deg); }
-}
-
-@keyframes slideUpFade {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* =============================================
-   PREMIUM STATUS BAR & BUTTON
-============================================= */
-#btnLoginPremium {
-    background: linear-gradient(135deg, var(--bg-card), #111) !important;
-    border: 1px solid var(--accent-gold) !important;
-    color: var(--accent-gold) !important;
-    box-shadow: 0 4px 12px rgba(229,178,93,0.15) !important;
-}
-
-#btnLoginPremium:hover {
-    background: linear-gradient(135deg, #111, var(--bg-card)) !important;
-    box-shadow: 0 6px 16px rgba(229,178,93,0.3) !important;
-    transform: translateY(-1px);
-}
-
-.premium-status-bar {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: linear-gradient(145deg, #18181b, #09090b);
-    border-bottom: 1px solid rgba(229,178,93,0.2);
-    padding: 16px 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-.premium-status-bar::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(229,178,93,0.5), transparent);
-}
-
-.psb-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.psb-greeting {
-    font-size: 1.05rem;
-    color: #f4f4f5;
-    font-weight: 500;
-}
-
-.psb-greeting strong {
-    color: var(--accent-gold);
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
-.psb-profile-badge {
-    background: linear-gradient(135deg, var(--accent-gold), #b38841);
-    color: #000;
-    font-size: 0.75rem;
-    font-weight: 800;
-    padding: 3px 10px;
-    border-radius: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    box-shadow: 0 2px 8px rgba(229,178,93,0.4);
 }
 
 .psb-limits {
