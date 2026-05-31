@@ -1598,19 +1598,26 @@ function inicializarLoginPremium() {
                                 state.premiumUser.produtosPermitidos = null;
                             }
                             
-                            // Atualizar gasto do mês
+                            // Buscar/criar comanda aberta primeiro
+                            await buscarOuCriarComanda(parsed.id);
+
+                            // Atualizar gasto do mês (inclui mês atual e qualquer pedido na comanda aberta)
                             const mesAtual = new Date();
                             const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
-                            const { data: orders } = await sb.from('orders')
-                                .select('total')
-                                .eq('cliente_premium_id', parsed.id)
-                                .gte('created_at', inicioMes)
-                                .not('status', 'eq', 'cancelado');
                             
+                            let query = sb.from('orders')
+                                .select('total, comanda_id')
+                                .eq('cliente_premium_id', parsed.id)
+                                .not('status', 'eq', 'cancelado');
+                                
+                            if (state.premiumUser.comandaId) {
+                                query = query.or(`created_at.gte.${inicioMes},comanda_id.eq.${state.premiumUser.comandaId}`);
+                            } else {
+                                query = query.gte('created_at', inicioMes);
+                            }
+                            
+                            const { data: orders } = await query;
                             state.premiumUser.gasto = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
-
-                            // Buscar/criar comanda aberta
-                            await buscarOuCriarComanda(parsed.id);
 
                             // Atualiza cache e re-renderiza
                             localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
@@ -1689,7 +1696,7 @@ function inicializarLoginPremium() {
 
             if (cpf.length !== 11 || !pin) {
                 if (errDiv) {
-                    errDiv.textContent = 'Preencha o CPF e o PIN corretamenta.';
+                    errDiv.textContent = 'Preencha o CPF e o PIN corretamente.';
                     errDiv.style.display = 'block';
                 }
                 return;
@@ -1707,7 +1714,7 @@ function inicializarLoginPremium() {
                 const pinHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
                 const { data, error } = await sb.from('clientes_premium')
-                    .select('id, nome, cpf, tipo, teto_mensal, pin, perfil_cardapio_id')
+                    .select('id, nome, cpf, tipo, teto_mensal, pin, perfil_cardapio_id, ativo, primeiro_acesso')
                     .eq('empresa_id', getTenantId())
                     .eq('cpf', cpf)
                     .single();
@@ -1716,8 +1723,27 @@ function inicializarLoginPremium() {
                     throw new Error('Credenciais inválidas.');
                 }
 
+                if (data.ativo === false) {
+                    throw new Error('Usuário bloqueado. O desbloqueio deverá ser feito com o administrador.');
+                }
+
                 if (data.pin !== pinHash) {
-                    throw new Error('Credenciais inválidas.');
+                    // Incrementar tentativa incorreta
+                    window.failedAttempts = window.failedAttempts || {};
+                    window.failedAttempts[cpf] = (window.failedAttempts[cpf] || 0) + 1;
+                    const attempts = window.failedAttempts[cpf];
+
+                    if (attempts === 3) {
+                        throw new Error('Credenciais inválidas. Atenção: se houver uma 4ª tentativa incorreta, seu usuário será bloqueado e o desbloqueio deverá ser feito com o administrador.');
+                    } else if (attempts >= 4) {
+                        // Bloquear no banco de dados
+                        await sb.from('clientes_premium')
+                            .update({ ativo: false })
+                            .eq('id', data.id);
+                        throw new Error('Usuário bloqueado por excesso de tentativas incorretas. O desbloqueio deverá ser feito com o administrador.');
+                    } else {
+                        throw new Error('Credenciais inválidas.');
+                    }
                 }
 
                 // Buscar categorias permitidas se houver perfil
@@ -1735,18 +1761,131 @@ function inicializarLoginPremium() {
                     produtosPermitidos = (prodData || []).map(p => p.product_id);
                 }
 
-                // Buscar gasto atual no mês
+                // Buscar comanda aberta do cliente para verificação de renovação
+                const { data: activeCom } = await sb.from('comandas')
+                    .select('id')
+                    .eq('cliente_premium_id', data.id)
+                    .eq('status', 'aberta')
+                    .maybeSingle();
+
+                // Buscar gasto atual no mês (e da comanda ativa, se aberta)
                 const mesAtual = new Date();
                 const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
-                const { data: orders } = await sb.from('orders')
-                    .select('total')
-                    .eq('cliente_premium_id', data.id)
-                    .gte('created_at', inicioMes)
-                    .not('status', 'eq', 'cancelado');
                 
+                let query = sb.from('orders')
+                    .select('total, comanda_id')
+                    .eq('cliente_premium_id', data.id)
+                    .not('status', 'eq', 'cancelado');
+
+                if (activeCom) {
+                    query = query.or(`created_at.gte.${inicioMes},comanda_id.eq.${activeCom.id}`);
+                } else {
+                    query = query.gte('created_at', inicioMes);
+                }
+
+                const { data: orders } = await query;
                 const gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
 
-                // Sucesso!
+                // Limpar tentativas em caso de sucesso
+                if (window.failedAttempts && window.failedAttempts[cpf]) {
+                    delete window.failedAttempts[cpf];
+                }
+
+                // Se for o primeiro acesso, forçar a troca de senha (PIN)
+                if (data.primeiro_acesso) {
+                    fecharModalLogin();
+                    
+                    const modalAlterar = document.getElementById('modalAlterarPinPremium');
+                    const errPinDiv = document.getElementById('alterarPinError');
+                    if (errPinDiv) errPinDiv.style.display = 'none';
+                    
+                    modalAlterar.classList.add('active');
+                    if (dom.backdrop) dom.backdrop.classList.add('active');
+                    document.body.classList.add('no-scroll');
+                    
+                    const btnSalvarNovo = document.getElementById('btnSalvarPinNovo');
+                    const inputNovo = document.getElementById('alterarPinNovo');
+                    const inputConfirmar = document.getElementById('alterarPinConfirmar');
+                    
+                    inputNovo.value = '';
+                    inputConfirmar.value = '';
+                    
+                    btnSalvarNovo.onclick = async () => {
+                        const novoPin = inputNovo.value.trim();
+                        const confirmarPin = inputConfirmar.value.trim();
+                        
+                        if (novoPin.length < 4 || novoPin.length > 6 || !/^\d+$/.test(novoPin)) {
+                            errPinDiv.textContent = 'O PIN deve ter entre 4 e 6 dígitos numéricos.';
+                            errPinDiv.style.display = 'block';
+                            return;
+                        }
+                        
+                        if (novoPin !== confirmarPin) {
+                            errPinDiv.textContent = 'As senhas digitadas não coincidem.';
+                            errPinDiv.style.display = 'block';
+                            return;
+                        }
+                        
+                        btnSalvarNovo.disabled = true;
+                        btnSalvarNovo.textContent = 'Salvando...';
+                        
+                        try {
+                            const newMsgBuffer = new TextEncoder().encode(novoPin);
+                            const newHashBuffer = await crypto.subtle.digest('SHA-256', newMsgBuffer);
+                            const newHashArray = Array.from(new Uint8Array(newHashBuffer));
+                            const newPinHash = newHashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                            
+                            const { error: updateErr } = await sb.from('clientes_premium')
+                                .update({ pin: newPinHash, primeiro_acesso: false })
+                                .eq('id', data.id);
+                                
+                            if (updateErr) throw updateErr;
+                            
+                            modalAlterar.classList.remove('active');
+                            if (dom.backdrop) dom.backdrop.classList.remove('active');
+                            document.body.classList.remove('no-scroll');
+                            
+                            mostrarToast('Senha alterada com sucesso!', 'success');
+                            
+                            const expiry = Date.now() + 12 * 60 * 60 * 1000;
+                            state.premiumUser = {
+                                id: data.id,
+                                nome: data.nome.split(' ')[0],
+                                nomeCompleto: data.nome,
+                                telefone: data.telefone,
+                                cpf: data.cpf,
+                                tipo: data.tipo,
+                                teto: parseFloat(data.teto_mensal) || 0,
+                                gasto: gastoMes,
+                                categoriasPermitidas: categoriasPermitidas,
+                                produtosPermitidos: produtosPermitidos,
+                                comandaId: null,
+                                expiry: expiry
+                            };
+
+                            await buscarOuCriarComanda(data.id);
+                            localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+                            
+                            atualizarBarraPremium();
+                            aplicarFiltroCardapioPremium();
+                            carregarComandaUI();
+
+                            const n = document.getElementById('clienteNome');
+                            if (n) n.value = data.nome;
+                            
+                        } catch (saveErr) {
+                            console.error('Erro ao salvar novo PIN:', saveErr);
+                            errPinDiv.textContent = 'Erro ao salvar a nova senha: ' + saveErr.message;
+                            errPinDiv.style.display = 'block';
+                        } finally {
+                            btnSalvarNovo.disabled = false;
+                            btnSalvarNovo.textContent = 'Salvar Nova Senha';
+                        }
+                    };
+                    return;
+                }
+
+                // Sucesso (Acesso normal)
                 const expiry = Date.now() + 12 * 60 * 60 * 1000;
                 state.premiumUser = {
                     id: data.id,
@@ -1763,9 +1902,7 @@ function inicializarLoginPremium() {
                     expiry: expiry
                 };
 
-                // Buscar ou criar comanda aberta
                 await buscarOuCriarComanda(data.id);
-
                 localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
                 
                 fecharModalLogin();
@@ -1773,14 +1910,13 @@ function inicializarLoginPremium() {
                 aplicarFiltroCardapioPremium();
                 carregarComandaUI();
 
-                // Preencher form
                 const n = document.getElementById('clienteNome');
                 if (n) n.value = data.nome;
 
             } catch (err) {
                 console.error('Login VIP:', err);
                 if (errDiv) {
-                    errDiv.textContent = 'CPF ou PIN incorretos.';
+                    errDiv.textContent = err.message || 'CPF ou PIN incorretos.';
                     errDiv.style.display = 'block';
                 }
             } finally {

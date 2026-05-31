@@ -487,6 +487,33 @@
         </div>
     </div>
 
+    <!-- Alterar PIN Modal (Primeiro Acesso) -->
+    <div class="modal" id="modalAlterarPinPremium" aria-modal="true" role="dialog">
+        <div class="modal-content" style="max-width:400px;">
+            <div class="modal-body" style="padding:2rem 1.5rem;">
+                <div style="text-align:center; margin-bottom:1.5rem;">
+                    <div style="font-size:3rem; margin-bottom:0.5rem;">🔑</div>
+                    <h3 style="margin:0; color:var(--accent-gold);">Alterar seu PIN</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">Este é seu primeiro acesso. Por segurança, você deve alterar sua senha (PIN).</p>
+                </div>
+
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label for="alterarPinNovo">Novo PIN (4-6 dígitos)</label>
+                    <input type="password" id="alterarPinNovo" placeholder="****" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:4px; font-size:1.5rem; padding:12px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom:1.5rem;">
+                    <label for="alterarPinConfirmar">Confirmar Novo PIN</label>
+                    <input type="password" id="alterarPinConfirmar" placeholder="****" maxlength="6" inputmode="numeric" style="text-align:center; letter-spacing:4px; font-size:1.5rem; padding:12px;">
+                </div>
+
+                <button class="btn-primary" id="btnSalvarPinNovo" style="width:100%; padding:14px; font-size:1rem; margin-bottom:1rem;">Salvar Nova Senha</button>
+
+                <div id="alterarPinError" style="color:#FF4757; text-align:center; font-size:0.85rem; display:none; margin-bottom:1rem;"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase CDN -->
     <!-- Config Central (deve vir antes do Supabase) -->
     <script src="/config.js"></script>

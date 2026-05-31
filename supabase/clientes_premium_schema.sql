@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS clientes_premium (
     perfil_cardapio_id UUID REFERENCES perfis_cardapio(id) ON DELETE SET NULL,
     teto_mensal NUMERIC(10,2) DEFAULT 0,
     ativo BOOLEAN DEFAULT true,
+    primeiro_acesso BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT now(),
     UNIQUE(empresa_id, cpf)
 );

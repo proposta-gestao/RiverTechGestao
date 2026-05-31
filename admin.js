@@ -4198,16 +4198,30 @@ async function carregarClientesPremium() {
         if (error) throw error;
         listaClientesPremium = data || [];
 
-        // Calcular gastos do mês para cada cliente
+        // Calcular gastos do mês para cada cliente (inclui mês atual e qualquer pedido na comanda aberta)
         const mesAtual = new Date();
         const inicioMes = new Date(mesAtual.getFullYear(), mesAtual.getMonth(), 1).toISOString();
         
         for (const cliente of listaClientesPremium) {
-            const { data: orders } = await sb.from('orders')
-                .select('total')
+            // Buscar comanda aberta do cliente
+            const { data: openComanda } = await sb.from('comandas')
+                .select('id')
                 .eq('cliente_premium_id', cliente.id)
-                .gte('created_at', inicioMes)
+                .eq('status', 'aberta')
+                .maybeSingle();
+
+            let query = sb.from('orders')
+                .select('total, comanda_id')
+                .eq('cliente_premium_id', cliente.id)
                 .not('status', 'eq', 'cancelado');
+
+            if (openComanda) {
+                query = query.or(`created_at.gte.${inicioMes},comanda_id.eq.${openComanda.id}`);
+            } else {
+                query = query.gte('created_at', inicioMes);
+            }
+
+            const { data: orders } = await query;
             cliente._gastoMes = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
         }
 
