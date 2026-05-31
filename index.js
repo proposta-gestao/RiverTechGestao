@@ -1732,17 +1732,38 @@ function atualizarBarraPremium() {
     if (state.premiumUser) {
         document.getElementById('premiumUserFirstName').textContent = state.premiumUser.nome;
         
-        const teto = state.premiumUser.teto;
-        const disp = teto > 0 ? (teto - state.premiumUser.gasto) : -1;
-        const tetoEl = document.getElementById('premiumUserTeto');
+        const badge = document.getElementById('premiumUserProfile');
+        if (badge) badge.textContent = state.premiumUser.tipo ? state.premiumUser.tipo.toUpperCase() : 'VIP';
         
-        if (disp >= 0) {
-            tetoEl.textContent = `Disp: R$ ${formatNumber(disp)}`;
-            tetoEl.style.display = 'inline';
-            tetoEl.style.background = disp < (teto * 0.1) ? '#FF4757' : 'var(--accent-gold)';
-            tetoEl.style.color = disp < (teto * 0.1) ? '#fff' : '#000';
+        const teto = state.premiumUser.teto;
+        const gasto = state.premiumUser.gasto || 0;
+        const disp = teto > 0 ? (teto - gasto) : -1;
+        
+        const utilizadoEl = document.getElementById('premiumUserUtilizado');
+        const disponivelEl = document.getElementById('premiumUserDisponivel');
+        const progressEl = document.getElementById('premiumUserProgress');
+        
+        if (teto > 0) {
+            if (utilizadoEl) utilizadoEl.textContent = formatCurrency(gasto);
+            if (disponivelEl) disponivelEl.textContent = formatCurrency(Math.max(0, disp));
+            
+            if (progressEl) {
+                const percent = Math.min(100, Math.max(0, (gasto / teto) * 100));
+                progressEl.style.width = percent + '%';
+                
+                // Muda a cor da barra dependendo do uso
+                if (percent >= 90) {
+                    progressEl.style.background = '#ef4444'; // red-500
+                } else if (percent >= 75) {
+                    progressEl.style.background = '#f59e0b'; // amber-500
+                } else {
+                    progressEl.style.background = '#10b981'; // emerald-500
+                }
+            }
+            document.querySelector('.psb-limits').style.display = 'flex';
         } else {
-            tetoEl.style.display = 'none';
+            // Sem limite definido
+            document.querySelector('.psb-limits').style.display = 'none';
         }
 
         bar.style.display = 'flex';

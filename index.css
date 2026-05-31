@@ -2167,3 +2167,99 @@
     from { transform: translateY(20px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+/* =============================================
+   PREMIUM STATUS BAR & BUTTON
+============================================= */
+#btnLoginPremium {
+    background: linear-gradient(135deg, var(--bg-card), #111) !important;
+    border: 1px solid var(--accent-gold) !important;
+    color: var(--accent-gold) !important;
+    box-shadow: 0 4px 12px rgba(229,178,93,0.15) !important;
+}
+
+#btnLoginPremium:hover {
+    background: linear-gradient(135deg, #111, var(--bg-card)) !important;
+    box-shadow: 0 6px 16px rgba(229,178,93,0.3) !important;
+    transform: translateY(-1px);
+}
+
+.premium-status-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: linear-gradient(145deg, #18181b, #09090b);
+    border-bottom: 1px solid rgba(229,178,93,0.2);
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-status-bar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(229,178,93,0.5), transparent);
+}
+
+.psb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.psb-greeting {
+    font-size: 1.05rem;
+    color: #f4f4f5;
+    font-weight: 500;
+}
+
+.psb-greeting strong {
+    color: var(--accent-gold);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.psb-profile-badge {
+    background: linear-gradient(135deg, var(--accent-gold), #b38841);
+    color: #000;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(229,178,93,0.4);
+}
+
+.psb-limits {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.psb-limit-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #a1a1aa;
+    font-weight: 600;
+}
+
+.psb-used span { color: #f87171; font-weight: 700; }
+.psb-available span { color: #34d399; font-weight: 700; }
+
+.psb-progress-bg {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.psb-progress-fill {
+    height: 100%;
+    background: var(--accent-gold);
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}

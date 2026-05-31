@@ -112,10 +112,19 @@
             </div>
 
             <!-- Premium Status Bar -->
-            <div id="premiumStatusBar" style="display:none; background: linear-gradient(90deg, var(--bg-card), rgba(229,178,93,0.1)); padding: 8px 15px; border-bottom: 1px solid var(--border-color); justify-content: space-between; align-items: center; font-size: 0.85rem;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span>👑 Olá, <strong id="premiumUserFirstName">Usuário</strong></span>
-                    <span id="premiumUserTeto" style="background:var(--accent-gold); color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem;">Lim: R$ 0,00</span>
+            <div id="premiumStatusBar" class="premium-status-bar" style="display:none;">
+                <div class="psb-header">
+                    <span class="psb-greeting">Bem-Vindo, <strong id="premiumUserFirstName">Usuário</strong>! 👑</span>
+                    <span class="psb-profile-badge" id="premiumUserProfile">VIP</span>
+                </div>
+                <div class="psb-limits">
+                    <div class="psb-limit-labels">
+                        <span class="psb-used">Utilizado: <span id="premiumUserUtilizado">R$ 0,00</span></span>
+                        <span class="psb-available">Disponível: <span id="premiumUserDisponivel">R$ 0,00</span></span>
+                    </div>
+                    <div class="psb-progress-bg">
+                        <div class="psb-progress-fill" id="premiumUserProgress"></div>
+                    </div>
                 </div>
             </div>
 
