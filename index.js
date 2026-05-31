@@ -1159,17 +1159,37 @@ document.getElementById("btnEnviar").onclick = async () => {
 
         // Se premium com comanda: incrementar total da comanda e atualizar UI
         if (state.premiumUser && state.premiumUser.comandaId) {
+            let incremented = false;
             try {
-                await sb.rpc('incrementar_total_comanda', {
+                const { error: rpcErr } = await sb.rpc('incrementar_total_comanda', {
                     _comanda_id: state.premiumUser.comandaId,
                     _valor: totalFinal
                 });
+                if (!rpcErr) {
+                    incremented = true;
+                } else {
+                    console.warn('[Comanda] RPC retornar erro, usando update direto:', rpcErr);
+                }
             } catch(rpcErr) {
-                console.warn('[Comanda] RPC falhou, usando update direto:', rpcErr);
-                await sb.from('comandas')
-                    .update({ total_acumulado: (state.premiumUser.gasto || 0) + totalFinal })
-                    .eq('id', state.premiumUser.comandaId);
+                console.warn('[Comanda] RPC falhou catastroficamente, usando update direto:', rpcErr);
             }
+
+            if (!incremented) {
+                try {
+                    // Buscar total acumulado atual da comanda no banco para somar de forma segura
+                    const { data: comandaAtual } = await sb.from('comandas')
+                        .select('total_acumulado')
+                        .eq('id', state.premiumUser.comandaId)
+                        .maybeSingle();
+                    const totalAcumuladoNovo = parseFloat(comandaAtual?.total_acumulado || 0) + totalFinal;
+                    await sb.from('comandas')
+                        .update({ total_acumulado: totalAcumuladoNovo })
+                        .eq('id', state.premiumUser.comandaId);
+                } catch (updErr) {
+                    console.error('[Comanda] Erro ao atualizar total_acumulado via fallback:', updErr);
+                }
+            }
+
             state.premiumUser.gasto = (state.premiumUser.gasto || 0) + totalFinal;
             localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
             atualizarBarraPremium();

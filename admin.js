@@ -797,14 +797,20 @@ async function carregarTudo() {
     await carregarConfiguracoes();
 
     // 2. Depois o restante em paralelo
-    await Promise.all([
+    const promises = [
         carregarProdutos(),
         carregarCategorias(),
         carregarCupons(),
         carregarMotivosEstoque(),
         carregarAtendentes(),
         carregarDashboard()
-    ]);
+    ];
+    
+    if (isModuloAtivo('clientes_premium')) {
+        promises.push(carregarClientesPremium());
+    }
+
+    await Promise.all(promises);
     renderStats();
     aplicarFiltrosDeModulos(); // Novo: Filtra funcionalidades por empresa
     setupAdminRealtime();
@@ -1258,7 +1264,14 @@ function renderPedidosFiltrados(filtrados = null) {
                             <div style="font-weight: 700; font-size: 0.85rem;">${dataStr}</div>
                             <div style="color: var(--text-muted); font-size: 0.75rem;">${horaStr}</div>
                         </td>
-                        <td><strong>${p.customer_name || 'Desconhecido'}</strong></td>
+                        <td>
+                            <strong>${p.customer_name || 'Desconhecido'}</strong>
+                            ${p.cliente_premium_id ? (() => {
+                                const cp = (typeof listaClientesPremium !== 'undefined') ? listaClientesPremium.find(c => c.id === p.cliente_premium_id) : null;
+                                const tipoLabel = cp ? (cp.tipo === 'funcionario' ? 'Func.' : cp.tipo === 'vip_diretoria' ? 'Diretoria' : 'VIP') : 'VIP';
+                                return `<br><span class="badge" style="background:rgba(229,178,93,0.15); color:var(--primary); font-size:0.7rem; font-weight:700; margin-top:4px; display:inline-block;">👑 ${tipoLabel}</span>`;
+                            })() : ''}
+                        </td>
                         <td><span class="badge" style="background:rgba(255,255,255,0.05);color:#aaa;font-size:0.75rem;">${p.atendente_nome || '—'}</span></td>
                         <td><span class="badge ${badgeClass}" style="text-transform:capitalize;">${statusLabel}</span></td>
                         <td>
