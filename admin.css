@@ -4034,3 +4034,36 @@ input[type=number] {
         top: 0;
     }
 }
+
+/* ========================================= */
+/* IMPRESSÃO (PDF) DASHBOARD PREMIUM         */
+/* ========================================= */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printRelatorioContainer, #printRelatorioContainer * {
+        visibility: visible;
+    }
+    #printRelatorioContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    .modal-actions, .admin-toolbar, .admin-sidebar, .admin-topbar, .dashboard-cards, .ranking-section {
+        display: none !important;
+    }
+    .admin-table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+    }
+    .admin-table th, .admin-table td {
+        border: 1px solid #ccc !important;
+        padding: 8px !important;
+        color: #000 !important;
+        background: #fff !important;
+    }
+}

@@ -4465,3 +4465,167 @@ async function abrirComandaPremium(clienteId) {
 
     abrirModal('modalComandaPremium');
 }
+
+// ============================================================
+// MÓDULO CLIENTES PREMIUM - DASHBOARD E RELATÓRIOS (FASE 8)
+// ============================================================
+window.__PREMIUM_DASH = {
+    comandasFechadas: [],
+
+    init: () => {
+        const inputInicio = document.getElementById('dashPremiumDataInicio');
+        const inputFim = document.getElementById('dashPremiumDataFim');
+        if (inputInicio && !inputInicio.value) {
+            const dataAtual = new Date();
+            const primeiroDia = new Date(dataAtual.getFullYear(), dataAtual.getMonth(), 1);
+            // Formatar YYYY-MM-DD local
+            inputInicio.value = primeiroDia.toISOString().split('T')[0];
+            inputFim.value = dataAtual.toISOString().split('T')[0];
+        }
+        
+        // Atrelar clique da aba para carregar dados ao abrir
+        const tabDashboard = document.getElementById('nav-sub-premium-dashboard');
+        if (tabDashboard) {
+            tabDashboard.addEventListener('click', () => {
+                // Pequeno atraso para garantir que a UI carregou a aba
+                setTimeout(() => window.__PREMIUM_DASH.carregarDashboardPremium(), 100);
+            });
+        }
+    },
+
+    carregarDashboardPremium: async () => {
+        try {
+            const dataInicio = document.getElementById('dashPremiumDataInicio').value;
+            const dataFim = document.getElementById('dashPremiumDataFim').value;
+            
+            if (!dataInicio || !dataFim) {
+                showToast('Selecione as datas de início e fim.', 'warning');
+                return;
+            }
+
+            // Preparar filtro gte e lte cobrindo o dia todo
+            const inicioAjustado = dataInicio + 'T00:00:00.000Z';
+            const fimAjustado = dataFim + 'T23:59:59.999Z';
+
+            const { data, error } = await sb.from('comandas')
+                .select('*, clientes_premium(nome, cpf)')
+                .eq('empresa_id', getTenantId())
+                .eq('status', 'fechada')
+                .gte('fechada_em', inicioAjustado)
+                .lte('fechada_em', fimAjustado)
+                .order('fechada_em', { ascending: false });
+
+            if (error) throw error;
+            window.__PREMIUM_DASH.comandasFechadas = data || [];
+            window.__PREMIUM_DASH.render();
+        } catch (err) {
+            console.error('Erro ao carregar dashboard premium:', err);
+            showToast('Erro ao buscar dados do dashboard.', 'error');
+        }
+    },
+
+    render: () => {
+        const comandas = window.__PREMIUM_DASH.comandasFechadas;
+        
+        let totalGasto = 0;
+        let totalComandas = comandas.length;
+        let clientesMap = {};
+
+        // Processar comandas
+        comandas.forEach(c => {
+            const valor = parseFloat(c.total_acumulado || 0);
+            totalGasto += valor;
+            
+            const clienteId = c.cliente_premium_id;
+            if (!clientesMap[clienteId]) {
+                clientesMap[clienteId] = {
+                    nome: c.clientes_premium ? c.clientes_premium.nome : 'Desconhecido',
+                    cpf: c.clientes_premium ? c.clientes_premium.cpf : '',
+                    total: 0
+                };
+            }
+            clientesMap[clienteId].total += valor;
+        });
+
+        const ticketMedio = totalComandas > 0 ? (totalGasto / totalComandas) : 0;
+
+        // Atualizar Cards
+        document.getElementById('dashPremiumTotalGasto').textContent = formatCurrency(totalGasto);
+        document.getElementById('dashPremiumTotalComandas').textContent = totalComandas;
+        document.getElementById('dashPremiumTicketMedio').textContent = formatCurrency(ticketMedio);
+
+        // Ranking (Top 10)
+        const ranking = Object.values(clientesMap).sort((a, b) => b.total - a.total).slice(0, 10);
+        const rankingBody = document.getElementById('dashPremiumRankingBody');
+        if (ranking.length === 0) {
+            rankingBody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum dado encontrado para o período.</td></tr>';
+        } else {
+            rankingBody.innerHTML = ranking.map((cli, index) => `
+                <tr>
+                    <td><strong>#${index + 1}</strong></td>
+                    <td>${cli.nome}</td>
+                    <td style="color:var(--accent-gold); font-weight:bold;">${formatCurrency(cli.total)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Relatório Tabela
+        const relatorioBody = document.getElementById('dashPremiumComandasBody');
+        if (comandas.length === 0) {
+            relatorioBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhuma comanda encontrada para o período.</td></tr>';
+        } else {
+            relatorioBody.innerHTML = comandas.map(c => {
+                const dataFechamento = new Date(c.fechada_em).toLocaleString('pt-BR');
+                const clienteNome = c.clientes_premium ? c.clientes_premium.nome : 'Desconhecido';
+                const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
+                return `
+                    <tr>
+                        <td>${dataFechamento}</td>
+                        <td>${clienteNome}</td>
+                        <td>${clienteCpf}</td>
+                        <td style="font-weight:bold;">${formatCurrency(c.total_acumulado)}</td>
+                        <td><span style="background:rgba(229,178,93,0.1); color:var(--primary); padding:3px 8px; border-radius:4px; font-size:0.8rem;">Comanda Premium</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    },
+
+    exportarRelatorioPremiumCSV: () => {
+        const comandas = window.__PREMIUM_DASH.comandasFechadas;
+        if (comandas.length === 0) {
+            showToast('Sem dados para exportar.', 'warning');
+            return;
+        }
+
+        // Usar ; para Excel PT-BR entender colunas facilmente
+        let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+        csvContent += "Data Fechamento;Cliente;CPF;Total\r\n";
+
+        comandas.forEach(c => {
+            const dataFechamento = new Date(c.fechada_em).toLocaleString('pt-BR');
+            const clienteNome = c.clientes_premium ? c.clientes_premium.nome : '';
+            const clienteCpf = c.clientes_premium ? c.clientes_premium.cpf : '';
+            const total = c.total_acumulado || 0;
+            const row = `"${dataFechamento}";"${clienteNome}";"${clienteCpf}";"${total.toFixed(2).replace('.', ',')}"`;
+            csvContent += row + "\r\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Relatorio_Premium_${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    },
+
+    imprimirRelatorioPremium: () => {
+        window.print();
+    }
+};
+
+// Iniciar a UI do Dashboard Premium quando o script carrega
+setTimeout(() => {
+    if (window.__PREMIUM_DASH) window.__PREMIUM_DASH.init();
+}, 1000);

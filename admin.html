@@ -1144,6 +1144,7 @@
                     <div class="admin-subtabs" style="margin-bottom: 0; min-width: max-content;">
                         <button class="subtab-btn active" data-subtab="config-clientes-premium" id="nav-sub-clientes-premium">👑 Clientes Premium</button>
                         <button class="subtab-btn" data-subtab="config-perfis-cardapio" id="nav-sub-perfis-cardapio">📋 Perfis de Cardápio</button>
+                        <button class="subtab-btn" data-subtab="config-premium-dashboard" id="nav-sub-premium-dashboard">📊 Dashboard Premium</button>
                     </div>
                 </div>
 
@@ -1198,6 +1199,96 @@
                             </p>
                             <div id="perfisCardapioLista">
                                 <p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtab: Dashboard Premium -->
+                <div class="subtab-content" id="subtab-config-premium-dashboard">
+                    <div class="config-card">
+                        <div class="config-card-header">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <h2>📊 Dashboard Premium</h2>
+                                <span class="badge" style="background: rgba(46, 204, 113, 0.1); color: var(--success); font-size: 0.75rem;">Visão Geral e Relatórios</span>
+                            </div>
+                            <div class="modal-actions" style="display:flex; gap: 10px;">
+                                <button class="btn-outline" onclick="window.__PREMIUM_DASH.imprimirRelatorioPremium()">🖨️ Imprimir PDF</button>
+                                <button class="btn-primary" onclick="window.__PREMIUM_DASH.exportarRelatorioPremiumCSV()">📥 Exportar CSV</button>
+                            </div>
+                        </div>
+                        <div class="config-card-body">
+                            <!-- Filtros -->
+                            <div class="admin-toolbar" style="margin-bottom: 2rem; background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
+                                        <label for="dashPremiumDataInicio" style="margin-bottom: 5px;">Data Início</label>
+                                        <input type="date" id="dashPremiumDataInicio">
+                                    </div>
+                                    <div class="form-group" style="margin:0; flex:1; min-width: 150px; max-width: 200px;">
+                                        <label for="dashPremiumDataFim" style="margin-bottom: 5px;">Data Fim</label>
+                                        <input type="date" id="dashPremiumDataFim">
+                                    </div>
+                                    <button class="btn-primary" onclick="window.__PREMIUM_DASH.carregarDashboardPremium()" style="height: 42px; margin-bottom: 0;">Filtrar</button>
+                                </div>
+                            </div>
+
+                            <!-- Cards de Resumo -->
+                            <div class="dashboard-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                                <div class="stat-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Total Consumido</div>
+                                    <div id="dashPremiumTotalGasto" style="font-size: 1.8rem; font-weight: bold; color: var(--primary);">R$ 0,00</div>
+                                </div>
+                                <div class="stat-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Comandas Fechadas</div>
+                                    <div id="dashPremiumTotalComandas" style="font-size: 1.8rem; font-weight: bold; color: var(--text-color);">0</div>
+                                </div>
+                                <div class="stat-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
+                                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Ticket Médio Premium</div>
+                                    <div id="dashPremiumTicketMedio" style="font-size: 1.8rem; font-weight: bold; color: var(--success);">R$ 0,00</div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+                                <!-- Ranking de Clientes -->
+                                <div class="ranking-section">
+                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🏆 Top Clientes (Maior Consumo)</h3>
+                                    <div class="admin-table-wrapper" style="max-height: 300px; overflow-y: auto;">
+                                        <table class="admin-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 50px;">Pos</th>
+                                                    <th>Cliente</th>
+                                                    <th>Total Gasto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dashPremiumRankingBody">
+                                                <tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum dado encontrado para o período.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Relatório de Comandas -->
+                                <div class="relatorio-section">
+                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🧾 Comandas Fechadas</h3>
+                                    <div class="admin-table-wrapper print-wrapper" style="max-height: 400px; overflow-y: auto;" id="printRelatorioContainer">
+                                        <table class="admin-table" id="tabelaRelatorioPremium">
+                                            <thead>
+                                                <tr>
+                                                    <th>Data Fechamento</th>
+                                                    <th>Cliente</th>
+                                                    <th>CPF</th>
+                                                    <th>Total Acumulado</th>
+                                                    <th>Forma de Pagto</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="dashPremiumComandasBody">
+                                                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhuma comanda encontrada para o período.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
