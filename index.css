@@ -2418,3 +2418,45 @@
     background: var(--accent-danger) !important;
     color: #fff !important;
 }
+
+/* Centralização de itens nos Modais Premium */
+#modalLoginPremium .modal-body,
+#modalAlterarPinPremium .modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#modalLoginPremium .form-group,
+#modalAlterarPinPremium .form-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+#modalLoginPremium .form-group label,
+#modalAlterarPinPremium .form-group label {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 6px;
+    display: block;
+}
+
+#modalLoginPremium .form-group input,
+#modalAlterarPinPremium .form-group input {
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto !important;
+    display: block;
+}
+
+#modalLoginPremium .btn-primary,
+#modalAlterarPinPremium .btn-primary {
+    max-width: 320px !important;
+    margin: 0 auto 1rem auto !important;
+}
