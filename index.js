@@ -1078,7 +1078,8 @@ document.getElementById("btnEnviar").onclick = async () => {
             payment_status: 'pendente',
             delivery_type: state.tipoEntrega,
             shipping_fee: freteValor,
-            cliente_premium_id: state.premiumUser ? state.premiumUser.id : null
+            cliente_premium_id: state.premiumUser ? state.premiumUser.id : null,
+            comanda_id: state.premiumUser && state.premiumUser.comandaId ? state.premiumUser.comandaId : null
         };
 
         const { error: orderError } = await sb.from('orders').insert(orderPayload);
@@ -1145,6 +1146,24 @@ document.getElementById("btnEnviar").onclick = async () => {
             }
         }
 
+        // Se premium com comanda: incrementar total da comanda e atualizar UI
+        if (state.premiumUser && state.premiumUser.comandaId) {
+            try {
+                await sb.rpc('incrementar_total_comanda', {
+                    _comanda_id: state.premiumUser.comandaId,
+                    _valor: totalFinal
+                });
+            } catch(rpcErr) {
+                console.warn('[Comanda] RPC falhou, usando update direto:', rpcErr);
+                await sb.from('comandas')
+                    .update({ total_acumulado: (state.premiumUser.gasto || 0) + totalFinal })
+                    .eq('id', state.premiumUser.comandaId);
+            }
+            state.premiumUser.gasto = (state.premiumUser.gasto || 0) + totalFinal;
+            localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
+            atualizarBarraPremium();
+        }
+
         state.carrinho = [];
         state.descontoAtivo = 0;
         state.cupomAplicado = null;
@@ -1152,7 +1171,11 @@ document.getElementById("btnEnviar").onclick = async () => {
         toggleCart(false);
         carregarProdutos();
         
-        if (state.formaPagamento === 'pix') {
+        // Se é cliente premium: bypass completo de WhatsApp/Pix/Cartão
+        if (state.premiumUser && state.premiumUser.comandaId) {
+            mostrarConfirmacaoComanda(totalFinal);
+            carregarComandaUI();
+        } else if (state.formaPagamento === 'pix') {
             await iniciarFluxoPix(orderId, totalFinal, msg);
         } else if (state.formaPagamento === 'cartao') {
             await iniciarFluxoCartaoCheckoutPro(orderId, msg);
@@ -1551,10 +1574,14 @@ function inicializarLoginPremium() {
                             
                             state.premiumUser.gasto = (orders || []).reduce((sum, o) => sum + parseFloat(o.total || 0), 0);
 
+                            // Buscar/criar comanda aberta
+                            await buscarOuCriarComanda(parsed.id);
+
                             // Atualiza cache e re-renderiza
                             localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
                             atualizarBarraPremium();
                             aplicarFiltroCardapioPremium();
+                            carregarComandaUI();
                             console.log('[Premium] Sessão sincronizada com sucesso e UI atualizada!');
                         }
                     })
@@ -1697,14 +1724,19 @@ function inicializarLoginPremium() {
                     gasto: gastoMes,
                     categoriasPermitidas: categoriasPermitidas,
                     produtosPermitidos: produtosPermitidos,
+                    comandaId: null,
                     expiry: expiry
                 };
+
+                // Buscar ou criar comanda aberta
+                await buscarOuCriarComanda(data.id);
 
                 localStorage.setItem('premiumUser', JSON.stringify(state.premiumUser));
                 
                 fecharModalLogin();
                 atualizarBarraPremium();
                 aplicarFiltroCardapioPremium();
+                carregarComandaUI();
 
                 // Preencher form
                 const n = document.getElementById('clienteNome');
@@ -1795,6 +1827,130 @@ function aplicarFiltroCardapioPremium() {
     // Re-render categories and products
     renderCategorias();
     renderMenu();
+}
+
+// =============================================
+// COMANDA DIGITAL
+// =============================================
+
+async function buscarOuCriarComanda(clienteId) {
+    try {
+        // Buscar comanda aberta existente
+        const { data: comanda, error } = await sb.from('comandas')
+            .select('id, total_acumulado')
+            .eq('cliente_premium_id', clienteId)
+            .eq('status', 'aberta')
+            .order('aberta_em', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) { console.error('[Comanda] Erro ao buscar:', error); return; }
+
+        if (comanda) {
+            state.premiumUser.comandaId = comanda.id;
+            console.log('[Comanda] Comanda aberta encontrada:', comanda.id);
+        } else {
+            // Criar nova comanda
+            const { data: nova, error: insertErr } = await sb.from('comandas').insert({
+                empresa_id: getTenantId(),
+                cliente_premium_id: clienteId,
+                status: 'aberta',
+                total_acumulado: 0
+            }).select('id').single();
+
+            if (insertErr) { console.error('[Comanda] Erro ao criar:', insertErr); return; }
+            state.premiumUser.comandaId = nova.id;
+            console.log('[Comanda] Nova comanda criada:', nova.id);
+        }
+    } catch (err) {
+        console.error('[Comanda] Erro geral:', err);
+    }
+}
+
+async function carregarComandaUI() {
+    const secao = document.getElementById('psb-comanda');
+    if (!secao) return;
+
+    if (!state.premiumUser || !state.premiumUser.comandaId) {
+        secao.style.display = 'none';
+        return;
+    }
+
+    secao.style.display = 'block';
+
+    // Toggle expand/collapse
+    const btnToggle = document.getElementById('btnToggleComanda');
+    if (btnToggle && !btnToggle._bound) {
+        btnToggle._bound = true;
+        btnToggle.onclick = () => {
+            const body = document.getElementById('psb-comanda-body');
+            const arrow = document.getElementById('psb-comanda-arrow');
+            if (body.style.display === 'none') {
+                body.style.display = 'block';
+                arrow.classList.add('open');
+            } else {
+                body.style.display = 'none';
+                arrow.classList.remove('open');
+            }
+        };
+    }
+
+    // Buscar pedidos da comanda
+    try {
+        const { data: pedidos } = await sb.from('orders')
+            .select('id, total, created_at, order_items(product_name, quantity, unit_price)')
+            .eq('comanda_id', state.premiumUser.comandaId)
+            .order('created_at', { ascending: false });
+
+        const container = document.getElementById('psb-comanda-itens');
+        const totalEl = document.getElementById('psb-comanda-total-valor');
+
+        if (!pedidos || pedidos.length === 0) {
+            container.innerHTML = '<div class="psb-comanda-vazia">Nenhum pedido na comanda ainda.</div>';
+            totalEl.textContent = 'R$ 0,00';
+            return;
+        }
+
+        let totalComanda = 0;
+        container.innerHTML = pedidos.map(p => {
+            totalComanda += parseFloat(p.total || 0);
+            const hora = new Date(p.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const itensResumo = (p.order_items || []).map(i => `${i.quantity}x ${i.product_name}`).join(', ');
+            return `
+                <div class="psb-comanda-item">
+                    <div>
+                        <div>${itensResumo || 'Pedido'}</div>
+                        <div class="psb-comanda-item-hora">${hora}</div>
+                    </div>
+                    <div class="psb-comanda-item-valor">${formatCurrency(p.total)}</div>
+                </div>
+            `;
+        }).join('');
+
+        totalEl.textContent = formatCurrency(totalComanda);
+    } catch (err) {
+        console.error('[Comanda] Erro ao carregar UI:', err);
+    }
+}
+
+function mostrarConfirmacaoComanda(totalPedido) {
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-alert-overlay';
+    overlay.innerHTML = `
+        <div class="custom-alert-box">
+            <div class="custom-alert-icon">📋</div>
+            <h2 class="custom-alert-title">Pedido adicionado à comanda!</h2>
+            <p class="custom-alert-text">O valor de <strong>${formatCurrency(totalPedido)}</strong> foi adicionado à sua comanda.<br><br>Seu pedido já foi enviado para a cozinha! 🎉</p>
+            <button class="custom-alert-btn">Entendido! 👍</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('active'));
+
+    overlay.querySelector('.custom-alert-btn').onclick = () => {
+        overlay.classList.remove('active');
+        setTimeout(() => overlay.remove(), 300);
+    };
 }
 
 // Inicializar

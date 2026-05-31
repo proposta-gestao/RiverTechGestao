@@ -4235,6 +4235,7 @@ function renderClientesPremium() {
                 <td style="text-align:center;">
                     <div style="display:flex; gap:8px; justify-content:center;">
                         <button class="btn-primary btn-sm" onclick="abrirModalClientePremium('${c.id}')" title="Editar">✏️</button>
+                        <button class="btn-icon" title="Ver Comanda" onclick="abrirComandaPremium('${c.id}')" style="color:var(--accent-gold);">📋</button>
                         <button class="btn-cancel btn-sm" onclick="excluirClientePremium('${c.id}', '${c.nome}')" title="Excluir">🗑️</button>
                     </div>
                 </td>
@@ -4356,4 +4357,84 @@ function initModuloClientesPremium() {
     if (!isModuloAtivo('clientes_premium')) return;
     carregarPerfisCardapio();
     carregarClientesPremium();
+}
+
+// ============================================================
+// MÓDULO COMANDAS PREMIUM
+// ============================================================
+
+async function abrirComandaPremium(clienteId) {
+    const cliente = listaClientesPremium.find(c => c.id === clienteId);
+    if (!cliente) return;
+
+    document.getElementById('comandaClienteNome').textContent = '👑 ' + cliente.nome;
+    document.getElementById('comandaModalTitle').textContent = '📋 Comanda — ' + cliente.nome.split(' ')[0];
+
+    // Buscar comanda aberta
+    const { data: comanda, error } = await sb.from('comandas')
+        .select('*')
+        .eq('cliente_premium_id', clienteId)
+        .eq('status', 'aberta')
+        .order('aberta_em', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (error) { console.error('Erro ao buscar comanda:', error); return; }
+
+    const btnFechar = document.getElementById('btnFecharComanda');
+
+    if (!comanda) {
+        document.getElementById('comandaStatus').innerHTML = '<span style="color:var(--text-muted);">Sem comanda aberta</span>';
+        document.getElementById('comandaPedidosLista').innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:2rem;">Nenhuma comanda aberta para este cliente.</p>';
+        document.getElementById('comandaTotalValor').textContent = 'R$ 0,00';
+        btnFechar.style.display = 'none';
+        abrirModal('modalComandaPremium');
+        return;
+    }
+
+    document.getElementById('comandaStatus').innerHTML = '<span style="background:rgba(52,211,153,0.15); color:#34d399; padding:3px 10px; border-radius:6px; font-size:0.8rem; font-weight:700;">ABERTA</span>';
+    document.getElementById('comandaTotalValor').textContent = formatCurrency(comanda.total_acumulado || 0);
+    btnFechar.style.display = '';
+
+    // Buscar pedidos da comanda
+    const { data: pedidos } = await sb.from('orders')
+        .select('id, total, created_at, status, order_items(product_name, quantity, unit_price)')
+        .eq('comanda_id', comanda.id)
+        .order('created_at', { ascending: false });
+
+    const lista = document.getElementById('comandaPedidosLista');
+    if (!pedidos || pedidos.length === 0) {
+        lista.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:1rem;">Comanda aberta, mas sem pedidos ainda.</p>';
+    } else {
+        lista.innerHTML = pedidos.map(p => {
+            const hora = new Date(p.created_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+            const itens = (p.order_items || []).map(i => `<div style="font-size:0.85rem; color:var(--text-muted); padding-left:10px;">• ${i.quantity}x ${i.product_name} — ${formatCurrency(i.unit_price * i.quantity)}</div>`).join('');
+            return `
+                <div style="padding:10px; margin-bottom:8px; background:var(--bg-input); border-radius:8px; border:1px solid var(--border-default);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                        <span style="font-weight:700; font-size:0.85rem;">#${p.id.slice(0,8)}</span>
+                        <span style="color:var(--text-muted); font-size:0.8rem;">${hora}</span>
+                    </div>
+                    ${itens}
+                    <div style="text-align:right; margin-top:6px; font-weight:700; color:var(--accent-gold);">${formatCurrency(p.total)}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Configurar botão de fechamento
+    btnFechar.onclick = async () => {
+        if (!confirm('Deseja encerrar esta comanda? O cliente precisará abrir uma nova para novos pedidos.')) return;
+        const { error: closeErr } = await sb.from('comandas').update({
+            status: 'fechada',
+            fechada_em: new Date().toISOString(),
+            fechada_por: window.adminUsuario || 'admin'
+        }).eq('id', comanda.id);
+        if (closeErr) { showToast('Erro ao fechar comanda: ' + closeErr.message, 'error'); return; }
+        showToast('Comanda encerrada com sucesso!', 'success');
+        fecharModal('modalComandaPremium');
+        carregarClientesPremium();
+    };
+
+    abrirModal('modalComandaPremium');
 }

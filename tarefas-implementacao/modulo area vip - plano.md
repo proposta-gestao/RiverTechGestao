@@ -287,8 +287,17 @@ Adicionar toggle `clientes_premium` na gestão de módulos da empresa no admin m
 
 - Tratamento de PIN incorreto (máximo de tentativas)
 - Renovação automática do teto no início de cada mês
-- Relatório de gastos por cliente premium no dashboard do admin
-- Exportação de dados de consumo (CSV/PDF)
+
+---
+
+### Fase 8: Dashboard e Relatórios Premium
+
+#### [NEW] [admin-premium-dashboard.html/js] (Integração no Admin)
+
+Para garantir uma visão gerencial de alto nível:
+1. **Dashboard Premium Exclusivo**: Uma tela com gráficos mostrando o consumo total dos clientes VIPs no mês, ranking dos clientes que mais consumiram, e categorias de produtos mais pedidas por esse público.
+2. **Exportação de Relatórios**: Botões de exportação (Excel e PDF) detalhando o histórico de comandas, o limite de crédito utilizado e o saldo de cada cliente premium.
+3. **Filtros Avançados**: Filtro por período (mês/semana) e por status de comanda (aberta/fechada) na exportação.
 
 ---
 
@@ -329,8 +338,9 @@ graph TD
 | 4 | Comanda Digital | 1-2 dias | Fase 1, 3 |
 | 5 | Integração Atendente | 1 dia | Fase 3, 4 |
 | 6 | Feature Flags | 0.5 dia | Fase 1 |
-| 7 | Polish & Edge Cases | 1-2 dias | Tudo |
-| **Total** | | **8-12 dias** | |
+| 7 | Polish & Edge Cases | 1 dia | Tudo |
+| 8 | Dashboard e Relatórios (Excel/PDF) | 2 dias | Fase 1, 2, 4 |
+| **Total** | | **10-14 dias** | |
 
 ---
 
