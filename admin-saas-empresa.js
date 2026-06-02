@@ -991,6 +991,8 @@ function carregarPropostas(slug) {
     const container = document.getElementById('propostasContainer');
     if (!container) return;
 
+    const cleanSlug = slug.toLowerCase();
+
     const html = `
         <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
@@ -1003,7 +1005,7 @@ function carregarPropostas(slug) {
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.4;">
                 Apresentação completa do sistema de gestão com cardápio digital, QR Code e painel administrativo master.
             </p>
-            <a href="/apresentacao/${slug}" target="_blank" class="btn-outline" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
+            <a href="/apresentacao/${cleanSlug}" target="_blank" class="btn-outline" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
                 Ver Apresentação
             </a>
         </div>
@@ -1029,7 +1031,7 @@ function carregarPropostas(slug) {
                 ✅ Opção 1: Implantação R$ 6.000 + R$ 349/mês<br>
                 ✅ Opção 2: R$ 750/mês (sem custo inicial, carência 24m)
             </div>
-            <a href="/apresentacao/${slug}-vip" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
+            <a href="/apresentacao/${cleanSlug}-vip" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
                 Ver Apresentação
             </a>
         </div>
