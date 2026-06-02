@@ -1016,9 +1016,19 @@ function carregarPropostas(slug) {
                 </div>
                 <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px;">👑</div>
             </div>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.4;">
-                Apresentação comercial com mockups da funcionalidade de Clientes VIP com limite de gastos e perfis restritos de cardápio.
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.4;">
+                Módulo exclusivo para acabar com o controle manual e prejuízos. Segurança absoluta sobre tudo que é consumido internamente ou por convidados.
             </p>
+            <ul style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; padding-left: 20px; line-height: 1.5;">
+                <li><b>Gestão Total:</b> Cadastro por CPF e limite financeiro mensal por pessoa.</li>
+                <li><b>Cardápio Inteligente:</b> Escolha o que cada perfil (VIP, Funcionário) pode ver.</li>
+                <li><b>Transparência e Bloqueio:</b> Cliente acompanha saldo via App. Sistema bloqueia se exceder.</li>
+            </ul>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                <strong style="color: var(--text-primary); margin-bottom: 5px; display: inline-block;">Prazo: ~4 semanas | Investimento:</strong><br>
+                ✅ Opção 1: Implantação R$ 6.000 + R$ 349/mês<br>
+                ✅ Opção 2: R$ 750/mês (sem custo inicial, carência 24m)
+            </div>
             <a href="/apresentacao/${slug}-vip" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
                 Ver Apresentação
             </a>
