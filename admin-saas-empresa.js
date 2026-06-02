@@ -1021,15 +1021,20 @@ function carregarPropostas(slug) {
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.4;">
                 Módulo exclusivo para acabar com o controle manual e prejuízos. Segurança absoluta sobre tudo que é consumido internamente ou por convidados.
             </p>
-            <ul style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; padding-left: 20px; line-height: 1.5;">
-                <li><b>Gestão Total:</b> Cadastro por CPF e limite financeiro mensal por pessoa.</li>
-                <li><b>Cardápio Inteligente:</b> Escolha o que cada perfil (VIP, Funcionário) pode ver.</li>
-                <li><b>Transparência e Bloqueio:</b> Cliente acompanha saldo via App. Sistema bloqueia se exceder.</li>
-            </ul>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
+                <strong>✨ Resumo de como vai funcionar:</strong>
+                <ul style="padding-left: 20px; margin-top: 5px; margin-bottom: 15px;">
+                    <li><b>Gestão Total:</b> Definição de limite financeiro mensal de cada pessoa e <i>Dashboard Gerencial</i>.</li>
+                    <li><b>Cardápio Inteligente:</b> Você escolhe o que cada perfil pode ver a nível de produtos (ex.: Mesa de cash omaha vê tudo, Funcionário só prato do dia e coca cola).</li>
+                    <li><b>Transparência na Mão:</b> Usuário acessa o app, vê os itens liberados e acompanha seu saldo. Se passar do limite, o sistema bloqueia o pedido automaticamente!</li>
+                    <li><b>Caixa Ágil:</b> Equipe identifica na hora o cliente (Selo VIP), vê o saldo e faz o fechamento com segurança. <i>(Obs: Controle 100% interno, sem integração fiscal)</i>.</li>
+                    <li><b>Fluxo de fechamento:</b> Fechamento de caixa por atendente e tipo de pagamento.</li>
+                </ul>
+            </div>
             <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
-                <strong style="color: var(--text-primary); margin-bottom: 5px; display: inline-block;">Prazo: ~4 semanas | Investimento:</strong><br>
-                ✅ Opção 1: Implantação R$ 6.000 + R$ 349/mês<br>
-                ✅ Opção 2: R$ 750/mês (sem custo inicial, carência 24m)
+                <strong style="color: var(--text-primary); margin-bottom: 5px; display: inline-block;">💰 Opções de Investimento (Prazo: ~4 semanas):</strong><br>
+                ✅ <b>Opção 1:</b> Implantação + Desenvolvimento R$ 6.000 (Pagamento único, em até 3x) + Licença de R$ 349/mês.<br>
+                ✅ <b>Opção 2:</b> R$ 1.000 (Entrada Única) + Licença de R$ 850/mês.
             </div>
             <a href="/apresentacao/${cleanSlug}-vip" target="_blank" class="btn-primary" style="display: block; text-align: center; text-decoration: none; padding: 10px;">
                 Ver Apresentação
