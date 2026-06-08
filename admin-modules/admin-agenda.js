@@ -22,7 +22,7 @@
     let servicos = [];
     let agendamentosFuturos = [];
     let listaEspera = [];
-    let diasComEventos = new Set();
+    let diasComEventos = new Map();
     let agendaSubscription = null;
     let profissionalSelecionado = null;
     let dataSelecionada = new Date();
@@ -281,17 +281,28 @@
         const inicioMes = new Date(calMes.getFullYear(), calMes.getMonth(), 1).toISOString();
         const fimMes = new Date(calMes.getFullYear(), calMes.getMonth() + 1, 0, 23, 59, 59).toISOString();
         
-        const { data } = await sb.from('agendamentos')
-            .select('data_hora_inicio')
+        let query = sb.from('agendamentos')
+            .select('data_hora_inicio, profissional:profissionais(cor_agenda)')
             .eq('empresa_id', EMPRESA_ID())
             .gte('data_hora_inicio', inicioMes)
             .lte('data_hora_inicio', fimMes)
             .in('status', ['pendente', 'confirmado', 'em_andamento', 'concluido']);
             
+        if (profissionalSelecionado) {
+            query = query.eq('profissional_id', profissionalSelecionado);
+        }
+            
+        const { data } = await query;
+            
         diasComEventos.clear();
         if (data) {
             data.forEach(ag => {
-                diasComEventos.add(new Date(ag.data_hora_inicio).toDateString());
+                const dateStr = new Date(ag.data_hora_inicio).toDateString();
+                const cor = (ag.profissional && ag.profissional.cor_agenda) ? ag.profissional.cor_agenda : 'var(--primary)';
+                if (!diasComEventos.has(dateStr)) {
+                    diasComEventos.set(dateStr, new Set());
+                }
+                diasComEventos.get(dateStr).add(cor);
             });
         }
     }
@@ -343,7 +354,20 @@
                 hasEvents ? 'has-events' : ''
             ].filter(Boolean).join(' ');
 
-            html += `<div class="${classes}" onclick="window.__AGENDA.selecionarDia(${ano}, ${mes}, ${dia})">${dia}</div>`;
+            let dotsHtml = '';
+            if (hasEvents) {
+                const cores = Array.from(diasComEventos.get(d.toDateString())).slice(0, 4);
+                dotsHtml = '<div class="mini-cal-dots">';
+                cores.forEach(cor => {
+                    dotsHtml += `<div class="mini-cal-dot" style="background-color: ${cor}"></div>`;
+                });
+                dotsHtml += '</div>';
+            }
+
+            html += `<div class="${classes}" onclick="window.__AGENDA.selecionarDia(${ano}, ${mes}, ${dia})">
+                        <span>${dia}</span>
+                        ${dotsHtml}
+                     </div>`;
         }
 
         container.innerHTML = html;

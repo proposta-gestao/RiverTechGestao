@@ -133,7 +133,23 @@
     font-weight: 700;
 }
 
-.mini-cal-day.has-events::after {
+.mini-cal-dots {
+    position: absolute;
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2px;
+}
+
+.mini-cal-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+}
+
+/* Maintain fallback just in case we still use has-events */
+.mini-cal-day.has-events:not(:has(.mini-cal-dots))::after {
     content: '';
     position: absolute;
     bottom: 3px;
@@ -145,7 +161,7 @@
     background: var(--primary);
 }
 
-.mini-cal-day.selected.has-events::after {
+.mini-cal-day.selected.has-events:not(:has(.mini-cal-dots))::after {
     background: #000;
 }
 
