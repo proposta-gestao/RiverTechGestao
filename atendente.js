@@ -183,7 +183,8 @@ async function startDashboard() {
 
     // Inicializa o contexto do tenant para white-label e feature flags
     await initTenantById(sb, waiter.empresa_id);
-    aplicarFiltrosDeModulosAtendente();
+    const modulosAtivos = aplicarFiltrosDeModulosAtendente();
+    if (modulosAtivos === false) return;
 
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('audioOverlay').style.display = 'none';
@@ -626,6 +627,17 @@ document.getElementById('loginCpf').addEventListener('keydown', (e) => {
  */
 function aplicarFiltrosDeModulosAtendente() {
     console.log('[Modules] Aplicando filtros no painel do atendente...');
+    
+    if (!isModuloAtivo('pedido_mesa')) {
+        document.body.innerHTML = `
+            <div style="display:flex; height:100vh; align-items:center; justify-content:center; flex-direction:column; background:#080808; color:#fff; font-family:Outfit, sans-serif; padding:2rem; text-align:center;">
+                <h1 style="font-size:2rem; color:#FF4757; margin-bottom:1rem;">Painel Inativo</h1>
+                <p style="color:#aaa;">O módulo de atendimento (Pedidos/Mesa) encontra-se desativado para esta loja.</p>
+                <button onclick="localStorage.removeItem('acp_waiter'); window.location.reload();" style="margin-top:20px; padding:10px 20px; border-radius:8px; background:rgba(255,255,255,0.1); color:#fff; border:none; cursor:pointer;">Voltar</button>
+            </div>
+        `;
+        return false;
+    }
     
     // 1. Pagamento Online
     if (!isModuloAtivo('pagamento')) {

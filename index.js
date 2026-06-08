@@ -202,6 +202,17 @@ async function carregarConfiguracoesPublicas() {
 function aplicarFiltrosDeModulosPublico() {
     console.log('[Modules] Filtrando funcionalidades públicas...');
 
+    // Bloqueia a loja se nenhum módulo público de produtos/cardápio estiver ativo
+    if (!isModuloAtivo('cardapio') && !isModuloAtivo('loja_roupas')) {
+        document.body.innerHTML = `
+            <div style="display:flex; height:100vh; align-items:center; justify-content:center; flex-direction:column; background:#080808; color:#fff; font-family:Outfit, sans-serif; padding:2rem; text-align:center;">
+                <h1 style="font-size:2rem; color:#FF4757; margin-bottom:1rem;">Página Inativa</h1>
+                <p style="color:#aaa;">O módulo de catálogo ou cardápio desta loja encontra-se desativado.</p>
+            </div>
+        `;
+        return;
+    }
+
     // 1. Módulo de Frete e Entrega (Permissão SaaS)
     if (!isModuloAtivo('config_frete')) {
         state.freteHabilitado = false;
