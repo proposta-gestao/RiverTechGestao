@@ -1358,18 +1358,6 @@ async function carregarProdutos() {
     }
     produtos = data || [];
 
-    // Inativar automaticamente itens com estoque 0
-    const itensParaInativar = produtos.filter(p => p.active && p.stock <= 0 && !p.archived);
-    if (itensParaInativar.length > 0) {
-        const ids = itensParaInativar.map(p => p.id);
-        const { error: updErr } = await sb.from('products').update({ active: false }).in('id', ids);
-        if (!updErr) {
-            // Update local state and re-render
-            produtos.forEach(p => { if (ids.includes(p.id)) p.active = false; });
-            showToast(`${itensParaInativar.length} item(ns) esgotados foram inativados.`, 'success');
-        }
-    }
-
     atualizarAlertaEstoque();
     renderProdutos();
     renderStats(); // Update stats summary
