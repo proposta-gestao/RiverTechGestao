@@ -3915,7 +3915,7 @@ function renderPerfisCardapio() {
     if (!container) return;
 
     if (listaPerfisCardapio.length === 0) {
-        container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>';
+        container.innerHTML = '';
         return;
     }
 
