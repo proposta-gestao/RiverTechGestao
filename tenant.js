@@ -506,21 +506,34 @@ async function initTenantAdmin(supabaseClient, userId) {
     }
 
     if (error || !data) {
-        console.warn('[Tenant-Admin] Usuário não encontrado em usuarios. Verificando Super Admin...');
-        
-        // Se não encontrou no usuarios, pode ser um Super Admin tentando acessar
-        const { data: isSuper } = await supabaseClient.rpc('is_super_admin', { _user_id: userId });
-        
-        if (isSuper) {
-            console.info('[Tenant-Admin] Super Admin detectado. Tentando carregar empresa via URL...');
-            const slug = _resolverSlug();
-            if (slug) {
-                return await initTenantPublico(supabaseClient);
+        console.warn('[Tenant-Admin] Usuário não encontrado em usuarios. Verificando tabela admin_users legada...');
+        const { data: legacyData, error: legacyError } = await supabaseClient
+            .from('admin_users')
+            .select('empresa_id, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto, tema_cor_hover)')
+            .eq('user_id', userId)
+            .limit(1);
+
+        if (legacyData && legacyData.length > 0) {
+            data = legacyData[0];
+            data.role = 'admin'; // Força role admin para usuários legados
+            error = null;
+        } else {
+            console.warn('[Tenant-Admin] Usuário não encontrado em admin_users. Verificando Super Admin...');
+            
+            // Se não encontrou no usuarios nem admin_users, pode ser um Super Admin tentando acessar
+            const { data: isSuper } = await supabaseClient.rpc('is_super_admin', { _user_id: userId });
+            
+            if (isSuper) {
+                console.info('[Tenant-Admin] Super Admin detectado. Tentando carregar empresa via URL...');
+                const slug = _resolverSlug();
+                if (slug) {
+                    return await initTenantPublico(supabaseClient);
+                }
             }
+            
+            console.error('[Tenant-Admin] Erro fatal ao buscar empresa do usuário:', userId, error?.message || legacyError?.message);
+            return null;
         }
-        
-        console.error('[Tenant-Admin] Erro fatal ao buscar empresa do usuário:', userId, error?.message);
-        return null;
     }
 
     const emp = data.empresas || {};
