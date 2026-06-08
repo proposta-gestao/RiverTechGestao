@@ -486,7 +486,7 @@ function switchTab(tabId, btn, persist = true) {
         if (cssEl) cssEl.disabled = false;
         // Carregar JS
         const script = document.createElement('script');
-        script.src = 'admin-agenda.js?v=' + Date.now();
+        script.src = 'admin-modules/admin-agenda.js?v=' + Date.now();
         script.onerror = () => showToast('Erro ao carregar módulo de agenda.', 'error');
         document.body.appendChild(script);
     }
@@ -497,7 +497,7 @@ function switchTab(tabId, btn, persist = true) {
         const cssLoja = document.getElementById('loja-css');
         if (cssLoja) cssLoja.disabled = false;
         const scriptLoja = document.createElement('script');
-        scriptLoja.src = 'admin-loja.js?v=' + Date.now();
+        scriptLoja.src = 'admin-modules/admin-loja.js?v=' + Date.now();
         scriptLoja.onerror = () => {
             window.__LOJA_INICIADO = false;
             showToast('Erro ao carregar módulo de loja.', 'error');
