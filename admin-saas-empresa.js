@@ -94,7 +94,7 @@ async function carregarConfiguracoesLoja() {
 
 // Lista completa de chaves de módulos para sincronização
 const LISTA_MODULOS = [
-    'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque',
+    'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque', 'produtos_equipe',
     'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
     'metricas_dashboard', 'metricas_analise_tempo', 'metricas_performance_vendas', 'metricas_destaques',
     'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',
@@ -132,7 +132,7 @@ function renderDadosBasicos(emp) {
     });
 
     // Sincronizar Master Toggles e Estado dos Containers
-    ['produtos', 'vendas', 'ops', 'agendamento', 'premium'].forEach(g => {
+    ['produtos', 'vendas', 'ops', 'agendamento', 'loja', 'premium'].forEach(g => {
         const container = document.getElementById(`grupo_${g}`);
         const master = document.getElementById(`master_${g}`);
         if (container && master) {
