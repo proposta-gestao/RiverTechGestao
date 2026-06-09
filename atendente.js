@@ -325,9 +325,10 @@ function setupRealtime() {
             handleUpdatedOrder(payload);
         })
         .subscribe((status) => {
-            console.log("Status da conexão Realtime:", status);
             if (status === 'SUBSCRIBED') {
-                console.log("Conectado com sucesso ao fluxo de pedidos!");
+                console.log("[Atendente] Conectado com sucesso ao fluxo de pedidos!");
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                console.warn("[Atendente] Realtime indisponível (pode ser proxy/firewall). Use refresh manual para atualizar pedidos.");
             }
         });
 }

@@ -1323,7 +1323,17 @@ function setupAdminRealtime() {
         }, payload => {
             carregarDashboard(); // Recarrega quando um agendamento mudar
         })
-        .subscribe();
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('[Realtime] Pedidos/Agendamentos conectado.');
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                console.warn('[Realtime] Canal de pedidos indisponível (pode ser proxy/firewall). O painel continua funcionando sem atualizações em tempo real.');
+                if (adminRealtimeChannel) {
+                    sb.removeChannel(adminRealtimeChannel);
+                    adminRealtimeChannel = null;
+                }
+            }
+        });
 
     // Realtime para mudanças na própria empresa (ex: módulos, tema)
     sb.channel('admin-company-realtime')
@@ -1341,7 +1351,13 @@ function setupAdminRealtime() {
                 renderProdutos(); // Garante que colunas de estoque sejam atualizadas
             }
         })
-        .subscribe();
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('[Realtime] Canal da empresa conectado.');
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                console.warn('[Realtime] Canal da empresa indisponível. Módulos e tema não serão atualizados em tempo real.');
+            }
+        });
 }
 
 async function carregarProdutos() {

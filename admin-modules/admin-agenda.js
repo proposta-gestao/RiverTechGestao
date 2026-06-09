@@ -210,9 +210,17 @@
                 }
             })
             .subscribe((status) => {
-                console.log('[Agenda] Status da conexão Realtime:', status);
-                if (status === 'CHANNEL_ERROR') {
-                    console.error('[Agenda] Erro ao conectar no Realtime. Verifique se o replication está ativo no banco.');
+                if (status === 'SUBSCRIBED') {
+                    console.log('[Agenda] Realtime conectado com sucesso.');
+                } else if (status === 'CHANNEL_ERROR') {
+                    console.warn('[Agenda] Realtime indisponível (pode ser proxy/firewall). O painel continua funcionando sem atualizações em tempo real.');
+                    // Remove o canal para evitar tentativas infinitas de reconexão
+                    if (agendaSubscription) {
+                        sb.removeChannel(agendaSubscription);
+                        agendaSubscription = null;
+                    }
+                } else if (status === 'TIMED_OUT') {
+                    console.warn('[Agenda] Realtime: timeout na conexão.');
                 }
             });
     }
