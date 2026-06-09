@@ -907,7 +907,11 @@ function aplicarFiltrosDeModulos() {
     toggleSubtab('config-frete', mConfigFrete);
     toggleSubtab('config-cancelamento', mConfigCanc);
 
-    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc;
+    // 4b. EQUIPE / ATENDENTES
+    const mProdEquipe = isModuloAtivo('produtos_equipe');
+    toggleSubtab('config-equipe', mProdEquipe);
+
+    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc || mProdEquipe;
     const navConfig = document.getElementById('nav-configuracoes');
     toggleElement(navConfig, mQualquerConfig, 'flex');
     if (navConfig) navConfig.classList.toggle('module-visible', mQualquerConfig);
