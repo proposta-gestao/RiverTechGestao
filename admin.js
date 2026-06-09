@@ -861,6 +861,7 @@ function aplicarFiltrosDeModulos() {
     const navProdutos = document.getElementById('nav-produtos');
     toggleElement(navProdutos, mQualquerProduto, 'flex');
     if (navProdutos) navProdutos.classList.toggle('module-visible', mQualquerProduto);
+    toggleElement(document.getElementById('side-nav-produtos'), mQualquerProduto, 'flex');
 
     // 2. VENDAS (Operacional)
     const mVendasHoje = isModuloAtivo('vendas_hoje_op');
@@ -893,6 +894,7 @@ function aplicarFiltrosDeModulos() {
     const navDashboard = document.getElementById('nav-dashboard');
     toggleElement(navDashboard, mQualquerDashboard, 'flex');
     if (navDashboard) navDashboard.classList.toggle('module-visible', mQualquerDashboard);
+    toggleElement(document.getElementById('side-nav-dashboard'), mQualquerDashboard, 'flex');
 
     // 4. CONFIGURAÇÕES
     const mConfigEnd = isModuloAtivo('config_endereco');
@@ -909,6 +911,7 @@ function aplicarFiltrosDeModulos() {
     const navConfig = document.getElementById('nav-configuracoes');
     toggleElement(navConfig, mQualquerConfig, 'flex');
     if (navConfig) navConfig.classList.toggle('module-visible', mQualquerConfig);
+    toggleElement(document.getElementById('side-nav-configuracoes'), mQualquerConfig, 'flex');
 
     // 5. CUPONS
     const mCupons = isModuloAtivo('cupons');
