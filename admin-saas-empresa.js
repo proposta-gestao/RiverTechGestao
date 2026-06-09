@@ -1,4 +1,4 @@
-// admin-saas-empresa.js - LÃ³gica de GestÃ£o 360Âº da Empresa
+// admin-saas-empresa.js - Lógica de Gestão 360º da Empresa
 
 const sb = window.supabase.createClient(window.APP_CONFIG.SUPABASE_URL, window.APP_CONFIG.SUPABASE_ANON_KEY);
 
@@ -7,7 +7,7 @@ let EMPRESA_DATA = null;
 let STORE_SETTINGS_DATA = null; // Armazena o ID e dados atuais do branding
 
 // ==========================================
-// 1. InicializaÃ§Ã£o e SeguranÃ§a
+// 1. Inicialização e Segurança
 // ==========================================
 
 function _darkenHex(hex, percent) {
@@ -30,7 +30,7 @@ async function init() {
     EMPRESA_ID = urlParams.get('id');
 
     if (!EMPRESA_ID) {
-        alert('ID da empresa nÃ£o fornecido.');
+        alert('ID da empresa não fornecido.');
         window.location.href = 'admin-saas.html';
         return;
     }
@@ -56,22 +56,22 @@ async function init() {
 // 2. Carregamento de Dados
 // ==========================================
 async function carregarDadosEmpresa() {
-    // 1. Dados BÃ¡sicos
+    // 1. Dados Básicos
     const { data: empresa, error } = await sb.from('empresas').select('*').eq('id', EMPRESA_ID).single();
     if (error || !empresa) {
-        showToast('Empresa nÃ£o encontrada.', 'error');
+        showToast('Empresa não encontrada.', 'error');
         return;
     }
     EMPRESA_DATA = empresa;
     renderDadosBasicos(empresa);
 
-    // 2. MÃ©tricas Financeiras
+    // 2. Métricas Financeiras
     await carregarMetricas();
 
     // 3. Administradores
     await carregarAdmins();
 
-    // 4. ConfiguraÃ§Ãµes EspecÃ­ficas
+    // 4. Configurações Específicas
     await carregarConfiguracoesLoja();
 
     // 5. Status do PIX
@@ -92,26 +92,26 @@ async function carregarConfiguracoesLoja() {
     }
 }
 
-// Lista completa de chaves de mÃ³dulos para sincronizaÃ§Ã£o
+// Lista completa de chaves de módulos para sincronização
 const LISTA_MODULOS = [
     'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque',
     'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
     'metricas_dashboard', 'metricas_analise_tempo', 'metricas_performance_vendas', 'metricas_destaques',
     'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',
     'cupons', 'cardapio', 'pagamento', 'pedido_mesa',
-    // MÃ³dulos de Agendamento
+    // Módulos de Agendamento
     'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
     'agendamento_mensagens', 'agendamento_fidelidade',
-    // MÃ³dulo de Loja de Roupas
+    // Módulo de Loja de Roupas
     'loja_roupas',
-    // MÃ³dulo de Clientes Premium
+    // Módulo de Clientes Premium
     'clientes_premium'
 ];
 
 function renderDadosBasicos(emp) {
     document.getElementById('empresaNome').textContent = emp.nome;
     document.getElementById('editEmpNome').value = emp.nome;
-    // Se a funÃ§Ã£o applyCnpjMask jÃ¡ estiver carregada (estarÃ¡ no hoisting ou definimos global)
+    // Se a função applyCnpjMask já estiver carregada (estará no hoisting ou definimos global)
     document.getElementById('editEmpCNPJ').value = emp.cnpj ? applyCnpjMask(emp.cnpj) : '';
     document.getElementById('editEmpPlano').value = emp.plano;
     document.getElementById('editEmpSegmento').value = emp.segmento || '';
@@ -119,12 +119,12 @@ function renderDadosBasicos(emp) {
     document.getElementById('editPlanoVencimento').value = emp.plano_vencimento || '';
     document.getElementById('infoId').textContent = emp.id;
     
-    // FormataÃ§Ã£o de data brasileira segura
+    // Formatação de data brasileira segura
     const dCriacao = new Date(emp.criado_em);
     const dataFormatada = isNaN(dCriacao) ? 'â€”' : dCriacao.toLocaleDateString('pt-BR');
     document.getElementById('infoCriacao').textContent = dataFormatada;
  
-    // MÃ³dulos (Feature Flags) - Popula todos os checkboxes dinamicamente
+    // Módulos (Feature Flags) - Popula todos os checkboxes dinamicamente
     const mods = emp.modulos || {};
     LISTA_MODULOS.forEach(key => {
         const el = document.getElementById(`mod_${key}`);
@@ -206,7 +206,7 @@ function renderDadosBasicos(emp) {
 
 async function carregarMetricas() {
     try {
-        // 1. Buscar Pedidos (Produtos) concluÃ­dos/finalizados
+        // 1. Buscar Pedidos (Produtos) concluídos/finalizados
         const { data: orders, error: errOrders } = await sb
             .from('orders')
             .select('total, created_at, status')
@@ -215,7 +215,7 @@ async function carregarMetricas() {
 
         if (errOrders) throw errOrders;
 
-        // 2. Buscar Agendamentos (ServiÃ§os) concluÃ­dos
+        // 2. Buscar Agendamentos (Serviços) concluídos
         const { data: appts, error: errAppts } = await sb
             .from('agendamentos')
             .select('empresa_id, status, data_hora_inicio, servico:servicos(preco)')
@@ -232,7 +232,7 @@ async function carregarMetricas() {
         const totalTransacoes = (orders?.length || 0) + (appts?.length || 0);
         const ticketMedio = totalTransacoes > 0 ? totalFaturamento / totalTransacoes : 0;
 
-        // 4. Faturamento do mÃªs atual
+        // 4. Faturamento do mês atual
         const agora = new Date();
         const mesAtual = agora.getMonth();
         const anoAtual = agora.getFullYear();
@@ -249,8 +249,8 @@ async function carregarMetricas() {
 
         const fatMes = fatMesProd + fatMesServ;
 
-        // 5. Ãšltima TransaÃ§Ã£o
-        let ultimoPedidoStr = 'Nenhuma transaÃ§Ã£o';
+        // 5. Última Transação
+        let ultimoPedidoStr = 'Nenhuma transação';
         const allTrans = [
             ...(orders || []).map(o => ({ date: new Date(o.created_at) })),
             ...(appts || []).map(a => ({ date: new Date(a.data_hora_inicio) }))
@@ -273,7 +273,7 @@ async function carregarMetricas() {
 
     } catch (err) {
         console.error('[Metrics] Erro:', err);
-        showToast('Erro ao carregar mÃ©tricas financeiras', 'error');
+        showToast('Erro ao carregar métricas financeiras', 'error');
     }
 }
  
@@ -301,10 +301,10 @@ async function carregarAdmins() {
 }
  
 // ==========================================
-// 3. AÃ§Ãµes e Funcionalidades
+// 3. Ações e Funcionalidades
 // ==========================================
 
-// --- VALIDAÃ‡ÃƒO E MÃSCARA DE CNPJ ---
+// --- VALIDAÇÃƒO E MÃSCARA DE CNPJ ---
 function cleanCnpj(value) {
     if (!value) return '';
     return value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -331,7 +331,7 @@ if (inputCnpj) {
         
         input.value = applyCnpjMask(input.value);
         
-        // Ajusta cursor para nÃ£o pular pro final se apagar no meio
+        // Ajusta cursor para não pular pro final se apagar no meio
         cursor += (input.value.length - oldLength);
         if(cursor >= 0) input.setSelectionRange(cursor, cursor);
 
@@ -348,10 +348,10 @@ if (inputCnpj) {
                 try {
                     // API Gratuita e sem limite rigoroso
                     const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${clean}`);
-                    if (!res.ok) throw new Error('CNPJ InvÃ¡lido');
+                    if (!res.ok) throw new Error('CNPJ Inválido');
                     
                     const data = await res.json();
-                    statusEl.textContent = `âœ… VÃ¡lido (${data.razao_social.substring(0, 15)}...)`;
+                    statusEl.textContent = `âœ… Válido (${data.razao_social.substring(0, 15)}...)`;
                     statusEl.style.color = 'var(--accent-green)';
                     
                     // Se os campos de nome estiverem vazios, auto-preenche
@@ -363,7 +363,7 @@ if (inputCnpj) {
                     if (!nameInput.value && sugestaoNome) nameInput.value = sugestaoNome;
 
                 } catch (err) {
-                    statusEl.textContent = 'âŒ NÃ£o encontrado na Receita';
+                    statusEl.textContent = 'âŒ Não encontrado na Receita';
                     statusEl.style.color = 'var(--accent-red)';
                 }
             }, 600);
@@ -374,7 +374,7 @@ if (inputCnpj) {
     });
 }
  
-// Salvar ConfiguraÃ§Ãµes (Plano e Status)
+// Salvar Configurações (Plano e Status)
 document.getElementById('btnSalvarConfig').addEventListener('click', async () => {
     const btn = document.getElementById('btnSalvarConfig');
     const nomeEmpresa = document.getElementById('editEmpNome').value.trim();
@@ -384,7 +384,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
  
-    // MÃ³dulos - Coleta todos os estados atuais mesclando com os existentes para nÃ£o perder mÃ³dulos ocultos
+    // Módulos - Coleta todos os estados atuais mesclando com os existentes para não perder módulos ocultos
     const modulos = { ...(EMPRESA_DATA.modulos || {}) };
     LISTA_MODULOS.forEach(key => {
         const el = document.getElementById(`mod_${key}`);
@@ -441,12 +441,12 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
             updated_at: new Date().toISOString()
         };
 
-        // RESOLUÃ‡ÃƒO DO ERRO 23502 (ID NULO):
-        // Se jÃ¡ temos um registro carregado, usamos o ID dele.
+        // RESOLUÇÃƒO DO ERRO 23502 (ID NULO):
+        // Se já temos um registro carregado, usamos o ID dele.
         if (STORE_SETTINGS_DATA && STORE_SETTINGS_DATA.id) {
             upsertData.id = STORE_SETTINGS_DATA.id;
         } else {
-            // Caso contrÃ¡rio (empresa sem config), buscamos o prÃ³ximo ID disponÃ­vel (Manual incremental)
+            // Caso contrário (empresa sem config), buscamos o próximo ID disponível (Manual incremental)
             const { data: maxRows } = await sb
                 .from('store_settings')
                 .select('id')
@@ -463,19 +463,19 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
 
         if (errSet) throw errSet;
  
-        showToast('ConfiguraÃ§Ãµes e Branding atualizados! âœ…');
+        showToast('Configurações e Branding atualizados! âœ…');
         await carregarDadosEmpresa(); // Recarrega tudo para atualizar STORE_SETTINGS_DATA
     } catch (err) {
         console.error('Erro ao salvar:', err);
-        showToast(err.message || 'Erro ao salvar configuraÃ§Ãµes', 'error');
+        showToast(err.message || 'Erro ao salvar configurações', 'error');
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Atualizar ConfiguraÃ§Ãµes';
+        btn.textContent = 'Atualizar Configurações';
     }
 });
  
-// Salvamento automÃ¡tico de mÃ³dulos
-// Salvamento automÃ¡tico de mÃ³dulos individuais
+// Salvamento automático de módulos
+// Salvamento automático de módulos individuais
 window.atualizarModulo = async (modulo, checked) => {
     if (!EMPRESA_ID || !EMPRESA_DATA) return;
  
@@ -496,15 +496,15 @@ window.atualizarModulo = async (modulo, checked) => {
         }
 
         if (!data || data.length === 0) {
-            throw new Error('PermissÃ£o negada ou empresa nÃ£o encontrada.');
+            throw new Error('Permissão negada ou empresa não encontrada.');
         }
         
         // Feedback visual premium
         showToast(`Funcionalidade ${checked ? 'ativada' : 'desativada'}!`);
         console.log(`[Modules] ${modulo} atualizado com sucesso para ${checked}`);
     } catch (err) {
-        console.error('Erro crÃ­tico ao atualizar mÃ³dulo:', err);
-        showToast('Erro ao salvar alteraÃ§Ã£o: ' + err.message, 'error');
+        console.error('Erro crítico ao atualizar módulo:', err);
+        showToast('Erro ao salvar alteração: ' + err.message, 'error');
         
         // Reverte o switch visualmente em caso de falha
         const el = document.getElementById(`mod_${modulo}`);
@@ -515,7 +515,7 @@ window.atualizarModulo = async (modulo, checked) => {
 
 
 
-// FunÃ§Ã£o para ativar/desativar um grupo inteiro de mÃ³dulos
+// Função para ativar/desativar um grupo inteiro de módulos
 window.toggleGrupoModulo = async (containerId, isChecked) => {
     if (!EMPRESA_ID || !EMPRESA_DATA) return;
     const container = document.getElementById(containerId);
@@ -541,7 +541,7 @@ window.toggleGrupoModulo = async (containerId, isChecked) => {
     }
 };
 
-// FunÃ§Ã£o para expandir/colapsar os cards de mÃ³dulos
+// Função para expandir/colapsar os cards de módulos
 window.toggleAccordionNovo = (id) => {
     const el = document.getElementById(id);
     const icon = document.getElementById('icon_' + id);
@@ -553,13 +553,13 @@ window.toggleAccordionNovo = (id) => {
     }
 };
 
-// --- MODAIS E NAVEGAÃ‡ÃƒO ---
+// --- MODAIS E NAVEGAÇÃƒO ---
 window.switchPageTab = (tabId) => {
-    // Esconder todos os conteÃºdos
+    // Esconder todos os conteúdos
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
     });
-    // Desativar todos os botÃµes
+    // Desativar todos os botões
     document.querySelectorAll('.page-tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -568,7 +568,7 @@ window.switchPageTab = (tabId) => {
     document.getElementById(tabId).classList.add('active');
     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
     
-    // Feedback visual (scroll para o topo da aba se necessÃ¡rio)
+    // Feedback visual (scroll para o topo da aba se necessário)
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -595,7 +595,7 @@ document.getElementById('btnConfirmarNovoAdmin').addEventListener('click', async
         btn.disabled = true;
         btn.textContent = 'Criando...';
 
-        // Chama a RPC para criar o usuÃ¡rio no auth e no public
+        // Chama a RPC para criar o usuário no auth e no public
         const { data, error } = await sb.rpc('create_new_admin_user', {
             p_email: email,
             p_password: password,
@@ -625,7 +625,7 @@ window.removerAdmin = async (userId, email) => {
     if (!confirm(`Deseja remover o acesso administrativo de ${email}?`)) return;
 
     try {
-        // Desvincular usuÃ¡rio
+        // Desvincular usuário
         const { error } = await sb
             .from('usuarios')
             .update({ empresa_id: null, role: 'atendente' }) // volta a ser atendente sem empresa ou cargo menor
@@ -640,7 +640,7 @@ window.removerAdmin = async (userId, email) => {
     }
 };
 
-// CÃ³pia de URLs
+// Cópia de URLs
 window.copyToClipboard = (elementId) => {
     const text = document.getElementById(elementId).textContent;
     navigator.clipboard.writeText(text);
@@ -653,26 +653,26 @@ window.copyAllUrls = () => {
     const aten = document.getElementById('urlAtendente').href;
     const agendamento = document.getElementById('urlAgendamento') ? document.getElementById('urlAgendamento').href : '';
 
-    const fullText = `ðŸš€ *Acessos da sua Loja - RiverTech GestÃ£o*
+    const fullText = `ðŸš€ *Acessos da sua Loja - RiverTech Gestão*
 
-ðŸ“ *Link do CardÃ¡pio (Para Clientes):*
+ðŸ“ *Link do Cardápio (Para Clientes):*
 ${menu}
 _Divulgue este link no seu Instagram e WhatsApp._
 
 ðŸ“… *Link de Agendamento Online:*
 ${agendamento}
-_Envie para os clientes marcarem horÃ¡rios._
+_Envie para os clientes marcarem horários._
 
-âš™ï¸ *Painel Administrativo (GestÃ£o):*
+âš™ï¸ *Painel Administrativo (Gestão):*
 ${admin}
-_Aqui vocÃª gerencia produtos, preÃ§os e configuraÃ§Ãµes._
+_Aqui você gerencia produtos, preços e configurações._
 
 ðŸŽ§ *Painel do Atendente (Pedidos):*
 ${aten}
 _Use este painel para receber e gerenciar os pedidos em tempo real._`;
 
     navigator.clipboard.writeText(fullText);
-    showToast('Todos os links copiados com instruÃ§Ãµes! âœ…');
+    showToast('Todos os links copiados com instruções! âœ…');
 };
 
 // --- TEMA ---
@@ -711,7 +711,7 @@ window.restaurarTemaPadrao = () => {
     document.getElementById('editTemaCorTexto').value = '#ffffff';
     document.getElementById('editTemaCorHover').value = '#d4a14c';
     previewTema();
-    showToast('PadrÃ£o restaurado (nÃ£o esqueÃ§a de salvar)');
+    showToast('Padrão restaurado (não esqueça de salvar)');
 };
 
 // Utils
@@ -728,11 +728,11 @@ function showToast(message, type = 'success') {
 }
 
 // ==========================================
-// PIX / Mercado Pago â€” GestÃ£o por Empresa
+// PIX / Mercado Pago â€” Gestão por Empresa
 // ==========================================
 
 /**
- * Carrega o status do PIX e CartÃ£o da empresa.
+ * Carrega o status do PIX e Cartão da empresa.
  * Chamado automaticamente ao carregar os dados da empresa.
  */
 function carregarStatusPix() {
@@ -747,14 +747,14 @@ function carregarStatusPix() {
     const statusTitle = document.getElementById('pixStatusTitle');
     const statusDesc = document.getElementById('pixStatusDesc');
     
-    if (!togglePix) return; // Aba Pagamentos nÃ£o existe na pÃ¡gina
+    if (!togglePix) return; // Aba Pagamentos não existe na página
     
     togglePix.checked = EMPRESA_DATA.pix_habilitado === true;
     toggleCartao.checked = EMPRESA_DATA.cartao_habilitado === true;
     toggleParcelamento.checked = EMPRESA_DATA.cartao_parcelamento === true;
     
     // O token vem mascarado do banco (ou vazio)
-    // Mostramos apenas se foi configurado ou nÃ£o
+    // Mostramos apenas se foi configurado ou não
     const temToken = !!EMPRESA_DATA.mp_access_token;
     
     if (temToken && (EMPRESA_DATA.pix_habilitado || EMPRESA_DATA.cartao_habilitado)) {
@@ -762,19 +762,19 @@ function carregarStatusPix() {
         statusIcon.style.background = 'rgba(16, 185, 129, 0.1)';
         statusTitle.textContent = 'Pagamentos Online Ativos';
         statusTitle.style.color = 'var(--accent-green)';
-        statusDesc.textContent = 'A empresa estÃ¡ pronta para receber pagamentos pelo site.';
+        statusDesc.textContent = 'A empresa está pronta para receber pagamentos pelo site.';
     } else if (temToken) {
         statusIcon.innerHTML = 'â¸ï¸';
         statusIcon.style.background = 'rgba(234, 179, 8, 0.1)';
         statusTitle.textContent = 'Pagamentos Configurados (Desativados)';
         statusTitle.style.color = 'var(--accent-gold)';
-        statusDesc.textContent = 'Token cadastrado, mas PIX/CartÃ£o estÃ£o desligados.';
+        statusDesc.textContent = 'Token cadastrado, mas PIX/Cartão estão desligados.';
     } else {
         statusIcon.innerHTML = 'âš ï¸';
         statusIcon.style.background = 'rgba(239, 68, 68, 0.1)';
-        statusTitle.textContent = 'Pagamentos nÃ£o configurados';
+        statusTitle.textContent = 'Pagamentos não configurados';
         statusTitle.style.color = 'var(--accent-red)';
-        statusDesc.textContent = 'Configure o token de ProduÃ§Ã£o do Mercado Pago abaixo.';
+        statusDesc.textContent = 'Configure o token de Produção do Mercado Pago abaixo.';
     }
     
     // Preenche o campo com asteriscos se o token existe
@@ -788,7 +788,7 @@ function carregarStatusPix() {
 }
 
 /**
- * Toggle individual para as opÃ§Ãµes de pagamento.
+ * Toggle individual para as opções de pagamento.
  */
 window.togglePagamento = async (tipo, checked) => {
     if (!EMPRESA_ID) return;
@@ -837,10 +837,10 @@ window.salvarConfigPix = async () => {
         return;
     }
     
-    // ValidaÃ§Ã£o bÃ¡sica do formato do token (se estiver enviando um novo)
+    // Validação básica do formato do token (se estiver enviando um novo)
     if (token && !token.startsWith('APP_USR-') && !token.startsWith('TEST-')) {
         const confirmar = confirm(
-            'O token nÃ£o parece ter o formato padrÃ£o do Mercado Pago (APP_USR-... ou TEST-...).\n\n' +
+            'O token não parece ter o formato padrão do Mercado Pago (APP_USR-... ou TEST-...).\n\n' +
             'Deseja salvar mesmo assim?'
         );
         if (!confirmar) return;
@@ -873,26 +873,26 @@ window.salvarConfigPix = async () => {
         EMPRESA_DATA.cartao_parcelamento = parcelamentoAtivo;
         
         carregarStatusPix();
-        showToast('ConfiguraÃ§Ãµes de pagamento salvas! ðŸŽ‰');
+        showToast('Configurações de pagamento salvas! ðŸŽ‰');
         
     } catch (err) {
-        showToast('Erro ao salvar configuraÃ§Ãµes: ' + err.message, 'error');
+        showToast('Erro ao salvar configurações: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
-        btn.textContent = 'Salvar ConfiguraÃ§Ã£o de Pagamentos';
+        btn.textContent = 'Salvar Configuração de Pagamentos';
     }
 };
 
 /**
- * Testa a conexÃ£o com a API do Mercado Pago usando o token.
- * NÃ£o cria nenhum pagamento â€” apenas verifica se o token Ã© vÃ¡lido.
+ * Testa a conexão com a API do Mercado Pago usando o token.
+ * Não cria nenhum pagamento â€” apenas verifica se o token é válido.
  */
 window.testarConexaoPix = async () => {
     const btn = document.getElementById('btnTestarPix');
     const resultEl = document.getElementById('pixTestResult');
     const tokenInput = document.getElementById('pixAccessToken');
     
-    // Usar o token do input OU o que jÃ¡ estÃ¡ salvo
+    // Usar o token do input OU o que já está salvo
     let tokenParaTestar = tokenInput.value.trim();
     
     if (!tokenParaTestar && EMPRESA_DATA?.mp_access_token) {
@@ -926,32 +926,32 @@ window.testarConexaoPix = async () => {
             resultEl.style.background = 'rgba(16, 185, 129, 0.1)';
             resultEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
             resultEl.innerHTML = `
-                âœ… <strong>ConexÃ£o bem-sucedida!</strong><br>
+                âœ… <strong>Conexão bem-sucedida!</strong><br>
                 <span style="font-size: 0.8rem; color: var(--text-secondary);">
                     Conta: <strong>${edgeData.first_name || ''} ${edgeData.last_name || ''}</strong> 
-                    (${edgeData.email || 'e-mail nÃ£o disponÃ­vel'})<br>
-                    ID: ${edgeData.id} | PaÃ­s: ${edgeData.country_id || 'BR'}
+                    (${edgeData.email || 'e-mail não disponível'})<br>
+                    ID: ${edgeData.id} | País: ${edgeData.country_id || 'BR'}
                 </span>
             `;
         } else {
-            const msg = edgeData?.error || 'Token invÃ¡lido ou expirado.';
+            const msg = edgeData?.error || 'Token inválido ou expirado.';
             resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
             resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
             
-            // Detectar erro especÃ­fico de Public Key usada no lugar do Access Token
+            // Detectar erro específico de Public Key usada no lugar do Access Token
             const isUnauthorizedPolicyError = msg.toLowerCase().includes('unauthorized') || msg.toLowerCase().includes('policy');
             
             if (isUnauthorizedPolicyError) {
                 resultEl.innerHTML = `
-                    âŒ <strong>Falha na conexÃ£o:</strong> ${msg}<br><br>
+                    âŒ <strong>Falha na conexão:</strong> ${msg}<br><br>
                     <span style="font-size: 0.8rem; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); padding: 8px 10px; border-radius: 6px; display: block; line-height: 1.6;">
-                        âš ï¸ <strong style="color: var(--accent-gold);">Causa provÃ¡vel:</strong> VocÃª pode ter inserido a <strong>Public Key</strong> em vez do <strong>Access Token</strong>.<br>
-                        Ambas comeÃ§am com <code style="background:#111; padding:1px 4px; border-radius:3px;">APP_USR-</code>, mas o <strong>Access Token</strong> tem ~70 caracteres (muito mais longo).<br>
-                        Acesse <strong>Mercado Pago Developers â†’ Seu App â†’ Credenciais de ProduÃ§Ã£o</strong> e copie o campo <strong>Access Token</strong>.
+                        âš ï¸ <strong style="color: var(--accent-gold);">Causa provável:</strong> Você pode ter inserido a <strong>Public Key</strong> em vez do <strong>Access Token</strong>.<br>
+                        Ambas começam com <code style="background:#111; padding:1px 4px; border-radius:3px;">APP_USR-</code>, mas o <strong>Access Token</strong> tem ~70 caracteres (muito mais longo).<br>
+                        Acesse <strong>Mercado Pago Developers â†’ Seu App â†’ Credenciais de Produção</strong> e copie o campo <strong>Access Token</strong>.
                     </span>
                 `;
             } else {
-                resultEl.innerHTML = `âŒ <strong>Falha na conexÃ£o:</strong> ${msg}`;
+                resultEl.innerHTML = `âŒ <strong>Falha na conexão:</strong> ${msg}`;
             }
         }
         
@@ -962,7 +962,7 @@ window.testarConexaoPix = async () => {
         resultEl.innerHTML = `â Œ <strong>Erro de rede:</strong> ${err.message}`;
     } finally {
         btn.disabled = false;
-        btn.textContent = 'ðŸ§ª Testar ConexÃ£o';
+        btn.textContent = 'ðŸ§ª Testar Conexão';
     }
 };
 
