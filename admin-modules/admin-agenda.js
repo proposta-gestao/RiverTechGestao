@@ -86,6 +86,24 @@
         try {
             await Promise.all([carregarProfissionais(), carregarServicos()]);
             await carregarDiasComAgendamentos();
+
+            // Format phone inputs
+            const telInputs = [
+                document.getElementById('agendaModalTelefone'),
+                document.getElementById('waitlistTelefone')
+            ];
+            telInputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('input', () => {
+                        let digits = input.value.replace(/\D/g, '').slice(0, 11);
+                        let formatted = digits;
+                        if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+                        if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+                        input.value = formatted;
+                    });
+                }
+            });
+
             renderSubtab('agenda'); // Começa na aba de Agenda do dia
             renderMiniCal();
             renderProfissionaisSidebar();
@@ -792,6 +810,11 @@
             window.showToast?.('Nome e Telefone são obrigatórios', 'error');
             return;
         }
+        const telLimpo = payload.cliente_telefone.replace(/\D/g, '');
+        if (telLimpo.length !== 11) {
+            window.showToast?.('O telefone deve ter exatamente 11 números', 'error');
+            return;
+        }
 
         const { error } = await sb.from('lista_espera').insert(payload);
 
@@ -1040,6 +1063,12 @@
 
         if (!profId || !servId || !data || !hora || !cliente || !telefone) {
             window.showToast?.('Preencha todos os campos obrigatórios e selecione um horário válido.', 'error');
+            return;
+        }
+
+        const telLimpo = telefone.replace(/\D/g, '');
+        if (telLimpo.length !== 11) {
+            window.showToast?.('O telefone deve ter exatamente 11 números', 'error');
             return;
         }
 

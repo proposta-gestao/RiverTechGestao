@@ -186,6 +186,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const pPromo = document.getElementById('prodPrecoPromo');
     if (pBase) pBase.addEventListener('input', atualizarPromoPreview);
     if (pPromo) pPromo.addEventListener('input', atualizarPromoPreview);
+
+    const inputTelefone = document.getElementById('cpTelefone');
+    if (inputTelefone) {
+        inputTelefone.addEventListener('input', () => {
+            let digits = inputTelefone.value.replace(/\D/g, '').slice(0, 11);
+            let formatted = digits;
+            if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+            if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+            inputTelefone.value = formatted;
+        });
+    }
 });
 
 function fecharModal(id) {
@@ -4350,6 +4361,8 @@ document.getElementById('btnSalvarClientePremium').onclick = async () => {
 
     if (!nome || !cpf) { showToast('Nome e CPF são obrigatórios', 'warning'); return; }
     if (cpf.length !== 11) { showToast('CPF deve ter 11 dígitos', 'warning'); return; }
+    const telefoneLimpo = telefone.replace(/\D/g, '');
+    if (!telefoneLimpo || telefoneLimpo.length !== 11) { showToast('O telefone deve ter exatamente 11 números', 'warning'); return; }
     if (!id && !pinRaw) { showToast('O PIN é obrigatório para novos cadastros', 'warning'); return; }
     if (pinRaw && (pinRaw.length < 4 || pinRaw.length > 6)) { showToast('O PIN deve ter entre 4 e 6 dígitos', 'warning'); return; }
 

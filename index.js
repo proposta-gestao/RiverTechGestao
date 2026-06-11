@@ -999,7 +999,9 @@ document.getElementById("btnEnviar").onclick = async () => {
     const telefoneCliente = document.getElementById("clienteTelefone")?.value.trim() || '';
 
     if (!nomeCliente)    return mostrarToast("Por favor, informe seu nome completo.", "error");
-    if (!telefoneCliente) return mostrarToast("Por favor, informe seu telefone/WhatsApp.", "error");
+    if (!telefoneCliente || telefoneCliente.replace(/\D/g, '').length !== 11) {
+        return mostrarToast("Por favor, informe seu telefone/WhatsApp válido com 11 dígitos.", "error");
+    }
 
     let camposEndereco = {};
     let freteValor = 0;
