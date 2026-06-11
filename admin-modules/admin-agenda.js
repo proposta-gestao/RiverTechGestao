@@ -115,20 +115,37 @@
 
             // Botão de Teste de Alerta (Persistent para o usuário verificar)
             if (!document.getElementById('btnTestarAudioAgenda')) {
-                const stats = document.querySelector('.agenda-stats');
-                if (stats) {
-                    const btnTest = document.createElement('button');
-                    btnTest.id = 'btnTestarAudioAgenda';
-                    btnTest.style.cssText = 'background:rgba(255,255,255,0.05); color:var(--color-muted); border:1px solid var(--admin-border); padding:6px 12px; border-radius:8px; font-size:0.75rem; cursor:pointer; margin-bottom:1rem; display:flex; align-items:center; gap:6px; transition:all 0.2s;';
-                    btnTest.innerHTML = '<span>🔔</span> Testar Alerta Sonoro';
-                    btnTest.onmouseover = () => btnTest.style.background = 'rgba(255,255,255,0.1)';
-                    btnTest.onmouseout = () => btnTest.style.background = 'rgba(255,255,255,0.05)';
-                    btnTest.onclick = () => {
+                const mobileBar = document.getElementById('agendaStatsMobileBar');
+                const statsCards = document.querySelector('.agenda-stats');
+                
+                const btnTest = document.createElement('button');
+                btnTest.id = 'btnTestarAudioAgenda';
+                btnTest.style.cssText = 'background:rgba(255,255,255,0.05); color:var(--color-muted); border:1px solid var(--admin-border); padding:6px 12px; border-radius:8px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:6px; transition:all 0.2s; flex-shrink:0; white-space:nowrap;';
+                btnTest.innerHTML = '<span>🔔</span> Testar Alerta Sonoro';
+                btnTest.onmouseover = () => btnTest.style.background = 'rgba(255,255,255,0.1)';
+                btnTest.onmouseout = () => btnTest.style.background = 'rgba(255,255,255,0.05)';
+                btnTest.onclick = () => {
+                    resumeAudio();
+                    playBell();
+                    showToast('Teste de áudio disparado!');
+                };
+
+                // No mobile: insere dentro da barra compacta (antes das infos)
+                if (mobileBar) {
+                    mobileBar.insertBefore(btnTest, mobileBar.firstChild);
+                }
+
+                // No desktop: também adiciona antes dos cards de stats (comportamento anterior)
+                if (statsCards) {
+                    const btnDesktop = btnTest.cloneNode(true);
+                    btnDesktop.id = 'btnTestarAudioAgendaDesktop';
+                    btnDesktop.style.cssText += ' margin-bottom:1rem;';
+                    btnDesktop.onclick = () => {
                         resumeAudio();
                         playBell();
                         showToast('Teste de áudio disparado!');
                     };
-                    stats.parentNode.insertBefore(btnTest, stats);
+                    statsCards.parentNode.insertBefore(btnDesktop, statsCards);
                 }
             }
 
@@ -484,6 +501,7 @@
     function renderStats() {
         const total = agendamentos.length;
         const concluidos = agendamentos.filter(a => a.status === 'concluido').length;
+        const pendentes = agendamentos.filter(a => a.status === 'pendente').length;
         const faturamento = agendamentos
             .filter(a => a.status === 'concluido')
             .reduce((sum, a) => sum + parseFloat(a.servico?.preco || 0), 0);
@@ -491,10 +509,18 @@
         const fmt = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
         const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+        
+        // Stats cards (desktop)
         el('agendaStat_total', total);
         el('agendaStat_concluidos', concluidos);
         el('agendaStat_faturamento', fmt(faturamento));
-        el('agendaStat_pendentes', agendamentos.filter(a => a.status === 'pendente').length);
+        el('agendaStat_pendentes', pendentes);
+
+        // Stats compactos (mobile bar)
+        el('agendaStatM_total', total);
+        el('agendaStatM_concluidos', concluidos);
+        el('agendaStatM_faturamento', fmt(faturamento));
+        el('agendaStatM_pendentes', pendentes);
     }
 
     // ============================================================
