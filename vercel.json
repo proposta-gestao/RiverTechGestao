@@ -29,7 +29,7 @@
       "destination": "/loja.html"
     },
     {
-      "source": "/:loja",
+      "source": "/:loja([^.]+)",
       "destination": "/cardapio.html"
     }
   ]

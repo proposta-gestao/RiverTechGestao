@@ -506,17 +506,65 @@ async function initTenantAdmin(supabaseClient, userId) {
     }
 
     if (error || !data) {
-        console.warn('[Tenant-Admin] Usuário não encontrado em usuarios. Verificando Super Admin...');
+        console.warn('[Tenant-Admin] Usuário não encontrado em usuarios. Tentando carregar empresa via slug...');
         
-        // Se não encontrou no usuarios, pode ser um Super Admin tentando acessar
+        // Para admins legados (admin_users), o get_empresa_id() do banco pode retornar NULL
+        // antes de a correção SQL ser aplicada, bloqueando TODAS as queries RLS.
+        // Estratégia: 
+        // 1. Tentar initTenantPublico (funciona se RLS de empresas estiver corrigida)
+        // 2. Fallback: usar RPC get_empresa_by_slug (SECURITY DEFINER, ignora RLS)
+        const slug = _resolverSlug();
+        if (slug) {
+            // Tentativa 1: initTenantPublico normal
+            invalidateTenantCache();
+            const publicResult = await initTenantPublico(supabaseClient, true);
+            if (publicResult) {
+                window.TENANT.role = 'admin';
+                console.info('[Tenant] ✅ Admin legado autenticado via slug | Empresa:', window.TENANT.nome);
+                return publicResult;
+            }
+
+            // Tentativa 2: RPC com SECURITY DEFINER (bypassa RLS)
+            console.warn('[Tenant-Admin] initTenantPublico falhou. Tentando RPC get_empresa_by_slug...');
+            try {
+                const { data: rpcData, error: rpcError } = await supabaseClient
+                    .rpc('get_empresa_by_slug', { _slug: slug });
+                
+                if (!rpcError && rpcData && rpcData.length > 0) {
+                    const emp = rpcData[0];
+                    window.TENANT.empresa_id       = emp.id;
+                    window.TENANT.slug             = emp.slug;
+                    window.TENANT.nome             = emp.nome;
+                    window.TENANT.cor_primaria     = emp.cor_primaria;
+                    window.TENANT.logo_url         = emp.logo_url;
+                    window.TENANT.modulos          = emp.modulos || {};
+                    window.TENANT.tema_cor_primaria   = emp.tema_cor_primaria;
+                    window.TENANT.tema_cor_secundaria = emp.tema_cor_secundaria;
+                    window.TENANT.tema_cor_botao      = emp.tema_cor_botao;
+                    window.TENANT.tema_cor_bg         = emp.tema_cor_bg;
+                    window.TENANT.tema_cor_surface    = emp.tema_cor_surface;
+                    window.TENANT.tema_cor_borda      = emp.tema_cor_borda;
+                    window.TENANT.tema_cor_texto      = emp.tema_cor_texto;
+                    window.TENANT.tema_cor_hover      = emp.tema_cor_hover;
+                    window.TENANT.role             = 'admin';
+                    window.TENANT.pronto           = true;
+                    window.empresa = { id: emp.id, nome: emp.nome, cor_primaria: emp.cor_primaria, logo_url: emp.logo_url };
+                    _aplicarWhiteLabel(emp);
+                    console.info('[Tenant] ✅ Admin legado autenticado via RPC | Empresa:', emp.nome);
+                    return emp.id;
+                }
+            } catch (rpcErr) {
+                console.warn('[Tenant-Admin] RPC get_empresa_by_slug não disponível:', rpcErr.message);
+            }
+        }
+        
+        // Fallback final: verificar se é Super Admin
+        console.warn('[Tenant-Admin] Todas as tentativas falharam. Verificando Super Admin...');
         const { data: isSuper } = await supabaseClient.rpc('is_super_admin', { _user_id: userId });
         
-        if (isSuper) {
-            console.info('[Tenant-Admin] Super Admin detectado. Tentando carregar empresa via URL...');
-            const slug = _resolverSlug();
-            if (slug) {
-                return await initTenantPublico(supabaseClient);
-            }
+        if (isSuper && slug) {
+            console.info('[Tenant-Admin] Super Admin detectado.');
+            return await initTenantPublico(supabaseClient);
         }
         
         console.error('[Tenant-Admin] Erro fatal ao buscar empresa do usuário:', userId, error?.message);

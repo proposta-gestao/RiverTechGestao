@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Admin | RiverTech</title>
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png">
     <style>
         html.tenant-loading body > :not(.tenant-loader) {
             opacity: 0 !important;
@@ -50,7 +51,7 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="design-tokens.css">
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="admin.css?v=2.2">
     <link rel="stylesheet" href="admin-agenda.css" id="agenda-css" disabled>
     <link rel="stylesheet" href="admin-loja.css" id="loja-css" disabled>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1197,11 +1198,7 @@
                             <button class="btn-primary" onclick="abrirModalPerfilCardapio()">+ Novo Perfil</button>
                         </div>
                         <div class="config-card-body">
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
-                                Crie perfis de acesso ao cardápio. Cada perfil define quais categorias de produtos o cliente premium pode visualizar.
-                            </p>
                             <div id="perfisCardapioLista">
-                                <p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>
                             </div>
                         </div>
                     </div>
@@ -1696,7 +1693,7 @@
             </div>
         </div>
     </div>
-</div>
+
 
     <!-- COMENTADO: Full Gallery Modal - Galeria completa desativada -->
     <!-- <div class="admin-modal-backdrop" id="modalGaleriaCompleta">
@@ -1719,7 +1716,7 @@
         </div>
     </div> -->
 
-</div>
+
 
     <!-- Custom Confirm Modal -->
     <div class="admin-modal-backdrop" id="modalConfirmacao">
@@ -2123,12 +2120,12 @@
             <button id="btnCloseMobile" class="btn-close-mobile">&times;</button>
         </div>
         <nav class="sidebar-nav">
-            <button class="nav-item active" data-tab="produtos">📦 Produtos</button>
+            <button class="nav-item active" data-tab="produtos" id="side-nav-produtos">📦 Produtos</button>
             <button class="nav-item" data-tab="agenda" id="side-nav-agenda" style="display:none;">📅 Agenda</button>
-            <button class="nav-item" data-tab="dashboard">📊 Vendas & Performance</button>
+            <button class="nav-item" data-tab="dashboard" id="side-nav-dashboard">📊 Vendas & Performance</button>
             <button class="nav-item" data-tab="loja" id="side-nav-loja" style="display:none;">👗 Loja</button>
             <button class="nav-item" data-tab="cupons" id="side-nav-cupons">🎫 Cupons</button>
-            <button class="nav-item" data-tab="configuracoes">⚙️ Configurações</button>
+            <button class="nav-item" data-tab="configuracoes" id="side-nav-configuracoes">⚙️ Configurações</button>
             <button class="nav-item nav-item--premium" data-tab="area-premium" id="side-nav-area-premium" style="display:none;">👑 Área Premium</button>
         </nav>
         <div class="sidebar-footer">
@@ -2289,7 +2286,7 @@
     <!-- Multi-Tenant Context -->
     <script src="theme-manager.js"></script>
     <script src="tenant.js"></script>
-    <script src="admin.js?v=2.0"></script>
+    <script src="admin.js?v=2.3"></script>
 </body>
 
 </html>

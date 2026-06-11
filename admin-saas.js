@@ -482,7 +482,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
     // Coletar Módulos
     const modulos = {};
     const LISTA_MOD_IDS = [
-        'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque',
+        'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque', 'produtos_equipe',
         'vendas_visao_geral', 'metricas_dashboard', 'metricas_performance_vendas',
         'config_frete', 'pagamento', 'cupons', 'cardapio',
         'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
@@ -736,7 +736,7 @@ function _getSegmentPreset(segmento) {
         restaurante: {
             modulos: {
                 // Produtos
-                produtos_gerenciar: true, produtos_categorias: true, produtos_estoque: true,
+                produtos_gerenciar: true, produtos_categorias: true, produtos_estoque: true, produtos_equipe: true,
                 // Vendas
                 vendas_hoje_op: true, vendas_ontem_op: true, vendas_visao_geral: true,
                 metricas_dashboard: true, metricas_analise_tempo: true,
@@ -762,7 +762,7 @@ function _getSegmentPreset(segmento) {
                 agendamento_ativo: true, agendamento_multi_profissional: true,
                 agendamento_lista_espera: true, agendamento_mensagens: true, agendamento_fidelidade: true,
                 // Inativo
-                produtos_gerenciar: false, produtos_categorias: false, produtos_estoque: false,
+                produtos_gerenciar: false, produtos_categorias: false, produtos_estoque: false, produtos_equipe: false,
                 config_frete: false, pagamento: true, cupons: false, cardapio: false,
                 config_personalizacao: true, config_endereco: true, config_cancelamentos: true,
                 loja_roupas: false
@@ -782,7 +782,7 @@ function _getSegmentPreset(segmento) {
                 config_frete: true, pagamento: true, cupons: true, cardapio: false,
                 config_personalizacao: true, config_endereco: true, config_cancelamentos: true,
                 // Inativo
-                produtos_gerenciar: false, produtos_categorias: false, produtos_estoque: false,
+                produtos_gerenciar: false, produtos_categorias: false, produtos_estoque: false, produtos_equipe: false,
                 agendamento_ativo: false, agendamento_multi_profissional: false,
                 agendamento_lista_espera: false, agendamento_mensagens: false, agendamento_fidelidade: false
             },
@@ -810,7 +810,7 @@ window.aplicarPresetSegmento = (segmento) => {
 
     // Atualizar masters e estados visuais dos grupos
     const grupos = [
-        { master: 'n_master_produtos',     content: 'n_grupo_produtos',     keys: ['produtos_gerenciar','produtos_categorias','produtos_estoque'] },
+        { master: 'n_master_produtos',     content: 'n_grupo_produtos',     keys: ['produtos_gerenciar','produtos_categorias','produtos_estoque','produtos_equipe'] },
         { master: 'n_master_vendas',       content: 'n_grupo_vendas',       keys: ['vendas_visao_geral','metricas_dashboard','metricas_performance_vendas'] },
         { master: 'n_master_ops',          content: 'n_grupo_ops',          keys: ['config_frete','pagamento','cupons','cardapio'] },
         { master: 'n_master_agendamento',  content: 'n_grupo_agendamento',  keys: ['agendamento_ativo','agendamento_multi_profissional','agendamento_lista_espera'] },

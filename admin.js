@@ -486,7 +486,7 @@ function switchTab(tabId, btn, persist = true) {
         if (cssEl) cssEl.disabled = false;
         // Carregar JS
         const script = document.createElement('script');
-        script.src = 'admin-agenda.js?v=' + Date.now();
+        script.src = 'admin-modules/admin-agenda.js?v=' + Date.now();
         script.onerror = () => showToast('Erro ao carregar módulo de agenda.', 'error');
         document.body.appendChild(script);
     }
@@ -497,7 +497,7 @@ function switchTab(tabId, btn, persist = true) {
         const cssLoja = document.getElementById('loja-css');
         if (cssLoja) cssLoja.disabled = false;
         const scriptLoja = document.createElement('script');
-        scriptLoja.src = 'admin-loja.js?v=' + Date.now();
+        scriptLoja.src = 'admin-modules/admin-loja.js?v=' + Date.now();
         scriptLoja.onerror = () => {
             window.__LOJA_INICIADO = false;
             showToast('Erro ao carregar módulo de loja.', 'error');
@@ -861,6 +861,7 @@ function aplicarFiltrosDeModulos() {
     const navProdutos = document.getElementById('nav-produtos');
     toggleElement(navProdutos, mQualquerProduto, 'flex');
     if (navProdutos) navProdutos.classList.toggle('module-visible', mQualquerProduto);
+    toggleElement(document.getElementById('side-nav-produtos'), mQualquerProduto, 'flex');
 
     // 2. VENDAS (Operacional)
     const mVendasHoje = isModuloAtivo('vendas_hoje_op');
@@ -893,6 +894,7 @@ function aplicarFiltrosDeModulos() {
     const navDashboard = document.getElementById('nav-dashboard');
     toggleElement(navDashboard, mQualquerDashboard, 'flex');
     if (navDashboard) navDashboard.classList.toggle('module-visible', mQualquerDashboard);
+    toggleElement(document.getElementById('side-nav-dashboard'), mQualquerDashboard, 'flex');
 
     // 4. CONFIGURAÇÕES
     const mConfigEnd = isModuloAtivo('config_endereco');
@@ -905,10 +907,15 @@ function aplicarFiltrosDeModulos() {
     toggleSubtab('config-frete', mConfigFrete);
     toggleSubtab('config-cancelamento', mConfigCanc);
 
-    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc;
+    // 4b. EQUIPE / ATENDENTES
+    const mProdEquipe = isModuloAtivo('produtos_equipe');
+    toggleSubtab('config-equipe', mProdEquipe);
+
+    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc || mProdEquipe;
     const navConfig = document.getElementById('nav-configuracoes');
     toggleElement(navConfig, mQualquerConfig, 'flex');
     if (navConfig) navConfig.classList.toggle('module-visible', mQualquerConfig);
+    toggleElement(document.getElementById('side-nav-configuracoes'), mQualquerConfig, 'flex');
 
     // 5. CUPONS
     const mCupons = isModuloAtivo('cupons');
@@ -1323,7 +1330,17 @@ function setupAdminRealtime() {
         }, payload => {
             carregarDashboard(); // Recarrega quando um agendamento mudar
         })
-        .subscribe();
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('[Realtime] Pedidos/Agendamentos conectado.');
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                console.warn('[Realtime] Canal de pedidos indisponível (pode ser proxy/firewall). O painel continua funcionando sem atualizações em tempo real.');
+                if (adminRealtimeChannel) {
+                    sb.removeChannel(adminRealtimeChannel);
+                    adminRealtimeChannel = null;
+                }
+            }
+        });
 
     // Realtime para mudanças na própria empresa (ex: módulos, tema)
     sb.channel('admin-company-realtime')
@@ -1341,7 +1358,13 @@ function setupAdminRealtime() {
                 renderProdutos(); // Garante que colunas de estoque sejam atualizadas
             }
         })
-        .subscribe();
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('[Realtime] Canal da empresa conectado.');
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                console.warn('[Realtime] Canal da empresa indisponível. Módulos e tema não serão atualizados em tempo real.');
+            }
+        });
 }
 
 async function carregarProdutos() {
@@ -3915,7 +3938,7 @@ function renderPerfisCardapio() {
     if (!container) return;
 
     if (listaPerfisCardapio.length === 0) {
-        container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;">Nenhum perfil cadastrado. Crie um perfil para definir cardápios personalizados.</p>';
+        container.innerHTML = '';
         return;
     }
 
