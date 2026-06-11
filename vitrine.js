@@ -69,6 +69,17 @@
             renderProdutos();
             _setupModalEvents();
 
+            const chkTel = document.getElementById('chkTelefone');
+            if (chkTel) {
+                chkTel.addEventListener('input', () => {
+                    let digits = chkTel.value.replace(/\D/g, '').slice(0, 11);
+                    let formatted = digits;
+                    if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+                    if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+                    chkTel.value = formatted;
+                });
+            }
+
         } catch (err) {
             console.error('[Vitrine] Erro na inicialização:', err);
         }
@@ -321,6 +332,11 @@
 
         if (!nome || !telefone) {
             alert('Por favor, preencha nome e telefone.');
+            return;
+        }
+        const telLimpo = telefone.replace(/\D/g, '');
+        if (telLimpo.length !== 11) {
+            alert('O telefone deve ter exatamente 11 números.');
             return;
         }
 

@@ -158,7 +158,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const nomeInput = document.getElementById('clienteNome');
     const telInput = document.getElementById('clienteTel');
     if (nomeInput) nomeInput.addEventListener('input', validarDadosCliente);
-    if (telInput) telInput.addEventListener('input', validarDadosCliente);
+    if (telInput) {
+        telInput.addEventListener('input', () => {
+            let digits = telInput.value.replace(/\D/g, '').slice(0, 11);
+            let formatted = digits;
+            if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+            if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+            telInput.value = formatted;
+            validarDadosCliente();
+        });
+    }
 });
 
 function validarDadosCliente() {
@@ -167,8 +176,9 @@ function validarDadosCliente() {
     const btn = document.getElementById('btnConfirmar');
     if (!btn) return;
 
-    // Habilita se tiver nome e pelo menos 10 caracteres no telefone
-    btn.disabled = !(nome && tel && tel.length >= 10);
+    const digits = tel ? tel.replace(/\D/g, '') : '';
+    // Habilita se tiver nome e exatamente 11 digitos no telefone
+    btn.disabled = !(nome && digits.length === 11);
 }
 
 // ============================================================
@@ -474,7 +484,7 @@ async function confirmarAgendamento() {
     const obs = document.getElementById('clienteObs').value.trim();
 
     if (!nome) return showToast('Preencha seu nome', 'error');
-    if (!tel || tel.length < 10) return showToast('Preencha um celular válido', 'error');
+    if (!tel || tel.replace(/\D/g, '').length !== 11) return showToast('Preencha um celular válido com 11 dígitos', 'error');
 
     showLoading('Confirmando seu horário...');
     document.getElementById('btnConfirmar').disabled = true;
