@@ -58,7 +58,7 @@
             height: 220px;
             background-color: var(--bg-page);
             background-image: none;
-            background-size: auto 280%; /* Prioriza a altura para nÃ£o cortar o texto, ocupando quase todo o banner */
+            background-size: auto 280%; /* Prioriza a altura para não cortar o texto, ocupando quase todo o banner */
             background-position: center;
             background-repeat: no-repeat;
             display: block;
@@ -93,7 +93,7 @@
             border-radius: 50%;
             background-color: var(--bg-card);
             background-image: none;
-            background-size:135%; /* Mantendo o mesmo ajuste que vocÃª fez no banner */
+            background-size:135%; /* Mantendo o mesmo ajuste que você fez no banner */
             background-position: center;
             background-repeat: no-repeat;
         }
@@ -924,7 +924,7 @@
 
         .modal-image-wrapper img {
             width: 100%;
-            height: clamp(120px, 35vh, 250px); /* Garante que a imagem nÃ£o esmague os botÃµes em telas pequenas */
+            height: clamp(120px, 35vh, 250px); /* Garante que a imagem não esmague os botões em telas pequenas */
             object-fit: cover;
         }
 
@@ -1296,7 +1296,7 @@
             to   { opacity: 1; transform: translateX(0); }
         }
 
-        /* Step body (scrollÃ¡vel) */
+        /* Step body (scrollável) */
         .step-body {
             flex: 1;
             overflow-y: auto;
@@ -1327,7 +1327,7 @@
             color: var(--primary);
         }
 
-        /* BotÃ£o Continuar */
+        /* Botão Continuar */
         .btn-continue-step {
             width: 100%;
             background: var(--btn-primary-bg);
@@ -1360,7 +1360,7 @@
             font-size: 1.1rem;
         }
 
-        /* BotÃ£o Voltar */
+        /* Botão Voltar */
         .btn-back-step {
             background: none;
             border: none;
@@ -1379,7 +1379,7 @@
             color: var(--primary);
         }
 
-        /* SeÃ§Ãµes do formulÃ¡rio */
+        /* Seções do formulário */
         .form-section {
             margin-bottom: 1.5rem;
         }
@@ -1444,7 +1444,7 @@
             color: var(--text-muted);
         }
 
-        /* Card de endereÃ§o da loja (retirada) */
+        /* Card de endereço da loja (retirada) */
         .store-address-card {
             background: #F0FDF4;
             border: 1.5px solid #A7F3D0;
@@ -1466,7 +1466,7 @@
             color: #A7F3D0;
         }
 
-        /* CEP wrapper (sem botÃ£o) */
+        /* CEP wrapper (sem botão) */
         .cep-wrapper {
             position: relative;
             display: flex;
@@ -1718,7 +1718,7 @@
             box-shadow: 0 10px 28px rgba(232,93,28,0.4);
         }
 
-        /* ===== OpÃ§Ãµes de Tipo de Entrega ===== */
+        /* ===== Opções de Tipo de Entrega ===== */
         .delivery-options {
             display: flex;
             gap: 12px;
@@ -1945,7 +1945,7 @@
             color: #999;
         }
 
-        /* Ajuste Mobile para o Modal PIX (Centralizado e nÃ£o no rodapÃ©) */
+        /* Ajuste Mobile para o Modal PIX (Centralizado e não no rodapé) */
         @media (max-width: 600px) {
             #modalPix {
                 top: 50%;

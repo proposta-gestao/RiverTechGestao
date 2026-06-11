@@ -4096,4 +4096,13 @@ input[type=number] {
         display: flex !important;
     }
 }
+}
 
+/* Força a ocultação de módulos desativados independentemente de media queries mobile ou desktop */
+.sidebar .tab-btn.module-hidden,
+.sidebar .subtab-btn.module-hidden,
+.module-hidden,
+[data-tab].module-hidden,
+[data-subtab].module-hidden {
+    display: none !important;
+}
