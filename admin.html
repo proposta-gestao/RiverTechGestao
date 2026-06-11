@@ -1353,21 +1353,28 @@
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="agendaModalProfissional">Profissional</label>
-                        <select id="agendaModalProfissional"></select>
+                        <select id="agendaModalProfissional" onchange="window.__AGENDA.carregarSlotsAdmin()"></select>
                     </div>
                     <div class="form-group" style="flex:1">
                         <label for="agendaModalServico">Serviço</label>
-                        <select id="agendaModalServico"></select>
+                        <select id="agendaModalServico" onchange="window.__AGENDA.carregarSlotsAdmin()"></select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="agendaModalData">Data</label>
-                        <input type="date" id="agendaModalData">
+                        <input type="date" id="agendaModalData" onchange="window.__AGENDA.carregarSlotsAdmin()">
                     </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="agendaModalHora">Horário</label>
-                        <input type="time" id="agendaModalHora">
+                        <label>Horários Disponíveis</label>
+                        <div id="agendaModalSlotsContainer" class="slots-grid-admin">
+                            <span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Selecione profissional, serviço e data</span>
+                        </div>
+                        <input type="hidden" id="agendaModalHora">
+                        <input type="hidden" id="agendaModalSlotInicio">
+                        <input type="hidden" id="agendaModalSlotFim">
                     </div>
                 </div>
                 <div class="form-row">

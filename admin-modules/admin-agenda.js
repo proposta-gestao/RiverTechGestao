@@ -846,11 +846,12 @@
         const modal = document.getElementById('modalNovoAgendamento');
         if (!modal) return;
 
-        // Preencher selects
+        // Preencher selects apenas com ativos
         const selProf = document.getElementById('agendaModalProfissional');
         const selServ = document.getElementById('agendaModalServico');
 
-        selProf.innerHTML = profissionais.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+        const profAtivos = profissionais.filter(p => p.ativo !== false);
+        selProf.innerHTML = profAtivos.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
         selServ.innerHTML = servicos.map(s => `<option value="${s.id}" data-dur="${s.duracao_min}">${s.nome} (${s.duracao_min}min)</option>`).join('');
 
         // Data padrão = data selecionada (formato local)
@@ -858,13 +859,16 @@
         const m = String(dataSelecionada.getMonth() + 1).padStart(2, '0');
         const d = String(dataSelecionada.getDate()).padStart(2, '0');
         document.getElementById('agendaModalData').value = `${y}-${m}-${d}`;
-        document.getElementById('agendaModalHora').value = '09:00';
+        document.getElementById('agendaModalHora').value = '';
+        document.getElementById('agendaModalSlotInicio').value = '';
+        document.getElementById('agendaModalSlotFim').value = '';
         document.getElementById('agendaModalCliente').value = '';
         document.getElementById('agendaModalTelefone').value = '';
         document.getElementById('agendaModalObs').value = '';
         document.getElementById('agendaModalId').value = '';
 
         modal.classList.add('active');
+        carregarSlotsAdmin();
     }
 
     function abrirModalAgendamento(id) {
@@ -876,10 +880,12 @@
         const modal = document.getElementById('modalNovoAgendamento');
         if (!modal) return;
 
-        // Preencher selects
+        // Preencher selects garantindo que o profissional atual apareça mesmo inativo
         const selProf = document.getElementById('agendaModalProfissional');
         const selServ = document.getElementById('agendaModalServico');
-        selProf.innerHTML = profissionais.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+        
+        const profValidos = profissionais.filter(p => p.ativo !== false || p.id === ag.profissional_id);
+        selProf.innerHTML = profValidos.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
         selServ.innerHTML = servicos.map(s => `<option value="${s.id}" data-dur="${s.duracao_min}">${s.nome} (${s.duracao_min}min)</option>`).join('');
 
         // Preencher valores do agendamento existente
@@ -893,8 +899,12 @@
         const dy = String(dInicio.getDate()).padStart(2, '0');
         const hr = String(dInicio.getHours()).padStart(2, '0');
         const mi = String(dInicio.getMinutes()).padStart(2, '0');
+        
         document.getElementById('agendaModalData').value = `${yr}-${mo}-${dy}`;
+        
         document.getElementById('agendaModalHora').value = `${hr}:${mi}`;
+        document.getElementById('agendaModalSlotInicio').value = ag.data_hora_inicio;
+        document.getElementById('agendaModalSlotFim').value = ag.data_hora_fim;
         
         document.getElementById('agendaModalCliente').value = ag.cliente_nome;
         document.getElementById('agendaModalTelefone').value = ag.cliente_telefone;
@@ -902,6 +912,7 @@
         document.getElementById('agendaModalId').value = ag.id;
 
         modal.classList.add('active');
+        carregarSlotsAdmin(ag.data_hora_inicio, ag.data_hora_fim, `${hr}:${mi}`);
     }
 
     function abrirModalNovoAgendamentoParaLista(waitlistId) {
@@ -912,9 +923,13 @@
         document.getElementById('agendaModalCliente').value = item.cliente_nome || '';
         document.getElementById('agendaModalTelefone').value = item.cliente_telefone || '';
         document.getElementById('agendaModalServico').value = item.servico_id || '';
-        document.getElementById('agendaModalData').value = item.data_desejada || dataSelecionada.toISOString().split('T')[0];
         
-        // Atribuir o ID da lista ao campo oculto (vou precisar criar esse campo no HTML)
+        if (item.data_desejada) {
+            document.getElementById('agendaModalData').value = item.data_desejada;
+            carregarSlotsAdmin();
+        }
+        
+        // Atribuir o ID da lista ao campo oculto
         const hiddenWaitlist = document.getElementById('agendaModalWaitlistId') || document.createElement('input');
         hiddenWaitlist.type = 'hidden';
         hiddenWaitlist.id = 'agendaModalWaitlistId';
@@ -922,27 +937,126 @@
         document.getElementById('modalNovoAgendamento').appendChild(hiddenWaitlist);
     }
 
+    async function carregarSlotsAdmin(preselectInicio = null, preselectFim = null, preselectHora = null) {
+        const profId = document.getElementById('agendaModalProfissional').value;
+        const servId = document.getElementById('agendaModalServico').value;
+        const data = document.getElementById('agendaModalData').value;
+        const container = document.getElementById('agendaModalSlotsContainer');
+
+        if (!profId || !servId || !data) {
+            container.innerHTML = `<span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Selecione profissional, serviço e data</span>`;
+            return;
+        }
+
+        container.innerHTML = `<div class="ag-slots-loading" style="padding:4px;"><span style="font-size:0.8rem;">Buscando horários...</span></div>`;
+
+        try {
+            const { data: slotsRpc, error } = await sb.rpc('get_slots_disponiveis', {
+                p_empresa_id: EMPRESA_ID(),
+                p_profissional_id: profId,
+                p_servico_id: servId,
+                p_data: data
+            });
+
+            if (error) throw error;
+            
+            let slots = slotsRpc || [];
+            
+            // Se estivermos editando, o slot atual pode não vir na RPC (pois já está ocupado por este mesmo agendamento)
+            // Precisamos injetá-lo manualmente na lista para o admin poder mantê-lo
+            if (preselectInicio && preselectHora) {
+                const isInData = preselectInicio.startsWith(data);
+                if (isInData) {
+                    const slotExiste = slots.find(s => s.slot_inicio === preselectInicio);
+                    if (!slotExiste) {
+                        slots.push({
+                            slot_inicio: preselectInicio,
+                            slot_fim: preselectFim
+                        });
+                        // Ordenar de novo após inserir
+                        slots.sort((a, b) => new Date(a.slot_inicio) - new Date(b.slot_inicio));
+                    }
+                }
+            }
+
+            if (slots.length === 0) {
+                container.innerHTML = `<span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Nenhum horário disponível.</span>`;
+                return;
+            }
+
+            const agora = new Date();
+            const [y, m, d] = data.split('-');
+            const dataSel = new Date(y, m - 1, d);
+            const isHoje = dataSel.toDateString() === agora.toDateString();
+
+            let html = '';
+            let count = 0;
+
+            slots.forEach((s, i) => {
+                const dInicio = new Date(s.slot_inicio);
+                if (isHoje && dInicio <= agora) return;
+
+                const horaNominal = String(dInicio.getHours()).padStart(2, '0') + ':' + String(dInicio.getMinutes()).padStart(2, '0');
+                const isSelected = (preselectInicio === s.slot_inicio);
+                
+                html += `<div class="ag-slot ${isSelected ? 'selected' : ''}" id="admin-slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" data-hora="${horaNominal}" onclick="window.__AGENDA.selecionarSlotAdmin(${i})">${horaNominal}</div>`;
+                count++;
+            });
+
+            if (count === 0) {
+                container.innerHTML = `<span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Nenhum horário futuro disponível para hoje.</span>`;
+            } else {
+                container.innerHTML = html;
+            }
+
+        } catch (err) {
+            console.error('Erro ao buscar slots:', err);
+            container.innerHTML = `<span style="color:var(--color-danger);font-size:0.8rem;padding:4px;">Erro ao carregar horários.</span>`;
+        }
+    }
+
+    function selecionarSlotAdmin(index) {
+        document.querySelectorAll('#agendaModalSlotsContainer .ag-slot').forEach(el => el.classList.remove('selected'));
+        const slotEl = document.getElementById(`admin-slot-${index}`);
+        if (!slotEl) return;
+        
+        slotEl.classList.add('selected');
+        document.getElementById('agendaModalHora').value = slotEl.dataset.hora;
+        document.getElementById('agendaModalSlotInicio').value = slotEl.dataset.inicio;
+        document.getElementById('agendaModalSlotFim').value = slotEl.dataset.fim;
+    }
+
     async function salvarAgendamento() {
         const profId = document.getElementById('agendaModalProfissional').value;
         const servId = document.getElementById('agendaModalServico').value;
         const data = document.getElementById('agendaModalData').value;
         const hora = document.getElementById('agendaModalHora').value;
+        const slotInicio = document.getElementById('agendaModalSlotInicio').value;
+        const slotFim = document.getElementById('agendaModalSlotFim').value;
         const cliente = document.getElementById('agendaModalCliente').value.trim();
         const telefone = document.getElementById('agendaModalTelefone').value.trim();
         const obs = document.getElementById('agendaModalObs').value.trim();
         const editId = document.getElementById('agendaModalId').value;
 
         if (!profId || !servId || !data || !hora || !cliente || !telefone) {
-            window.showToast?.('Preencha todos os campos obrigatórios.', 'error');
+            window.showToast?.('Preencha todos os campos obrigatórios e selecione um horário válido.', 'error');
             return;
         }
 
-        const serv = servicos.find(s => s.id === servId);
-        const durMin = serv?.duracao_min || 30;
+        let inicio, fim;
         
-        // Criar data em horário local (Brasília) - sem 'Z' para não forçar UTC
-        const inicio = new Date(`${data}T${hora}:00`);
-        const fim = new Date(inicio.getTime() + durMin * 60000);
+        if (slotInicio && slotFim) {
+            // Se selecionou pelo grid de slots (que já vem com timezone UTC do RPC)
+            inicio = slotInicio;
+            fim = slotFim;
+        } else {
+            // Fallback caso não tenha slots (não deve acontecer com o novo fluxo)
+            const serv = servicos.find(s => s.id === servId);
+            const durMin = serv?.duracao_min || 30;
+            const dObj = new Date(`${data}T${hora}:00`);
+            inicio = dObj.toISOString();
+            fim = new Date(dObj.getTime() + durMin * 60000).toISOString();
+        }
 
         const payload = {
             empresa_id: EMPRESA_ID(),
@@ -950,8 +1064,8 @@
             servico_id: servId,
             cliente_nome: cliente,
             cliente_telefone: telefone,
-            data_hora_inicio: inicio.toISOString(),
-            data_hora_fim: fim.toISOString(),
+            data_hora_inicio: inicio,
+            data_hora_fim: fim,
             observacao: obs || null,
         };
 
@@ -965,17 +1079,17 @@
         }
 
         const waitlistId = document.getElementById('agendaModalWaitlistId')?.value;
-        if (waitlistId) {
-            payload.waitlist_id = waitlistId; // Se quiser rastrear a origem
-            // Marcar como confirmado na lista de espera
-            await sb.from('lista_espera').update({ status: 'confirmado', agendamento_id: data.id }).eq('id', waitlistId);
+        if (waitlistId && !editId) {
+            payload.waitlist_id = waitlistId;
+            await sb.from('lista_espera').update({ status: 'confirmado' }).eq('id', waitlistId);
             document.getElementById('agendaModalWaitlistId').value = '';
         }
 
         window.showToast?.('Agendamento salvo!');
         document.getElementById('modalNovoAgendamento').classList.remove('active');
-        await Promise.all([carregarAgendamentos(), carregarListaEspera()]);
+        await Promise.all([carregarAgendamentos(), carregarListaEspera(), carregarAgendamentosFuturos()]);
         renderTimeline();
+        renderTimelineFuturo();
         renderStats();
         if (document.getElementById('agendaTab_lista').style.display !== 'none') renderListaEsperaTab();
     }
@@ -1155,7 +1269,9 @@
         abrirModalListaEspera,
         salvarListaEspera,
         removerDaLista,
-        abrirModalNovoAgendamentoParaLista
+        abrirModalNovoAgendamentoParaLista,
+        carregarSlotsAdmin,
+        selecionarSlotAdmin
     };
 
     // --- EVENTOS DE UPLOAD ---
