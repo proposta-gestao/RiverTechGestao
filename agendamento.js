@@ -143,6 +143,11 @@ const agendarApp = {
         setTimeout(() => this.irPara(3), 200);
     },
 
+    abrirListaEspera() {
+        console.log("abrirListaEspera placeholder");
+        // Será implementado no passo 5
+    },
+
     navMes,
     selecionarDia,
     selecionarSlot,
@@ -382,39 +387,18 @@ async function carregarSlotsDisponiveis() {
 
 function renderSlots(slots) {
     const container = document.getElementById('slotsContainer');
-
-    if (slots.length === 0) {
-        container.innerHTML = `<div class="ag-slots-empty">Nenhum horário disponível nesta data.</div>`;
-        return;
-    }
-
     const agora = new Date();
     const isHoje = state.dataSelecionada.toDateString() === agora.toDateString();
 
-    // Cria grid
-    let html = `<div class="ag-slots-grid">`;
-    let count = 0;
-    const agoraAbs = new Date();
-
-    slots.forEach((s, i) => {
+    // Filtra slots que já passaram
+    const slotsDisponiveis = slots.filter(s => {
         const dInicio = new Date(s.slot_inicio);
-        
-        // Se for hoje, filtra slots que já passaram (comparação absoluta de tempo)
-        if (isHoje) {
-            if (dInicio <= agoraAbs) return;
-        }
-
-        // Extrair hora local (Brasília) para exibir "09:00" etc
-        const horaNominal = String(dInicio.getHours()).padStart(2, '0') + ':' + String(dInicio.getMinutes()).padStart(2, '0');
-        
-        html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaNominal}')">${horaNominal}</div>`;
-        count++;
+        return !(isHoje && dInicio <= agora);
     });
-    html += `</div>`;
 
-    if (count === 0) {
+    if (slotsDisponiveis.length === 0) {
         const diaSemanaNome = state.dataSelecionada.toLocaleDateString('pt-BR', { weekday: 'long' });
-        if (isHoje && slots.length > 0) {
+        if (isHoje) {
             container.innerHTML = `
                 <div class="ag-slots-empty">
                     <div style="font-size: 2rem; margin-bottom: 10px;">🌙</div>
@@ -422,6 +406,7 @@ function renderSlots(slots) {
                     <p style="margin-top:8px; font-size:0.85rem; color:var(--color-muted);">
                         Tente selecionar uma data futura no calendário.
                     </p>
+                    <button class="ag-btn-primary" style="margin-top:15px; padding: 10px 16px;" onclick="agendarApp.abrirListaEspera()">Entrar na Lista de Espera</button>
                 </div>`;
         } else {
             container.innerHTML = `
@@ -434,11 +419,20 @@ function renderSlots(slots) {
                             Verifique se a empresa configurou horários de funcionamento para este dia da semana no painel.
                         </span>
                     </p>
+                    <button class="ag-btn-primary" style="margin-top:15px; padding: 10px 16px;" onclick="agendarApp.abrirListaEspera()">Entrar na Lista de Espera</button>
                 </div>`;
         }
-    } else {
-        container.innerHTML = html;
+        return;
     }
+
+    let html = `<div class="ag-slots-grid">`;
+    slotsDisponiveis.forEach((s, i) => {
+        const dInicio = new Date(s.slot_inicio);
+        const horaNominal = String(dInicio.getHours()).padStart(2, '0') + ':' + String(dInicio.getMinutes()).padStart(2, '0');
+        html += `<div class="ag-slot" id="slot-${i}" data-inicio="${s.slot_inicio}" data-fim="${s.slot_fim}" onclick="agendarApp.selecionarSlot(${i}, '${horaNominal}')">${horaNominal}</div>`;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
 }
 
 function selecionarSlot(index, horaFormatada) {
