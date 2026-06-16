@@ -735,19 +735,26 @@ function calcularInsights(filtrados) {
     const mediaPedidosDia = (totalPedidos / uniqueDaysCount);
     const taxaCancelamento = totalPedidos > 0 ? ((totalCancelados / totalPedidos) * 100) : 0;
 
-    // Top Produto e Categoria
+    // Top Produto/Serviço e Categoria
     const topProduto = Object.entries(qtdPorProduto).sort((a, b) => b[1] - a[1])[0] || ['--', 0];
     const topCategoria = Object.entries(faturamentoPorCategoria).sort((a, b) => b[1] - a[1])[0] || ['--', 0];
+
+    // Contexto do módulo para labels dinâmicas
+    const dashCtx = getDashboardContext();
+    const labelTopItem = dashCtx === 'agenda'
+        ? (topProduto[1] > 0 ? `Agendado ${topProduto[1]} ${topProduto[1] === 1 ? 'vez' : 'vezes'}` : 'Nenhum agendado')
+        : (topProduto[1] > 0 ? `Vendido ${topProduto[1]} ${topProduto[1] === 1 ? 'vez' : 'vezes'}` : 'Nenhum vendido');
+    const labelTopCategoria = topCategoria[1] > 0 ? `Faturou R$ ${formatNumber(topCategoria[1])}` : 'Sem faturamento';
 
     // Atualização do DOM
     // Tempo
     document.getElementById('insightMelhorHora').innerText = melhorHora.hora !== '--' ? melhorHora.hora + 'h' : '--';
-    document.getElementById('txtInsightHora').innerText = melhorHora.hora !== '--' 
-        ? `Pico de faturamento às ${melhorHora.hora}h (R$ ${formatNumber(melhorHora.valor)})`
+    document.getElementById('txtInsightHora').innerText = melhorHora.hora !== '--'
+        ? `Pico de faturamento \u00E0s ${melhorHora.hora}h (R$ ${formatNumber(melhorHora.valor)})`
         : 'Aguardando dados...';
 
     document.getElementById('insightMelhorDia').innerText = melhorDiaSem.nome;
-    document.getElementById('txtInsightMelhor').innerText = melhorDiaSem.valor > 0 
+    document.getElementById('txtInsightMelhor').innerText = melhorDiaSem.valor > 0
         ? `Melhor dia: ${melhorDiaSem.nome.toLowerCase()} (R$ ${formatNumber(melhorDiaSem.valor)})`
         : 'Aguardando dados...';
 
@@ -761,18 +768,21 @@ function calcularInsights(filtrados) {
     document.getElementById('insightMediaPedidos').innerText = formatNumber(mediaPedidosDia);
     document.getElementById('insightTaxaCancelamento').innerText = formatNumber(taxaCancelamento) + '%';
 
-    // Destaques
+    // Destaques — labels dinâmicos conforme contexto do módulo
     document.getElementById('insightProdutoTop').innerText = topProduto[0];
-    document.getElementById('txtProdutoTop').innerText = topProduto[1] > 0 ? `Vendido ${topProduto[1]} vezes` : 'Nenhum vendido';
+    document.getElementById('txtProdutoTop').innerText = labelTopItem;
     document.getElementById('insightCategoriaTop').innerText = topCategoria[0];
-    document.getElementById('txtCategoriaTop').innerText = topCategoria[1] > 0 ? `Faturou R$ ${formatNumber(topCategoria[1])}` : 'Sem faturamento';
+    document.getElementById('txtCategoriaTop').innerText = labelTopCategoria;
 
-    const topDiasList = top3Dias.length > 0 
-        ? top3Dias.map((d, i) => `${i + 1}. ${d[0]} - R$ ${formatNumber(d[1])}`).join('<br>') 
-        : 'Nenhum dado disponível';
+    const topDiasList = top3Dias.length > 0
+        ? top3Dias.map((d, i) => `${i + 1}. ${d[0]} - R$ ${formatNumber(d[1])}`).join('<br>')
+        : 'Nenhum dado dispon\u00EDvel';
     document.getElementById('insightTopDias').innerHTML = topDiasList;
 
-    // Geração de Insight Inteligente
+    // Atualiza labels de destaques na seção do DOM
+    atualizarLabelsDestaques();
+
+    // Gera\u00E7\u00E3o de Insight Inteligente
     gerarInsightInteligente(melhorHora, melhorDiaSem, piorDiaSem, ticketMedio);
 }
 
@@ -1013,6 +1023,10 @@ function aplicarFiltrosDeModulos() {
     if (typeof atualizarAlertaEstoque === 'function') {
         atualizarAlertaEstoque();
     }
+
+    // Atualiza labels e select do Atendente/Profissional conforme módulo ativo
+    atualizarLabelAtendente();
+    atualizarLabelsDestaques();
 }
 
 /**
@@ -1027,50 +1041,180 @@ function validarAcessoModulo(modulo) {
     return true;
 }
 
-async function carregarAtendentes() {
-    const { data, error } = await sb.from('atendentes').select('nome').order('nome');
-    if (error) { showToast('Erro ao carregar atendentes', 'error'); return; }
+/**
+ * Determina o contexto do dashboard com base nos módulos ativos da empresa.
+ * Retorna: 'agenda' | 'produtos' | 'loja' | 'misto'
+ */
+function getDashboardContext() {
+    const temAgenda = isModuloAtivo('agendamento_ativo');
+    const temProdutos = isModuloAtivo('produtos_gerenciar');
+    const temLoja = isModuloAtivo('loja_roupas');
+
+    if (temAgenda && (temProdutos || temLoja)) return 'misto';
+    if (temAgenda) return 'agenda';
+    if (temLoja) return 'loja';
+    return 'produtos'; // padrão / fallback
+}
+
+/**
+ * Atualiza o label e placeholder do select de Atendente
+ * com base no contexto do módulo ativo.
+ */
+function atualizarLabelAtendente() {
+    const label = document.getElementById('labelFiltroAtendente');
     const select = document.getElementById('filtroAtendente');
-    if (select && data) {
-        select.innerHTML = '<option value="">Todos os atendentes</option>';
-        data.forEach(at => {
-            const opt = document.createElement('option');
-            opt.value = at.nome;
-            opt.textContent = at.nome;
-            select.appendChild(opt);
-        });
+    const ctx = getDashboardContext();
+
+    if (!label || !select) return;
+
+    if (ctx === 'agenda') {
+        label.textContent = '\uD83D\uDC68\u200D\uD83D\uDCBC Profissional';
+        select.querySelector('option[value=""]').textContent = 'Todos os profissionais';
+    } else if (ctx === 'misto') {
+        label.textContent = '\uD83D\uDC68\u200D\uD83D\uDCBC Atendente / Profissional';
+        select.querySelector('option[value=""]').textContent = 'Todos';
+    } else {
+        label.textContent = '\uD83D\uDC68\u200D\uD83D\uDCBC Atendente';
+        select.querySelector('option[value=""]').textContent = 'Todos os atendentes';
     }
+}
+
+/**
+ * Atualiza os labels da seção Destaques conforme o contexto do módulo.
+ */
+function atualizarLabelsDestaques() {
+    const ctx = getDashboardContext();
+    const labelProduto = document.getElementById('labelProdutoTop');
+    const labelCategoria = document.getElementById('labelCategoriaTop');
+    const txtProdutoTop = document.getElementById('txtProdutoTop');
+    const txtCategoriaTop = document.getElementById('txtCategoriaTop');
+
+    if (ctx === 'agenda') {
+        if (labelProduto) labelProduto.textContent = '\u2702\uFE0F Servi\u00E7o Mais Agendado';
+        if (labelCategoria) labelCategoria.textContent = '\uD83D\uDCCB Servi\u00E7o Mais Lucrativo';
+        if (txtProdutoTop) txtProdutoTop.textContent = 'Mais agendado (Qtd)';
+        if (txtCategoriaTop) txtCategoriaTop.textContent = 'Maior faturamento';
+    } else if (ctx === 'loja') {
+        if (labelProduto) labelProduto.textContent = '\uD83D\uDC57 Pe\u00E7a Mais Vendida';
+        if (labelCategoria) labelCategoria.textContent = '\uD83D\uDCC2 Categoria L\u00EDder';
+        if (txtProdutoTop) txtProdutoTop.textContent = 'Mais vendido (Qtd)';
+        if (txtCategoriaTop) txtCategoriaTop.textContent = 'Maior faturamento';
+    } else {
+        if (labelProduto) labelProduto.textContent = '\uD83C\uDF4E Produto Estrela';
+        if (labelCategoria) labelCategoria.textContent = '\uD83D\uDCC2 Categoria L\u00EDder';
+        if (txtProdutoTop) txtProdutoTop.textContent = 'Mais vendido (Qtd)';
+        if (txtCategoriaTop) txtCategoriaTop.textContent = 'Maior faturamento';
+    }
+}
+
+/**
+ * Carrega o select de Atendente/Profissional do dashboard com isolamento correto de tenant.
+ * - Módulo Agenda: busca em `profissionais` (com filtro empresa_id)
+ * - Módulo Produtos/Loja: busca em `atendentes` (com filtro empresa_id)
+ * - Módulo Misto: carrega ambos e faz merge
+ */
+async function carregarAtendentes() {
+    const tenantId = getTenantId();
+    const ctx = getDashboardContext();
+    const select = document.getElementById('filtroAtendente');
+    if (!select) return;
+
+    let nomes = [];
+
+    try {
+        if (ctx === 'agenda') {
+            // Agenda: usa profissionais
+            const { data, error } = await sb
+                .from('profissionais')
+                .select('nome')
+                .eq('empresa_id', tenantId)
+                .eq('ativo', true)
+                .order('nome');
+            if (error) throw error;
+            nomes = (data || []).map(p => p.nome);
+        } else if (ctx === 'misto') {
+            // Misto: merge de atendentes + profissionais
+            const [resAt, resProf] = await Promise.all([
+                sb.from('atendentes').select('nome').eq('empresa_id', tenantId).order('nome'),
+                sb.from('profissionais').select('nome').eq('empresa_id', tenantId).eq('ativo', true).order('nome')
+            ]);
+            const nomesAt = (resAt.data || []).map(a => a.nome);
+            const nomesProf = (resProf.data || []).map(p => p.nome);
+            // Merge sem duplicatas
+            nomes = [...new Set([...nomesAt, ...nomesProf])].sort();
+        } else {
+            // Produtos ou Loja: usa atendentes
+            const { data, error } = await sb
+                .from('atendentes')
+                .select('nome')
+                .eq('empresa_id', tenantId)
+                .order('nome');
+            if (error) throw error;
+            nomes = (data || []).map(a => a.nome);
+        }
+    } catch (err) {
+        console.error('[Dashboard] Erro ao carregar atendentes/profissionais:', err);
+        return;
+    }
+
+    const firstOptionText = select.querySelector('option[value=""]')?.textContent || 'Todos';
+    select.innerHTML = `<option value="">${firstOptionText}</option>`;
+    nomes.forEach(nome => {
+        const opt = document.createElement('option');
+        opt.value = nome;
+        opt.textContent = nome;
+        select.appendChild(opt);
+    });
+
+    // Garante que os labels estejam atualizados
+    atualizarLabelAtendente();
 }
 
 async function carregarDashboard() {
     try {
         const tenantId = getTenantId();
-        console.log('[Dashboard] Carregando dados para tenant:', tenantId);
-        
-        // 1. Carrega Pedidos (Produtos)
-        const { data: dataOrders, error: errorOrders } = await sb
-            .from('orders')
-            .select('*, order_items(*)')
-            .eq('empresa_id', tenantId)
-            .order('created_at', { ascending: false });
+        const ctx = getDashboardContext();
+        console.log('[Dashboard] Carregando dados para tenant:', tenantId, '| Contexto:', ctx);
 
-        if (errorOrders) console.error('[Dashboard] Erro orders:', errorOrders);
+        let dataOrders = [];
+        let dataAgendamentos = [];
 
-        // 2. Carrega Agendamentos (Serviços)
-        const { data: dataAgendamentos, error: errorAgendamentos } = await sb
-            .from('agendamentos')
-            .select('*, profissional:profissionais(nome), servico:servicos(nome, preco)')
-            .eq('empresa_id', tenantId);
+        // 1. Carrega Pedidos (Produtos/Loja) — apenas se o módulo for relevante
+        if (ctx === 'produtos' || ctx === 'loja' || ctx === 'misto') {
+            const { data, error } = await sb
+                .from('orders')
+                .select('*, order_items(*)')
+                .eq('empresa_id', tenantId)
+                .order('created_at', { ascending: false });
 
-        if (errorAgendamentos) console.error('[Dashboard] Erro agendamentos:', errorAgendamentos);
+            if (error) {
+                console.error('[Dashboard] Erro ao carregar orders:', error);
+            } else {
+                dataOrders = data || [];
+            }
+        }
 
-        console.log(`[Dashboard] Pedidos: ${dataOrders?.length || 0}, Agendamentos: ${dataAgendamentos?.length || 0}`);
+        // 2. Carrega Agendamentos — apenas se o módulo Agenda estiver ativo
+        if (ctx === 'agenda' || ctx === 'misto') {
+            const { data, error } = await sb
+                .from('agendamentos')
+                .select('*, profissional:profissionais(nome), servico:servicos(nome, preco)')
+                .eq('empresa_id', tenantId);
+
+            if (error) {
+                console.error('[Dashboard] Erro ao carregar agendamentos:', error);
+            } else {
+                dataAgendamentos = data || [];
+            }
+        }
+
+        console.log(`[Dashboard] Pedidos: ${dataOrders.length}, Agendamentos: ${dataAgendamentos.length}`);
 
         // 3. Mapeia Agendamentos para o formato de Pedidos
-        const agendamentosMapeados = (dataAgendamentos || []).map(a => {
+        const agendamentosMapeados = dataAgendamentos.map(a => {
             // Fallback para data: usa data_hora_inicio se created_at não existir
             const dataVenda = a.created_at || a.data_hora_inicio || new Date().toISOString();
-            
+
             return {
                 id: a.id,
                 created_at: dataVenda,
@@ -1078,10 +1222,10 @@ async function carregarDashboard() {
                 customer_name: a.cliente_nome,
                 customer_phone: a.cliente_telefone,
                 status: a.status,
-                atendente_nome: a.profissional?.nome || '—',
+                atendente_nome: a.profissional?.nome || '\u2014',
                 is_agendamento: true,
                 order_items: [{
-                    product_name: a.servico?.nome || 'Serviço',
+                    product_name: a.servico?.nome || 'Servi\u00E7o',
                     quantity: 1,
                     unit_price: a.servico?.preco || 0,
                     is_service: true
@@ -1089,14 +1233,14 @@ async function carregarDashboard() {
             };
         });
 
-        // 4. Combina tudo e ordena por data decrescente
-        pedidos = [...(dataOrders || []), ...agendamentosMapeados].sort((a, b) => 
+        // 4. Combina apenas as fontes relevantes e ordena por data decrescente
+        pedidos = [...dataOrders, ...agendamentosMapeados].sort((a, b) =>
             new Date(b.created_at) - new Date(a.created_at)
         );
 
         setModoDashboard(currentModoDashboard);
     } catch (err) {
-        console.error('[Dashboard] Erro crítico:', err);
+        console.error('[Dashboard] Erro cr\u00EDtico:', err);
     }
 }
 

@@ -164,6 +164,7 @@ window.TENANT = {
     brand_name: null,
     brand_subtitle: null,
     modulos: {},
+    segmento: null,
     pronto: false,
     tema_cor_primaria: null,
     tema_cor_secundaria: null,
@@ -191,6 +192,7 @@ function invalidateTenantCache() {
     window.TENANT.brand_name = null;
     window.TENANT.brand_subtitle = null;
     window.TENANT.modulos = {};
+    window.TENANT.segmento = null;
     window.TENANT.pronto = false;
     window.TENANT.tema_cor_primaria = null;
     window.TENANT.tema_cor_secundaria = null;
@@ -476,7 +478,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     // Tentamos primeiro com o tema completo
     let { data, error } = await supabaseClient
         .from('usuarios')
-        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto, tema_cor_hover)')
+        .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, segmento, tema_cor_primaria, tema_cor_secundaria, tema_cor_botao, tema_cor_bg, tema_cor_surface, tema_cor_borda, tema_cor_texto, tema_cor_hover)')
         .eq('id', userId)
         .limit(1);
     
@@ -492,7 +494,7 @@ async function initTenantAdmin(supabaseClient, userId) {
         console.warn('[Tenant-Admin] Falha ao carregar colunas de tema, tentando busca básica...');
         const retry = await supabaseClient
             .from('usuarios')
-            .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos)')
+            .select('empresa_id, role, email, empresas(id, nome, slug, cor_primaria, logo_url, status, modulos, segmento)')
             .eq('id', userId)
             .limit(1);
         
@@ -587,7 +589,7 @@ async function initTenantAdmin(supabaseClient, userId) {
         throw new Error(`Acesso negado: Você não tem permissão para acessar o painel desta empresa. Seu painel correto é: /${emp.slug}`);
     }
 
-    // PASSO 3 — Armazenar globalmente (incluindo tema)
+    // PASSO 3 — Armazenar globalmente (incluindo tema e segmento)
     window.TENANT.empresa_id         = data.empresa_id;
     window.TENANT.slug               = emp.slug   || null;
     window.TENANT.nome               = emp.nome   || null;
@@ -595,6 +597,7 @@ async function initTenantAdmin(supabaseClient, userId) {
     window.TENANT.logo_url           = emp.logo_url || null;
     window.TENANT.role               = data.role;
     window.TENANT.modulos             = emp.modulos || {};
+    window.TENANT.segmento            = emp.segmento || null;
     window.TENANT.tema_cor_primaria   = emp.tema_cor_primaria  || null;
     window.TENANT.tema_cor_secundaria = emp.tema_cor_secundaria || null;
     window.TENANT.tema_cor_botao      = emp.tema_cor_botao     || null;
@@ -681,6 +684,15 @@ function getTenantId() {
     }
     return window.TENANT.empresa_id;
 }
+
+/**
+ * Retorna o segmento da empresa logada.
+ * Ex: 'restaurante', 'barbearia', 'loja_roupas', null
+ */
+function getSegmento() {
+    return (window.TENANT && window.TENANT.segmento) || null;
+}
+window.getSegmento = getSegmento;
 
 /**
  * Verifica se um determinado módulo está ativo para a empresa atual.
