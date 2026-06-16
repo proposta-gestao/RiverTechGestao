@@ -315,7 +315,7 @@
                                     <input type="text" id="filtroCliente" placeholder="Nome ou celular...">
                                 </div>
                                 <div class="filter-group">
-                                    <label for="filtroAtendente">👨‍💼 Atendente</label>
+                                    <label for="filtroAtendente" id="labelFiltroAtendente">👨‍💼 Atendente</label>
                                     <select id="filtroAtendente">
                                         <option value="">Todos os atendentes</option>
                                     </select>
@@ -443,12 +443,12 @@
                         <h3 class="metrics-section-title">⭐ Destaques</h3>
                         <div class="insights-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                             <div class="stat-card" style="border-left: 4px solid #e5b25d;">
-                                <div class="stat-label">🍎 Produto Estrela</div>
+                                <div class="stat-label" id="labelProdutoTop">🍎 Produto Estrela</div>
                                 <div class="stat-value" id="insightProdutoTop" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtProdutoTop" style="font-size: 0.8rem; margin-top: 5px;">Mais vendido (Qtd)</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid #e5b25d;">
-                                <div class="stat-label">📂 Categoria Líder</div>
+                                <div class="stat-label" id="labelCategoriaTop">📂 Categoria Líder</div>
                                 <div class="stat-value" id="insightCategoriaTop" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtCategoriaTop" style="font-size: 0.8rem; margin-top: 5px;">Maior faturamento</div>
                             </div>
