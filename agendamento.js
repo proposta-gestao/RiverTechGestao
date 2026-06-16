@@ -151,8 +151,14 @@ const agendarApp = {
         const selServico = document.getElementById('wlServico');
         selServico.innerHTML = state.servicos.map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
         
+        // Carrega opções de profissional
+        const selProfissional = document.getElementById('wlProfissional');
+        selProfissional.innerHTML = '<option value="">Qualquer profissional</option>' + 
+            state.profissionais.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+        
         // Pré-seleciona se já escolheu
         if (state.servico) selServico.value = state.servico.id;
+        if (state.profissional) selProfissional.value = state.profissional.id;
         
         // Pré-seleciona data se já escolheu
         const inputData = document.getElementById('wlData');
@@ -180,6 +186,7 @@ const agendarApp = {
         const nome = document.getElementById('wlNome').value.trim();
         const telefone = document.getElementById('wlTel').value.trim();
         const servicoId = document.getElementById('wlServico').value;
+        const profId = document.getElementById('wlProfissional').value || null;
         const dataPref = document.getElementById('wlData').value || null;
 
         if (!nome || !telefone) {
@@ -201,6 +208,7 @@ const agendarApp = {
                 cliente_nome: nome,
                 cliente_telefone: telefone,
                 servico_id: servicoId,
+                profissional_id_pref: profId,
                 data_desejada: dataPref,
                 status: 'aguardando'
             };
