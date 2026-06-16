@@ -144,8 +144,78 @@ const agendarApp = {
     },
 
     abrirListaEspera() {
-        console.log("abrirListaEspera placeholder");
-        // Será implementado no passo 5
+        const modal = document.getElementById('modalListaEspera');
+        if (!modal) return;
+        
+        // Carrega opções de serviço
+        const selServico = document.getElementById('wlServico');
+        selServico.innerHTML = state.servicos.map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
+        
+        // Pré-seleciona se já escolheu
+        if (state.servico) selServico.value = state.servico.id;
+        
+        // Pré-seleciona data se já escolheu
+        const inputData = document.getElementById('wlData');
+        if (state.dataSelecionada) {
+            const y = state.dataSelecionada.getFullYear();
+            const m = String(state.dataSelecionada.getMonth() + 1).padStart(2, '0');
+            const d = String(state.dataSelecionada.getDate()).padStart(2, '0');
+            inputData.value = `${y}-${m}-${d}`;
+        } else {
+            inputData.value = '';
+        }
+        
+        document.getElementById('wlNome').value = '';
+        document.getElementById('wlTel').value = '';
+        
+        modal.style.display = 'flex';
+    },
+
+    fecharListaEspera() {
+        const modal = document.getElementById('modalListaEspera');
+        if (modal) modal.style.display = 'none';
+    },
+
+    async salvarListaEspera() {
+        const nome = document.getElementById('wlNome').value.trim();
+        const telefone = document.getElementById('wlTel').value.trim();
+        const servicoId = document.getElementById('wlServico').value;
+        const dataPref = document.getElementById('wlData').value || null;
+
+        if (!nome || !telefone) {
+            showToast('Nome e WhatsApp são obrigatórios.', 'error');
+            return;
+        }
+
+        const telLimpo = telefone.replace(/\D/g, '');
+        if (telLimpo.length !== 11) {
+            showToast('O WhatsApp deve ter 11 números com DDD.', 'error');
+            return;
+        }
+
+        showLoading('Entrando na fila...');
+        
+        try {
+            const payload = {
+                empresa_id: window.TENANT.empresa_id,
+                cliente_nome: nome,
+                cliente_telefone: telefone,
+                servico_id: servicoId,
+                data_desejada: dataPref,
+                status: 'aguardando'
+            };
+
+            const { error } = await sb.from('lista_espera').insert(payload);
+            if (error) throw error;
+
+            agendarApp.fecharListaEspera();
+            showToast('Sucesso! Você está na lista de espera.');
+        } catch (err) {
+            console.error('Erro na lista de espera:', err);
+            showToast('Erro ao entrar na lista de espera.', 'error');
+        } finally {
+            hideLoading();
+        }
     },
 
     navMes,
