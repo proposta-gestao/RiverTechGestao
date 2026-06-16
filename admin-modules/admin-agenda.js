@@ -1098,19 +1098,22 @@
             observacao: obs || null,
         };
 
-        const { error } = editId
-            ? await sb.from('agendamentos').update(payload).eq('id', editId)
-            : await sb.from('agendamentos').insert(payload);
+        const waitlistId = document.getElementById('agendaModalWaitlistId')?.value;
+        
+        const { data: savedData, error } = editId
+            ? await sb.from('agendamentos').update(payload).eq('id', editId).select().single()
+            : await sb.from('agendamentos').insert(payload).select().single();
 
         if (error) {
             window.showToast?.('Erro ao salvar agendamento: ' + error.message, 'error');
             return;
         }
 
-        const waitlistId = document.getElementById('agendaModalWaitlistId')?.value;
-        if (waitlistId && !editId) {
-            payload.waitlist_id = waitlistId;
-            await sb.from('lista_espera').update({ status: 'confirmado' }).eq('id', waitlistId);
+        if (waitlistId && !editId && savedData) {
+            await sb.from('lista_espera').update({ 
+                status: 'confirmado',
+                agendamento_id: savedData.id 
+            }).eq('id', waitlistId);
             document.getElementById('agendaModalWaitlistId').value = '';
         }
 
