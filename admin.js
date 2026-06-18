@@ -201,6 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function fecharModal(id) {
     document.getElementById(id).classList.remove('active');
+    // Reset da conversão de Lista de Espera ao fechar modal de agendamento
+    if (id === 'modalNovoAgendamento' && window.__AGENDA) {
+        window.__AGENDA._listaEsperaConversaoId = null;
+    }
 }
 
 function abrirModal(id) {

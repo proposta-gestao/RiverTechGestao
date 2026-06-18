@@ -208,7 +208,7 @@
                 </div>
                 <div class="ag-form-group">
                     <label for="clienteTel">Seu celular / WhatsApp *</label>
-                    <input type="tel" id="clienteTel" placeholder="(11) 99999-9999" autocomplete="tel" maxlength="15">
+                    <input type="text" inputmode="numeric" id="clienteTel" placeholder="(11) 99999-9999" autocomplete="tel" maxlength="15">
                 </div>
                 <div class="ag-form-group">
                     <label for="clienteObs">Observação (opcional)</label>
@@ -273,7 +273,7 @@
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
                     <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">WhatsApp *</label>
-                    <input type="tel" id="wlTel" placeholder="(11) 99999-9999" maxlength="15" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
+                    <input type="text" inputmode="numeric" id="wlTel" placeholder="(11) 99999-9999" maxlength="15" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
                     <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">Serviço Desejado *</label>
@@ -283,9 +283,27 @@
                     <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">Profissional Preferido</label>
                     <select id="wlProfissional" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);"></select>
                 </div>
-                <div class="ag-form-group" style="margin-bottom:15px;">
+                <div class="ag-form-group" style="margin-bottom:10px;">
                     <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">Data Preferencial (Opcional)</label>
                     <input type="date" id="wlData" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
+                </div>
+                <div class="ag-form-group" style="margin-bottom:10px;">
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">1ª Opção de Horário</label>
+                    <select id="wlHorario1" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
+                        <option value="">Qualquer horário</option>
+                    </select>
+                </div>
+                <div class="ag-form-group" style="margin-bottom:10px;">
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">2ª Opção de Horário</label>
+                    <select id="wlHorario2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
+                        <option value="">Qualquer horário</option>
+                    </select>
+                </div>
+                <div class="ag-form-group" style="margin-bottom:15px;">
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">3ª Opção de Horário</label>
+                    <select id="wlHorario3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
+                        <option value="">Qualquer horário</option>
+                    </select>
                 </div>
                 
                 <div style="display:flex; gap:10px; margin-top:20px;">
