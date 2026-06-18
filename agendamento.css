@@ -6,19 +6,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --color-primary:       #E5B25D;
-    --color-primary-hover: #d4a14c;
-    --color-bg:            #0d0d0d;
-    --color-surface:       #1a1a1a;
-    --color-surface-2:     #222222;
-    --color-border:        rgba(229,178,93,0.18);
-    --color-text:          #ffffff;
-    --color-muted:         #a0a0a0;
-    --color-success:       #22c55e;
-    --color-danger:        #ef4444;
+    --color-primary:       var(--accent-primary, #E5B25D);
+    --color-primary-hover: var(--accent-primary-hover, #d4a14c);
+    --color-bg:            var(--bg-page, #0d0d0d);
+    --color-surface:       var(--bg-card, #1a1a1a);
+    --color-surface-2:     var(--bg-input, #222222);
+    --color-border:        var(--border-default, rgba(var(--rgb-brand-500, 229,178,93), 0.18));
+    --color-text:          var(--text-primary, #ffffff);
+    --color-muted:         var(--text-muted, #a0a0a0);
+    --color-success:       var(--state-success-bg, #22c55e);
+    --color-danger:        var(--state-danger-bg, #ef4444);
     --shadow:              0 8px 32px rgba(0,0,0,0.45);
-    --radius:              16px;
-    --radius-sm:           10px;
+    --radius:              var(--radius-lg, 16px);
+    --radius-sm:           var(--radius-md, 10px);
     --transition:          all 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 
