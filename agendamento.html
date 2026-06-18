@@ -54,7 +54,6 @@
                 <p>Agendamento Online</p>
             </div>
         </div>
-        <div class="ag-header-badge">📅 Agende já</div>
     </header>
 
     <!-- Progress Bar -->
@@ -151,7 +150,7 @@
         <div class="ag-step-panel" id="step-4">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:0.5rem; flex-wrap:wrap;">
                 <h2 class="ag-step-title" style="margin-bottom:0;">Que horas? 🕐</h2>
-                <button onclick="agendarApp.abrirListaEspera()" style="background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid var(--primary); padding:6px 14px; border-radius:20px; font-size:0.8rem; font-weight:600; cursor:pointer; flex-shrink:0; transition:all 0.2s;">📝 Fila de Espera</button>
+                <button onclick="agendarApp.abrirListaEspera()" style="background:var(--color-primary); color:#000; border:none; padding:8px 18px; border-radius:50px; font-size:0.85rem; font-weight:700; cursor:pointer; flex-shrink:0; transition:all 0.2s; box-shadow: 0 4px 15px rgba(229,178,93,0.3);">📝 Fila de Espera</button>
             </div>
             <p class="ag-step-subtitle" id="step4Subtitle">Escolha um horário disponível.</p>
 
@@ -311,7 +310,7 @@
                 
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button class="ag-btn-back" style="flex:1;" onclick="agendarApp.fecharListaEspera()">Cancelar</button>
-                    <button class="ag-btn-primary" style="flex:1;" onclick="agendarApp.salvarListaEspera()">Enviar</button>
+                    <button class="ag-btn-next" style="flex:1;" onclick="agendarApp.salvarListaEspera()">Enviar</button>
                 </div>
             </div>
         </div>

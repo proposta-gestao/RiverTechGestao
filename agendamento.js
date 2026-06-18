@@ -588,7 +588,7 @@ function renderSlots(slots) {
                     <p style="margin-top:8px; font-size:0.85rem; color:var(--color-muted);">
                         Tente selecionar uma data futura no calendário.
                     </p>
-                    <button class="ag-btn-primary" style="margin-top:15px; padding: 10px 16px;" onclick="agendarApp.abrirListaEspera()">Entrar na Lista de Espera</button>
+                    <button class="ag-btn-next" style="margin-top:15px; padding: 10px 16px;" onclick="agendarApp.abrirListaEspera()">Entrar na Lista de Espera</button>
                 </div>`;
         } else {
             container.innerHTML = `
@@ -601,7 +601,7 @@ function renderSlots(slots) {
                             Verifique se a empresa configurou horários de funcionamento para este dia da semana no painel.
                         </span>
                     </p>
-                    <button class="ag-btn-primary" style="margin-top:15px; padding: 10px 16px;" onclick="agendarApp.abrirListaEspera()">Entrar na Lista de Espera</button>
+                    <button class="ag-btn-next" style="margin-top:15px; padding: 10px 16px;" onclick="agendarApp.abrirListaEspera()">Entrar na Lista de Espera</button>
                 </div>`;
         }
         return;
