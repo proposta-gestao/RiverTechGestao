@@ -149,7 +149,10 @@
              STEP 4 — ESCOLHER HORÁRIO
              ====================================================== -->
         <div class="ag-step-panel" id="step-4">
-            <h2 class="ag-step-title">Que horas? 🕐</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:0.5rem; flex-wrap:wrap;">
+                <h2 class="ag-step-title" style="margin-bottom:0;">Que horas? 🕐</h2>
+                <button onclick="agendarApp.abrirListaEspera()" style="background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid var(--primary); padding:6px 14px; border-radius:20px; font-size:0.8rem; font-weight:600; cursor:pointer; flex-shrink:0; transition:all 0.2s;">📝 Fila de Espera</button>
+            </div>
             <p class="ag-step-subtitle" id="step4Subtitle">Escolha um horário disponível.</p>
 
             <div class="ag-slots-wrap">
