@@ -42,6 +42,7 @@
     // ============================================================
     let audioCtx = null;
     const bellAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    const waitlistAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2866/2866-preview.mp3');
 
     async function initAudio() {
         if (audioCtx) return;
@@ -67,6 +68,18 @@
         if (audioCtx.state === 'suspended') {
             await audioCtx.resume();
         }
+        
+        // Desbloqueia os áudios no navegador através da interação do usuário
+        bellAudio.play().then(() => {
+            bellAudio.pause();
+            bellAudio.currentTime = 0;
+        }).catch(()=>{});
+
+        waitlistAudio.play().then(() => {
+            waitlistAudio.pause();
+            waitlistAudio.currentTime = 0;
+        }).catch(()=>{});
+
         updateAudioBar();
     }
 
@@ -77,6 +90,15 @@
         }
         bellAudio.currentTime = 0;
         bellAudio.play().catch(e => console.warn('[Agenda-Audio] Falha no play:', e));
+    }
+
+    function playWaitlistBell() {
+        if (!audioCtx || audioCtx.state !== 'running') {
+            console.warn('[Agenda-Audio] Bloqueado. Estado:', audioCtx?.state);
+            return;
+        }
+        waitlistAudio.currentTime = 0;
+        waitlistAudio.play().catch(e => console.warn('[Agenda-Audio] Falha no play waitlist:', e));
     }
 
     // ============================================================
@@ -233,12 +255,27 @@
                 await carregarTudoAgenda();
             })
             .on('postgres_changes', { 
-                event: '*', 
+                event: 'INSERT', 
                 schema: 'public', 
                 table: 'lista_espera'
             }, async (payload) => {
-                if (payload.new && payload.new.empresa_id !== empresaId) return;
-                console.log('[Agenda] Mudança na lista de espera');
+                if (payload.new && payload.new.empresa_id && payload.new.empresa_id !== empresaId) return;
+                console.log('[Agenda] NOVA ENTRADA NA LISTA DE ESPERA!', payload);
+                playWaitlistBell();
+                if (typeof window.showToast === 'function') {
+                    window.showToast('📝 Novo cliente na Lista de Espera!');
+                }
+                await carregarListaEspera();
+                if (document.getElementById('agendaTab_lista')?.style.display !== 'none') {
+                    renderListaEsperaTab();
+                }
+            })
+            .on('postgres_changes', { 
+                event: 'UPDATE', 
+                schema: 'public', 
+                table: 'lista_espera'
+            }, async (payload) => {
+                if (payload.new && payload.new.empresa_id && payload.new.empresa_id !== empresaId) return;
                 await carregarListaEspera();
                 if (document.getElementById('agendaTab_lista')?.style.display !== 'none') {
                     renderListaEsperaTab();
@@ -353,7 +390,7 @@
     async function carregarListaEspera() {
         const { data, error } = await sb
             .from('lista_espera')
-            .select('*, servico:servicos(nome)')
+            .select('*, servico:servicos(nome), profissional:profissionais(nome)')
             .eq('empresa_id', EMPRESA_ID())
             .in('status', ['aguardando', 'notificado'])
             .order('criado_em', { ascending: true });
@@ -741,28 +778,48 @@
                     <thead>
                         <tr>
                             <th>Cliente</th>
-                            <th>Serviço</th>
-                            <th>Data Desejada</th>
+                            <th>Serviço e Preferências</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${listaEspera.map(item => {
-                            const dataDesejada = item.data_desejada ? new Date(item.data_desejada).toLocaleDateString('pt-BR') : 'Qualquer';
+                            const dataDesejada = item.data_desejada ? new Date(item.data_desejada + 'T12:00:00').toLocaleDateString('pt-BR') : 'Qualquer data';
+                            const profName = item.profissional?.nome || 'Qualquer profissional';
+                            let horarios = '';
+                            if (item.horarios_preferenciais && item.horarios_preferenciais.length > 0) {
+                                horarios = item.horarios_preferenciais.join(', ');
+                            } else {
+                                horarios = 'Qualquer horário';
+                            }
+                            
                             const statusClass = item.status === 'notificado' ? 'status-confirmado' : 'status-pendente';
+                            
+                            // Highlight (match flag - to be used by filter later)
+                            const isMatch = item._isMatch ? 'background: rgba(229,178,93,0.15); border-left: 4px solid var(--primary);' : '';
+
                             return `
-                                <tr>
+                                <tr style="${isMatch}">
                                     <td>
                                         <div style="font-weight:600;">${item.cliente_nome}</div>
                                         <div style="font-size:0.75rem; color:var(--text-muted);">📱 ${item.cliente_telefone}</div>
+                                        ${item._isMatch ? '<div style="font-size:0.7rem; color:var(--primary); margin-top:4px;">⭐ Compatível com a Vaga!</div>' : ''}
                                     </td>
-                                    <td>${item.servico?.nome || '—'}</td>
-                                    <td>${dataDesejada}</td>
-                                    <td><span class="agendamento-status ${statusClass}">${item.status.toUpperCase()}</span></td>
+                                    <td>
+                                        <div><strong>${item.servico?.nome || '—'}</strong></div>
+                                        <div style="font-size:0.8rem; color:var(--text-muted);">📅 ${dataDesejada} | 🕒 ${horarios}</div>
+                                        <div style="font-size:0.8rem; color:var(--text-muted);">👥 ${profName}</div>
+                                    </td>
+                                    <td>
+                                        <span class="agendamento-status ${statusClass}">${item.status.toUpperCase()}</span>
+                                        ${item.notificado_em ? `<div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Avisado em: ${new Date(item.notificado_em).toLocaleDateString('pt-BR')}</div>` : ''}
+                                    </td>
                                     <td class="agendamento-actions">
-                                        <button onclick="window.__AGENDA.abrirModalNovoAgendamentoParaLista('${item.id}')" title="Converter em Agendamento">📅</button>
-                                        <button onclick="window.__AGENDA.removerDaLista('${item.id}')" title="Remover" style="color:var(--danger);">✕</button>
+                                        <button onclick="window.__AGENDA.avisarWhatsApp('${item.id}')" title="Avisar via WhatsApp" style="color:#25D366; background:rgba(37,211,102,0.1);">💬</button>
+                                        <button onclick="window.__AGENDA.abrirModalNovoAgendamentoParaLista('${item.id}')" title="Converter em Agendamento" style="color:var(--primary); background:rgba(229,178,93,0.1);">📅</button>
+                                        <button onclick="window.__AGENDA.recusarDaLista('${item.id}')" title="Recusar" style="color:var(--danger); background:rgba(244,67,54,0.1);">🚫</button>
+                                        <button onclick="window.__AGENDA.removerDaLista('${item.id}')" title="Cancelar" style="color:var(--text-muted);">✕</button>
                                     </td>
                                 </tr>
                             `;
@@ -776,11 +833,62 @@
         if (!confirm('Deseja remover este cliente da lista de espera?')) return;
         const { error } = await sb.from('lista_espera').update({ status: 'cancelado' }).eq('id', id);
         if (!error) {
-            window.showToast?.('Removido da lista.');
+            window.showToast?.('Cancelado e removido da lista.');
             await carregarListaEspera();
             renderListaEsperaTab();
         }
     }
+
+    async function recusarDaLista(id) {
+        if (!confirm('Deseja recusar este cliente (ex: não respondeu)? O registro ficará como recusado.')) return;
+        const { error } = await sb.from('lista_espera').update({ status: 'recusado' }).eq('id', id);
+        if (!error) {
+            window.showToast?.('Marcado como recusado.');
+            await carregarListaEspera();
+            renderListaEsperaTab();
+        }
+    }
+
+    async function avisarWhatsApp(id) {
+        const item = listaEspera.find(x => x.id === id);
+        if (!item) return;
+
+        // Atualiza banco
+        const agora = new Date();
+        const expira = new Date(agora.getTime() + (2 * 60 * 60 * 1000)); // +2 horas
+
+        const { error } = await sb.from('lista_espera').update({ 
+            status: 'notificado', 
+            notificado_em: agora.toISOString(),
+            expira_em: expira.toISOString()
+        }).eq('id', id);
+
+        if (error) {
+            window.showToast?.('Erro ao atualizar status', 'error');
+            return;
+        }
+
+        // Monta Mensagem
+        let srv = item.servico?.nome || 'um serviço';
+        let data = item.data_desejada ? new Date(item.data_desejada + 'T12:00:00').toLocaleDateString('pt-BR') : '';
+        let prof = item.profissional?.nome ? ` com ${item.profissional.nome}` : '';
+        
+        let msg = `Olá, ${item.cliente_nome}! Surgiu uma vaga para ${srv}${prof}`;
+        if (data) msg += ` no dia ${data}`;
+        msg += `. Gostaria de confirmar este horário?`;
+
+        // Limpa telefone
+        let telLimpo = item.cliente_telefone.replace(/\D/g, '');
+        if (telLimpo.length === 11) telLimpo = '55' + telLimpo; // Adiciona DDI Brasil se for celular
+
+        const linkUrl = `https://wa.me/${telLimpo}?text=${encodeURIComponent(msg)}`;
+        window.open(linkUrl, '_blank');
+
+        window.showToast?.('Cliente notificado via WhatsApp!');
+        await carregarListaEspera();
+        renderListaEsperaTab();
+    }
+
 
     function abrirModalListaEspera() {
         const modal = document.getElementById('modalListaEspera');
@@ -942,6 +1050,9 @@
         const item = listaEspera.find(i => i.id === waitlistId);
         if (!item) return;
 
+        // Fonte única para o waitlistId
+        window.__AGENDA._listaEsperaConversaoId = waitlistId;
+
         abrirModalNovoAgendamento();
         document.getElementById('agendaModalCliente').value = item.cliente_nome || '';
         document.getElementById('agendaModalTelefone').value = item.cliente_telefone || '';
@@ -951,13 +1062,6 @@
             document.getElementById('agendaModalData').value = item.data_desejada;
             carregarSlotsAdmin();
         }
-        
-        // Atribuir o ID da lista ao campo oculto
-        const hiddenWaitlist = document.getElementById('agendaModalWaitlistId') || document.createElement('input');
-        hiddenWaitlist.type = 'hidden';
-        hiddenWaitlist.id = 'agendaModalWaitlistId';
-        hiddenWaitlist.value = waitlistId;
-        document.getElementById('modalNovoAgendamento').appendChild(hiddenWaitlist);
     }
 
     async function carregarSlotsAdmin(preselectInicio = null, preselectFim = null, preselectHora = null) {
@@ -1098,7 +1202,7 @@
             observacao: obs || null,
         };
 
-        const waitlistId = document.getElementById('agendaModalWaitlistId')?.value;
+        const waitlistId = window.__AGENDA._listaEsperaConversaoId;
         
         const { data: savedData, error } = editId
             ? await sb.from('agendamentos').update(payload).eq('id', editId).select().single()
@@ -1114,7 +1218,7 @@
                 status: 'confirmado',
                 agendamento_id: savedData.id 
             }).eq('id', waitlistId);
-            document.getElementById('agendaModalWaitlistId').value = '';
+            window.__AGENDA._listaEsperaConversaoId = null; // reseta
         }
 
         window.showToast?.('Agendamento salvo!');
@@ -1140,7 +1244,47 @@
 
     async function cancelarAgendamento(id) {
         if (!confirm('Deseja cancelar este agendamento?')) return;
+        
+        // Pega dados antes de cancelar
+        const { data: ag } = await sb.from('agendamentos').select('data_hora_inicio, servico_id, profissional_id').eq('id', id).single();
+        
         await atualizarStatus(id, 'cancelado');
+        
+        // Executa Match
+        if (ag && listaEspera && listaEspera.length > 0) {
+            const d = new Date(ag.data_hora_inicio);
+            const dataAg = d.toISOString().split('T')[0];
+            const horaAg = d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit', timeZone: 'America/Sao_Paulo'});
+            
+            let matchFound = false;
+            listaEspera.forEach(item => {
+                // Remove matches anteriores
+                item._isMatch = false;
+                
+                const sameDate = !item.data_desejada || item.data_desejada === dataAg;
+                const sameSrv = item.servico_id === ag.servico_id;
+                const sameProf = !item.profissional_id_pref || item.profissional_id_pref === ag.profissional_id;
+                const sameHora = !item.horarios_preferenciais || item.horarios_preferenciais.length === 0 || item.horarios_preferenciais.includes(horaAg) || item.horarios_preferenciais.includes('');
+                
+                if (sameDate && sameSrv && sameProf && sameHora && item.status === 'aguardando') {
+                    item._isMatch = true;
+                    matchFound = true;
+                }
+            });
+            
+            if (matchFound) {
+                window.showToast?.('Vaga aberta! Clientes compatíveis encontrados na Lista de Espera.', 'success');
+                // Força visualização da aba
+                document.getElementById('agendaTab_timeline').style.display = 'none';
+                document.getElementById('agendaTab_futuro').style.display = 'none';
+                document.getElementById('agendaTab_lista').style.display = 'block';
+                document.querySelectorAll('.agenda-view-btn').forEach(b => b.classList.remove('active'));
+                const btnLista = document.querySelector('.agenda-view-btn[onclick*="lista"]');
+                if (btnLista) btnLista.classList.add('active');
+                
+                renderListaEsperaTab();
+            }
+        }
     }
 
     async function concluirAgendamento(id) {

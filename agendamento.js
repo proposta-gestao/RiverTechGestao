@@ -160,6 +160,9 @@ const agendarApp = {
         if (state.servico) selServico.value = state.servico.id;
         if (state.profissional) selProfissional.value = state.profissional.id;
         
+        // Carrega opções de horários baseados na empresa
+        agendarApp.carregarOpcoesHorariosListaEspera();
+        
         // Pré-seleciona data se já escolheu
         const inputData = document.getElementById('wlData');
         if (state.dataSelecionada) {
@@ -171,8 +174,10 @@ const agendarApp = {
             inputData.value = '';
         }
         
-        document.getElementById('wlNome').value = '';
         document.getElementById('wlTel').value = '';
+        document.getElementById('wlHorario1').value = '';
+        document.getElementById('wlHorario2').value = '';
+        document.getElementById('wlHorario3').value = '';
         
         modal.style.display = 'flex';
     },
@@ -188,6 +193,14 @@ const agendarApp = {
         const servicoId = document.getElementById('wlServico').value;
         const profId = document.getElementById('wlProfissional').value || null;
         const dataPref = document.getElementById('wlData').value || null;
+        const h1 = document.getElementById('wlHorario1').value;
+        const h2 = document.getElementById('wlHorario2').value;
+        const h3 = document.getElementById('wlHorario3').value;
+        
+        const horariosPreferenciais = [];
+        if (h1) horariosPreferenciais.push(h1);
+        if (h2) horariosPreferenciais.push(h2);
+        if (h3) horariosPreferenciais.push(h3);
 
         if (!nome || !telefone) {
             showToast('Nome e WhatsApp são obrigatórios.', 'error');
@@ -210,6 +223,7 @@ const agendarApp = {
                 servico_id: servicoId,
                 profissional_id_pref: profId,
                 data_desejada: dataPref,
+                horarios_preferenciais: horariosPreferenciais,
                 status: 'aguardando'
             };
 
@@ -224,6 +238,59 @@ const agendarApp = {
         } finally {
             hideLoading();
         }
+    },
+
+    async carregarOpcoesHorariosListaEspera() {
+        try {
+            const { data, error } = await sb
+                .from('horarios_funcionamento')
+                .select('hora_abertura, hora_fechamento')
+                .eq('empresa_id', state.empresaId);
+
+            if (error || !data || data.length === 0) return this.gerarHorariosPadrao();
+
+            let minTime = "23:59:59";
+            let maxTime = "00:00:00";
+            data.forEach(h => {
+                if (h.hora_abertura && h.hora_abertura < minTime) minTime = h.hora_abertura;
+                if (h.hora_fechamento && h.hora_fechamento > maxTime) maxTime = h.hora_fechamento;
+            });
+
+            if (minTime > maxTime) return this.gerarHorariosPadrao();
+
+            const hInicio = parseInt(minTime.split(':')[0]);
+            const hFim = parseInt(maxTime.split(':')[0]);
+            
+            let optionsHtml = '<option value="">Qualquer horário</option>';
+            for (let h = hInicio; h <= hFim; h++) {
+                for (let m of ['00', '30']) {
+                    if (h === hFim && m === '30') continue;
+                    const horaStr = `${String(h).padStart(2, '0')}:${m}`;
+                    optionsHtml += `<option value="${horaStr}">${horaStr}</option>`;
+                }
+            }
+            
+            document.getElementById('wlHorario1').innerHTML = optionsHtml;
+            document.getElementById('wlHorario2').innerHTML = optionsHtml;
+            document.getElementById('wlHorario3').innerHTML = optionsHtml;
+        } catch (err) {
+            console.error('Erro ao buscar horarios de funcionamento', err);
+            this.gerarHorariosPadrao();
+        }
+    },
+
+    gerarHorariosPadrao() {
+        let optionsHtml = '<option value="">Qualquer horário</option>';
+        for (let h = 8; h <= 20; h++) {
+            for (let m of ['00', '30']) {
+                if (h === 20 && m === '30') continue;
+                const horaStr = `${String(h).padStart(2, '0')}:${m}`;
+                optionsHtml += `<option value="${horaStr}">${horaStr}</option>`;
+            }
+        }
+        document.getElementById('wlHorario1').innerHTML = optionsHtml;
+        document.getElementById('wlHorario2').innerHTML = optionsHtml;
+        document.getElementById('wlHorario3').innerHTML = optionsHtml;
     },
 
     navMes,
@@ -241,14 +308,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const nomeInput = document.getElementById('clienteNome');
     const telInput = document.getElementById('clienteTel');
     if (nomeInput) nomeInput.addEventListener('input', validarDadosCliente);
+    const wlTelInput = document.getElementById('wlTel');
+    
+    function formatarTelefone(input) {
+        let digits = input.value.replace(/\D/g, '').slice(0, 11);
+        let formatted = digits;
+        if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+        if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+        input.value = formatted;
+    }
+
     if (telInput) {
         telInput.addEventListener('input', () => {
-            let digits = telInput.value.replace(/\D/g, '').slice(0, 11);
-            let formatted = digits;
-            if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
-            if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
-            telInput.value = formatted;
+            formatarTelefone(telInput);
             validarDadosCliente();
+        });
+        telInput.addEventListener('keydown', (e) => {
+            const allowed = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+            if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        telInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            telInput.value = pasted.replace(/\D/g, '').slice(0, 11);
+            formatarTelefone(telInput);
+            validarDadosCliente();
+        });
+    }
+
+    if (wlTelInput) {
+        wlTelInput.addEventListener('input', () => {
+            formatarTelefone(wlTelInput);
+        });
+        wlTelInput.addEventListener('keydown', (e) => {
+            const allowed = ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'];
+            if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        wlTelInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData).getData('text');
+            wlTelInput.value = pasted.replace(/\D/g, '').slice(0, 11);
+            formatarTelefone(wlTelInput);
         });
     }
 });
