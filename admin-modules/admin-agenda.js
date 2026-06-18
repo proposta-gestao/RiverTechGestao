@@ -63,22 +63,25 @@
         bar.style.display = isReady ? 'none' : 'flex';
     }
 
+    let audioUnlocked = false;
     async function resumeAudio() {
         if (!audioCtx) await initAudio();
         if (audioCtx.state === 'suspended') {
             await audioCtx.resume();
         }
         
-        // Desbloqueia os áudios no navegador através da interação do usuário
-        bellAudio.play().then(() => {
-            bellAudio.pause();
-            bellAudio.currentTime = 0;
-        }).catch(()=>{});
-
-        waitlistAudio.play().then(() => {
-            waitlistAudio.pause();
-            waitlistAudio.currentTime = 0;
-        }).catch(()=>{});
+        // Desbloqueia os áudios no navegador através da interação do usuário apenas 1 vez
+        if (!audioUnlocked) {
+            try {
+                await bellAudio.play();
+                bellAudio.pause();
+                bellAudio.currentTime = 0;
+                await waitlistAudio.play();
+                waitlistAudio.pause();
+                waitlistAudio.currentTime = 0;
+                audioUnlocked = true;
+            } catch(e) {}
+        }
 
         updateAudioBar();
     }
@@ -164,8 +167,8 @@
                 btnTest.innerHTML = '<span>🔔</span> Testar Alerta Sonoro';
                 btnTest.onmouseover = () => btnTest.style.background = 'rgba(255,255,255,0.1)';
                 btnTest.onmouseout = () => btnTest.style.background = 'rgba(255,255,255,0.05)';
-                btnTest.onclick = () => {
-                    resumeAudio();
+                btnTest.onclick = async () => {
+                    await resumeAudio();
                     playBell();
                     showToast('Teste de áudio disparado!');
                 };
@@ -180,8 +183,8 @@
                     const btnDesktop = btnTest.cloneNode(true);
                     btnDesktop.id = 'btnTestarAudioAgendaDesktop';
                     btnDesktop.style.cssText += ' margin-bottom:1rem;';
-                    btnDesktop.onclick = () => {
-                        resumeAudio();
+                    btnDesktop.onclick = async () => {
+                        await resumeAudio();
                         playBell();
                         showToast('Teste de áudio disparado!');
                     };
@@ -1445,6 +1448,8 @@
         abrirModalListaEspera,
         salvarListaEspera,
         removerDaLista,
+        recusarDaLista,
+        avisarWhatsApp,
         abrirModalNovoAgendamentoParaLista,
         carregarSlotsAdmin,
         selecionarSlotAdmin
