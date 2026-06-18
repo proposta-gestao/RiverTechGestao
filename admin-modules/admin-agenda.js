@@ -92,7 +92,9 @@
             return;
         }
         bellAudio.currentTime = 0;
-        bellAudio.play().catch(e => console.warn('[Agenda-Audio] Falha no play:', e));
+        bellAudio.play().catch(e => {
+            if (e.name !== 'AbortError') console.warn('[Agenda-Audio] Falha no play:', e);
+        });
     }
 
     function playWaitlistBell() {
@@ -101,7 +103,9 @@
             return;
         }
         waitlistAudio.currentTime = 0;
-        waitlistAudio.play().catch(e => console.warn('[Agenda-Audio] Falha no play waitlist:', e));
+        waitlistAudio.play().catch(e => {
+            if (e.name !== 'AbortError') console.warn('[Agenda-Audio] Falha no play waitlist:', e);
+        });
     }
 
     // ============================================================
