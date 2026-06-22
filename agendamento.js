@@ -318,6 +318,15 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = formatted;
     }
 
+    // Pré-preenche os dados do localStorage se existirem
+    const savedNome = localStorage.getItem('ag_cliente_nome');
+    const savedTel = localStorage.getItem('ag_cliente_tel');
+    if (nomeInput && savedNome) nomeInput.value = savedNome;
+    if (telInput && savedTel) {
+        telInput.value = savedTel;
+        formatarTelefone(telInput);
+    }
+
     if (telInput) {
         telInput.addEventListener('input', () => {
             formatarTelefone(telInput);
@@ -686,6 +695,10 @@ async function confirmarAgendamento() {
 
         if (error) throw error;
 
+        // Salva dados no localStorage para agilizar próximos agendamentos
+        localStorage.setItem('ag_cliente_nome', nome);
+        localStorage.setItem('ag_cliente_tel', tel);
+
         // Preenche tela de sucesso
         document.getElementById('confServico').textContent = state.servico.nome;
         document.getElementById('confProfissional').textContent = state.profissional.nome;
@@ -727,9 +740,13 @@ function novoAgendamento() {
     state.slotInicio = null;
     state.slotFim = null;
 
-    // Reseta inputs
-    document.getElementById('clienteNome').value = '';
-    document.getElementById('clienteTel').value = '';
+    // Reseta inputs (mantém nome e telefone se estiverem salvos)
+    if (!localStorage.getItem('ag_cliente_nome')) {
+        document.getElementById('clienteNome').value = '';
+    }
+    if (!localStorage.getItem('ag_cliente_tel')) {
+        document.getElementById('clienteTel').value = '';
+    }
     document.getElementById('clienteObs').value = '';
     
     // Reseta UI
