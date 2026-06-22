@@ -701,11 +701,19 @@ async function confirmarAgendamento() {
 
     } catch (err) {
         console.error('Erro ao salvar agendamento:', err);
-        showToast('Erro ao confirmar agendamento. O horário pode ter sido reservado por outra pessoa.', 'error');
+
+        // Código 23P01 = exclusion_violation (PostgreSQL)
+        // Acontece quando a exclusion constraint detecta sobreposição de horários
+        const isConflito = err.code === '23P01' || (err.message && err.message.includes('agendamentos_no_overlap'));
+        const msg = isConflito
+            ? '⚡ Este horário acabou de ser reservado por outra pessoa. Escolha outro.'
+            : 'Erro ao confirmar agendamento. Tente novamente.';
+
+        showToast(msg, 'error');
         hideLoading();
         document.getElementById('btnConfirmar').disabled = false;
         
-        // Recarrega slots para garantir
+        // Recarrega slots para mostrar grade atualizada
         carregarSlotsDisponiveis();
         agendarApp.irPara(4); // Volta para tela de horário
     }
