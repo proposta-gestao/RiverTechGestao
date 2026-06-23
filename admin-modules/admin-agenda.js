@@ -1393,24 +1393,30 @@
             document.getElementById('servModalDesc').value = s.descricao || '';
             document.getElementById('servModalDuracao').value = s.duracao_min || 30;
             document.getElementById('servModalPreco').value = s.preco || 0;
+            // Intervalo por serviço: exibe vazio se NULL (herda da agenda)
+            document.getElementById('servModalIntervalo').value = s.intervalo_min != null ? s.intervalo_min : '';
         } else {
             document.getElementById('servModalId').value = '';
             document.getElementById('servModalNome').value = '';
             document.getElementById('servModalDesc').value = '';
             document.getElementById('servModalDuracao').value = '';
             document.getElementById('servModalPreco').value = '';
+            document.getElementById('servModalIntervalo').value = '';
         }
         document.getElementById('modalServico').classList.add('active');
     }
 
     async function salvarServico() {
         const id = document.getElementById('servModalId').value;
+        const intervaloRaw = document.getElementById('servModalIntervalo').value;
         const payload = {
             empresa_id: EMPRESA_ID(),
             nome: document.getElementById('servModalNome').value.trim(),
             descricao: document.getElementById('servModalDesc').value.trim() || null,
             duracao_min: parseInt(document.getElementById('servModalDuracao').value) || 30,
             preco: parseFloat(document.getElementById('servModalPreco').value) || 0,
+            // NULL = herda da agenda. Valor = sobrescreve.
+            intervalo_min: intervaloRaw !== '' ? parseInt(intervaloRaw) : null,
         };
 
         if (!payload.nome) { window.showToast?.('Nome é obrigatório', 'error'); return; }
