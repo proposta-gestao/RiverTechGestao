@@ -962,10 +962,9 @@ function renderLojaEstoque() {
                 <td style="text-align:center; font-weight:bold; color:${cor}; font-size:1.1rem;">${v.estoque}</td>
                 <td style="text-align:center;">
                     <div style="display:inline-flex; align-items:center; gap:6px; justify-content:center;">
-                        <div style="display:inline-flex; border:1px solid var(--border-color); border-radius:6px; overflow:hidden;">
-                            <button onclick="window.__LOJA.salvarEstoqueGeralDelta('${v.id}', -1)" style="border:none; background:transparent; padding:4px 10px; cursor:pointer; color:var(--danger); font-weight:bold; border-right:1px solid var(--border-color);" title="Remover">-</button>
-                            <input type="number" id="inEstoqueGeral_${v.id}" value="1" min="1" style="width:40px; text-align:center; padding:4px 0; border:none; background:transparent; color:var(--text-color); font-weight:bold; outline:none;" title="Quantidade a adicionar/remover">
-                            <button onclick="window.__LOJA.salvarEstoqueGeralDelta('${v.id}', 1)" style="border:none; background:transparent; padding:4px 10px; cursor:pointer; color:var(--success); font-weight:bold; border-left:1px solid var(--border-color);" title="Adicionar">+</button>
+                        <div style="display:inline-flex; align-items:center; gap:6px;">
+                            <input type="number" id="inEstoqueGeral_${v.id}" placeholder="" style="width:60px; text-align:center; padding:4px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color); font-weight:bold; outline:none;" title="Quantidade">
+                            <button onclick="window.__LOJA.salvarEstoqueGeralDelta('${v.id}', 1)" class="btn-sm btn-primary" title="Adicionar quantidade informada">Adicionar</button>
                         </div>
                         <button onclick="window.__LOJA.abrirModalEstoqueVariacao('${v.id}')" class="btn-sm" style="background:transparent; border:1px solid var(--border-color); color:var(--text-color); padding:4px 8px;" title="Histórico e Ajuste Completo">📋</button>
                     </div>
@@ -1009,7 +1008,19 @@ window.__LOJA.salvarEstoqueGeralDelta = async function(id, sign) {
 window.__LOJA.abrirModalEstoqueVariacao = async function(varId) {
     if (typeof validarAcessoModulo === 'function' && !validarAcessoModulo('loja_estoque')) return;
     
-    const variacao = lojaCurrentVariacoes.find(v => v.id === varId);
+    let variacao = null;
+    if (window.lojaCurrentVariacoes && window.lojaCurrentVariacoes.length > 0) {
+        variacao = window.lojaCurrentVariacoes.find(v => v.id === varId);
+    }
+    if (!variacao && window.lojaProdutos) {
+        for(let p of window.lojaProdutos) {
+            if(p.loja_variacoes) {
+                const found = p.loja_variacoes.find(v => v.id === varId);
+                if(found) { variacao = found; break; }
+            }
+        }
+    }
+    
     if (!variacao) return;
 
     document.getElementById('lojaVarId').value = variacao.id;

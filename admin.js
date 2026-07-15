@@ -3865,81 +3865,86 @@ async function carregarMotivosEstoque() {
 }
 
 function renderizarMotivosEstoque() {
-    const tbody = document.getElementById('motivosEstoqueBody');
-    if (!tbody) return;
+    const renderTable = (tbodyId) => {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
 
-    if (motivosEstoque.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhum motivo cadastrado.</td></tr>';
-        return;
-    }
+        if (motivosEstoque.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhum motivo cadastrado.</td></tr>';
+            return;
+        }
 
-    tbody.innerHTML = motivosEstoque.map((m, index) => `
-        <tr data-id="${m.id}" data-index="${index}" class="motivo-estoque-row">
-            <td class="drag-handle-motivo" style="text-align: center; color: var(--text-muted); cursor: grab; font-size: 1.2rem; user-select: none; width: 40px;">
-                ☰
-            </td>
-            <td style="font-weight:600; cursor:pointer;" onclick="editarMotivoEstoque('${m.id}')" title="Clique para editar">${m.name}</td>
-            <td style="text-align: center; width: 100px;">
-                <label class="switch" style="display: inline-block;">
-                    <input type="checkbox" ${m.active ? 'checked' : ''} onchange="toggleStatusMotivoEstoque('${m.id}', this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </td>
-            <td style="width: 150px;">
-                <div style="display:flex;gap:8px;justify-content:center;">
-                    <button class="btn-sm btn-edit" onclick="editarMotivoEstoque('${m.id}')">Editar</button>
-                    <button class="btn-sm btn-delete" onclick="excluirMotivoEstoque('${m.id}')">Excluir</button>
-                </div>
-            </td>
-        </tr>
-    `).join('');
+        tbody.innerHTML = motivosEstoque.map((m, index) => `
+            <tr data-id="${m.id}" data-index="${index}" class="motivo-estoque-row">
+                <td class="drag-handle-motivo" style="text-align: center; color: var(--text-muted); cursor: grab; font-size: 1.2rem; user-select: none; width: 40px;">
+                    ☰
+                </td>
+                <td style="font-weight:600; cursor:pointer;" onclick="editarMotivoEstoque('${m.id}')" title="Clique para editar">${m.name}</td>
+                <td style="text-align: center; width: 100px;">
+                    <label class="switch" style="display: inline-block;">
+                        <input type="checkbox" ${m.active ? 'checked' : ''} onchange="toggleStatusMotivoEstoque('${m.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </td>
+                <td style="width: 150px;">
+                    <div style="display:flex;gap:8px;justify-content:center;">
+                        <button class="btn-sm btn-edit" onclick="editarMotivoEstoque('${m.id}')">Editar</button>
+                        <button class="btn-sm btn-delete" onclick="excluirMotivoEstoque('${m.id}')">Excluir</button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    };
+
+    renderTable('motivosEstoqueBody');
+    renderTable('lojaMotivosEstoqueBody');
 }
 
 function initSortableMotivosEstoque() {
-    const el = document.getElementById('motivosEstoqueBody');
-    if (!el) return;
-    
-    // Verificar se a biblioteca Sortable está disponível
-    if (typeof Sortable === 'undefined') {
-        console.error('SortableJS não encontrado.');
-        return;
-    }
+    const initSortable = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        
+        if (typeof Sortable === 'undefined') return;
 
-    // Destruir instância anterior de forma segura
-    const oldSortable = Sortable.get(el);
-    if (oldSortable) oldSortable.destroy();
+        const oldSortable = Sortable.get(el);
+        if (oldSortable) oldSortable.destroy();
 
-    el.sortable = new Sortable(el, {
-        animation: 150,
-        handle: '.drag-handle-motivo',
-        ghostClass: 'sortable-ghost',
-        dragClass: 'dragging',
-        forceFallback: true, // Forçar fallback ajuda em alguns navegadores e ambientes móveis
-        onStart: () => el.classList.add('is-dragging'),
-        onEnd: async (evt) => {
-            el.classList.remove('is-dragging');
-            if (evt.oldIndex === evt.newIndex) return;
+        el.sortable = new Sortable(el, {
+            animation: 150,
+            handle: '.drag-handle-motivo',
+            ghostClass: 'sortable-ghost',
+            dragClass: 'dragging',
+            forceFallback: true,
+            onStart: () => el.classList.add('is-dragging'),
+            onEnd: async (evt) => {
+                el.classList.remove('is-dragging');
+                if (evt.oldIndex === evt.newIndex) return;
 
-            // Reordenar baseado no novo estado do DOM
-            const rows = Array.from(el.querySelectorAll('.motivo-estoque-row'));
-            const updates = rows.map((tr, index) => ({
-                id: tr.dataset.id,
-                order_position: index + 1
-            }));
+                // Reordenar baseado no novo estado do DOM
+                const rows = Array.from(el.querySelectorAll('.motivo-estoque-row'));
+                const updates = rows.map((tr, index) => ({
+                    id: tr.dataset.id,
+                    order_position: index + 1
+                }));
 
-            // Atualizar localmente para manter sincronizado sem re-renderizar imediatamente
-            updates.forEach(u => {
-                const item = motivosEstoque.find(m => m.id === u.id);
-                if (item) item.order_position = u.order_position;
-            });
-            
-            // Reordenar o array original para bater com o novo DOM
-            motivosEstoque.sort((a, b) => (a.order_position || 0) - (b.order_position || 0));
+                // Atualizar localmente para manter sincronizado sem re-renderizar imediatamente
+                updates.forEach(u => {
+                    const item = motivosEstoque.find(m => m.id === u.id);
+                    if (item) item.order_position = u.order_position;
+                });
+                
+                // Reordenar o array original para bater com o novo DOM
+                motivosEstoque.sort((a, b) => (a.order_position || 0) - (b.order_position || 0));
 
-            await salvarOrdemMotivosEstoque(updates);
-            showToast('Ordem atualizada!', 'success');
-        }
-    });
+                await salvarOrdemMotivosEstoque(updates);
+                showToast('Ordem atualizada!', 'success');
+            }
+        });
+    };
+
+    initSortable('motivosEstoqueBody');
+    initSortable('lojaMotivosEstoqueBody');
 }
 
 async function salvarOrdemMotivosEstoque(updates) {

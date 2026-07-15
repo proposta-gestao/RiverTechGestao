@@ -577,9 +577,10 @@
                 <!-- Sub-abas -->
                 <div class="produtos-toolbar">
                     <div class="admin-subtabs">
-                        <button class="subtab-btn active" data-subtab="loja-produtos">👗 Gerenciar Produtos</button>
-                        <button class="subtab-btn" data-subtab="loja-categorias">📂 Categorias</button>
+                        <button class="subtab-btn active" data-subtab="loja-produtos">👕 Gerenciar Produtos</button>
+                        <button class="subtab-btn" data-subtab="loja-categorias">🏷️ Categorias</button>
                         <button class="subtab-btn" data-subtab="loja-estoque">📦 Estoque</button>
+                        <button class="subtab-btn" data-subtab="loja-motivos">📋 Motivos</button>
                     </div>
                 </div>
 
@@ -637,12 +638,9 @@
                     </div>
                 </div>
 
-                <!-- Subtab: Estoque consolidado -->
+                <!-- Subtab: Estoque -->
                 <div class="subtab-content" id="subtab-loja-estoque">
-                    <div class="admin-toolbar">
-                        <h2>Estoque por Variação</h2>
-                    </div>
-                    <div class="admin-table-wrapper">
+                    <div class="admin-table-wrapper" style="margin-top: 15px;">
                         <table class="admin-table">
                             <thead>
                                 <tr>
@@ -650,12 +648,44 @@
                                     <th>SKU</th>
                                     <th>Cor</th>
                                     <th>Tamanho</th>
-                                    <th style="text-align:center;">Estoque</th>
-                                    <th style="text-align:center;">Ajustar</th>
+                                    <th style="text-align:center;">Estoque Atual</th>
+                                    <th style="text-align:center;">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="lojaEstoqueBody"></tbody>
+                            <tbody id="lojaEstoqueBody">
+                                <tr><td colspan="6" style="text-align:center;">Carregando estoque...</td></tr>
+                            </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- Subtab: Motivos -->
+                <div class="subtab-content" id="subtab-loja-motivos">
+                    <div class="config-card" style="margin-top:15px;">
+                        <div class="config-card-header">
+                            <h3>Motivos de Movimentação</h3>
+                            <button class="btn-save" onclick="adicionarMotivoEstoque()" style="padding:6px 12px; font-size:0.9rem;">+ Novo Motivo</button>
+                        </div>
+                        <div class="config-card-body">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1rem;">
+                                Cadastre os motivos para entradas e saídas manuais de estoque (Ex: Avaria, Vencimento).
+                            </p>
+                            <div class="admin-table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;"></th>
+                                            <th>Nome do Motivo</th>
+                                            <th style="text-align: center; width: 100px;">Status</th>
+                                            <th style="width: 150px; text-align: center;">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lojaMotivosEstoqueBody">
+                                        <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando motivos...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
