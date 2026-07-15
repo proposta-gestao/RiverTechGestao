@@ -250,10 +250,19 @@ body {
   color: var(--loja-text);
 }
 .loja-secao-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  display: flex;
   gap: 1.2rem;
   overflow-x: auto;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.loja-secao-grid::-webkit-scrollbar {
+  display: none;
+}
+.loja-secao-grid > * {
+  flex: 0 0 calc(25% - 0.9rem);
+  scroll-snap-align: start;
 }
 
 /* ══════════════════════════════════════════════
@@ -910,8 +919,8 @@ body {
   .loja-header-inner { gap:8px; }
   .loja-brand-subtitle { display:none; }
   .loja-search-wrapper { max-width:none; }
-  .loja-pub-grid { grid-template-columns:repeat(2,1fr); gap:0.8rem; }
-  .loja-secao-grid { grid-template-columns:repeat(2,1fr); }
+  .loja-grid { grid-template-columns:repeat(2,1fr); }
+  .loja-secao-grid > * { flex: 0 0 calc(45% - 0.6rem); }
   .loja-toolbar { padding:0.6rem 1rem; top:60px; }
   .loja-toolbar-inner { flex-direction:column; align-items:flex-start; gap:8px; }
   .loja-filtros { flex-direction:column; align-items:flex-start; }

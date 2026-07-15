@@ -463,8 +463,11 @@
             btn.addEventListener('click', () => {
                 const rel = _produtos.find(p => p.id === btn.dataset.relId);
                 if (rel) {
-                    window.ModalProduto.fechar();
-                    setTimeout(() => _abrirModalProduto(rel), 200);
+                    // Update content seamlessly without closing the modal
+                    _abrirModalProduto(rel);
+                    // Scroll the modal body back to the top smoothly
+                    const modalBody = document.querySelector('.mp-body');
+                    if (modalBody) modalBody.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             });
         });
