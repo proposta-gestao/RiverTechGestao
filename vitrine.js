@@ -99,7 +99,7 @@
     async function _carregarProdutos(empresaId) {
         const { data, error } = await sb
             .from('loja_produtos')
-            .select('*, loja_categorias(nome), loja_variacoes(*)')
+            .select('*, loja_categorias(nome), loja_variacoes(*), galeria_imagens(*)')
             .eq('empresa_id', empresaId)
             .eq('ativo', true)
             .order('created_at', { ascending: false });

@@ -81,22 +81,17 @@
             }
         }
 
-        // Carrossel de imagens — suporta galeria completa (múltiplas imagens)
+        // Carrossel de imagens — usa galeria_imagens (múltiplas fotos)
         const carouselEl = document.getElementById('mp-carousel');
         if (carouselEl) {
             if (carousel) carousel.destroy();
             carousel = new ProductCarousel(carouselEl);
-            // Prioriza galeria_imagens se disponível, senão usa imagem_url
-            const galeria = prod.galeria_imagens || [];
+            // galeria_imagens.url (coluna url na tabela)
+            const galeria = (prod.galeria_imagens || []).slice().sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
             const imgs = galeria.length > 0
-                ? galeria
-                    .slice()
-                    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
-                    .map(g => g.imagem_url)
-                    .filter(Boolean)
+                ? galeria.map(g => g.url).filter(Boolean)
                 : [prod.imagem_url].filter(Boolean);
             carousel.setImages(imgs);
-            // Expor para uso externo (ex: vitrine.js)
             window._lojaCarousel = carousel;
         }
 
@@ -161,7 +156,6 @@
     }
 
     function _selectSize(btn, container) {
-        // Permitir selecionar mesmo esgotado (para ver combinações)
         container.querySelectorAll('.var-size').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedSize = btn.dataset.value;
@@ -170,6 +164,7 @@
         _updateEstoque();
         _updateBotaoCompra();
         _updatePrecoSelecionado();
+        _atualizarFotoVariacao();
     }
 
     /* ══════════════════════════════════════════════
@@ -209,6 +204,24 @@
         _updateEstoque();
         _updateBotaoCompra();
         _updatePrecoSelecionado();
+        _atualizarFotoVariacao();
+    }
+
+    // Troca a foto do carrossel para a imagem específica da variação selecionada
+    function _atualizarFotoVariacao() {
+        if (!carousel || !selectedColor) return;
+        // Procura a variação que bate com a cor selecionada (+ tamanho se já escolhido)
+        const variacao = variacoes.find(v => {
+            if (selectedSize) return v.cor === selectedColor && v.tamanho === selectedSize;
+            return v.cor === selectedColor;
+        });
+        if (variacao?.imagem_url) {
+            // Injetar a foto da variação no início do carrossel e ir para ela
+            const galeria = (produto.galeria_imagens || []).slice().sort((a,b) => (a.ordem||0)-(b.ordem||0)).map(g => g.url).filter(Boolean);
+            const todasFotos = [variacao.imagem_url, ...galeria.filter(u => u !== variacao.imagem_url)];
+            if (produto.imagem_url && !todasFotos.includes(produto.imagem_url)) todasFotos.push(produto.imagem_url);
+            carousel.setImages(todasFotos);
+        }
     }
 
     /* ══════════════════════════════════════════════
