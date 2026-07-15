@@ -215,8 +215,7 @@
                 total: subtotal,
                 delivery_type: tipoEntrega,
                 payment_method: formaPgto,
-                status: 'pendente',
-                origem: 'loja_roupas',  // Identificador de segmento para o admin
+                status: 'pendente'
             }).select().single();
 
             if (orderErr) {
