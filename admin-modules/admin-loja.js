@@ -673,17 +673,13 @@ window.__LOJA.uploadFotoEdicaoVariacao = async function(file) {
     if (!file) return;
     showToast('Enviando foto...', 'info');
     
-    const ext = file.name.split('.').pop();
-    const fileName = `loja-var-${Date.now()}.${ext}`;
-    const filePath = `variacoes/${getTenantId()}/${fileName}`;
-
-    const { error: errUp } = await sb.storage.from('produtos').upload(filePath, file);
-    if (errUp) {
-        showToast('Erro ao subir foto: ' + errUp.message, 'error');
+    if (typeof window.handleCloudinaryUpload !== 'function') {
+        showToast('Erro: Serviço de upload indisponível', 'error');
         return;
     }
 
-    const { data: { publicUrl } } = sb.storage.from('produtos').getPublicUrl(filePath);
+    const publicUrl = await window.handleCloudinaryUpload(file, 'variacoes');
+    if (!publicUrl) return; // Erro já tratado no handleCloudinaryUpload
     
     document.getElementById('editVarImageUrl').value = publicUrl;
     document.getElementById('editVarImagePreview').innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;object-fit:cover;">`;
