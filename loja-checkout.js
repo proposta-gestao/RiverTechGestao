@@ -46,6 +46,7 @@
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
         _resetForm();
+        _carregarDadosCheckout();
         _preencherResumo();
     }
 
@@ -74,6 +75,61 @@
         if (camposAuto) camposAuto.style.display = 'none';
 
         _freteAtual = 0;
+    }
+
+    function _salvarDadosCheckout(nome, telefone, tipoEntrega, enderecoObj) {
+        try {
+            const payload = { nome, telefone, tipoEntrega, endereco: enderecoObj };
+            localStorage.setItem(`loja_chk_${_empresaId}`, JSON.stringify(payload));
+        } catch(e) {}
+    }
+
+    function _carregarDadosCheckout() {
+        if (!_empresaId) return;
+        try {
+            const str = localStorage.getItem(`loja_chk_${_empresaId}`);
+            if (!str) return;
+            const dados = JSON.parse(str);
+
+            if (dados.nome) _setVal('chk-nome', dados.nome);
+            if (dados.telefone) _setVal('chk-telefone', dados.telefone);
+
+            if (dados.tipoEntrega) {
+                const r = document.querySelector(`input[name="chk-tipo"][value="${dados.tipoEntrega}"]`);
+                if (r) r.checked = true;
+                _toggleEnderecoSection();
+            }
+
+            if (dados.endereco) {
+                const end = dados.endereco;
+                _setVal('chk-cep', end.cep);
+                _setVal('chk-logradouro', end.logradouro);
+                _setVal('chk-numero', end.numero);
+                _setVal('chk-complemento', end.complemento);
+                _setVal('chk-bairro', end.bairro);
+                _setVal('chk-cidade', end.cidade);
+                _setVal('chk-estado', end.estado);
+
+                const camposAuto = document.getElementById('chk-campos-auto');
+                if (camposAuto) camposAuto.style.display = 'grid';
+
+                if (dados.tipoEntrega === 'entrega' && end.bairro && end.cidade) {
+                    _freteAtual = _calcularFrete(end.bairro, end.cidade);
+                    const status = document.getElementById('chk-cep-status');
+                    if (_freteAtual === -1) {
+                        if (status) {
+                            status.textContent = '⚠️ Bairro não atendido para entrega.';
+                            status.style.color = 'var(--danger)';
+                        }
+                    } else {
+                        if (status) {
+                            status.textContent = `✅ Frete para ${end.bairro}: ${_freteAtual === 0 ? 'Grátis' : LojaStore.formatPreco(_freteAtual)}`;
+                            status.style.color = 'var(--success)';
+                        }
+                    }
+                }
+            }
+        } catch(e) {}
     }
 
     function _preencherResumo() {
@@ -297,6 +353,8 @@
                 if (btn) { btn.disabled = false; btn.textContent = 'Confirmar Pedido'; }
                 return;
             }
+
+            _salvarDadosCheckout(nome, telefone, tipoEntrega, enderecoObj);
 
             // 3. Inserir itens do pedido
             const itensPedido = cart.map(item => ({
