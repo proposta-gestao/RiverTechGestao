@@ -631,7 +631,6 @@ function renderVariacoesExistentes() {
         </tr>
         `;
     }).join('');
-    }).join('');
 }
 
 window.__LOJA.abrirEditarVariacao = function(id) {
