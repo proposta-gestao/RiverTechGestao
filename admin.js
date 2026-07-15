@@ -3956,7 +3956,13 @@ async function salvarOrdemMotivosEstoque(updates) {
 }
 
 const novoMotivoHandler = async () => {
-    if (!validarAcessoModulo('produtos_estoque')) return;
+    // Allow if either cardapio estoque or loja estoque module is active
+    const podeCardapio = typeof validarAcessoModulo !== 'function' || validarAcessoModulo('produtos_estoque', true);
+    const podeLoja = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+    if (!podeCardapio && !podeLoja) {
+        showToast('Módulo desativado. Contrate para liberar acesso.', 'error');
+        return;
+    }
     const name = await customPrompt('Novo Motivo de Estoque', 'Digite o nome do motivo:');
     if (name && name.trim()) {
         const nextOrder = (motivosEstoque.length > 0) 
@@ -3975,11 +3981,6 @@ const novoMotivoHandler = async () => {
         }
     }
 };
-
-document.getElementById('btnNovoMotivoEstoque').onclick = novoMotivoHandler;
-
-const btnLojaMotivo = document.getElementById('btnNovoMotivoEstoqueLoja');
-if (btnLojaMotivo) btnLojaMotivo.onclick = novoMotivoHandler;
 
 window.editarMotivoEstoque = async (id) => {
     const motivo = motivosEstoque.find(m => m.id === id);
