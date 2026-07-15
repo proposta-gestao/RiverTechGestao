@@ -175,7 +175,7 @@
                 }
             } else {
                 if (status) {
-                    status.textContent = \`✅ Frete para \${data.bairro}: \${_freteAtual === 0 ? 'Grátis' : LojaStore.formatPreco(_freteAtual)}\`;
+                    status.textContent = `✅ Frete para ${data.bairro}: ${_freteAtual === 0 ? 'Grátis' : LojaStore.formatPreco(_freteAtual)}`;
                     status.style.color = 'var(--success)';
                 }
             }
