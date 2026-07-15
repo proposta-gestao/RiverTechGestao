@@ -642,6 +642,19 @@ window.__LOJA.abrirEditarVariacao = function(id) {
     document.getElementById('editVarPreco').value = v.preco || '';
     document.getElementById('editVarImageUrl').value = v.imagem_url || '';
 
+    // Populate stock if the field exists
+    const estoqueInput = document.getElementById('editVarEstoqueInput');
+    if (estoqueInput) {
+        estoqueInput.value = v.estoque ?? '';
+        estoqueInput.dataset.estoqueOriginal = v.estoque ?? 0;
+    }
+    // Show/hide stock group based on module
+    const estoqueGroup = document.getElementById('editVarEstoqueGroup');
+    if (estoqueGroup) {
+        const hasEstoque = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+        estoqueGroup.style.display = hasEstoque ? '' : 'none';
+    }
+
     const preview = document.getElementById('editVarImagePreview');
     if (v.imagem_url) {
         preview.innerHTML = `<img src="${v.imagem_url}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -697,16 +710,28 @@ window.__LOJA.salvarEdicaoVariacao = async function() {
 
     if (error) {
         showToast('Erro ao salvar', 'error');
-    } else {
-        showToast('Variação atualizada!', 'success');
-        fecharModal('modalEditarVariacao');
-        await carregarLojaProdutos();
-        const pId = document.getElementById('lojaProdId').value;
-        const updated = lojaProdutos.find(p => p.id === pId);
-        if(updated) {
-            lojaCurrentVariacoes = updated.loja_variacoes || [];
-            renderVariacoesExistentes();
+        return;
+    }
+
+    // Save stock delta if changed
+    const estoqueInput = document.getElementById('editVarEstoqueInput');
+    if (estoqueInput && estoqueInput.value !== '') {
+        const novoEstoque = parseInt(estoqueInput.value);
+        const estoqueOriginal = parseInt(estoqueInput.dataset.estoqueOriginal || 0);
+        const delta = novoEstoque - estoqueOriginal;
+        if (delta !== 0) {
+            await window.__LOJA.ajustarEstoque(id, delta);
         }
+    }
+
+    showToast('Variação atualizada!', 'success');
+    fecharModal('modalEditarVariacao');
+    await carregarLojaProdutos();
+    const pId = document.getElementById('lojaProdId').value;
+    const updated = lojaProdutos.find(p => p.id === pId);
+    if(updated) {
+        lojaCurrentVariacoes = updated.loja_variacoes || [];
+        renderVariacoesExistentes();
     }
 };
 
