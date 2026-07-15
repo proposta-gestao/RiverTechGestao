@@ -2073,12 +2073,12 @@
                         <input type="number" id="editVarPreco" min="0" step="0.01" placeholder="">
                     </div>
                     <div class="form-group" style="flex:1" id="editVarEstoqueGroup">
-                        <label>Estoque Atual</label>
+                        <label>Ajustar Estoque (+/-)</label>
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <input type="number" id="editVarEstoqueInput" min="0" placeholder="" style="flex:1;">
+                            <input type="number" id="editVarEstoqueInput" placeholder="Ex: 5 ou -2" style="flex:1;">
                             <button type="button" class="btn-sm" onclick="window.__LOJA.abrirModalEstoqueVariacao(document.getElementById('editVarId').value)" style="white-space:nowrap; padding:4px 8px; background:transparent; border:1px solid var(--border-color); color:var(--text-color);" title="Histórico completo">📋 Histórico</button>
                         </div>
-                        <small style="color:var(--text-muted); font-size:0.75rem;">Altere e salve para ajustar o estoque</small>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Deixe em branco para não alterar</small>
                     </div>
                 </div>
 

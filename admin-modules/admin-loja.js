@@ -645,8 +645,7 @@ window.__LOJA.abrirEditarVariacao = function(id) {
     // Populate stock if the field exists
     const estoqueInput = document.getElementById('editVarEstoqueInput');
     if (estoqueInput) {
-        estoqueInput.value = v.estoque ?? '';
-        estoqueInput.dataset.estoqueOriginal = v.estoque ?? 0;
+        estoqueInput.value = ''; // Sempre vazio para ajuste incremental
     }
     // Show/hide stock group based on module
     const estoqueGroup = document.getElementById('editVarEstoqueGroup');
@@ -716,10 +715,8 @@ window.__LOJA.salvarEdicaoVariacao = async function() {
     // Save stock delta if changed
     const estoqueInput = document.getElementById('editVarEstoqueInput');
     if (estoqueInput && estoqueInput.value !== '') {
-        const novoEstoque = parseInt(estoqueInput.value);
-        const estoqueOriginal = parseInt(estoqueInput.dataset.estoqueOriginal || 0);
-        const delta = novoEstoque - estoqueOriginal;
-        if (delta !== 0) {
+        const delta = parseInt(estoqueInput.value);
+        if (delta !== 0 && !isNaN(delta)) {
             await window.__LOJA.ajustarEstoque(id, delta);
         }
     }
