@@ -1965,9 +1965,13 @@
 
                     <!-- Tabela interativa de combinações com estoque inicial -->
                     <div id="lojaCombPreview" style="display:none; margin-top:1.5rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:10px;">
                             <label class="group-label" style="margin-bottom:0;">📋 Variações geradas — defina o estoque inicial:</label>
-                            <button class="btn-sm" style="font-size:0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.3);" onclick="window.__LOJA.aplicarEstoqueGlobal()">Aplicar mesmo valor a todos</button>
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                <input type="number" id="globalPreco" step="0.01" min="0" placeholder="Preço" style="width:80px; padding:4px 8px; font-size:12px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">
+                                <input type="number" id="globalEstoque" min="0" placeholder="Estoque" style="width:75px; padding:4px 8px; font-size:12px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">
+                                <button class="btn-sm" style="font-size:0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.3);" onclick="window.__LOJA.aplicarEstoqueGlobal()">Aplicar a todos</button>
+                            </div>
                         </div>
                         <div class="admin-table-wrapper" style="max-height:280px; overflow-y:auto;">
                             <table class="admin-table">
@@ -1976,7 +1980,7 @@
                                         <th>Cor</th>
                                         <th>Tamanho</th>
                                         <th style="width:110px;">Preço (R$)</th>
-                                        <th style="width:90px;">Estoque Inicial</th>
+                                        <th style="width:90px;" id="thCombEstoque">Estoque Inicial</th>
                                         <th style="width:50px;">Foto</th>
                                     </tr>
                                 </thead>
@@ -2007,6 +2011,51 @@
                             </thead>
                             <tbody id="lojaVariacoesEditBody"></tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOJA: EDITAR VARIAÇÃO (preço + foto) -->
+    <div class="admin-modal-backdrop" id="modalEditarVariacao">
+        <div class="admin-modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalEditarVariacao')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>Editar Variação</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__LOJA.salvarEdicaoVariacao()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editVarId">
+                <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:10px 14px; margin-bottom:1rem; font-size:0.85rem; color:var(--text-muted);">
+                    <span id="editVarInfo">—</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="editVarPreco">Preço (R$)</label>
+                        <input type="number" id="editVarPreco" min="0" step="0.01" placeholder="">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="margin-bottom:8px; display:block;">📷 Foto desta variação <small style="color:var(--text-muted); font-weight:normal;">(opcional)</small></label>
+                    <div style="display:flex; align-items:center; gap:12px; background:rgba(229,178,93,0.05); padding:10px; border-radius:10px; border:1px dashed rgba(229,178,93,0.3);">
+                        <div id="editVarImagePreview" style="width:72px; height:72px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; cursor:pointer;" onclick="document.getElementById('editVarUploadInput').click()">
+                            <span id="editVarImageIcon" style="font-size:1.5rem;">🖼️</span>
+                        </div>
+                        <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                            <input type="hidden" id="editVarImageUrl">
+                            <button class="btn-sm" type="button" onclick="document.getElementById('editVarUploadInput').click()" style="background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.3);">Trocar Foto</button>
+                            <button class="btn-sm" type="button" onclick="window.__LOJA.removerFotoEdicaoVariacao()" style="background:transparent; color:var(--danger); border:1px solid var(--danger);">Remover Foto</button>
+                            <input type="file" id="editVarUploadInput" accept="image/*" style="display:none;" onchange="window.__LOJA.uploadFotoEdicaoVariacao(this.files[0])">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2079,11 +2128,11 @@
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="novaVarPreco">Preço (R$)</label>
-                        <input type="number" id="novaVarPreco" min="0" step="0.01" placeholder="0.00">
+                        <input type="number" id="novaVarPreco" min="0" step="0.01" placeholder="">
                     </div>
                     <div class="form-group" style="flex:1">
                         <label for="novaVarEstoque">Estoque Inicial</label>
-                        <input type="number" id="novaVarEstoque" min="0" placeholder="0">
+                        <input type="number" id="novaVarEstoque" min="0" placeholder="">
                     </div>
                 </div>
                 <!-- Foto específica desta variação -->
@@ -2099,6 +2148,85 @@
                             <button class="btn-sm" type="button" onclick="window.__LOJA.removerImagemVariacao()" style="background:transparent; color:var(--danger); border:1px solid var(--danger); margin-left:6px;">Remover</button>
                             <input type="file" id="lojaUploadVarImagem" accept="image/*" style="display:none;" onchange="window.__LOJA.uploadImagemVariacao(this.files[0])">
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOJA: ESTOQUE DA VARIAÇÃO -->
+    <div class="admin-modal-backdrop" id="modalLojaEstoque">
+        <div class="admin-modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalLojaEstoque')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>Estoque da Variação</h3>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="inventory-header">
+                    <div class="inventory-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                        Movimentar Estoque
+                    </div>
+                    <div id="groupLojaEstoqueAtual">
+                        <span class="inventory-current-badge">Estoque Atual: <span id="lojaVarEstoqueDisplay">0</span></span>
+                        <input type="hidden" id="lojaVarId">
+                        <input type="hidden" id="lojaVarEstoque">
+                    </div>
+                </div>
+
+                <div class="inventory-body">
+                    <div class="form-row">
+                        <div class="form-group" style="flex:1">
+                            <label for="lojaVarTipoMovimentacao">Tipo de Operação</label>
+                            <select id="lojaVarTipoMovimentacao">
+                                <option value="entrada">Entrada (Reposição)</option>
+                                <option value="saida">Saída (Perda / Avaria / Ajuste)</option>
+                                <option value="exato">Definir Quantidade Exata</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex:1">
+                            <label for="lojaVarMovimentacaoEstoque" id="lojaVarQtdLabel">Quantidade</label>
+                            <input type="number" id="lojaVarMovimentacaoEstoque" min="0" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lojaVarMotivoSelect">Motivo</label>
+                        <select id="lojaVarMotivoSelect">
+                            <option value="">Selecione ou adicione...</option>
+                        </select>
+                        <button class="btn-sm" onclick="window.__LOJA.novoMotivoEstoqueLoja()" style="margin-top: 5px; font-size: 12px; background:transparent; color:var(--primary); border:1px solid var(--primary);">+ Adicionar Motivo</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lojaVarObsMovimentacao">Observações (opcional)</label>
+                        <textarea id="lojaVarObsMovimentacao" rows="2" placeholder="Detalhes do ajuste..."></textarea>
+                    </div>
+                    <button class="btn-primary" onclick="window.__LOJA.salvarMovimentacaoEstoqueLoja()" style="width: 100%;">Registrar Movimentação</button>
+                </div>
+
+                <div class="inventory-history-section">
+                    <div class="history-header">
+                        <h4>Histórico Recente (esta variação)</h4>
+                    </div>
+                    <div class="admin-table-wrapper" style="max-height: 200px; overflow-y: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tipo</th>
+                                    <th>Qtd</th>
+                                    <th>Motivo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lojaVarEstoqueHistoryBody">
+                                <tr><td colspan="4" style="text-align:center;">Carregando histórico...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

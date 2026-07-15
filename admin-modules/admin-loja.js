@@ -84,6 +84,19 @@ async function carregarLojaCategorias() {
 }
 
 async function carregarLojaProdutos() {
+    const hasEstoqueMod = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+    
+    // Toggle UI elements for stock
+    const thCombEstoque = document.getElementById('thCombEstoque');
+    const thVarEstoque = document.getElementById('thVarEstoque');
+    const groupNvEstoque = document.getElementById('groupNvEstoque');
+    const btnTabLojaEstoque = document.querySelector('button[data-subtab="loja-estoque"]');
+    
+    if (thCombEstoque) thCombEstoque.style.display = hasEstoqueMod ? '' : 'none';
+    if (thVarEstoque) thVarEstoque.style.display = hasEstoqueMod ? '' : 'none';
+    if (groupNvEstoque) groupNvEstoque.style.display = hasEstoqueMod ? '' : 'none';
+    if (btnTabLojaEstoque) btnTabLojaEstoque.style.display = hasEstoqueMod ? '' : 'none';
+
     const { data, error } = await sb.from('loja_produtos')
         .select('*, loja_categorias(nome), loja_variacoes(*), galeria_imagens(*)')
         .eq('empresa_id', getTenantId())
@@ -147,6 +160,7 @@ function renderLojaProdutos() {
         const numVariacoes = variacoes.length;
         const estoqueTotal = variacoes.reduce((acc, curr) => acc + (curr.estoque || 0), 0);
         const corEstoque = estoqueTotal <= 0 ? 'var(--danger)' : 'inherit';
+        const hasEstoque = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
         // Imagem principal: primeiro da galeria ou imagem_url
         const galeria = (p.galeria_imagens || []).sort((a,b) => (a.ordem||0)-(b.ordem||0));
         const imgSrc = galeria[0]?.url || p.imagem_url || 'Logo.png';
@@ -162,7 +176,7 @@ function renderLojaProdutos() {
                 <td><strong>${p.nome}</strong></td>
                 <td>${catNome}</td>
                 <td><span class="badge" style="background:rgba(255,255,255,0.05);">${numVariacoes} un.</span></td>
-                <td style="color:${corEstoque}; font-weight:bold;">${estoqueTotal}</td>
+                <td style="${hasEstoque ? `color:${corEstoque}; font-weight:bold;` : 'color:var(--text-muted);'}">${hasEstoque ? estoqueTotal : 'N/A'}</td>
                 <td><span class="badge ${p.ativo ? 'badge-active' : 'badge-inactive'}">${p.ativo ? 'Ativo' : 'Inativo'}</span></td>
                 <td>
                     <div class="actions-cell">
@@ -521,8 +535,8 @@ window.atualizarPreviewCombinacoes = function() {
                 <tr data-cor="${c}" data-tam="${t}">
                     <td><strong>${c}</strong></td>
                     <td>${t}</td>
-                    <td><input type="number" step="0.01" min="0" value="0" class="in-preco" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);"></td>
-                    <td><input type="number" min="0" value="0" class="in-estoque" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);"></td>
+                    <td><input type="number" step="0.01" min="0" class="in-preco" placeholder="" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);"></td>
+                    ${hasEstoque ? `<td><input type="number" min="0" class="in-estoque" placeholder="" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);"></td>` : '<input type="hidden" class="in-estoque" value="0">'}
                     <td style="text-align:center;">
                         <input type="hidden" class="in-foto">
                         <button type="button" class="btn-sm" onclick="window.__LOJA.uploadFotoComb(this)" style="width:32px; height:32px; border-radius:6px; border:1px dashed var(--border-color); background:transparent; color:var(--text-color); cursor:pointer; font-size:14px; padding:0; display:flex; align-items:center; justify-content:center;" title="Adicionar foto específica">📷</button>
@@ -567,13 +581,14 @@ window.__LOJA.aplicarEstoqueGlobal = function() {
     const trs = document.querySelectorAll('#lojaCombBody tr');
     if (trs.length === 0) return;
     
-    const firstPreco = trs[0].querySelector('.in-preco').value;
-    const firstEstq = trs[0].querySelector('.in-estoque').value;
+    const globalPreco = document.getElementById('globalPreco').value;
+    const globalEstoque = document.getElementById('globalEstoque').value;
 
-    trs.forEach((tr, i) => {
-        if(i > 0) {
-            tr.querySelector('.in-preco').value = firstPreco;
-            tr.querySelector('.in-estoque').value = firstEstq;
+    trs.forEach(tr => {
+        if(globalPreco !== '') tr.querySelector('.in-preco').value = globalPreco;
+        if(globalEstoque !== '') {
+            const inEstoque = tr.querySelector('.in-estoque');
+            if(inEstoque) inEstoque.value = globalEstoque;
         }
     });
 };
@@ -583,15 +598,22 @@ window.__LOJA.aplicarEstoqueGlobal = function() {
 // ------------------------------------------------------------
 function renderVariacoesExistentes() {
     const tbody = document.getElementById('lojaVariacoesEditBody');
+    const hasEstoque = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+
     if (lojaCurrentVariacoes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma variação.</td></tr>';
+        tbody.innerHTML = `<tr><td colspan="${hasEstoque ? 7 : 6}" style="text-align:center;">Nenhuma variação.</td></tr>`;
         return;
     }
 
     tbody.innerHTML = lojaCurrentVariacoes.map(v => {
         const imgHtml = v.imagem_url
-            ? `<img src="${v.imagem_url}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color);">`
-            : `<div style="width:36px;height:36px;border-radius:6px;border:1px dashed var(--border-color);display:flex;align-items:center;justify-content:center;font-size:0.9rem;">📷</div>`;
+            ? `<img src="${v.imagem_url}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color);cursor:pointer;" title="Clique para trocar foto" onclick="window.__LOJA.trocarFotoVariacao('${v.id}')">`
+            : `<div style="width:36px;height:36px;border-radius:6px;border:1px dashed var(--border-color);display:flex;align-items:center;justify-content:center;font-size:0.9rem;cursor:pointer;" title="Clique para adicionar foto" onclick="window.__LOJA.trocarFotoVariacao('${v.id}')">📷</div>`;
+        
+        const estoqueHtml = hasEstoque
+            ? `<td style="cursor:pointer;" onclick="window.__LOJA.abrirModalEstoqueVariacao('${v.id}')" title="Ajustar Estoque"><strong>${v.estoque}</strong> ✎</td>`
+            : '';
+
         return `
         <tr>
             <td>${imgHtml}</td>
@@ -599,14 +621,95 @@ function renderVariacoesExistentes() {
             <td>${v.cor}</td>
             <td>${v.tamanho}</td>
             <td>R$ ${parseFloat(v.preco||0).toFixed(2)}</td>
-            <td><strong>${v.estoque}</strong></td>
+            ${estoqueHtml}
             <td>
-                <button class="btn-sm btn-delete" onclick="window.__LOJA.excluirVariacao('${v.id}')">Excluir</button>
+                <div style="display:flex;gap:4px;">
+                    <button class="btn-sm btn-edit" onclick="window.__LOJA.abrirEditarVariacao('${v.id}')" title="Editar preço e foto">Editar</button>
+                    <button class="btn-sm btn-delete" onclick="window.__LOJA.excluirVariacao('${v.id}')">Excluir</button>
+                </div>
             </td>
         </tr>
         `;
     }).join('');
+    }).join('');
 }
+
+window.__LOJA.abrirEditarVariacao = function(id) {
+    const v = lojaCurrentVariacoes.find(x => x.id === id);
+    if (!v) return;
+
+    document.getElementById('editVarId').value = v.id;
+    document.getElementById('editVarInfo').textContent = `SKU: ${v.sku} | Cor: ${v.cor} | Tam: ${v.tamanho}`;
+    document.getElementById('editVarPreco').value = v.preco || '';
+    document.getElementById('editVarImageUrl').value = v.imagem_url || '';
+
+    const preview = document.getElementById('editVarImagePreview');
+    if (v.imagem_url) {
+        preview.innerHTML = `<img src="${v.imagem_url}" style="width:100%;height:100%;object-fit:cover;">`;
+    } else {
+        preview.innerHTML = `<span id="editVarImageIcon" style="font-size:1.5rem;">🖼️</span>`;
+    }
+
+    abrirModal('modalEditarVariacao');
+};
+
+window.__LOJA.trocarFotoVariacao = function(id) {
+    // If clicked on the photo directly from the table, open the edit modal
+    window.__LOJA.abrirEditarVariacao(id);
+};
+
+window.__LOJA.uploadFotoEdicaoVariacao = async function(file) {
+    if (!file) return;
+    showToast('Enviando foto...', 'info');
+    
+    const ext = file.name.split('.').pop();
+    const fileName = `loja-var-${Date.now()}.${ext}`;
+    const filePath = `variacoes/${getTenantId()}/${fileName}`;
+
+    const { error: errUp } = await sb.storage.from('produtos').upload(filePath, file);
+    if (errUp) {
+        showToast('Erro ao subir foto: ' + errUp.message, 'error');
+        return;
+    }
+
+    const { data: { publicUrl } } = sb.storage.from('produtos').getPublicUrl(filePath);
+    
+    document.getElementById('editVarImageUrl').value = publicUrl;
+    document.getElementById('editVarImagePreview').innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+    showToast('Foto adicionada! Lembre de salvar.', 'success');
+};
+
+window.__LOJA.removerFotoEdicaoVariacao = function() {
+    document.getElementById('editVarImageUrl').value = '';
+    document.getElementById('editVarImagePreview').innerHTML = `<span id="editVarImageIcon" style="font-size:1.5rem;">🖼️</span>`;
+};
+
+window.__LOJA.salvarEdicaoVariacao = async function() {
+    const id = document.getElementById('editVarId').value;
+    const preco = parseFloat(document.getElementById('editVarPreco').value) || 0;
+    const imagem_url = document.getElementById('editVarImageUrl').value || null;
+
+    if (!id) return;
+
+    showToast('Salvando...', 'info');
+    const { error } = await sb.from('loja_variacoes')
+        .update({ preco, imagem_url })
+        .eq('id', id);
+
+    if (error) {
+        showToast('Erro ao salvar', 'error');
+    } else {
+        showToast('Variação atualizada!', 'success');
+        fecharModal('modalEditarVariacao');
+        await carregarLojaProdutos();
+        const pId = document.getElementById('lojaProdId').value;
+        const updated = lojaProdutos.find(p => p.id === pId);
+        if(updated) {
+            lojaCurrentVariacoes = updated.loja_variacoes || [];
+            renderVariacoesExistentes();
+        }
+    }
+};
 
 window.__LOJA.excluirVariacao = async function(id) {
     customConfirm('Excluir Variação', 'Certeza?', async () => {
@@ -878,6 +981,193 @@ window.__LOJA.ajustarEstoque = async function(id, delta) {
         await carregarLojaProdutos();
     } catch (e) {
         showToast(e.message || 'Erro ao atualizar', 'error');
+    }
+};
+
+// ==========================================
+// MÓDULO DE ESTOQUE DA LOJA (VARIAÇÕES)
+// ==========================================
+
+window.__LOJA.abrirModalEstoqueVariacao = async function(varId) {
+    if (typeof validarAcessoModulo === 'function' && !validarAcessoModulo('loja_estoque')) return;
+    
+    const variacao = lojaCurrentVariacoes.find(v => v.id === varId);
+    if (!variacao) return;
+
+    document.getElementById('lojaVarId').value = variacao.id;
+    document.getElementById('lojaVarEstoque').value = variacao.estoque;
+    document.getElementById('lojaVarEstoqueDisplay').textContent = variacao.estoque;
+    document.getElementById('lojaVarMovimentacaoEstoque').value = '';
+    document.getElementById('lojaVarObsMovimentacao').value = '';
+    document.getElementById('lojaVarTipoMovimentacao').value = 'entrada';
+    
+    // Atualizar label ao mudar tipo
+    const selectTipo = document.getElementById('lojaVarTipoMovimentacao');
+    const qtdLabel = document.getElementById('lojaVarQtdLabel');
+    selectTipo.onchange = function() {
+        if (qtdLabel) {
+            if (this.value === 'exato') {
+                qtdLabel.textContent = 'Quantidade Exata (novo total)';
+            } else {
+                qtdLabel.textContent = 'Quantidade';
+            }
+        }
+    };
+    if (qtdLabel) qtdLabel.textContent = 'Quantidade';
+
+    // Atualiza motivos
+    const selectMotivo = document.getElementById('lojaVarMotivoSelect');
+    selectMotivo.innerHTML = '<option value="">Selecione...</option>' + 
+        (window.motivosEstoque || []).filter(m => m.active).map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+
+    abrirModal('modalLojaEstoque');
+    await window.__LOJA.carregarHistoricoEstoqueVariacao(variacao.id);
+};
+
+window.__LOJA.carregarHistoricoEstoqueVariacao = async function(varId) {
+    const tbody = document.getElementById('lojaVarEstoqueHistoryBody');
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Carregando...</td></tr>';
+    
+    const { data, error } = await sb.from('stock_movements')
+        .select('*, stock_reasons(name)')
+        .eq('loja_variacao_id', varId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+        
+    if (error) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--danger);">Erro ao carregar histórico.</td></tr>';
+        return;
+    }
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Nenhuma movimentação registrada.</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = data.map(m => {
+        const dateObj = new Date(m.created_at);
+        const dataStr = dateObj.toLocaleDateString('pt-BR') + ' ' + dateObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        const isEntrada = m.type === 'entrada';
+        const isExato = m.type === 'exato';
+        const color = isExato ? 'var(--text-muted)' : (isEntrada ? 'var(--success)' : 'var(--danger)');
+        const signal = isExato ? '↔' : (isEntrada ? '+' : '-');
+        const tipoLabel = isExato ? 'Ajuste Exato' : (isEntrada ? 'Entrada' : 'Saída');
+        const motivo = m.stock_reasons ? m.stock_reasons.name : (m.reason || '-');
+        
+        return `
+            <tr>
+                <td style="font-size:0.8rem; color:var(--text-muted);">${dataStr}</td>
+                <td style="color:${color}; font-weight:bold;">${tipoLabel}</td>
+                <td style="color:${color}; font-weight:bold;">${signal}${m.quantity}</td>
+                <td style="font-size:0.85rem;" title="${m.notes || ''}">${motivo}</td>
+            </tr>
+        `;
+    }).join('');
+};
+
+window.__LOJA.salvarMovimentacaoEstoqueLoja = async function() {
+    const varId = document.getElementById('lojaVarId').value;
+    const tipo = document.getElementById('lojaVarTipoMovimentacao').value;
+    const qtdInput = document.getElementById('lojaVarMovimentacaoEstoque').value;
+    const qtd = parseInt(qtdInput);
+    const motivoId = document.getElementById('lojaVarMotivoSelect').value;
+    const obs = document.getElementById('lojaVarObsMovimentacao').value;
+    
+    if (!qtdInput || qtd < 0) {
+        showToast('Informe uma quantidade válida.', 'error');
+        return;
+    }
+    if (!motivoId) {
+        showToast('Selecione um motivo para a movimentação.', 'error');
+        return;
+    }
+
+    const variacao = lojaCurrentVariacoes.find(v => v.id === varId);
+    if (!variacao) return;
+
+    let novoEstoque;
+    const estoqueAtual = parseInt(variacao.estoque || 0);
+
+    if (tipo === 'exato') {
+        novoEstoque = qtd;
+    } else if (tipo === 'entrada') {
+        if (qtd <= 0) { showToast('Quantidade deve ser maior que zero.', 'error'); return; }
+        novoEstoque = estoqueAtual + qtd;
+    } else { // saida
+        if (qtd <= 0) { showToast('Quantidade deve ser maior que zero.', 'error'); return; }
+        novoEstoque = estoqueAtual - qtd;
+        if (novoEstoque < 0) {
+            showToast('A saída não pode ser maior que o estoque atual.', 'error');
+            return;
+        }
+    }
+
+    const empresaId = getTenantId();
+
+    try {
+        // 1. Atualizar estoque na loja_variacoes
+        const { error: errUpdate } = await sb.from('loja_variacoes')
+            .update({ estoque: novoEstoque })
+            .eq('id', varId);
+            
+        if (errUpdate) throw errUpdate;
+
+        // 2. Registrar movimento em stock_movements
+        const { error: errLog } = await sb.from('stock_movements').insert({
+            loja_variacao_id: varId,
+            empresa_id: empresaId,
+            type: tipo,
+            quantity: qtd,
+            reason_id: motivoId,
+            notes: obs
+        });
+
+        if (errLog) console.error('Erro ao registrar log de estoque (loja)', errLog);
+
+        showToast('Estoque atualizado com sucesso!', 'success');
+        
+        // Atualizar estado local e tela
+        variacao.estoque = novoEstoque;
+        document.getElementById('lojaVarEstoque').value = novoEstoque;
+        document.getElementById('lojaVarEstoqueDisplay').textContent = novoEstoque;
+        document.getElementById('lojaVarMovimentacaoEstoque').value = '';
+        document.getElementById('lojaVarObsMovimentacao').value = '';
+        
+        // Recarregar histórico e tabelas
+        await window.__LOJA.carregarHistoricoEstoqueVariacao(varId);
+        renderVariacoesExistentes();
+        carregarLojaProdutos();
+        
+    } catch (error) {
+        console.error('Erro atualizar estoque:', error);
+        showToast('Erro ao atualizar estoque.', 'error');
+    }
+};
+
+window.__LOJA.novoMotivoEstoqueLoja = async function() {
+    const name = await customPrompt('Novo Motivo de Estoque', 'Digite o nome do motivo:');
+    if (name && name.trim()) {
+        const nextOrder = (window.motivosEstoque && window.motivosEstoque.length > 0) 
+            ? Math.max(...window.motivosEstoque.map(m => m.order_position || 0)) + 1 
+            : 1;
+
+        const { error } = await sb.from('stock_reasons').insert({ 
+            name: name.trim(), 
+            empresa_id: getTenantId(),
+            order_position: nextOrder
+        });
+        if (error) {
+            showToast('Erro ao criar: ' + error.message, 'error');
+        } else {
+            showToast('Motivo criado!', 'success');
+            if (typeof carregarMotivosEstoque === 'function') {
+                await carregarMotivosEstoque();
+            }
+            // Atualiza select no modal da loja
+            const selectMotivo = document.getElementById('lojaVarMotivoSelect');
+            selectMotivo.innerHTML = '<option value="">Selecione...</option>' + 
+                (window.motivosEstoque || []).filter(m => m.active).map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+        }
     }
 };
 

@@ -81,7 +81,16 @@
             }
         }
 
-        // Carrossel de imagens — usa galeria_imagens (múltiplas fotos)
+        const hasEstoqueMod = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+
+        if (!hasEstoqueMod) {
+            variacoes.forEach(v => v.estoque = 9999);
+        }
+
+        const mpEstoque = document.getElementById('mp-estoque');
+        if(mpEstoque) mpEstoque.style.display = hasEstoqueMod ? 'block' : 'none';
+
+        // Inicializar Carrossel de imagens — usa galeria_imagens (múltiplas fotos)
         const carouselEl = document.getElementById('mp-carousel');
         if (carouselEl) {
             if (carousel) carousel.destroy();
