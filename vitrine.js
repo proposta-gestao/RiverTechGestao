@@ -341,8 +341,8 @@
         tams.forEach(t => { if (!tamsOrdenados.includes(t)) tamsOrdenados.push(t); });
 
         // Imagem (principal ou galeria)
-        const galeria = p.galeria_imagens || [];
-        const imgPrincipal = p.imagem_url || (galeria.length > 0 ? galeria[0].imagem_url : null);
+        const galeria = (p.galeria_imagens || []).slice().sort((a,b) => (a.ordem||0)-(b.ordem||0));
+        const imgPrincipal = galeria.length > 0 ? galeria[0].url : p.imagem_url;
         const hasImage = !!imgPrincipal;
         const imageHTML = hasImage
             ? `<img src="${imgPrincipal}" alt="${p.nome}" loading="lazy" draggable="false">`

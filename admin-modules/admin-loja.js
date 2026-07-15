@@ -311,6 +311,7 @@ window.__LOJA.salvarProduto = async function() {
                 const tam = tr.dataset.tam;
                 const precoInput = tr.querySelector('.in-preco');
                 const estqInput = tr.querySelector('.in-estoque');
+                const fotoInput = tr.querySelector('.in-foto');
                 varsToInsert.push({
                     empresa_id: getTenantId(),
                     produto_id: savedProdId,
@@ -318,7 +319,8 @@ window.__LOJA.salvarProduto = async function() {
                     cor: cor,
                     sku: gerarSKULocal(nome, cor, tam),
                     preco: parseFloat(precoInput.value) || 0,
-                    estoque: parseInt(estqInput.value) || 0
+                    estoque: parseInt(estqInput.value) || 0,
+                    imagem_url: fotoInput ? (fotoInput.value || null) : null
                 });
             });
 
@@ -521,11 +523,44 @@ window.atualizarPreviewCombinacoes = function() {
                     <td>${t}</td>
                     <td><input type="number" step="0.01" min="0" value="0" class="in-preco" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);"></td>
                     <td><input type="number" min="0" value="0" class="in-estoque" style="width:100%; padding:6px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);"></td>
+                    <td style="text-align:center;">
+                        <input type="hidden" class="in-foto">
+                        <button type="button" class="btn-sm" onclick="window.__LOJA.uploadFotoComb(this)" style="width:32px; height:32px; border-radius:6px; border:1px dashed var(--border-color); background:transparent; color:var(--text-color); cursor:pointer; font-size:14px; padding:0; display:flex; align-items:center; justify-content:center;" title="Adicionar foto específica">📷</button>
+                    </td>
                 </tr>
             `;
         });
     });
     tbody.innerHTML = html;
+};
+
+window.__LOJA.uploadFotoComb = function(btn) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const oldContent = btn.innerHTML;
+        btn.innerHTML = '⏳';
+        btn.disabled = true;
+        try {
+            const url = await window.handleCloudinaryUpload(file, 'loja');
+            if (url) {
+                const tr = btn.closest('tr');
+                tr.querySelector('.in-foto').value = url;
+                btn.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">`;
+                btn.style.border = '1px solid var(--primary)';
+                showToast('Foto da variação adicionada!', 'success');
+            }
+        } catch (err) {
+            showToast('Erro ao enviar foto', 'error');
+            btn.innerHTML = oldContent;
+        } finally {
+            btn.disabled = false;
+        }
+    };
+    input.click();
 };
 
 window.__LOJA.aplicarEstoqueGlobal = function() {
