@@ -81,13 +81,23 @@
             }
         }
 
-        // Carrossel de imagens
+        // Carrossel de imagens — suporta galeria completa (múltiplas imagens)
         const carouselEl = document.getElementById('mp-carousel');
         if (carouselEl) {
             if (carousel) carousel.destroy();
             carousel = new ProductCarousel(carouselEl);
-            const imgs = [prod.imagem_url].filter(Boolean);
+            // Prioriza galeria_imagens se disponível, senão usa imagem_url
+            const galeria = prod.galeria_imagens || [];
+            const imgs = galeria.length > 0
+                ? galeria
+                    .slice()
+                    .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
+                    .map(g => g.imagem_url)
+                    .filter(Boolean)
+                : [prod.imagem_url].filter(Boolean);
             carousel.setImages(imgs);
+            // Expor para uso externo (ex: vitrine.js)
+            window._lojaCarousel = carousel;
         }
 
         // Renderizar variações
@@ -309,34 +319,16 @@
 
     /* ══════════════════════════════════════════════
        COMPRA
+       A ação de compra é delegada ao vitrine.js + loja-store.js.
+       Este método permanece para compatibilidade com código legado.
        ══════════════════════════════════════════════ */
 
     async function comprar(supabaseClient, onSuccess) {
+        // Delegar ao handler externo se disponível (novo fluxo: loja-store.js + carrinho)
         const variacao = _getVariacaoSelecionada();
-        if (!variacao || variacao.estoque <= 0) return;
-
-        // Ocultar modal de produto temporariamente e abrir o de checkout
-        fechar();
-        
-        const chkBackdrop = document.getElementById('modalCheckoutBackdrop');
-        if (chkBackdrop) {
-            chkBackdrop.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Grava a variação selecionada no botão para uso posterior
-            const btnConfirm = document.getElementById('btnConfirmarCheckout');
-            if (btnConfirm) {
-                btnConfirm.dataset.variacaoId = variacao.id;
-                // Limpar event listeners antigos recriando o elemento
-                const novoBtn = btnConfirm.cloneNode(true);
-                btnConfirm.parentNode.replaceChild(novoBtn, btnConfirm);
-                
-                novoBtn.addEventListener('click', async () => {
-                    if (typeof window.processarCheckoutLoja === 'function') {
-                        await window.processarCheckoutLoja(variacao, onSuccess);
-                    }
-                });
-            }
+        if (!variacao) return;
+        if (typeof onSuccess === 'function') {
+            await onSuccess(variacao);
         }
     }
 

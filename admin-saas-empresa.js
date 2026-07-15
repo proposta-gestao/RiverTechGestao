@@ -158,12 +158,19 @@ function renderDadosBasicos(emp) {
     // URLs
     const baseUrl = window.location.origin;
     const urlMenu = `${baseUrl}/${emp.slug}`;
+    const urlLoja = `${baseUrl}/loja.html?tenant=${emp.slug}`;
     const urlAdmin = `${baseUrl}/admin.html?tenant=${emp.slug}`;
     const urlAten = `${baseUrl}/atendente.html?tenant=${emp.slug}`;
     const urlAgendamento = `${baseUrl}/agendamento.html?tenant=${emp.slug}`;
  
     document.getElementById('urlMenu').textContent = `/${emp.slug}`;
     document.getElementById('urlMenu').href = urlMenu;
+    
+    const elLoja = document.getElementById('urlLoja');
+    if (elLoja) {
+        elLoja.textContent = `/loja.html?tenant=${emp.slug}`;
+        elLoja.href = urlLoja;
+    }
     
     document.getElementById('urlAdmin').textContent = `/admin.html?tenant=${emp.slug}`;
     document.getElementById('urlAdmin').href = urlAdmin;
@@ -649,15 +656,20 @@ window.copyToClipboard = (elementId) => {
 
 window.copyAllUrls = () => {
     const menu = document.getElementById('urlMenu').href;
+    const loja = document.getElementById('urlLoja') ? document.getElementById('urlLoja').href : '';
     const admin = document.getElementById('urlAdmin').href;
     const aten = document.getElementById('urlAtendente').href;
     const agendamento = document.getElementById('urlAgendamento') ? document.getElementById('urlAgendamento').href : '';
 
     const fullText = `ðŸš€ *Acessos da sua Loja - RiverTech Gestão*
 
-ðŸ“ *Link do Cardápio (Para Clientes):*
+ðŸ“  *Link do Cardápio (Para Clientes):*
 ${menu}
 _Divulgue este link no seu Instagram e WhatsApp._
+
+🛍️ *Link da Loja Online (Para Varejo/Roupas):*
+${loja}
+_Acesse sua vitrine virtual completa._
 
 ðŸ“… *Link de Agendamento Online:*
 ${agendamento}
