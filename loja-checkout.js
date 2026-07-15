@@ -316,16 +316,20 @@
         try {
             const subtotal = LojaStore.getCartSubtotal();
 
-            // 1. Abater estoque de todas as variações
-            for (const item of cart) {
-                const { error: estqErr } = await _sb.rpc('loja_remover_estoque', {
-                    p_variacao_id: item.id,
-                    p_quantidade: item.quantidade || 1
-                });
-                if (estqErr) {
-                    LojaStore.showToast(`Estoque insuficiente: ${item.nome}.`, 'error');
-                    if (btn) { btn.disabled = false; btn.textContent = 'Confirmar Pedido'; }
-                    return;
+            const hasEstoqueMod = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+
+            // 1. Abater estoque de todas as variações (se módulo ativo)
+            if (hasEstoqueMod) {
+                for (const item of cart) {
+                    const { error: estqErr } = await _sb.rpc('loja_remover_estoque', {
+                        p_variacao_id: item.id,
+                        p_quantidade: item.quantidade || 1
+                    });
+                    if (estqErr) {
+                        LojaStore.showToast(`Estoque insuficiente: ${item.nome}.`, 'error');
+                        if (btn) { btn.disabled = false; btn.textContent = 'Confirmar Pedido'; }
+                        return;
+                    }
                 }
             }
 
