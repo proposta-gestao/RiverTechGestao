@@ -961,9 +961,10 @@ function renderLojaEstoque() {
                 <td>${v.tamanho}</td>
                 <td style="text-align:center; font-weight:bold; color:${cor}; font-size:1.1rem;">${v.estoque}</td>
                 <td style="text-align:center;">
-                    <div style="display:inline-flex; border:1px solid var(--border-color); border-radius:6px; overflow:hidden;">
-                        <button onclick="window.__LOJA.ajustarEstoque('${v.id}', -1)" style="border:none; background:transparent; padding:4px 10px; cursor:pointer; color:var(--danger); font-weight:bold;">-</button>
-                        <button onclick="window.__LOJA.ajustarEstoque('${v.id}', 1)" style="border:none; background:transparent; padding:4px 10px; cursor:pointer; color:var(--success); font-weight:bold; border-left:1px solid var(--border-color);">+</button>
+                    <div style="display:inline-flex; align-items:center; gap:6px;">
+                        <input type="number" id="inEstoqueGeral_${v.id}" value="${v.estoque}" min="0" style="width:70px; text-align:center; padding:4px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color); font-weight:bold;">
+                        <button onclick="window.__LOJA.salvarEstoqueGeralExato('${v.id}', ${v.estoque})" class="btn-sm btn-primary" title="Salvar quantidade">💾</button>
+                        <button onclick="window.__LOJA.abrirModalEstoqueVariacao('${v.id}')" class="btn-sm" style="background:transparent; border:1px solid var(--border-color); color:var(--text-color);" title="Histórico e Ajuste Completo">📋</button>
                     </div>
                 </td>
             </tr>
@@ -972,6 +973,7 @@ function renderLojaEstoque() {
 }
 
 window.__LOJA.ajustarEstoque = async function(id, delta) {
+    if (delta === 0) return;
     const funcName = delta > 0 ? 'loja_adicionar_estoque' : 'loja_remover_estoque';
     try {
         const { data, error } = await sb.rpc(funcName, { p_variacao_id: id, p_quantidade: Math.abs(delta) });
@@ -981,6 +983,26 @@ window.__LOJA.ajustarEstoque = async function(id, delta) {
     } catch (e) {
         showToast(e.message || 'Erro ao atualizar', 'error');
     }
+};
+
+window.__LOJA.salvarEstoqueGeralExato = async function(id, estoqueAtual) {
+    const input = document.getElementById(`inEstoqueGeral_${id}`);
+    if (!input) return;
+    
+    const novoEstoque = parseInt(input.value);
+    if (isNaN(novoEstoque) || novoEstoque < 0) {
+        showToast('Quantidade inválida.', 'warning');
+        return;
+    }
+    
+    const delta = novoEstoque - estoqueAtual;
+    if (delta === 0) {
+        showToast('Estoque não foi alterado.', 'info');
+        return;
+    }
+    
+    // Use the existing delta update function
+    await window.__LOJA.ajustarEstoque(id, delta);
 };
 
 // ==========================================
