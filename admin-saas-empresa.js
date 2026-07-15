@@ -103,7 +103,7 @@ const LISTA_MODULOS = [
     'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
     'agendamento_mensagens', 'agendamento_fidelidade',
     // Módulo de Loja de Roupas
-    'loja_roupas',
+    'loja_roupas', 'loja_estoque',
     // Módulo de Clientes Premium
     'clientes_premium'
 ];

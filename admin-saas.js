@@ -486,7 +486,8 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
         'vendas_visao_geral', 'metricas_dashboard', 'metricas_performance_vendas',
         'config_frete', 'pagamento', 'cupons', 'cardapio',
         'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
-        'agendamento_mensagens', 'agendamento_fidelidade', 'config_personalizacao'
+        'agendamento_mensagens', 'agendamento_fidelidade', 'config_personalizacao',
+        'loja_roupas', 'loja_estoque'
     ];
     LISTA_MOD_IDS.forEach(key => {
         const el = document.getElementById(`n_mod_${key}`);
@@ -773,7 +774,7 @@ function _getSegmentPreset(segmento) {
         loja_roupas: {
             modulos: {
                 // Loja
-                loja_roupas: true,
+                loja_roupas: true, loja_estoque: true,
                 // Vendas
                 vendas_hoje_op: true, vendas_ontem_op: true, vendas_visao_geral: true,
                 metricas_dashboard: true, metricas_analise_tempo: true,
