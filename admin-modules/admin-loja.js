@@ -19,7 +19,7 @@ const sb = window.sb;
 let lojaProdutos = [];
 let lojaCategorias = [];
 let lojaEstoque = [];
-let lojaCurrentProdImages = [];
+let lojaCurrentProdImages = []; // [{url, id, ordem, produto_id}]
 let lojaCurrentVariacoes = [];
 
 const TAMANHOS_PADRAO = ['PP', 'P', 'M', 'G', 'GG', 'X1', 'X2'];
@@ -85,7 +85,7 @@ async function carregarLojaCategorias() {
 
 async function carregarLojaProdutos() {
     const { data, error } = await sb.from('loja_produtos')
-        .select('*, loja_categorias(nome), loja_variacoes(*)')
+        .select('*, loja_categorias(nome), loja_variacoes(*), galeria_imagens(*)')
         .eq('empresa_id', getTenantId())
         .order('ordem', { ascending: true })
         .order('created_at', { ascending: false });
@@ -147,11 +147,18 @@ function renderLojaProdutos() {
         const numVariacoes = variacoes.length;
         const estoqueTotal = variacoes.reduce((acc, curr) => acc + (curr.estoque || 0), 0);
         const corEstoque = estoqueTotal <= 0 ? 'var(--danger)' : 'inherit';
+        // Imagem principal: primeiro da galeria ou imagem_url
+        const galeria = (p.galeria_imagens || []).sort((a,b) => (a.ordem||0)-(b.ordem||0));
+        const imgSrc = galeria[0]?.url || p.imagem_url || 'Logo.png';
+        const numFotos = galeria.length || (p.imagem_url ? 1 : 0);
 
         return `
             <tr data-id="${p.id}">
                 <td class="drag-handle" style="cursor:grab; color:var(--text-muted); font-size:1.2rem;">≡</td>
-                <td><img src="${p.imagem_url || 'Logo.png'}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"></td>
+                <td style="position:relative;">
+                    <img src="${imgSrc}" style="width:40px;height:40px;object-fit:cover;border-radius:6px;">
+                    ${numFotos > 1 ? `<span style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.7);color:#fff;font-size:0.6rem;padding:1px 4px;border-radius:4px;">${numFotos}</span>` : ''}
+                </td>
                 <td><strong>${p.nome}</strong></td>
                 <td>${catNome}</td>
                 <td><span class="badge" style="background:rgba(255,255,255,0.05);">${numVariacoes} un.</span></td>
@@ -208,10 +215,10 @@ window.__LOJA.novoProduto = function() {
     document.getElementById('lojaProdCategoria').value = '';
     document.getElementById('lojaProdAtivo').value = 'true';
     
-    // Imagem
+    // Galeria
     lojaCurrentProdImages = [];
     document.getElementById('lojaProdImageUrl').value = '';
-    atualizarPreviewImagemLoja(null);
+    _renderGaleriaGrid();
 
     // Seção de criação
     document.getElementById('lojaNovosCheckboxes').style.display = 'block';
@@ -224,7 +231,7 @@ window.__LOJA.novoProduto = function() {
     abrirModal('modalLojaProduto');
 };
 
-window.__LOJA.editarProduto = function(id) {
+window.__LOJA.editarProduto = async function(id) {
     const prod = lojaProdutos.find(p => p.id === id);
     if (!prod) return;
 
@@ -234,9 +241,20 @@ window.__LOJA.editarProduto = function(id) {
     document.getElementById('lojaProdCategoria').value = prod.loja_categoria_id || '';
     document.getElementById('lojaProdAtivo').value = prod.ativo ? 'true' : 'false';
 
-    lojaCurrentProdImages = prod.imagem_url ? [prod.imagem_url] : [];
-    document.getElementById('lojaProdImageUrl').value = prod.imagem_url || '';
-    atualizarPreviewImagemLoja(prod.imagem_url);
+    // Carregar galeria de imagens do banco
+    const { data: galeriaData } = await sb.from('galeria_imagens')
+        .select('*')
+        .eq('produto_id', id)
+        .order('ordem', { ascending: true });
+    
+    if (galeriaData && galeriaData.length > 0) {
+        lojaCurrentProdImages = galeriaData.map(g => ({ id: g.id, url: g.url, ordem: g.ordem || 0, produto_id: g.produto_id }));
+    } else {
+        // Compatibilidade: imagem_url antiga
+        lojaCurrentProdImages = prod.imagem_url ? [{ id: null, url: prod.imagem_url, ordem: 0, produto_id: id }] : [];
+    }
+    document.getElementById('lojaProdImageUrl').value = lojaCurrentProdImages[0]?.url || '';
+    _renderGaleriaGrid();
 
     // Ocultar criação de checkboxes, mostrar tabela de edição
     document.getElementById('lojaNovosCheckboxes').style.display = 'none';
@@ -259,7 +277,8 @@ window.__LOJA.salvarProduto = async function() {
     const descricao = document.getElementById('lojaProdDescricao').value.trim();
     const catId = document.getElementById('lojaProdCategoria').value;
     const ativo = document.getElementById('lojaProdAtivo').value === 'true';
-    const imagem_url = document.getElementById('lojaProdImageUrl').value;
+    // Imagem principal é a 1ª da galeria
+    const imagem_url = lojaCurrentProdImages[0]?.url || null;
 
     if (!nome) { showToast('Nome é obrigatório', 'error'); btn.disabled = false; btn.innerText = 'Salvar'; return; }
 
@@ -273,15 +292,16 @@ window.__LOJA.salvarProduto = async function() {
     };
 
     try {
+        let savedProdId = id;
         if (id) {
             // Edição
             const { error } = await sb.from('loja_produtos').update(prodData).eq('id', id);
             if (error) throw error;
-            showToast('Produto atualizado!', 'success');
         } else {
             // Criação
             const { data: newProd, error } = await sb.from('loja_produtos').insert([prodData]).select().single();
             if (error) throw error;
+            savedProdId = newProd.id;
 
             // Criar variações se houver
             const trs = document.querySelectorAll('#lojaCombBody tr');
@@ -291,10 +311,9 @@ window.__LOJA.salvarProduto = async function() {
                 const tam = tr.dataset.tam;
                 const precoInput = tr.querySelector('.in-preco');
                 const estqInput = tr.querySelector('.in-estoque');
-                
                 varsToInsert.push({
                     empresa_id: getTenantId(),
-                    produto_id: newProd.id,
+                    produto_id: savedProdId,
                     tamanho: tam,
                     cor: cor,
                     sku: gerarSKULocal(nome, cor, tam),
@@ -307,9 +326,12 @@ window.__LOJA.salvarProduto = async function() {
                 const { error: errVar } = await sb.from('loja_variacoes').insert(varsToInsert);
                 if (errVar) console.error('Erro ao inserir variacoes', errVar);
             }
-            showToast('Produto criado com variações!', 'success');
         }
 
+        // Sincronizar galeria_imagens com o produto
+        await _sincronizarGaleriaImagens(savedProdId);
+
+        showToast(id ? 'Produto atualizado!' : 'Produto criado!', 'success');
         fecharModal('modalLojaProduto');
         await carregarLojaProdutos();
     } catch (err) {
@@ -344,8 +366,62 @@ function gerarSKULocal(nome, cor, tam) {
 // ------------------------------------------------------------
 // IMAGENS (Cloudinary)
 // ------------------------------------------------------------
+// ------------------------------------------------------------------
+// GALERIA DE IMAGENS (múltiplas fotos por produto)
+// ------------------------------------------------------------------
+
+// Renderiza as miniaturas na grade do modal
+function _renderGaleriaGrid() {
+    const grid = document.getElementById('lojaGaleriaGrid');
+    if (!grid) return;
+
+    const btn = document.getElementById('btnLojaAdicionarImagem');
+    if (btn) btn.disabled = lojaCurrentProdImages.length >= 5;
+
+    if (lojaCurrentProdImages.length === 0) {
+        grid.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem; padding:10px 0;">Nenhuma foto adicionada ainda.</span>';
+        return;
+    }
+
+    grid.innerHTML = lojaCurrentProdImages.map((img, idx) => `
+        <div style="position:relative; flex-shrink:0;" data-idx="${idx}">
+            <img src="${img.url}" style="width:80px; height:80px; object-fit:cover; border-radius:8px; border:2px solid ${idx === 0 ? 'var(--primary)' : 'var(--border-color)'}; display:block;" title="${idx === 0 ? 'Imagem principal' : 'Foto ' + (idx+1)}">
+            <!-- Botão Favoritar (torna principal) -->
+            ${idx > 0 ? `<button onclick="window.__LOJA.favoritarImagem(${idx})" title="Definir como principal" style="position:absolute; top:-6px; left:-6px; background:rgba(229,178,93,0.9); color:#000; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:0.65rem; display:flex; align-items:center; justify-content:center; line-height:1;">⭐</button>` : '<span title="Imagem principal" style="position:absolute; top:-6px; left:-6px; background:var(--primary); color:#000; border-radius:50%; width:20px; height:20px; font-size:0.65rem; display:flex; align-items:center; justify-content:center;">★</span>'}
+            <!-- Botão Remover -->
+            <button onclick="window.__LOJA.removerImagemGaleria(${idx})" title="Remover" style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:#fff; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:0.7rem; display:flex; align-items:center; justify-content:center;">×</button>
+        </div>
+    `).join('');
+
+    // Atualizar hidden field com a URL principal
+    document.getElementById('lojaProdImageUrl').value = lojaCurrentProdImages[0]?.url || '';
+}
+
+// Sincroniza lojaCurrentProdImages com a tabela galeria_imagens
+async function _sincronizarGaleriaImagens(produtoId) {
+    // Apagar registros antigos deste produto
+    await sb.from('galeria_imagens').delete().eq('produto_id', produtoId);
+    
+    if (lojaCurrentProdImages.length === 0) return;
+
+    const registros = lojaCurrentProdImages.map((img, idx) => ({
+        empresa_id: getTenantId(),
+        produto_id: produtoId,
+        url: img.url,
+        tipo: 'produto',
+        ordem: idx
+    }));
+
+    const { error } = await sb.from('galeria_imagens').insert(registros);
+    if (error) console.error('[Galeria] Erro ao sincronizar:', error);
+}
+
 window.__LOJA.uploadImagem = async function(file) {
     if (!file) return;
+    if (lojaCurrentProdImages.length >= 5) {
+        showToast('Limite de 5 imagens atingido.', 'warning');
+        return;
+    }
     const btn = document.getElementById('btnLojaAdicionarImagem');
     btn.disabled = true;
     btn.innerText = 'Enviando...';
@@ -353,34 +429,47 @@ window.__LOJA.uploadImagem = async function(file) {
     try {
         const url = await window.handleCloudinaryUpload(file, 'loja');
         if (url) {
-            document.getElementById('lojaProdImageUrl').value = url;
-            atualizarPreviewImagemLoja(url);
-            showToast('Imagem carregada!', 'success');
+            lojaCurrentProdImages.push({ id: null, url, ordem: lojaCurrentProdImages.length, produto_id: null });
+            _renderGaleriaGrid();
+            showToast('Imagem adicionada!', 'success');
         }
     } catch(err) {
         showToast('Erro ao carregar imagem', 'error');
     } finally {
-        btn.disabled = false;
-        btn.innerText = '+ Foto';
+        btn.disabled = lojaCurrentProdImages.length >= 5;
+        btn.innerText = '+ Adicionar Foto';
+        // Limpar input para permitir re-seleção do mesmo arquivo
+        document.getElementById('lojaUploadImagem').value = '';
     }
 };
 
+window.__LOJA.removerImagemGaleria = function(idx) {
+    lojaCurrentProdImages.splice(idx, 1);
+    // Reordenar
+    lojaCurrentProdImages.forEach((img, i) => img.ordem = i);
+    _renderGaleriaGrid();
+};
+
+window.__LOJA.favoritarImagem = function(idx) {
+    // Move a foto escolhida para a posição 0 (principal)
+    const [img] = lojaCurrentProdImages.splice(idx, 1);
+    lojaCurrentProdImages.unshift(img);
+    lojaCurrentProdImages.forEach((img, i) => img.ordem = i);
+    _renderGaleriaGrid();
+    showToast('Imagem principal atualizada!', 'success');
+};
+
+// Legado: mantém compatibilidade
 window.__LOJA.removerImagem = function() {
-    document.getElementById('lojaProdImageUrl').value = '';
-    atualizarPreviewImagemLoja(null);
+    if (lojaCurrentProdImages.length > 0) {
+        lojaCurrentProdImages.shift();
+        lojaCurrentProdImages.forEach((img, i) => img.ordem = i);
+        _renderGaleriaGrid();
+    }
 };
 
 function atualizarPreviewImagemLoja(url) {
-    const prevBox = document.getElementById('lojaProdImagePreview');
-    const thumb = document.getElementById('lojaProdImageThumb');
-    
-    if (url) {
-        thumb.src = url;
-        prevBox.style.display = 'block';
-    } else {
-        thumb.src = '';
-        prevBox.style.display = 'none';
-    }
+    // Mantido para compatibilidade (não usado mais, mas evita erros)
 }
 
 // ------------------------------------------------------------
@@ -460,12 +549,17 @@ window.__LOJA.aplicarEstoqueGlobal = function() {
 function renderVariacoesExistentes() {
     const tbody = document.getElementById('lojaVariacoesEditBody');
     if (lojaCurrentVariacoes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma variação.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma variação.</td></tr>';
         return;
     }
 
-    tbody.innerHTML = lojaCurrentVariacoes.map(v => `
+    tbody.innerHTML = lojaCurrentVariacoes.map(v => {
+        const imgHtml = v.imagem_url
+            ? `<img src="${v.imagem_url}" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--border-color);">`
+            : `<div style="width:36px;height:36px;border-radius:6px;border:1px dashed var(--border-color);display:flex;align-items:center;justify-content:center;font-size:0.9rem;">📷</div>`;
+        return `
         <tr>
+            <td>${imgHtml}</td>
             <td style="font-size:0.8rem; color:var(--text-muted);">${v.sku}</td>
             <td>${v.cor}</td>
             <td>${v.tamanho}</td>
@@ -475,7 +569,8 @@ function renderVariacoesExistentes() {
                 <button class="btn-sm btn-delete" onclick="window.__LOJA.excluirVariacao('${v.id}')">Excluir</button>
             </td>
         </tr>
-    `).join('');
+        `;
+    }).join('');
 }
 
 window.__LOJA.excluirVariacao = async function(id) {
@@ -496,7 +591,6 @@ window.__LOJA.excluirVariacao = async function(id) {
     });
 };
 
-// ... NOVA VARIAÇÃO MODAL ...
 window.__LOJA.abrirModalNovaVariacao = function() {
     const pId = document.getElementById('lojaProdId').value;
     document.getElementById('novaVarProdutoId').value = pId;
@@ -509,8 +603,35 @@ window.__LOJA.abrirModalNovaVariacao = function() {
 
     document.getElementById('novaVarPreco').value = '0';
     document.getElementById('novaVarEstoque').value = '0';
+    // Limpar foto da variação
+    document.getElementById('novaVarImageUrl').value = '';
+    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">\uD83D\uDDBC\uFE0F</span>';
+    document.getElementById('lojaUploadVarImagem').value = '';
 
     abrirModal('modalLojaNovaVariacao');
+};
+
+window.__LOJA.uploadImagemVariacao = async function(file) {
+    if (!file) return;
+    showToast('Enviando foto...', 'success');
+    try {
+        const url = await window.handleCloudinaryUpload(file, 'loja');
+        if (url) {
+            document.getElementById('novaVarImageUrl').value = url;
+            const prev = document.getElementById('novaVarImagePreview');
+            prev.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
+            showToast('Foto da variação carregada!', 'success');
+        }
+    } catch(e) {
+        showToast('Erro ao enviar foto', 'error');
+    } finally {
+        document.getElementById('lojaUploadVarImagem').value = '';
+    }
+};
+
+window.__LOJA.removerImagemVariacao = function() {
+    document.getElementById('novaVarImageUrl').value = '';
+    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">\uD83D\uDDBC\uFE0F</span>';
 };
 
 window.__LOJA.salvarNovaVariacao = async function() {
@@ -519,6 +640,7 @@ window.__LOJA.salvarNovaVariacao = async function() {
     const cor = document.getElementById('novaVarCor').value;
     const preco = parseFloat(document.getElementById('novaVarPreco').value) || 0;
     const estoque = parseInt(document.getElementById('novaVarEstoque').value) || 0;
+    const imagem_url = document.getElementById('novaVarImageUrl').value || null;
 
     const { data: prod } = await sb.from('loja_produtos').select('nome').eq('id', pId).single();
 
@@ -529,7 +651,8 @@ window.__LOJA.salvarNovaVariacao = async function() {
         cor: cor,
         sku: gerarSKULocal(prod?.nome || 'PROD', cor, tam),
         preco,
-        estoque
+        estoque,
+        imagem_url
     };
 
     const { error } = await sb.from('loja_variacoes').insert([vData]);
