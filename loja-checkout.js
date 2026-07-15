@@ -81,6 +81,7 @@
         const totalEl = document.getElementById('chk-resumo-total');
         if (!container) return;
 
+        const cart = LojaStore.getCart();
         let total = LojaStore.getCartSubtotal();
         const tipoEntrega = document.querySelector('input[name="chk-tipo"]:checked')?.value || 'retirada';
         
