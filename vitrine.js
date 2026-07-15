@@ -412,20 +412,7 @@
        ═══════════════════════════════════════════════ */
 
     function _abrirModalProduto(prod) {
-        // Passar galeria ao modal (múltiplas imagens — PASSO 4)
-        const galeria = prod.galeria_imagens || [];
-        const imgs = galeria.length > 0
-            ? galeria.sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(g => g.imagem_url)
-            : [prod.imagem_url].filter(Boolean);
-
-        // Injetar imagens antes de abrir (monkey-patch temporário)
-        const _origAbrir = window.ModalProduto.abrir;
         window.ModalProduto.abrir(prod);
-
-        // Atualizar carrossel com galeria completa se diferente de imagem única
-        if (imgs.length > 1 && window._lojaCarousel) {
-            window._lojaCarousel.setImages(imgs);
-        }
 
         // Produtos relacionados (mesma categoria — PASSO 4)
         _renderRelacionados(prod);
