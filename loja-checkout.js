@@ -18,14 +18,22 @@
 
     let _sb = null;
     let _empresaId = null;
+    let _zonasFrete = [];
+    let _freteAtual = 0;
 
     /* ═══════════════════════════════════════════════
        CONFIGURAR SUPABASE
        ═══════════════════════════════════════════════ */
 
-    function setup(supabaseClient, empresaId) {
+    async function setup(supabaseClient, empresaId) {
         _sb = supabaseClient;
         _empresaId = empresaId;
+        try {
+            const { data } = await _sb.from('shipping_zones').select('*').eq('empresa_id', _empresaId).eq('active', true);
+            _zonasFrete = data || [];
+        } catch (e) {
+            console.warn('[LojaCheckout] Erro ao carregar zonas de frete', e);
+        }
     }
 
     /* ═══════════════════════════════════════════════
@@ -64,6 +72,8 @@
         if (cepStatus) cepStatus.textContent = '';
         const camposAuto = document.getElementById('chk-campos-auto');
         if (camposAuto) camposAuto.style.display = 'none';
+
+        _freteAtual = 0;
     }
 
     function _preencherResumo() {
@@ -71,7 +81,20 @@
         const totalEl = document.getElementById('chk-resumo-total');
         if (!container) return;
 
-        const cart = LojaStore.getCart();
+        let total = LojaStore.getCartSubtotal();
+        const tipoEntrega = document.querySelector('input[name="chk-tipo"]:checked')?.value || 'retirada';
+        
+        let htmlExtra = '';
+        if (tipoEntrega === 'entrega' && _freteAtual > 0) {
+            htmlExtra = `
+                <div class="chk-resumo-item" style="color: var(--text-muted);">
+                    <span class="chk-resumo-nome">Frete</span>
+                    <span class="chk-resumo-preco">${LojaStore.formatPreco(_freteAtual)}</span>
+                </div>
+            `;
+            total += _freteAtual;
+        }
+
         container.innerHTML = cart.map(item => `
             <div class="chk-resumo-item">
                 <span class="chk-resumo-nome">${item.nome}
@@ -81,9 +104,31 @@
                     ${item.quantidade > 1 ? `<small>×${item.quantidade}</small>` : ''}
                 </span>
             </div>
-        `).join('');
+        `).join('') + htmlExtra;
 
-        if (totalEl) totalEl.textContent = LojaStore.formatPreco(LojaStore.getCartSubtotal());
+        if (totalEl) totalEl.textContent = LojaStore.formatPreco(total);
+    }
+
+    /* ═══════════════════════════════════════════════
+       CÁLCULO DE FRETE
+       ═══════════════════════════════════════════════ */
+
+    function _normalizar(str) {
+        return (str || '').toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function _calcularFrete(bairro, cidade) {
+        if (!bairro) return -1;
+        const bNorm = _normalizar(bairro);
+        const cNorm = _normalizar(cidade);
+
+        const zona = _zonasFrete.find(z => {
+            if (!z.neighborhoods) return false;
+            if (z.cidade && _normalizar(z.cidade) !== cNorm) return false;
+            const lista = z.neighborhoods.split(',').map(b => _normalizar(b));
+            return lista.includes(bNorm);
+        });
+        return zona ? (parseFloat(zona.fee) || 0) : -1;
     }
 
     /* ═══════════════════════════════════════════════
@@ -121,12 +166,29 @@
             _setVal('chk-cidade', data.localidade);
             _setVal('chk-estado', data.uf);
 
-            if (status) status.textContent = '✅ Endereço encontrado!';
+            _freteAtual = _calcularFrete(data.bairro, data.localidade);
+
+            if (_freteAtual === -1) {
+                if (status) {
+                    status.textContent = '⚠️ Bairro não atendido para entrega.';
+                    status.style.color = 'var(--danger)';
+                }
+            } else {
+                if (status) {
+                    status.textContent = \`✅ Frete para \${data.bairro}: \${_freteAtual === 0 ? 'Grátis' : LojaStore.formatPreco(_freteAtual)}\`;
+                    status.style.color = 'var(--success)';
+                }
+            }
+
             if (camposAuto) camposAuto.style.display = 'grid';
+            _preencherResumo();
 
             document.getElementById('chk-numero')?.focus();
         } catch {
-            if (status) status.textContent = '❌ Erro ao buscar CEP.';
+            if (status) {
+                status.textContent = '❌ Erro ao buscar CEP.';
+                status.style.color = 'var(--danger)';
+            }
         }
     }
 
@@ -138,6 +200,7 @@
         const tipo = document.querySelector('input[name="chk-tipo"]:checked')?.value || 'retirada';
         const secaoEndereco = document.getElementById('chk-secao-endereco');
         if (secaoEndereco) secaoEndereco.style.display = tipo === 'entrega' ? 'block' : 'none';
+        _preencherResumo();
     }
 
     /* ═══════════════════════════════════════════════
@@ -176,6 +239,11 @@
                 return;
             }
 
+            if (_freteAtual === -1) {
+                LojaStore.showToast('Bairro não atendido para entrega.', 'error');
+                return;
+            }
+
             enderecoObj = { cep, logradouro, numero, complemento, bairro, cidade, estado };
         }
 
@@ -205,14 +273,19 @@
             }
 
             // 2. Criar pedido
+            const subtotalTotal = subtotal;
+            const freteCalculado = (tipoEntrega === 'entrega' && _freteAtual > 0) ? _freteAtual : 0;
+            const orderTotal = subtotalTotal + freteCalculado;
+
             const { data: orderData, error: orderErr } = await _sb.from('orders').insert({
                 empresa_id: _empresaId,
                 customer_name: nome,
                 customer_phone: telefone,
                 customer_address: enderecoObj,
-                subtotal,
+                subtotal: subtotalTotal,
                 discount: 0,
-                total: subtotal,
+                shipping_fee: freteCalculado,
+                total: orderTotal,
                 delivery_type: tipoEntrega,
                 payment_method: formaPgto,
                 status: 'pendente'
@@ -242,7 +315,7 @@
 
             // 5. Fluxo de pagamento
             if (formaPgto === 'pix') {
-                await _gerarPix(orderData.id, subtotal);
+                await _gerarPix(orderData.id, orderTotal);
             } else if (formaPgto === 'cartao') {
                 await _gerarCartao(orderData.id);
             } else {
