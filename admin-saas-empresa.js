@@ -480,6 +480,41 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
         btn.textContent = 'Atualizar Configurações';
     }
 });
+
+// ==========================================
+// Exclusão de Empresa (Super Admin)
+// ==========================================
+const btnExcluir = document.getElementById('btnExcluirEmpresa');
+if (btnExcluir) {
+    btnExcluir.addEventListener('click', async () => {
+        const nomeEmpresa = (typeof EMPRESA_DATA !== 'undefined' && EMPRESA_DATA.nome) ? EMPRESA_DATA.nome : 'esta empresa';
+        const confirmacao = prompt(`⚠️ AÇÃO IRREVERSÍVEL!\n\nVocê está prestes a excluir permanentemente a empresa "${nomeEmpresa}" e TODOS os seus dados associados (produtos, agendamentos, clientes, vendas, etc).\n\nPara confirmar a exclusão, digite a palavra de segurança: EXCLUIR`);
+        
+        if (confirmacao !== 'EXCLUIR') {
+            if (confirmacao !== null) {
+                showToast('Palavra de segurança incorreta. Exclusão cancelada.', 'error');
+            }
+            return;
+        }
+
+        try {
+            btnExcluir.disabled = true;
+            btnExcluir.textContent = '🗑️ Apagando Empresa e Dados...';
+
+            const { error } = await sb.from('empresas').delete().eq('id', EMPRESA_ID);
+            
+            if (error) throw error;
+            
+            // Redireciona para o painel global e passa uma flag para mostrar notificação de sucesso
+            window.location.href = 'admin-saas.html?deleted=true';
+        } catch (err) {
+            console.error('Erro crítico ao excluir empresa:', err);
+            showToast('Erro ao excluir: ' + (err.message || err.details || 'Tente novamente.'), 'error');
+            btnExcluir.disabled = false;
+            btnExcluir.textContent = '🗑️ Excluir Empresa Permanentemente';
+        }
+    });
+}
  
 // Salvamento automático de módulos
 // Salvamento automático de módulos individuais

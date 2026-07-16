@@ -117,6 +117,13 @@ async function iniciarPainel() {
     if (btnLimpar) {
         btnLimpar.addEventListener('click', limparVendasGlobais);
     }
+
+    // Verificar se acabou de excluir uma empresa
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('deleted') === 'true') {
+        showToast('Empresa e todos os seus dados foram excluídos com sucesso.', 'success');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 }
 
 async function limparVendasGlobais() {
