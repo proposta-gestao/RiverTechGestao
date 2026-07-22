@@ -376,11 +376,38 @@ function renderizarEmpresas() {
                 <button onclick="abrirModalEdicao('${emp.id}')">Editar</button>
                 <a href="/admin.html?tenant=${emp.slug}" target="_blank" style="color:var(--text-secondary);text-decoration:none;font-size:0.9rem">Painel Admin ↗</a>
                 <a href="/apresentacao/${emp.slug}" target="_blank" style="color:var(--accent-gold);text-decoration:none;font-size:0.85rem;opacity:0.8" title="Apresentação comercial">🎴 Proposta ↗</a>
+                <button onclick="excluirEmpresaRapido('${emp.id}', '${emp.nome.replace(/'/g, "\\'")}')" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 4px 8px; font-size: 0.8rem; margin-left: 8px;">🗑️ Excluir</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
+
+// Função global para exclusão rápida da lista
+window.excluirEmpresaRapido = async (id, nome) => {
+    const confirmacao = prompt(`⚠️ AÇÃO IRREVERSÍVEL!\n\nVocê está prestes a excluir permanentemente a empresa "${nome}" e TODOS os seus dados associados (produtos, agendamentos, clientes, vendas, etc).\n\nPara confirmar a exclusão, digite a palavra de segurança: EXCLUIR`);
+    
+    if (confirmacao !== 'EXCLUIR') {
+        if (confirmacao !== null) {
+            showToast('Palavra de segurança incorreta. Exclusão cancelada.', 'error');
+        }
+        return;
+    }
+
+    try {
+        showToast('🗑️ Apagando Empresa e Dados...', 'warning');
+
+        const { error } = await sb.from('empresas').delete().eq('id', id);
+        
+        if (error) throw error;
+        
+        showToast('Empresa e todos os seus dados foram excluídos com sucesso.', 'success');
+        carregarEmpresas(); // Atualiza a lista e as métricas
+    } catch (err) {
+        console.error('Erro crítico ao excluir empresa:', err);
+        showToast('Erro ao excluir: ' + (err.message || err.details || 'Tente novamente.'), 'error');
+    }
+};
 
 // ==========================================
 // 8. Modais (Abrir / Fechar)
