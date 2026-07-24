@@ -226,6 +226,12 @@ window.__LOJA.novoProduto = function() {
     document.getElementById('lojaProdId').value = '';
     document.getElementById('lojaProdNome').value = '';
     document.getElementById('lojaProdDescricao').value = '';
+    
+    // Configurações de observação (default para novo produto)
+    document.getElementById('lojaProdPermiteObs').checked = true;
+    document.getElementById('lojaProdObsPlaceholder').value = 'Ex: Tirar cebola, ponto da carne, etc.';
+    document.getElementById('containerLojaProdObsPlaceholder').style.display = 'block';
+
     document.getElementById('lojaProdCategoria').value = '';
     document.getElementById('lojaProdAtivo').value = 'true';
     
@@ -252,6 +258,13 @@ window.__LOJA.editarProduto = async function(id) {
     document.getElementById('lojaProdId').value = prod.id;
     document.getElementById('lojaProdNome').value = prod.nome;
     document.getElementById('lojaProdDescricao').value = prod.descricao || '';
+    
+    // Configurações de observação
+    const permiteObs = prod.permite_observacao !== false; // default true
+    document.getElementById('lojaProdPermiteObs').checked = permiteObs;
+    document.getElementById('lojaProdObsPlaceholder').value = prod.observacao_placeholder || 'Ex: Tirar cebola, ponto da carne, etc.';
+    document.getElementById('containerLojaProdObsPlaceholder').style.display = permiteObs ? 'block' : 'none';
+
     document.getElementById('lojaProdCategoria').value = prod.loja_categoria_id || '';
     document.getElementById('lojaProdAtivo').value = prod.ativo ? 'true' : 'false';
 
@@ -291,6 +304,8 @@ window.__LOJA.salvarProduto = async function() {
     const descricao = document.getElementById('lojaProdDescricao').value.trim();
     const catId = document.getElementById('lojaProdCategoria').value;
     const ativo = document.getElementById('lojaProdAtivo').value === 'true';
+    const permite_observacao = document.getElementById('lojaProdPermiteObs').checked;
+    const observacao_placeholder = document.getElementById('lojaProdObsPlaceholder').value.trim();
     // Imagem principal é a 1ª da galeria
     const imagem_url = lojaCurrentProdImages[0]?.url || null;
 
@@ -302,7 +317,9 @@ window.__LOJA.salvarProduto = async function() {
         descricao,
         loja_categoria_id: catId || null,
         ativo,
-        imagem_url
+        imagem_url,
+        permite_observacao,
+        observacao_placeholder
     };
 
     try {

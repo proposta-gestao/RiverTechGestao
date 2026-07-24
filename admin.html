@@ -1548,6 +1548,20 @@
                 <label for="prodDesc">Descrição</label>
                 <textarea id="prodDesc" placeholder="Descrição detalhada do produto..."></textarea>
             </div>
+            
+            <div class="form-group config-observacao" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <label for="prodPermiteObs" style="margin: 0; font-weight: 600;">Permitir Observação do Cliente?</label>
+                    <label class="switch">
+                        <input type="checkbox" id="prodPermiteObs" checked onchange="document.getElementById('containerProdObsPlaceholder').style.display = this.checked ? 'block' : 'none'">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div id="containerProdObsPlaceholder" style="margin-top: 10px;">
+                    <label for="prodObsPlaceholder" style="font-size: 0.8rem; color: var(--text-muted);">Texto de Ajuda (Placeholder)</label>
+                    <input type="text" id="prodObsPlaceholder" placeholder="Ex: Tirar cebola, ponto da carne, etc.">
+                </div>
+            </div>
             <div class="form-row" style="align-items: flex-start;">
                 <div class="form-group" style="flex:1">
                     <div style="height: 22px; display: flex; align-items: center; margin-bottom: 4px;">
@@ -1945,6 +1959,21 @@
                 <div class="form-group">
                     <label for="lojaProdDescricao">Descrição</label>
                     <textarea id="lojaProdDescricao" placeholder="Descrição do produto..." style="min-height:70px;"></textarea>
+                </div>
+                
+                <!-- Observação do Cliente -->
+                <div class="form-group config-observacao" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <label for="lojaProdPermiteObs" style="margin: 0; font-weight: 600;">Permitir Observação do Cliente?</label>
+                        <label class="switch">
+                            <input type="checkbox" id="lojaProdPermiteObs" checked onchange="document.getElementById('containerLojaProdObsPlaceholder').style.display = this.checked ? 'block' : 'none'">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div id="containerLojaProdObsPlaceholder" style="margin-top: 10px;">
+                        <label for="lojaProdObsPlaceholder" style="font-size: 0.8rem; color: var(--text-muted);">Texto de Ajuda (Placeholder)</label>
+                        <input type="text" id="lojaProdObsPlaceholder" placeholder="Ex: Tirar cebola, ponto da carne, etc.">
+                    </div>
                 </div>
 
                 <!-- Linha 3: Categoria + Status -->

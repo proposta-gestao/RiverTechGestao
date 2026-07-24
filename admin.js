@@ -2084,6 +2084,12 @@ function abrirModalNovoProduto() {
     document.getElementById('produtoId').value = '';
     document.getElementById('prodNome').value = '';
     document.getElementById('prodDesc').value = '';
+    
+    // Configurações de observação (default)
+    document.getElementById('prodPermiteObs').checked = true;
+    document.getElementById('prodObsPlaceholder').value = 'Ex: Tirar cebola, ponto da carne, etc.';
+    document.getElementById('containerProdObsPlaceholder').style.display = 'block';
+
     document.getElementById('prodPreco').value = '';
     document.getElementById('prodPrecoPromo').value = '';
     setPromoType('val');
@@ -2134,6 +2140,13 @@ function editarProduto(id) {
     document.getElementById('produtoId').value = p.id;
     document.getElementById('prodNome').value = p.name;
     document.getElementById('prodDesc').value = p.description || '';
+    
+    // Configurações de observação
+    const permiteObs = p.permite_observacao !== false;
+    document.getElementById('prodPermiteObs').checked = permiteObs;
+    document.getElementById('prodObsPlaceholder').value = p.observacao_placeholder || 'Ex: Tirar cebola, ponto da carne, etc.';
+    document.getElementById('containerProdObsPlaceholder').style.display = permiteObs ? 'block' : 'none';
+
     document.getElementById('prodPreco').value = p.price;
     document.getElementById('prodEstoque').value = p.stock;
     document.getElementById('prodEstoqueDisplay').innerText = p.stock;
@@ -2204,6 +2217,8 @@ async function executarSalvarProduto() {
         category_id:     document.getElementById('prodCategoria').value || null,
         active:          document.getElementById('prodAtivo').value === 'true',
         image_url:       currentProductImages,
+        permite_observacao: document.getElementById('prodPermiteObs').checked,
+        observacao_placeholder: document.getElementById('prodObsPlaceholder').value.trim(),
         promo_price:     (() => {
             const val = parseFloat(document.getElementById('prodPrecoPromo').value);
             if (!val || val <= 0) return null;

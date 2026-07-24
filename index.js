@@ -138,7 +138,9 @@ async function carregarProdutos() {
             stock: p.stock,
             cat: p.categories?.name || '',
             catSlug: p.categories?.slug || '',
-            category_id: p.category_id
+            category_id: p.category_id,
+            permite_observacao: p.permite_observacao,
+            observacao_placeholder: p.observacao_placeholder
         };
     });
     renderMenu();
@@ -784,6 +786,18 @@ window.abrirModal = (id) => {
     dom.pNome.innerText = produto.nome;
     dom.pDesc.innerText = produto.desc;
     
+    // Configurações do campo de observação
+    const obsWrapper = document.getElementById("observationWrapper");
+    const obsInput = document.getElementById("obs");
+    if (obsWrapper && obsInput) {
+        if (produto.permite_observacao === false) {
+            obsWrapper.style.display = 'none';
+        } else {
+            obsWrapper.style.display = 'block';
+            obsInput.placeholder = produto.observacao_placeholder || 'Ex: Sem cebola, ponto da carne, etc.';
+        }
+    }
+
     // Lógica de preço no modal
     if (produto.promo_price > 0) {
         if (dom.pPreco) dom.pPreco.innerHTML = `<span class="price-old-modal">${formatCurrency(produto.preco)}</span> ${formatCurrency(produto.promo_price)}`;
