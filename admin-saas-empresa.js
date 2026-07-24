@@ -808,6 +808,19 @@ window.previewTema = () => {
         btn.onmouseenter = () => btn.style.background = hover;
         btn.onmouseleave = () => btn.style.background = botao;
     }
+
+    // Atualiza também os swatches na aba de informações (se estiverem visíveis)
+    const setSwatch = (id, color) => {
+        const el = document.getElementById(id);
+        if (el) el.style.background = color || '#333';
+    };
+    setSwatch('swatch-primaria', primaria);
+    setSwatch('swatch-secundaria', document.getElementById('editTemaCorSecundaria').value);
+    setSwatch('swatch-botao', botao);
+    setSwatch('swatch-bg', bg);
+    setSwatch('swatch-surface', surface);
+    setSwatch('swatch-borda', document.getElementById('editTemaCorBorda').value);
+    setSwatch('swatch-texto', texto);
 };
 
 window.restaurarTemaPadrao = () => {
