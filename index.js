@@ -789,12 +789,19 @@ window.abrirModal = (id) => {
     // Configurações do campo de observação
     const obsWrapper = document.getElementById("observationWrapper");
     const obsInput = document.getElementById("obs");
+    const obsContent = document.getElementById("obsContent");
+    const btnToggleObs = document.getElementById("btnToggleObs");
+
     if (obsWrapper && obsInput) {
         if (produto.permite_observacao === false) {
             obsWrapper.style.display = 'none';
         } else {
             obsWrapper.style.display = 'block';
             obsInput.placeholder = produto.observacao_placeholder || 'Ex: Sem cebola, ponto da carne, etc.';
+            
+            // Estado inicial: fechado e vazio
+            if (obsContent) obsContent.style.display = 'none';
+            if (btnToggleObs) btnToggleObs.innerHTML = '<span class="icon">+</span> Adicionar observação';
         }
     }
 
@@ -841,6 +848,20 @@ function toggleModal(show) {
 window.removerDoCarrinho = (index) => {
     state.carrinho.splice(index, 1);
     renderCarrinho();
+};
+
+window.toggleObs = () => {
+    const obsContent = document.getElementById("obsContent");
+    const btnToggleObs = document.getElementById("btnToggleObs");
+    if (obsContent.style.display === 'none') {
+        obsContent.style.display = 'block';
+        btnToggleObs.innerHTML = '<span class="icon">-</span> Ocultar observação';
+        document.getElementById("obs").focus();
+    } else {
+        obsContent.style.display = 'none';
+        btnToggleObs.innerHTML = '<span class="icon">+</span> Adicionar observação';
+        document.getElementById("obs").value = ''; // Limpa se ocultar
+    }
 };
 
 // =============================================
