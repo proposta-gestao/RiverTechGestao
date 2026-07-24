@@ -118,6 +118,25 @@ function renderDadosBasicos(emp) {
     document.getElementById('editEmpStatus').value = emp.status;
     document.getElementById('editPlanoVencimento').value = emp.plano_vencimento || '';
     document.getElementById('infoId').textContent = emp.id;
+
+    // Populate slug field
+    const slugInput = document.getElementById('editEmpSlug');
+    if (slugInput) {
+        slugInput.value = emp.slug || '';
+        // Preview update
+        const slugPreview = document.getElementById('slugPreview');
+        const updateSlugPreview = () => {
+            if (slugPreview) {
+                const v = slugInput.value.trim();
+                slugPreview.textContent = v ? `→ https://gestaotech.vercel.app/${v}` : '';
+            }
+        };
+        slugInput.oninput = function() {
+            this.value = this.value.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+            updateSlugPreview();
+        };
+        updateSlugPreview();
+    }
     
     // Formatação de data brasileira segura
     const dCriacao = new Date(emp.criado_em);
@@ -390,6 +409,19 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
     const segmento = document.getElementById('editEmpSegmento').value || null;
     const status = document.getElementById('editEmpStatus').value;
     const plano_vencimento = document.getElementById('editPlanoVencimento').value || null;
+    const novoSlug = (document.getElementById('editEmpSlug')?.value || '').trim().toLowerCase();
+    const slugAtual = EMPRESA_DATA?.slug || '';
+
+    // Validar slug
+    if (novoSlug && !/^[a-z0-9-]+$/.test(novoSlug)) {
+        showToast('URL inválida. Use apenas letras minúsculas, números e hífen.', 'error');
+        return;
+    }
+    // Confirmar alteração de slug
+    if (novoSlug && novoSlug !== slugAtual) {
+        const ok = confirm(`⚠️ Atenção!\n\nVocê está alterando a URL da loja de "${slugAtual}" para "${novoSlug}".\n\nTodos os links públicos anteriores pararão de funcionar.\n\nDeseja continuar?`);
+        if (!ok) return;
+    }
  
     // Módulos - Coleta todos os estados atuais mesclando com os existentes para não perder módulos ocultos
     const modulos = { ...(EMPRESA_DATA.modulos || {}) };
@@ -433,11 +465,17 @@ document.getElementById('btnSalvarConfig').addEventListener('click', async () =>
                 tema_cor_borda,
                 tema_cor_texto,
                 tema_cor_hover,
-                cor_primaria: tema_cor_primaria // Legado
+                cor_primaria: tema_cor_primaria, // Legado
+                ...(novoSlug && novoSlug !== slugAtual ? { slug: novoSlug } : {})
             })
             .eq('id', EMPRESA_ID);
 
         if (errEmp) throw errEmp;
+
+        // Se o slug mudou, atualiza o dado local
+        if (novoSlug && novoSlug !== slugAtual && EMPRESA_DATA) {
+            EMPRESA_DATA.slug = novoSlug;
+        }
 
         // 2. Atualizar Store Settings (Branding)
         const upsertData = {

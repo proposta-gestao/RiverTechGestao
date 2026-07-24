@@ -499,6 +499,18 @@
                         <input type="text" id="editEmpNome" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
                     </div>
 
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label style="display:flex; align-items:center; gap:8px;">
+                            🔗 URL da Loja (Slug)
+                            <span style="font-size:0.72rem; color:var(--accent-red); font-weight:400;">⚠️ Alterar muda todos os links públicos</span>
+                        </label>
+                        <div style="display:flex; align-items:center; margin-top:5px; background:#000; border:1px solid var(--border-color); border-radius:6px; overflow:hidden;">
+                            <span style="padding:12px 10px; color:var(--text-secondary); font-size:0.8rem; white-space:nowrap; font-family:monospace; border-right:1px solid var(--border-color); background:rgba(255,255,255,0.03);">gestaotech.vercel.app/</span>
+                            <input type="text" id="editEmpSlug" placeholder="nome-da-loja" style="flex:1; padding:12px; background:transparent; border:none; color:#fff; font-family:monospace; outline:none;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-');">
+                        </div>
+                        <div id="slugPreview" style="margin-top:6px; font-size:0.75rem; color:var(--text-secondary); font-family:monospace;"></div>
+                    </div>
+
                     <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 1rem;">
                         <div class="form-group" style="flex: 1;">
                             <label>Nome da Marca (Exibição Pública)</label>
