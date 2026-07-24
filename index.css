@@ -58,7 +58,7 @@
             height: 220px;
             background-color: var(--bg-page);
             background-image: none;
-            background-size: auto 280%; /* Prioriza a altura para não cortar o texto, ocupando quase todo o banner */
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             display: block;
@@ -93,7 +93,7 @@
             border-radius: 50%;
             background-color: var(--bg-card);
             background-image: none;
-            background-size:135%; /* Mantendo o mesmo ajuste que você fez no banner */
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }
