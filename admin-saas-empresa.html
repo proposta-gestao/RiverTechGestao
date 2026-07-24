@@ -602,55 +602,89 @@
                     <button class="copy-btn-all" onclick="copyAllUrls()" style="width: 100%; margin-bottom: 1rem; padding: 12px; background: var(--bg-hover); border: 1px dashed var(--accent-gold); color: var(--accent-gold); border-radius: 8px; cursor: pointer; font-weight: 600;">📋 Copiar links</button>
 
                     <h3 style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">🎨 Identidade Visual</h3>
+                    <style>
+                        .color-pair { display: flex; flex-direction: column; gap: 4px; }
+                        .color-pair label { font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; }
+                        .color-pair small { font-size: 0.65rem; color: var(--text-muted); line-height: 1.1; }
+                        .color-input-row { display: flex; align-items: center; gap: 6px; }
+                        .color-input-row input[type="color"] { width: 36px; height: 36px; border: none; border-radius: 8px; cursor: pointer; background: #1a1a1a; padding: 2px; flex-shrink: 0; }
+                        .color-input-row input[type="text"] { flex: 1; padding: 8px 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-family: monospace; font-size: 0.82rem; text-transform: uppercase; }
+                        .color-input-row input[type="text"]:focus { border-color: var(--accent-gold); outline: none; }
+                    </style>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
                         <div class="theme-color-field" style="grid-column: 1 / -1; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px;">
                             <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">Destaques e Botões</span>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">PRIMÁRIA</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Preços, destaques e badges</span>
-                            <input type="color" id="editTemaCorPrimaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>PRIMÁRIA</label>
+                            <small>Preços, destaques e badges</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorPrimaria" oninput="syncHex('editTemaCorPrimaria','editTemaCorPrimariaHex'); previewTema();">
+                                <input type="text" id="editTemaCorPrimariaHex" placeholder="#E5B25D" maxlength="7" oninput="syncPicker('editTemaCorPrimaria','editTemaCorPrimariaHex'); previewTema();">
+                            </div>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">SECUNDÁRIA</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Detalhes secundários</span>
-                            <input type="color" id="editTemaCorSecundaria" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>SECUNDÁRIA</label>
+                            <small>Detalhes secundários</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorSecundaria" oninput="syncHex('editTemaCorSecundaria','editTemaCorSecundariaHex'); previewTema();">
+                                <input type="text" id="editTemaCorSecundariaHex" placeholder="#1E90FF" maxlength="7" oninput="syncPicker('editTemaCorSecundaria','editTemaCorSecundariaHex'); previewTema();">
+                            </div>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">BOTÕES</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Fundo de botões principais</span>
-                            <input type="color" id="editTemaCorBotao" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>BOTÕES</label>
+                            <small>Fundo de botões principais</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorBotao" oninput="syncHex('editTemaCorBotao','editTemaCorBotaoHex'); previewTema();">
+                                <input type="text" id="editTemaCorBotaoHex" placeholder="#E5B25D" maxlength="7" oninput="syncPicker('editTemaCorBotao','editTemaCorBotaoHex'); previewTema();">
+                            </div>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">HOVER (BOTÕES)</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Cor ao passar o mouse</span>
-                            <input type="color" id="editTemaCorHover" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>HOVER (BOTÕES)</label>
+                            <small>Cor ao passar o mouse</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorHover" oninput="syncHex('editTemaCorHover','editTemaCorHoverHex'); previewTema();">
+                                <input type="text" id="editTemaCorHoverHex" placeholder="#d4a14c" maxlength="7" oninput="syncPicker('editTemaCorHover','editTemaCorHoverHex'); previewTema();">
+                            </div>
                         </div>
 
                         <div class="theme-color-field" style="grid-column: 1 / -1; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px; margin-top: 10px;">
                             <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">Estrutura e Fundo</span>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">FUNDO GERAL</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Fundo principal da página</span>
-                            <input type="color" id="editTemaCorBg" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>FUNDO GERAL</label>
+                            <small>Fundo principal da página</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorBg" oninput="syncHex('editTemaCorBg','editTemaCorBgHex'); previewTema();">
+                                <input type="text" id="editTemaCorBgHex" placeholder="#0d0d0d" maxlength="7" oninput="syncPicker('editTemaCorBg','editTemaCorBgHex'); previewTema();">
+                            </div>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">CARDS / SURFACE</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Fundo de caixas e modais</span>
-                            <input type="color" id="editTemaCorSurface" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>CARDS / SURFACE</label>
+                            <small>Fundo de caixas e modais</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorSurface" oninput="syncHex('editTemaCorSurface','editTemaCorSurfaceHex'); previewTema();">
+                                <input type="text" id="editTemaCorSurfaceHex" placeholder="#1a1a1a" maxlength="7" oninput="syncPicker('editTemaCorSurface','editTemaCorSurfaceHex'); previewTema();">
+                            </div>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">BORDAS</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Divisórias e linhas</span>
-                            <input type="color" id="editTemaCorBorda" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>BORDAS</label>
+                            <small>Divisórias e linhas</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorBorda" oninput="syncHex('editTemaCorBorda','editTemaCorBordaHex'); previewTema();">
+                                <input type="text" id="editTemaCorBordaHex" placeholder="#333333" maxlength="7" oninput="syncPicker('editTemaCorBorda','editTemaCorBordaHex'); previewTema();">
+                            </div>
                         </div>
-                        <div class="theme-color-field">
-                            <label style="font-size: 0.7rem; color: var(--text-secondary); font-weight: 700;">TEXTO</label>
-                            <span style="display:block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.1;">Cor principal das letras</span>
-                            <input type="color" id="editTemaCorTexto" oninput="previewTema()" style="width: 100%; height: 35px; border: none; border-radius: 6px; cursor: pointer; background: #1a1a1a; padding: 2px;">
+                        <div class="color-pair">
+                            <label>TEXTO</label>
+                            <small>Cor principal das letras</small>
+                            <div class="color-input-row">
+                                <input type="color" id="editTemaCorTexto" oninput="syncHex('editTemaCorTexto','editTemaCorTextoHex'); previewTema();">
+                                <input type="text" id="editTemaCorTextoHex" placeholder="#ffffff" maxlength="7" oninput="syncPicker('editTemaCorTexto','editTemaCorTextoHex'); previewTema();">
+                            </div>
                         </div>
                     </div>
+
                     <div id="themePreview" style="padding: 1rem; border-radius: 12px; border: 1px solid #333; margin-bottom: 1rem; text-align: center;">
                         <div id="previewCard" style="padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 700; font-size: 0.8rem;">Preview</div>
                         <button id="previewBtn" style="padding: 8px 15px; border-radius: 6px; border: none; font-weight: 800; font-size: 0.75rem;">COMPRAR</button>

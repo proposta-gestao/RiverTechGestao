@@ -164,14 +164,26 @@ function renderDadosBasicos(emp) {
     });
  
     // Tema
-    if(document.getElementById('editTemaCorPrimaria'))   document.getElementById('editTemaCorPrimaria').value = emp.tema_cor_primaria || '#E5B25D';
-    if(document.getElementById('editTemaCorSecundaria')) document.getElementById('editTemaCorSecundaria').value = emp.tema_cor_secundaria || '#1E90FF';
-    if(document.getElementById('editTemaCorBotao'))      document.getElementById('editTemaCorBotao').value = emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D';
-    if(document.getElementById('editTemaCorHover'))      document.getElementById('editTemaCorHover').value = emp.tema_cor_hover || _darkenHex(emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D', 8);
-    if(document.getElementById('editTemaCorBg'))         document.getElementById('editTemaCorBg').value = emp.tema_cor_bg || '#0d0d0d';
-    if(document.getElementById('editTemaCorSurface'))    document.getElementById('editTemaCorSurface').value = emp.tema_cor_surface || '#1a1a1a';
-    if(document.getElementById('editTemaCorBorda'))      document.getElementById('editTemaCorBorda').value = emp.tema_cor_borda || 'rgba(229,178,93,0.2)';
-    if(document.getElementById('editTemaCorTexto'))      document.getElementById('editTemaCorTexto').value = emp.tema_cor_texto || '#ffffff';
+    window._setThemeField = (pickerId, hexId, value) => {
+        const el = document.getElementById(pickerId);
+        if(el) {
+            // Se for rgba e houver hex equivalente, precisamos converter? No nosso banco salvávamos hex. 
+            // O rgba('229,178,93,0.2') era default para borda. Input type="color" não suporta rgba, então o valor ficava inválido.
+            // Vou forçar para hex para o picker funcionar, ou o picker simplesmente ignorará o rgba.
+            el.value = value;
+            const hexEl = document.getElementById(hexId);
+            if (hexEl) hexEl.value = value;
+        }
+    };
+
+    _setThemeField('editTemaCorPrimaria', 'editTemaCorPrimariaHex', emp.tema_cor_primaria || '#E5B25D');
+    _setThemeField('editTemaCorSecundaria', 'editTemaCorSecundariaHex', emp.tema_cor_secundaria || '#1E90FF');
+    _setThemeField('editTemaCorBotao', 'editTemaCorBotaoHex', emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D');
+    _setThemeField('editTemaCorHover', 'editTemaCorHoverHex', emp.tema_cor_hover || _darkenHex(emp.tema_cor_botao || emp.tema_cor_primaria || '#E5B25D', 8));
+    _setThemeField('editTemaCorBg', 'editTemaCorBgHex', emp.tema_cor_bg || '#0d0d0d');
+    _setThemeField('editTemaCorSurface', 'editTemaCorSurfaceHex', emp.tema_cor_surface || '#1a1a1a');
+    _setThemeField('editTemaCorBorda', 'editTemaCorBordaHex', emp.tema_cor_borda || '#333333');
+    _setThemeField('editTemaCorTexto', 'editTemaCorTextoHex', emp.tema_cor_texto || '#ffffff');
     previewTema();
  
     // URLs
@@ -761,6 +773,18 @@ _Use este painel para receber e gerenciar os pedidos em tempo real._`;
 };
 
 // --- TEMA ---
+window.syncHex = (pickerId, hexId) => {
+    const val = document.getElementById(pickerId).value;
+    document.getElementById(hexId).value = val;
+};
+
+window.syncPicker = (pickerId, hexId) => {
+    const hex = document.getElementById(hexId).value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        document.getElementById(pickerId).value = hex;
+    }
+};
+
 window.previewTema = () => {
     const primaria = document.getElementById('editTemaCorPrimaria').value;
     const botao = document.getElementById('editTemaCorBotao').value;
@@ -787,14 +811,16 @@ window.previewTema = () => {
 };
 
 window.restaurarTemaPadrao = () => {
-    document.getElementById('editTemaCorPrimaria').value = '#E5B25D';
-    document.getElementById('editTemaCorSecundaria').value = '#1E90FF';
-    document.getElementById('editTemaCorBotao').value = '#E5B25D';
-    document.getElementById('editTemaCorBg').value = '#0d0d0d';
-    document.getElementById('editTemaCorSurface').value = '#1a1a1a';
-    document.getElementById('editTemaCorBorda').value = 'rgba(229,178,93,0.2)';
-    document.getElementById('editTemaCorTexto').value = '#ffffff';
-    document.getElementById('editTemaCorHover').value = '#d4a14c';
+    if (typeof window._setThemeField === 'function') {
+        window._setThemeField('editTemaCorPrimaria', 'editTemaCorPrimariaHex', '#E5B25D');
+        window._setThemeField('editTemaCorSecundaria', 'editTemaCorSecundariaHex', '#1E90FF');
+        window._setThemeField('editTemaCorBotao', 'editTemaCorBotaoHex', '#E5B25D');
+        window._setThemeField('editTemaCorBg', 'editTemaCorBgHex', '#0d0d0d');
+        window._setThemeField('editTemaCorSurface', 'editTemaCorSurfaceHex', '#1a1a1a');
+        window._setThemeField('editTemaCorBorda', 'editTemaCorBordaHex', '#333333');
+        window._setThemeField('editTemaCorTexto', 'editTemaCorTextoHex', '#ffffff');
+        window._setThemeField('editTemaCorHover', 'editTemaCorHoverHex', '#d4a14c');
+    }
     previewTema();
     showToast('Padrão restaurado (não esqueça de salvar)');
 };
