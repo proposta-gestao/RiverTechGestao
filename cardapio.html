@@ -409,8 +409,12 @@
                     <p id="pdesc" class="product-description">Descrição detalhada do produto.</p>
 
                     <div class="observation-wrapper" id="observationWrapper">
-                        <label for="obs">Alguma observação?</label>
-                        <textarea id="obs" placeholder="Ex: Sem cebola, ponto da carne, etc."></textarea>
+                        <button type="button" class="btn-toggle-obs" id="btnToggleObs" onclick="window.toggleObs()">
+                            <span class="icon">+</span> Adicionar observação
+                        </button>
+                        <div class="obs-content" id="obsContent" style="display: none;">
+                            <textarea id="obs" placeholder="Ex: Sem cebola, ponto da carne, etc."></textarea>
+                        </div>
                     </div>
 
                     <div class="modal-actions-container">
