@@ -232,10 +232,33 @@ if (document.getElementById('sidebarOverlay')) {
 // ==========================================
 async function carregarEmpresas() {
     try {
-        const { data, error } = await sb.from('empresas').select('*').order('criado_em', { ascending: false });
-        if (error) throw error;
+        let allEmpresas = [];
+        let from = 0;
+        const step = 1000;
+        let hasMore = true;
+
+        while (hasMore) {
+            const { data, error } = await sb
+                .from('empresas')
+                .select('*')
+                .order('criado_em', { ascending: false })
+                .range(from, from + step - 1);
+            
+            if (error) throw error;
+            
+            if (data && data.length > 0) {
+                allEmpresas = allEmpresas.concat(data);
+                if (data.length < step) {
+                    hasMore = false;
+                } else {
+                    from += step;
+                }
+            } else {
+                hasMore = false;
+            }
+        }
         
-        EMPRESAS = data || [];
+        EMPRESAS = allEmpresas || [];
         renderizarEmpresas();
         atualizarMetricas();
         carregarFaturamentoGlobal(); // Nova métrica global
