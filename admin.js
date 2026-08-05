@@ -513,8 +513,8 @@ function switchTab(tabId, btn, persist = true) {
 
     // Lazy Load + Init do Módulo Restaurante
     if (tabId === 'restaurante') {
-        if (!window.__RESTAURANTE_INICIADO) {
-            window.__RESTAURANTE_INICIADO = true;
+        if (!window.__RESTAURANTE_CARREGANDO) {
+            window.__RESTAURANTE_CARREGANDO = true;
             const cssRest = document.getElementById('restaurante-css');
             if (cssRest) cssRest.disabled = false;
             const scriptRest = document.createElement('script');
@@ -524,7 +524,10 @@ function switchTab(tabId, btn, persist = true) {
                     window.__RESTAURANTE.init();
                 }
             };
-            scriptRest.onerror = () => showToast('Erro ao carregar módulo de restaurante.', 'error');
+            scriptRest.onerror = () => {
+                window.__RESTAURANTE_CARREGANDO = false;
+                showToast('Erro ao carregar módulo de restaurante.', 'error');
+            };
             document.body.appendChild(scriptRest);
         } else if (window.__RESTAURANTE && window.__RESTAURANTE.init && !window.__RESTAURANTE_DADOS_CARREGADOS) {
             window.__RESTAURANTE.init();

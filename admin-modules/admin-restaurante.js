@@ -18,8 +18,8 @@
 (function () {
     'use strict';
 
-    if (window.__RESTAURANTE_INICIADO) return;
-    window.__RESTAURANTE_INICIADO = true;
+    if (window.__RESTAURANTE_SCRIPT_INICIADO) return;
+    window.__RESTAURANTE_SCRIPT_INICIADO = true;
 
     window.__RESTAURANTE = window.__RESTAURANTE || {};
 
