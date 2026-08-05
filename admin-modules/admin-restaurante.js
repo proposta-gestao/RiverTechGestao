@@ -98,29 +98,44 @@
     // INICIALIZAÇÃO
     // ============================================================
     window.__RESTAURANTE.init = async function () {
-        console.log('[Restaurante] Iniciando módulo...');
-        setupSubtabs();
-        await Promise.all([
-            carregarUnidades(),
-            carregarConfig(),
-            carregarDepositos(),
-            carregarFornecedores(),
-            carregarCategoriasInsumos(),
-            carregarProdutosCardapio(),
-        ]);
-        await carregarInsumos();
-        renderDepositos();
-        renderFornecedores();
-        renderCategoriasInsumos();
-        renderInsumos();
-        renderFichasTecnicas();
-        await carregarInventarios();
-        renderInventarios();
-        await carregarMovimentacoes();
-        renderMovimentacoes();
-        renderConfig();
-        window.__RESTAURANTE_DADOS_CARREGADOS = true;
-        console.log('[Restaurante] Módulo pronto!');
+        try {
+            console.log('[Restaurante] Iniciando módulo...');
+            const tenantId = getTenantId();
+            console.log('[Restaurante] TenantId:', tenantId);
+            if (!tenantId) {
+                console.error('[Restaurante] ERRO: empresa_id não disponível. Módulo não pode iniciar.');
+                toast('Erro ao carregar módulo: empresa não identificada.', 'error');
+                return;
+            }
+            setupSubtabs();
+            console.log('[Restaurante] Carregando dados...');
+            await Promise.all([
+                carregarUnidades(),
+                carregarConfig(),
+                carregarDepositos(),
+                carregarFornecedores(),
+                carregarCategoriasInsumos(),
+                carregarProdutosCardapio(),
+            ]);
+            console.log('[Restaurante] Dados base carregados. Carregando insumos...');
+            await carregarInsumos();
+            console.log('[Restaurante] Renderizando...');
+            renderDepositos();
+            renderFornecedores();
+            renderCategoriasInsumos();
+            renderInsumos();
+            renderFichasTecnicas();
+            await carregarInventarios();
+            renderInventarios();
+            await carregarMovimentacoes();
+            renderMovimentacoes();
+            renderConfig();
+            window.__RESTAURANTE_DADOS_CARREGADOS = true;
+            console.log('[Restaurante] ✅ Módulo pronto!');
+        } catch (err) {
+            console.error('[Restaurante] ❌ ERRO na inicialização:', err);
+            toast('Erro ao inicializar módulo Restaurante: ' + (err.message || err), 'error');
+        }
     };
 
     // ============================================================
