@@ -94,7 +94,7 @@ async function carregarConfiguracoesLoja() {
 
 // Lista completa de chaves de módulos para sincronização
 const LISTA_MODULOS = [
-    'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque', 'produtos_equipe', 'ficha_tecnica',
+    'produtos_gerenciar', 'produtos_categorias', 'produtos_estoque', 'produtos_equipe',
     'vendas_hoje_op', 'vendas_ontem_op', 'vendas_visao_geral',
     'metricas_dashboard', 'metricas_analise_tempo', 'metricas_performance_vendas', 'metricas_destaques',
     'config_endereco', 'config_personalizacao', 'config_frete', 'config_cancelamentos',

@@ -544,7 +544,7 @@ document.getElementById('btnSalvarNovaEmpresa').addEventListener('click', async 
         'config_frete', 'pagamento', 'cupons', 'cardapio',
         'agendamento_ativo', 'agendamento_multi_profissional', 'agendamento_lista_espera',
         'agendamento_mensagens', 'agendamento_fidelidade', 'config_personalizacao',
-        'loja_roupas', 'loja_estoque'
+        'loja_roupas', 'loja_estoque', 'ficha_tecnica'
     ];
     LISTA_MOD_IDS.forEach(key => {
         const el = document.getElementById(`n_mod_${key}`);
