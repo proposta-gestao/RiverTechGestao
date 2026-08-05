@@ -1362,6 +1362,127 @@
                 </div>
 
             </div> <!-- Fechamento tab-area-premium -->
+
+            <!-- =============================================================== -->
+            <!-- TAB: Restaurante — Ficha Técnica                               -->
+            <!-- =============================================================== -->
+            <div class="tab-content" id="tab-restaurante">
+                <!-- Sub-navegação -->
+                <div class="rest-subtabs">
+                    <button class="rest-subtab-btn" onclick="switchTab('produtos', document.getElementById('nav-produtos'))">🍔 Produtos</button>
+                    <button class="rest-subtab-btn active" data-subtab="insumos">🧂 Insumos</button>
+                    <button class="rest-subtab-btn" data-subtab="fichas">📋 Fichas Técnicas</button>
+                    <button class="rest-subtab-btn" data-subtab="inventario">📦 Inventário</button>
+                    <button class="rest-subtab-btn" data-subtab="movimentos">🔄 Movimentações</button>
+                    <button class="rest-subtab-btn" data-subtab="cadastros">🗃️ Cadastros</button>
+                    <button class="rest-subtab-btn" data-subtab="config">⚙️ Configurações</button>
+                </div>
+
+                <!-- ── Insumos ── -->
+                <div class="rest-subtab-content active" id="rest-subtab-insumos">
+                    <div class="rest-section-header">
+                        <div>
+                            <h2>🧂 Insumos</h2>
+                            <p class="rest-section-desc">Ingredientes, bebidas, embalagens e matérias-primas</p>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <input type="text" id="restInsumoBusca" placeholder="🔍 Buscar insumo..." oninput="window.__RESTAURANTE.filtrarInsumos()" style="min-width:180px;">
+                            <select id="restInsumoCategoriaFiltro" onchange="window.__RESTAURANTE.filtrarInsumos()" style="min-width:150px;">
+                                <option value="">Todas categorias</option>
+                            </select>
+                            <button class="btn-primary" onclick="window.__RESTAURANTE.novoInsumo()">+ Novo Insumo</button>
+                        </div>
+                    </div>
+                    <div id="rest-insumos-lista" class="rest-insumos-grid"></div>
+                </div>
+
+                <!-- ── Fichas Técnicas ── -->
+                <div class="rest-subtab-content" id="rest-subtab-fichas">
+                    <div class="rest-section-header">
+                        <div>
+                            <h2>📋 Fichas Técnicas</h2>
+                            <p class="rest-section-desc">Composição de cada item do cardápio</p>
+                        </div>
+                        <button class="btn-primary" onclick="window.__RESTAURANTE.novaFicha()">+ Nova Ficha</button>
+                    </div>
+                    <div id="rest-fichas-lista" class="rest-fichas-grid"></div>
+                </div>
+
+                <!-- ── Inventário ── -->
+                <div class="rest-subtab-content" id="rest-subtab-inventario">
+                    <div class="rest-section-header">
+                        <div>
+                            <h2>📦 Inventário Físico</h2>
+                            <p class="rest-section-desc">Conferência de estoque e geração de ajustes</p>
+                        </div>
+                        <button class="btn-primary" onclick="window.__RESTAURANTE.novoInventario()">+ Novo Inventário</button>
+                    </div>
+                    <div id="rest-inventarios-lista"></div>
+                </div>
+
+                <!-- ── Movimentações ── -->
+                <div class="rest-subtab-content" id="rest-subtab-movimentos">
+                    <div class="rest-section-header">
+                        <div>
+                            <h2>🔄 Histórico de Movimentações</h2>
+                            <p class="rest-section-desc">Entradas, saídas, perdas e ajustes de estoque</p>
+                        </div>
+                        <button class="btn-primary" onclick="window.__RESTAURANTE.novaMovimentacao()">+ Nova Movimentação</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="rest-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Insumo</th>
+                                    <th>Depósito</th>
+                                    <th>Tipo</th>
+                                    <th>Qtd</th>
+                                    <th>Custo Un.</th>
+                                    <th>Motivo/Obs</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rest-movimentos-lista"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ── Cadastros ── -->
+                <div class="rest-subtab-content" id="rest-subtab-cadastros">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;">
+                        <!-- Depósitos -->
+                        <div class="rest-card">
+                            <div class="rest-card-header">
+                                <h3>🏪 Depósitos</h3>
+                                <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoDeposito()">+ Novo</button>
+                            </div>
+                            <div id="rest-depositos-lista" class="rest-card-body"></div>
+                        </div>
+                        <!-- Fornecedores -->
+                        <div class="rest-card">
+                            <div class="rest-card-header">
+                                <h3>🚚 Fornecedores</h3>
+                                <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoFornecedor()">+ Novo</button>
+                            </div>
+                            <div id="rest-fornecedores-lista" class="rest-card-body"></div>
+                        </div>
+                        <!-- Categorias -->
+                        <div class="rest-card">
+                            <div class="rest-card-header">
+                                <h3>🏷️ Categorias</h3>
+                                <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novaCategoria()">+ Nova</button>
+                            </div>
+                            <div id="rest-categorias-lista" class="rest-card-body"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Configurações ── -->
+                <div class="rest-subtab-content" id="rest-subtab-config">
+                    <div id="rest-config-container"></div>
+                </div>
+            </div>
+
         </div> <!-- Fechamento da admin-content-wrapper -->
     </div> <!-- Fechamento da admin-layout -->
 
@@ -2503,125 +2624,7 @@
         </div>
     </div>
 
-    <!-- =============================================================== -->
-    <!-- TAB: Restaurante — Ficha Técnica                               -->
-    <!-- Injetada via JS ao ativar o módulo (admin.js)                  -->
-    <!-- =============================================================== -->
-    <div class="tab-content" id="tab-restaurante">
-        <!-- Sub-navegação -->
-        <div class="rest-subtabs">
-            <button class="rest-subtab-btn active" data-subtab="insumos">🧂 Insumos</button>
-            <button class="rest-subtab-btn" data-subtab="fichas">📋 Fichas Técnicas</button>
-            <button class="rest-subtab-btn" data-subtab="inventario">📦 Inventário</button>
-            <button class="rest-subtab-btn" data-subtab="movimentos">🔄 Movimentações</button>
-            <button class="rest-subtab-btn" data-subtab="cadastros">🗃️ Cadastros</button>
-            <button class="rest-subtab-btn" data-subtab="config">⚙️ Configurações</button>
-        </div>
 
-        <!-- ── Insumos ── -->
-        <div class="rest-subtab-content active" id="rest-subtab-insumos">
-            <div class="rest-section-header">
-                <div>
-                    <h2>🧂 Insumos</h2>
-                    <p class="rest-section-desc">Ingredientes, bebidas, embalagens e matérias-primas</p>
-                </div>
-                <div style="display:flex;gap:8px;align-items:center;">
-                    <input type="text" id="restInsumoBusca" placeholder="🔍 Buscar insumo..." oninput="window.__RESTAURANTE.filtrarInsumos()" style="min-width:180px;">
-                    <select id="restInsumoCategoriaFiltro" onchange="window.__RESTAURANTE.filtrarInsumos()" style="min-width:150px;">
-                        <option value="">Todas categorias</option>
-                    </select>
-                    <button class="btn-primary" onclick="window.__RESTAURANTE.novoInsumo()">+ Novo Insumo</button>
-                </div>
-            </div>
-            <div id="rest-insumos-lista" class="rest-insumos-grid"></div>
-        </div>
-
-        <!-- ── Fichas Técnicas ── -->
-        <div class="rest-subtab-content" id="rest-subtab-fichas">
-            <div class="rest-section-header">
-                <div>
-                    <h2>📋 Fichas Técnicas</h2>
-                    <p class="rest-section-desc">Composição de cada item do cardápio</p>
-                </div>
-                <button class="btn-primary" onclick="window.__RESTAURANTE.novaFicha()">+ Nova Ficha</button>
-            </div>
-            <div id="rest-fichas-lista" class="rest-fichas-grid"></div>
-        </div>
-
-        <!-- ── Inventário ── -->
-        <div class="rest-subtab-content" id="rest-subtab-inventario">
-            <div class="rest-section-header">
-                <div>
-                    <h2>📦 Inventário Físico</h2>
-                    <p class="rest-section-desc">Conferência de estoque e geração de ajustes</p>
-                </div>
-                <button class="btn-primary" onclick="window.__RESTAURANTE.novoInventario()">+ Novo Inventário</button>
-            </div>
-            <div id="rest-inventarios-lista"></div>
-        </div>
-
-        <!-- ── Movimentações ── -->
-        <div class="rest-subtab-content" id="rest-subtab-movimentos">
-            <div class="rest-section-header">
-                <div>
-                    <h2>🔄 Histórico de Movimentações</h2>
-                    <p class="rest-section-desc">Entradas, saídas, perdas e ajustes de estoque</p>
-                </div>
-                <button class="btn-primary" onclick="window.__RESTAURANTE.novaMovimentacao()">+ Nova Movimentação</button>
-            </div>
-            <div style="overflow-x:auto;">
-                <table class="rest-table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Insumo</th>
-                            <th>Depósito</th>
-                            <th>Tipo</th>
-                            <th>Qtd</th>
-                            <th>Custo Un.</th>
-                            <th>Motivo/Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rest-movimentos-lista"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ── Cadastros ── -->
-        <div class="rest-subtab-content" id="rest-subtab-cadastros">
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;">
-                <!-- Depósitos -->
-                <div class="rest-card">
-                    <div class="rest-card-header">
-                        <h3>🏪 Depósitos</h3>
-                        <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoDeposito()">+ Novo</button>
-                    </div>
-                    <div id="rest-depositos-lista" class="rest-card-body"></div>
-                </div>
-                <!-- Fornecedores -->
-                <div class="rest-card">
-                    <div class="rest-card-header">
-                        <h3>🚚 Fornecedores</h3>
-                        <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoFornecedor()">+ Novo</button>
-                    </div>
-                    <div id="rest-fornecedores-lista" class="rest-card-body"></div>
-                </div>
-                <!-- Categorias -->
-                <div class="rest-card">
-                    <div class="rest-card-header">
-                        <h3>🏷️ Categorias</h3>
-                        <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novaCategoria()">+ Nova</button>
-                    </div>
-                    <div id="rest-categorias-lista" class="rest-card-body"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ── Configurações ── -->
-        <div class="rest-subtab-content" id="rest-subtab-config">
-            <div id="rest-config-container"></div>
-        </div>
-    </div>
 
     <!-- =============================================================== -->
     <!-- MODAIS: Restaurante                                             -->
