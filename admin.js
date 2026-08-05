@@ -511,9 +511,24 @@ function switchTab(tabId, btn, persist = true) {
         window.__LOJA.init();
     }
 
-    // Inicia Módulo Restaurante se a aba for Restaurante
-    if (tabId === 'restaurante' && window.__RESTAURANTE && window.__RESTAURANTE.init) {
-        window.__RESTAURANTE.init();
+    // Lazy Load + Init do Módulo Restaurante
+    if (tabId === 'restaurante') {
+        if (!window.__RESTAURANTE_INICIADO) {
+            window.__RESTAURANTE_INICIADO = true;
+            const cssRest = document.getElementById('restaurante-css');
+            if (cssRest) cssRest.disabled = false;
+            const scriptRest = document.createElement('script');
+            scriptRest.src = 'admin-modules/admin-restaurante.js?v=' + Date.now();
+            scriptRest.onload = () => {
+                if (window.__RESTAURANTE && window.__RESTAURANTE.init) {
+                    window.__RESTAURANTE.init();
+                }
+            };
+            scriptRest.onerror = () => showToast('Erro ao carregar módulo de restaurante.', 'error');
+            document.body.appendChild(scriptRest);
+        } else if (window.__RESTAURANTE && window.__RESTAURANTE.init && !window.__RESTAURANTE_DADOS_CARREGADOS) {
+            window.__RESTAURANTE.init();
+        }
     }
 
     // Lazy Load do módulo de Loja de Roupas

@@ -54,8 +54,11 @@
     // HELPER: obtém o tenant ID do contexto global
     // ============================================================
     function getTenantId() {
-        if (window.getTenantId) return window.getTenantId();
-        if (window.__TENANT_ID) return window.__TENANT_ID;
+        // Usa o padrão nativo do sistema (tenant.js)
+        if (window.TENANT && window.TENANT.empresa_id) return window.TENANT.empresa_id;
+        // Fallback para função global se existir
+        if (typeof window.getTenantId === 'function') return window.getTenantId();
+        console.warn('[Restaurante] empresa_id não disponível ainda.');
         return null;
     }
 
@@ -116,6 +119,8 @@
         await carregarMovimentacoes();
         renderMovimentacoes();
         renderConfig();
+        window.__RESTAURANTE_DADOS_CARREGADOS = true;
+        console.log('[Restaurante] Módulo pronto!');
     };
 
     // ============================================================
