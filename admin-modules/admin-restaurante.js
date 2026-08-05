@@ -37,6 +37,7 @@
         unidades: [],
         fichasTecnicas: [],
         inventarios: [],
+        movimentacoes: [],
         restaurantConfig: null,
         produtosCardapio: [],
         // Contexto de edição
@@ -112,6 +113,8 @@
         renderFichasTecnicas();
         await carregarInventarios();
         renderInventarios();
+        await carregarMovimentacoes();
+        renderMovimentacoes();
         renderConfig();
     };
 
@@ -1228,6 +1231,121 @@
         await carregarInventarios();
         renderInventarios();
         toast('Inventário cancelado.');
+    };
+
+    // ============================================================
+    // MOVIMENTAÇÕES MANUAIS
+    // ============================================================
+    async function carregarMovimentacoes() {
+        const tenantId = getTenantId();
+        if (!tenantId) return;
+        const { data, error } = await sb.from('vw_movimentacoes_insumos')
+            .select('*')
+            .eq('empresa_id', tenantId)
+            .order('data', { ascending: false })
+            .limit(100);
+        if (error) { console.error('[Restaurante] Erro movimentações:', error); return; }
+        state.movimentacoes = data || [];
+    }
+
+    function renderMovimentacoes() {
+        const container = document.getElementById('rest-movimentos-lista');
+        if (!container) return;
+        if (!state.movimentacoes.length) {
+            container.innerHTML = '<tr><td colspan="7" class="rest-empty" style="border:none;">Nenhuma movimentação registrada.</td></tr>';
+            return;
+        }
+
+        const tipoBadge = {
+            entrada: '<span class="rest-badge rest-badge--ok">Entrada</span>',
+            saida: '<span class="rest-badge rest-badge--alerta">Saída</span>',
+            perda: '<span class="rest-badge rest-badge--off">Perda</span>',
+            consumo: '<span class="rest-badge" style="background:rgba(255,255,255,0.15);">Consumo</span>',
+            estorno: '<span class="rest-badge">Estorno</span>',
+            ajuste: '<span class="rest-badge">Ajuste</span>',
+            reserva: '<span class="rest-badge">Reserva</span>'
+        };
+
+        container.innerHTML = state.movimentacoes.map(m => {
+            const date = new Date(m.data).toLocaleString('pt-BR');
+            const qtyClass = m.tipo === 'entrada' || m.tipo === 'estorno' ? 'text-success' : 'text-danger';
+            const sign = m.tipo === 'entrada' || m.tipo === 'estorno' ? '+' : '-';
+            return `
+            <tr>
+                <td><span style="font-size:0.85rem;color:var(--text-secondary);">${date}</span></td>
+                <td><strong>${m.insumo_nome}</strong></td>
+                <td>${m.deposito_nome || '—'}</td>
+                <td>${tipoBadge[m.tipo] || m.tipo}</td>
+                <td class="${qtyClass}">${sign}${parseFloat(m.quantidade).toFixed(3)} ${m.unidade || ''}</td>
+                <td>${m.custo_unitario ? fmtBRL(m.custo_unitario) : '—'}</td>
+                <td><span style="font-size:0.85rem;">${m.observacao || '—'}</span></td>
+            </tr>`;
+        }).join('');
+    }
+
+    window.__RESTAURANTE.novaMovimentacao = function () {
+        const selInsumo = document.getElementById('restMovInsumo');
+        selInsumo.innerHTML = '<option value="">Selecione o Insumo</option>' +
+            state.insumos.filter(i => i.ativo).map(i =>
+                `<option value="${i.id}">${i.nome} (${i.unidade_medida?.simbolo || ''})</option>`
+            ).join('');
+
+        const selDep = document.getElementById('restMovDeposito');
+        selDep.innerHTML = state.depositos.filter(d => d.ativo).map(d =>
+            `<option value="${d.id}">${d.nome}</option>`
+        ).join('');
+
+        document.getElementById('restMovTipo').value = 'entrada';
+        document.getElementById('restMovQtd').value = '';
+        document.getElementById('restMovCusto').value = '';
+        document.getElementById('restMovObs').value = '';
+        
+        // Show/hide custoRow based on tipo
+        document.getElementById('restMovTipo').onchange = (e) => {
+            document.getElementById('restMovCustoRow').style.display = e.target.value === 'entrada' ? 'flex' : 'none';
+            document.getElementById('restMovCusto').value = '';
+        };
+        document.getElementById('restMovCustoRow').style.display = 'flex';
+
+        abrirModal('modalRestMovimento');
+    };
+
+    window.__RESTAURANTE.salvarMovimentacao = async function () {
+        const tenantId = getTenantId();
+        const insumoId = document.getElementById('restMovInsumo').value;
+        const depositoId = document.getElementById('restMovDeposito').value;
+        const tipo = document.getElementById('restMovTipo').value;
+        const qty = parseFloat(document.getElementById('restMovQtd').value);
+        const custoStr = document.getElementById('restMovCusto').value;
+        const obs = document.getElementById('restMovObs').value.trim();
+
+        if (!insumoId) { toast('Selecione o insumo.', 'error'); return; }
+        if (!depositoId) { toast('Selecione o depósito.', 'error'); return; }
+        if (!qty || qty <= 0) { toast('Quantidade inválida.', 'error'); return; }
+
+        const payload = {
+            empresa_id: tenantId,
+            insumo_id: insumoId,
+            deposito_id: depositoId,
+            tipo: tipo,
+            quantidade: qty,
+            custo_unitario: (tipo === 'entrada' && custoStr) ? parseFloat(custoStr) : null,
+            referencia_tipo: 'manual',
+            observacao: obs || null,
+        };
+
+        const { error } = await sb.from('movimentacoes_insumos').insert(payload);
+        if (error) { toast('Erro ao registrar movimentação.', 'error'); return; }
+
+        fecharModalRest('modalRestMovimento');
+        await carregarMovimentacoes();
+        renderMovimentacoes();
+        
+        // Refresh insumos para ver novo saldo e custo na listagem
+        await carregarInsumos();
+        renderInsumos();
+        
+        toast('Movimentação registrada com sucesso!');
     };
 
     // ============================================================
