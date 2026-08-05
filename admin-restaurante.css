@@ -1,0 +1,358 @@
+/* ============================================================
+   MÓDULO RESTAURANTE — FICHA TÉCNICA
+   Estilos específicos para o admin (admin.html -> #tab-restaurante)
+============================================================ */
+
+/* ── Subtabs ── */
+.rest-subtabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: 10px;
+    overflow-x: auto;
+}
+
+.rest-subtab-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.rest-subtab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rest-subtab-btn.active {
+    background: var(--surface-hover);
+    color: var(--accent-gold);
+    box-shadow: 0 0 0 1px var(--border-default);
+}
+
+/* ── Conteúdo das Subtabs ── */
+.rest-subtab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.rest-subtab-content.active {
+    display: block;
+}
+
+/* ── Cabeçalhos de Seção ── */
+.rest-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.rest-section-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.rest-section-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ── Componentes: Cards Genéricos ── */
+.rest-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.rest-card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-default);
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rest-card-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.rest-card-body {
+    padding: 16px;
+}
+
+/* ── Grids ── */
+.rest-insumos-grid,
+.rest-fichas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+/* ── Insumos Card ── */
+.rest-insumo-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rest-insumo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.rest-insumo-card.alerta-minimo {
+    border-left: 4px solid var(--accent-danger);
+}
+
+.rest-insumo-card.inativo {
+    opacity: 0.6;
+}
+
+.rest-insumo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.rest-insumo-nome {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.rest-insumo-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.rest-insumo-details span {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-default);
+}
+
+/* ── Ficha Técnica Card ── */
+.rest-ficha-card {
+    background: var(--surface-card);
+    border: 1px solid var(--border-default);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rest-ficha-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-default);
+    padding-bottom: 12px;
+}
+
+.rest-ficha-produto {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-gold);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.rest-ficha-itens {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.9rem;
+    flex-grow: 1;
+}
+
+.rest-ficha-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+}
+
+.rest-ficha-footer {
+    border-top: 1px dashed var(--border-default);
+    padding-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.9rem;
+    justify-content: space-between;
+}
+
+/* ── Editor Ficha Itens ── */
+.rest-ficha-item-editor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.rest-ficha-item-info {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.rest-ficha-item-qtd {
+    font-weight: 600;
+    color: var(--accent-gold);
+}
+
+/* ── Listas Simples (Cadastros) ── */
+.rest-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.rest-list-item:last-child {
+    border-bottom: none;
+}
+
+.rest-list-item.inativo {
+    opacity: 0.5;
+}
+
+.rest-list-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rest-list-nome {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.rest-list-detail {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.rest-list-actions {
+    display: flex;
+    gap: 4px;
+}
+
+/* ── Badges ── */
+.rest-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+}
+
+.rest-badge--ok {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.rest-badge--alerta {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+}
+
+.rest-badge--off {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+/* ── Tabelas ── */
+.rest-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.rest-table th, .rest-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.rest-table th {
+    color: var(--text-secondary);
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.rest-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* ── Utilitários ── */
+.rest-empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--border-default);
+    border-radius: 12px;
+}
+
+.rest-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.rest-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(0,0,0,0.15);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-default);
+}
+
+.rest-estoque-deposito-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-default);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}

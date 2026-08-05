@@ -506,6 +506,16 @@ function switchTab(tabId, btn, persist = true) {
         document.body.appendChild(script);
     }
 
+    // Inicia Módulo Loja de Roupas se a aba for Loja
+    if (tabId === 'loja' && window.__LOJA && window.__LOJA.init) {
+        window.__LOJA.init();
+    }
+
+    // Inicia Módulo Restaurante se a aba for Restaurante
+    if (tabId === 'restaurante' && window.__RESTAURANTE && window.__RESTAURANTE.init) {
+        window.__RESTAURANTE.init();
+    }
+
     // Lazy Load do módulo de Loja de Roupas
     if (tabId === 'loja' && !window.__LOJA_INICIADO) {
         window.__LOJA_INICIADO = true; // Marca como iniciado IMEDIATAMENTE para evitar duplicatas
@@ -974,6 +984,17 @@ function aplicarFiltrosDeModulos() {
     if (mLoja) {
         const cssLoja = document.getElementById('loja-css');
         if (cssLoja) cssLoja.disabled = false;
+    }
+
+    // 8b. RESTAURANTE / FICHA TÉCNICA
+    const mRestaurante = isModuloAtivo('ficha_tecnica');
+    const navRestaurante = document.getElementById('nav-restaurante');
+    toggleElement(navRestaurante, mRestaurante, 'flex');
+    if (navRestaurante) navRestaurante.classList.toggle('module-visible', mRestaurante);
+    toggleElement(document.getElementById('side-nav-restaurante'), mRestaurante, 'flex');
+    if (mRestaurante) {
+        const cssRestaurante = document.getElementById('restaurante-css');
+        if (cssRestaurante) cssRestaurante.disabled = false;
     }
 
     // --- Redirecionamento Automático (Segurança e UX) ---

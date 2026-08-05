@@ -54,6 +54,7 @@
     <link rel="stylesheet" href="admin.css?v=2.2">
     <link rel="stylesheet" href="admin-agenda.css" id="agenda-css" disabled>
     <link rel="stylesheet" href="admin-loja.css" id="loja-css" disabled>
+    <link rel="stylesheet" href="admin-restaurante.css" id="restaurante-css" disabled>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -118,6 +119,8 @@
                 <button class="tab-btn" data-tab="agenda" id="nav-agenda" style="display:none;">📅 Agenda</button>
                 <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">📊 Vendas & Performance</button>
                 <button class="tab-btn" data-tab="loja" id="nav-loja" style="display:none;">👗 Loja</button>
+                <!-- Módulo Restaurante: visível apenas com ficha_tecnica ativo -->
+                <button class="tab-btn" data-tab="restaurante" id="nav-restaurante" style="display:none;">🍽️ Restaurante</button>
                 <button class="tab-btn" data-tab="cupons" id="nav-cupons">🎫 Cupons</button>
                 <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">⚙️ Configurações</button>
                 <button class="tab-btn tab-btn--premium" data-tab="area-premium" id="nav-area-premium" style="display:none;">👑 Área Premium</button>
@@ -2346,6 +2349,8 @@
             <button class="nav-item" data-tab="agenda" id="side-nav-agenda" style="display:none;">📅 Agenda</button>
             <button class="nav-item" data-tab="dashboard" id="side-nav-dashboard">📊 Vendas & Performance</button>
             <button class="nav-item" data-tab="loja" id="side-nav-loja" style="display:none;">👗 Loja</button>
+            <!-- Módulo Restaurante -->
+            <button class="nav-item" data-tab="restaurante" id="side-nav-restaurante" style="display:none;">🍽️ Restaurante</button>
             <button class="nav-item" data-tab="cupons" id="side-nav-cupons">🎫 Cupons</button>
             <button class="nav-item" data-tab="configuracoes" id="side-nav-configuracoes">⚙️ Configurações</button>
             <button class="nav-item nav-item--premium" data-tab="area-premium" id="side-nav-area-premium" style="display:none;">👑 Área Premium</button>
@@ -2498,6 +2503,459 @@
         </div>
     </div>
 
+    <!-- =============================================================== -->
+    <!-- TAB: Restaurante — Ficha Técnica                               -->
+    <!-- Injetada via JS ao ativar o módulo (admin.js)                  -->
+    <!-- =============================================================== -->
+    <div class="tab-content" id="tab-restaurante" style="display:none;">
+        <!-- Sub-navegação -->
+        <div class="rest-subtabs">
+            <button class="rest-subtab-btn active" data-subtab="insumos">🧂 Insumos</button>
+            <button class="rest-subtab-btn" data-subtab="fichas">📋 Fichas Técnicas</button>
+            <button class="rest-subtab-btn" data-subtab="inventario">📦 Inventário</button>
+            <button class="rest-subtab-btn" data-subtab="cadastros">🗃️ Cadastros</button>
+            <button class="rest-subtab-btn" data-subtab="config">⚙️ Configurações</button>
+        </div>
+
+        <!-- ── Insumos ── -->
+        <div class="rest-subtab-content active" id="rest-subtab-insumos">
+            <div class="rest-section-header">
+                <div>
+                    <h2>🧂 Insumos</h2>
+                    <p class="rest-section-desc">Ingredientes, bebidas, embalagens e matérias-primas</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="text" id="restInsumoBusca" placeholder="🔍 Buscar insumo..." oninput="window.__RESTAURANTE.filtrarInsumos()" style="min-width:180px;">
+                    <select id="restInsumoCategoriaFiltro" onchange="window.__RESTAURANTE.filtrarInsumos()" style="min-width:150px;">
+                        <option value="">Todas categorias</option>
+                    </select>
+                    <button class="btn-primary" onclick="window.__RESTAURANTE.novoInsumo()">+ Novo Insumo</button>
+                </div>
+            </div>
+            <div id="rest-insumos-lista" class="rest-insumos-grid"></div>
+        </div>
+
+        <!-- ── Fichas Técnicas ── -->
+        <div class="rest-subtab-content" id="rest-subtab-fichas">
+            <div class="rest-section-header">
+                <div>
+                    <h2>📋 Fichas Técnicas</h2>
+                    <p class="rest-section-desc">Composição de cada item do cardápio</p>
+                </div>
+                <button class="btn-primary" onclick="window.__RESTAURANTE.novaFicha()">+ Nova Ficha</button>
+            </div>
+            <div id="rest-fichas-lista" class="rest-fichas-grid"></div>
+        </div>
+
+        <!-- ── Inventário ── -->
+        <div class="rest-subtab-content" id="rest-subtab-inventario">
+            <div class="rest-section-header">
+                <div>
+                    <h2>📦 Inventário Físico</h2>
+                    <p class="rest-section-desc">Conferência de estoque e geração de ajustes</p>
+                </div>
+                <button class="btn-primary" onclick="window.__RESTAURANTE.novoInventario()">+ Novo Inventário</button>
+            </div>
+            <div id="rest-inventarios-lista"></div>
+        </div>
+
+        <!-- ── Cadastros ── -->
+        <div class="rest-subtab-content" id="rest-subtab-cadastros">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;">
+                <!-- Depósitos -->
+                <div class="rest-card">
+                    <div class="rest-card-header">
+                        <h3>🏪 Depósitos</h3>
+                        <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoDeposito()">+ Novo</button>
+                    </div>
+                    <div id="rest-depositos-lista" class="rest-card-body"></div>
+                </div>
+                <!-- Fornecedores -->
+                <div class="rest-card">
+                    <div class="rest-card-header">
+                        <h3>🚚 Fornecedores</h3>
+                        <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoFornecedor()">+ Novo</button>
+                    </div>
+                    <div id="rest-fornecedores-lista" class="rest-card-body"></div>
+                </div>
+                <!-- Categorias -->
+                <div class="rest-card">
+                    <div class="rest-card-header">
+                        <h3>🏷️ Categorias</h3>
+                        <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novaCategoria()">+ Nova</button>
+                    </div>
+                    <div id="rest-categorias-lista" class="rest-card-body"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Configurações ── -->
+        <div class="rest-subtab-content" id="rest-subtab-config">
+            <div id="rest-config-container"></div>
+        </div>
+    </div>
+
+    <!-- =============================================================== -->
+    <!-- MODAIS: Restaurante                                             -->
+    <!-- =============================================================== -->
+
+    <!-- Modal: Novo/Editar Depósito -->
+    <div class="admin-modal-backdrop" id="modalRestDeposito">
+        <div class="admin-modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestDeposito').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>🏪 Novo Depósito</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__RESTAURANTE.salvarDeposito()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="restDepositoId">
+                <div class="form-group">
+                    <label for="restDepositoNome">Nome *</label>
+                    <input type="text" id="restDepositoNome" placeholder="Ex: Cozinha Principal">
+                </div>
+                <div class="form-group">
+                    <label for="restDepositoTipo">Tipo</label>
+                    <select id="restDepositoTipo">
+                        <option value="geral">Geral</option>
+                        <option value="cozinha">Cozinha</option>
+                        <option value="bar">Bar</option>
+                        <option value="central">Estoque Central</option>
+                        <option value="filial">Filial</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <label class="rest-toggle" style="margin-top:8px;">
+                    <input type="checkbox" id="restDepositoAtivo" checked>
+                    <span>Ativo</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo/Editar Fornecedor -->
+    <div class="admin-modal-backdrop" id="modalRestFornecedor">
+        <div class="admin-modal" style="max-width:520px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestFornecedor').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>🚚 Novo Fornecedor</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__RESTAURANTE.salvarFornecedor()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="restFornId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="restFornNome">Nome *</label>
+                        <input type="text" id="restFornNome" placeholder="Razão social ou nome">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="restFornTelefone">Telefone</label>
+                        <input type="tel" id="restFornTelefone" placeholder="(31) 99999-9999">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restFornEmail">E-mail</label>
+                        <input type="email" id="restFornEmail" placeholder="contato@fornecedor.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="restFornContato">Contato/Responsável</label>
+                        <input type="text" id="restFornContato" placeholder="Nome do contato">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="restFornObs">Observações</label>
+                    <textarea id="restFornObs" rows="2" placeholder="Condições de pagamento, prazo de entrega..."></textarea>
+                </div>
+                <label class="rest-toggle">
+                    <input type="checkbox" id="restFornAtivo" checked>
+                    <span>Ativo</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo/Editar Categoria -->
+    <div class="admin-modal-backdrop" id="modalRestCategoria">
+        <div class="admin-modal" style="max-width:400px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestCategoria').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>🏷️ Nova Categoria</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__RESTAURANTE.salvarCategoria()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="restCatId">
+                <div class="form-group">
+                    <label for="restCatNome">Nome *</label>
+                    <input type="text" id="restCatNome" placeholder="Ex: Carnes, Laticínios, Bebidas...">
+                </div>
+                <label class="rest-toggle">
+                    <input type="checkbox" id="restCatAtivo" checked>
+                    <span>Ativa</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo/Editar Insumo -->
+    <div class="admin-modal-backdrop" id="modalRestInsumo">
+        <div class="admin-modal" style="max-width:620px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestInsumo').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>🧂 Novo Insumo</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__RESTAURANTE.salvarInsumo()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="restInsumoId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:2">
+                        <label for="restInsumoNome">Nome do Insumo *</label>
+                        <input type="text" id="restInsumoNome" placeholder="Ex: Hambúrguer Artesanal 180g">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoCodigo">Código Interno</label>
+                        <input type="text" id="restInsumoCodigo" placeholder="Opcional">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoCategoria">Categoria</label>
+                        <select id="restInsumoCategoria"></select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoFornecedor">Fornecedor</label>
+                        <select id="restInsumoFornecedor"></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoUnidade">Unidade de Uso *</label>
+                        <select id="restInsumoUnidade"></select>
+                        <small style="color:var(--text-muted)">Unidade utilizada nas fichas técnicas</small>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoCusto">Custo Médio (por unidade de uso)</label>
+                        <input type="number" id="restInsumoCusto" step="0.0001" min="0" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoUnidadeCompra">Unidade de Compra</label>
+                        <select id="restInsumoUnidadeCompra"></select>
+                        <small style="color:var(--text-muted)">Ex: compra por kg, usa em g</small>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoQtdEmbalagem">Qtd por Embalagem</label>
+                        <input type="number" id="restInsumoQtdEmbalagem" step="0.001" min="0" placeholder="Ex: 24 (unidades por caixa)">
+                    </div>
+                </div>
+                <div class="form-row" style="gap:1rem; align-items:center;">
+                    <label class="rest-toggle">
+                        <input type="checkbox" id="restInsumoControlaLote">
+                        <span>Controla Lote <small style="color:var(--text-muted)">(futuro)</small></span>
+                    </label>
+                    <label class="rest-toggle">
+                        <input type="checkbox" id="restInsumoControlaValidade">
+                        <span>Controla Validade <small style="color:var(--text-muted)">(futuro)</small></span>
+                    </label>
+                    <label class="rest-toggle">
+                        <input type="checkbox" id="restInsumoAtivo" checked>
+                        <span>Ativo</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Gerenciar Estoque por Depósito -->
+    <div class="admin-modal-backdrop" id="modalRestEstoque">
+        <div class="admin-modal" style="max-width:560px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestEstoque').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>📦 Estoque por Depósito</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__RESTAURANTE.salvarEstoque()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="restEstoqueInsumoId">
+                <p style="margin-bottom:1rem; font-weight:600;" id="restEstoqueInsumoNome"></p>
+                <div id="restEstoqueDepositosLista"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Nova Ficha Técnica -->
+    <div class="admin-modal-backdrop" id="modalRestFicha">
+        <div class="admin-modal" style="max-width:680px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestFicha').classList.remove('active'); document.getElementById('restFichaProduto').disabled=false;" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>📋 Nova Ficha Técnica</h3>
+                </div>
+                <div class="modal-actions">
+                    <span id="restFichaVersao" style="color:var(--text-muted); font-size:0.85rem; margin-right:8px;"></span>
+                    <button class="btn-save" onclick="window.__RESTAURANTE.salvarFicha()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="restFichaId">
+                <div class="form-row">
+                    <div class="form-group" style="flex:2">
+                        <label for="restFichaProduto">Produto do Cardápio *</label>
+                        <select id="restFichaProduto"></select>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restFichaQtdProduzida">Rende (porções)</label>
+                        <input type="number" id="restFichaQtdProduzida" step="0.01" min="0" placeholder="Ex: 1">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restFichaUnidProduzida">Unidade produzida</label>
+                        <select id="restFichaUnidProduzida"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="restFichaObs">Observações</label>
+                    <textarea id="restFichaObs" rows="2" placeholder="Modo de preparo, observações..."></textarea>
+                </div>
+                <label class="rest-toggle" style="margin-bottom:1rem;">
+                    <input type="checkbox" id="restFichaAtivo" checked>
+                    <span>Ficha ativa</span>
+                </label>
+
+                <!-- Adicionar insumo -->
+                <div class="rest-card" style="margin-top:1rem;">
+                    <div class="rest-card-header"><h4>Adicionar Insumo</h4></div>
+                    <div class="rest-card-body">
+                        <div class="form-row" style="align-items:flex-end; gap:8px;">
+                            <div class="form-group" style="flex:2">
+                                <label>Insumo</label>
+                                <select id="restFichaAddInsumo"></select>
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label>Quantidade</label>
+                                <input type="number" id="restFichaAddQtd" step="0.001" min="0.001" placeholder="0">
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label>Unidade</label>
+                                <select id="restFichaAddUnidade"></select>
+                            </div>
+                            <button class="btn-primary" style="margin-bottom:0;" onclick="window.__RESTAURANTE.adicionarItemFicha()">+ Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de itens -->
+                <div style="margin-top:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <strong>Composição da Receita</strong>
+                        <span style="color:var(--text-muted); font-size:0.85rem;">Custo total: <strong id="restFichaCustoTotal" style="color:var(--accent-gold);">R$ 0,00</strong></span>
+                    </div>
+                    <div id="restFichaItensLista"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Novo Inventário -->
+    <div class="admin-modal-backdrop" id="modalRestNovoInventario">
+        <div class="admin-modal" style="max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestNovoInventario').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3>📦 Novo Inventário</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__RESTAURANTE.iniciarInventario()">Iniciar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="restInventarioDeposito">Depósito</label>
+                    <select id="restInventarioDeposito">
+                        <option value="">Todos os depósitos</option>
+                    </select>
+                    <small style="color:var(--text-muted)">Deixe vazio para inventário geral.</small>
+                </div>
+                <div class="form-group">
+                    <label for="restInventarioObs">Observações</label>
+                    <textarea id="restInventarioObs" rows="2" placeholder="Ex: Inventário mensal de junho..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Visualizar/Editar Inventário -->
+    <div class="admin-modal-backdrop" id="modalRestInventarioVer">
+        <div class="admin-modal" style="max-width:780px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="document.getElementById('modalRestInventarioVer').classList.remove('active')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="restInventarioVerTitulo">Inventário</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.salvarContagemInventario()" style="margin-right:8px;">💾 Salvar Contagem</button>
+                    <button class="btn-save" id="btnConcluirInventarioVer" onclick="window.__RESTAURANTE.concluirInventario()">✅ Concluir</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom:1rem; display:flex; gap:2rem;">
+                    <span>🏪 Depósito: <strong id="restInventarioVerDeposito"></strong></span>
+                    <span>📝 Obs: <strong id="restInventarioVerObs"></strong></span>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="rest-table">
+                        <thead>
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Estoque Sistema</th>
+                                <th>Contado</th>
+                                <th>Diferença</th>
+                                <th>Ajuste</th>
+                            </tr>
+                        </thead>
+                        <tbody id="restInventarioItensLista"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Config Central (deve vir antes do Supabase) -->
     <script src="/config.js"></script>
     <!-- Supabase & SortableJS -->
@@ -2509,6 +2967,8 @@
     <script src="theme-manager.js"></script>
     <script src="tenant.js"></script>
     <script src="admin.js?v=2.3"></script>
+    <!-- Módulo Restaurante (carregado condicionalmente pelo admin.js) -->
+    <script src="admin-modules/admin-restaurante.js"></script>
 </body>
 
 </html>
