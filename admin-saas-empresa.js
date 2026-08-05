@@ -105,7 +105,9 @@ const LISTA_MODULOS = [
     // Módulo de Loja de Roupas
     'loja_roupas', 'loja_estoque',
     // Módulo de Clientes Premium
-    'clientes_premium'
+    'clientes_premium',
+    // Módulo Restaurante - Ficha Técnica
+    'ficha_tecnica'
 ];
 
 function renderDadosBasicos(emp) {
@@ -145,9 +147,23 @@ function renderDadosBasicos(emp) {
  
     // Módulos (Feature Flags) - Popula todos os checkboxes dinamicamente
     const mods = emp.modulos || {};
+    // Módulos que são OPT-IN (desativados por padrão se não estiverem no banco)
+    const modulosOptIn = new Set(['ficha_tecnica', 'loja_roupas', 'loja_estoque', 'agendamento_ativo',
+        'agendamento_multi_profissional', 'agendamento_lista_espera', 'agendamento_mensagens',
+        'agendamento_fidelidade', 'clientes_premium']);
     LISTA_MODULOS.forEach(key => {
         const el = document.getElementById(`mod_${key}`);
-        if (el) el.checked = mods[key] !== false;
+        if (!el) return;
+        if (key in mods) {
+            // Se a chave existe no banco, usa o valor do banco
+            el.checked = !!mods[key];
+        } else if (modulosOptIn.has(key)) {
+            // Módulos opt-in: desativado por padrão
+            el.checked = false;
+        } else {
+            // Módulos core: ativo por padrão
+            el.checked = true;
+        }
     });
 
     // Sincronizar Master Toggles e Estado dos Containers

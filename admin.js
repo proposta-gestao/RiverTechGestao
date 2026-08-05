@@ -506,6 +506,34 @@ function switchTab(tabId, btn, persist = true) {
         document.body.appendChild(script);
     }
 
+    // Inicia Módulo Loja de Roupas se a aba for Loja
+    if (tabId === 'loja' && window.__LOJA && window.__LOJA.init) {
+        window.__LOJA.init();
+    }
+
+    // Lazy Load + Init do Módulo Restaurante
+    if (tabId === 'restaurante') {
+        if (!window.__RESTAURANTE_CARREGANDO) {
+            window.__RESTAURANTE_CARREGANDO = true;
+            const cssRest = document.getElementById('restaurante-css');
+            if (cssRest) cssRest.disabled = false;
+            const scriptRest = document.createElement('script');
+            scriptRest.src = 'admin-modules/admin-restaurante.js?v=' + Date.now();
+            scriptRest.onload = () => {
+                if (window.__RESTAURANTE && window.__RESTAURANTE.init) {
+                    window.__RESTAURANTE.init();
+                }
+            };
+            scriptRest.onerror = () => {
+                window.__RESTAURANTE_CARREGANDO = false;
+                showToast('Erro ao carregar módulo de restaurante.', 'error');
+            };
+            document.body.appendChild(scriptRest);
+        } else if (window.__RESTAURANTE && window.__RESTAURANTE.init && !window.__RESTAURANTE_DADOS_CARREGADOS) {
+            window.__RESTAURANTE.init();
+        }
+    }
+
     // Lazy Load do módulo de Loja de Roupas
     if (tabId === 'loja' && !window.__LOJA_INICIADO) {
         window.__LOJA_INICIADO = true; // Marca como iniciado IMEDIATAMENTE para evitar duplicatas
@@ -974,6 +1002,17 @@ function aplicarFiltrosDeModulos() {
     if (mLoja) {
         const cssLoja = document.getElementById('loja-css');
         if (cssLoja) cssLoja.disabled = false;
+    }
+
+    // 8b. RESTAURANTE / FICHA TÉCNICA
+    const mRestaurante = isModuloAtivo('ficha_tecnica');
+    const navRestaurante = document.getElementById('nav-restaurante');
+    toggleElement(navRestaurante, mRestaurante, 'flex');
+    if (navRestaurante) navRestaurante.classList.toggle('module-visible', mRestaurante);
+    toggleElement(document.getElementById('side-nav-restaurante'), mRestaurante, 'flex');
+    if (mRestaurante) {
+        const cssRestaurante = document.getElementById('restaurante-css');
+        if (cssRestaurante) cssRestaurante.disabled = false;
     }
 
     // --- Redirecionamento Automático (Segurança e UX) ---

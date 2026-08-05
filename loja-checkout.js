@@ -333,6 +333,30 @@
                 }
             }
 
+            // 1b. Validação de estoque do restaurante (Módulo Ficha Técnica)
+            const hasRestauranteMod = typeof isModuloAtivo === 'function' ? isModuloAtivo('ficha_tecnica') : false;
+            if (hasRestauranteMod) {
+                const restCart = cart.map(item => ({
+                    product_id: item.produtoId,
+                    quantity: item.quantidade || 1,
+                    nome: item.nome
+                }));
+                const { data: valRest, error: valErr } = await _sb.rpc('restaurante_validar_carrinho', {
+                    p_empresa_id: _empresaId,
+                    p_carrinho: restCart
+                });
+                
+                if (valErr) {
+                    console.error('[LojaCheckout] Erro na validação restaurante', valErr);
+                } else if (valRest && valRest.valido === false) {
+                    // Mostra o primeiro erro apenas para simplificar
+                    const primErro = valRest.erros[0];
+                    LojaStore.showToast(`Estoque insuficiente de insumo: ${primErro.insumo_nome} (Falta ${primErro.qtd_necessaria - primErro.qtd_disponivel})`, 'error');
+                    if (btn) { btn.disabled = false; btn.textContent = 'Confirmar Pedido'; }
+                    return;
+                }
+            }
+
             // 2. Criar pedido
             const subtotalTotal = subtotal;
             const freteCalculado = (tipoEntrega === 'entrega' && _freteAtual > 0) ? _freteAtual : 0;

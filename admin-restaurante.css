@@ -1,0 +1,453 @@
+/* ============================================================
+   MÓDULO RESTAURANTE — FICHA TÉCNICA
+   Estilos específicos para o admin (admin.html -> #tab-restaurante)
+============================================================ */
+
+/* ── Subtabs ── */
+.rest-subtabs {
+    display: flex;
+    gap: 8px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+    border-radius: 14px;
+    width: fit-content;
+    margin: 0 auto 1.8rem auto;
+    overflow-x: auto;
+}
+
+.rest-subtab-btn {
+    padding: 10px 18px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: var(--text-muted, #aaa);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition, all 0.2s ease);
+    white-space: nowrap;
+}
+
+.rest-subtab-btn:hover:not(.active) {
+    color: var(--text-main, #fff);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rest-subtab-btn.active {
+    background: var(--color-button, var(--accent-gold, #E5B25D));
+    color: var(--color-button-text, #000);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Conteúdo das Subtabs ── */
+.rest-subtab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.rest-subtab-content.active {
+    display: block;
+}
+
+/* ── Cabeçalhos de Seção & Filtros ── */
+.rest-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.rest-section-header h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary, #fff);
+    margin-bottom: 4px;
+}
+
+.rest-section-desc {
+    color: var(--text-muted, #aaa);
+    font-size: 0.9rem;
+}
+
+.rest-section-header input[type="text"],
+.rest-section-header select,
+#restGatilhoBaixa,
+#tab-restaurante select,
+#tab-restaurante input[type="text"],
+#tab-restaurante input[type="number"] {
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1.5px solid var(--border-color, rgba(229, 178, 93, 0.2));
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: var(--transition, all 0.2s);
+    color: #fff;
+}
+
+.rest-section-header input[type="text"]:focus,
+.rest-section-header select:focus,
+#restGatilhoBaixa:focus,
+#tab-restaurante select:focus,
+#tab-restaurante input[type="text"]:focus,
+#tab-restaurante input[type="number"]:focus {
+    border-color: var(--primary, #E5B25D);
+    box-shadow: 0 0 12px rgba(229, 178, 93, 0.3);
+}
+
+.rest-section-header select option,
+#restGatilhoBaixa option,
+#tab-restaurante select option {
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 10px;
+}
+
+/* ── Componentes: Cards Genéricos ── */
+.rest-card {
+    background: var(--surface-card, #161616);
+    border: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.rest-card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    background: rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rest-card-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary, #fff);
+    font-weight: 600;
+}
+
+.rest-card-body {
+    padding: 18px;
+}
+
+/* ── Grids ── */
+.rest-insumos-grid,
+.rest-fichas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+/* ── Insumos Card ── */
+.rest-insumo-card {
+    background: var(--surface-card, #161616);
+    border: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rest-insumo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    border-color: rgba(229, 178, 93, 0.4);
+}
+
+.rest-insumo-card.alerta-minimo {
+    border-left: 4px solid var(--accent-danger, #ef4444);
+}
+
+.rest-insumo-card.inativo {
+    opacity: 0.6;
+}
+
+.rest-insumo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.rest-insumo-nome {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #fff);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.rest-insumo-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #aaa);
+}
+
+.rest-insumo-details span {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-default, rgba(229, 178, 93, 0.15));
+}
+
+/* ── Ficha Técnica Card ── */
+.rest-ficha-card {
+    background: var(--surface-card, #161616);
+    border: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rest-ficha-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    padding-bottom: 12px;
+}
+
+.rest-ficha-produto {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-gold, #E5B25D);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.rest-ficha-itens {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.9rem;
+    flex-grow: 1;
+}
+
+.rest-ficha-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+}
+
+.rest-ficha-footer {
+    border-top: 1px dashed var(--border-default, rgba(229, 178, 93, 0.2));
+    padding-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.9rem;
+    justify-content: space-between;
+}
+
+/* ── Editor Ficha Itens ── */
+.rest-ficha-item-editor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.rest-ficha-item-info {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.rest-ficha-item-qtd {
+    font-weight: 600;
+    color: var(--accent-gold, #E5B25D);
+}
+
+/* ── Listas Simples (Cadastros) ── */
+.rest-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border-default, rgba(229, 178, 93, 0.15));
+}
+
+.rest-list-item:last-child {
+    border-bottom: none;
+}
+
+.rest-list-item.inativo {
+    opacity: 0.5;
+}
+
+.rest-list-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rest-list-nome {
+    font-weight: 500;
+    color: var(--text-primary, #fff);
+}
+
+.rest-list-detail {
+    font-size: 0.85rem;
+    color: var(--text-muted, #aaa);
+}
+
+.rest-list-actions {
+    display: flex;
+    gap: 6px;
+}
+
+/* ── Badges ── */
+.rest-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary, #ccc);
+}
+
+.rest-badge--ok {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.rest-badge--alerta {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+}
+
+.rest-badge--off {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+/* ── Tabelas ── */
+.rest-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.rest-table th, .rest-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-default, rgba(229, 178, 93, 0.15));
+}
+
+.rest-table th {
+    color: var(--text-secondary, #aaa);
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.rest-table tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Utilitários & Toggles ── */
+.rest-empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--text-muted, #aaa);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed var(--border-default, rgba(229, 178, 93, 0.2));
+    border-radius: 12px;
+}
+
+.rest-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+}
+
+.rest-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary, #fff);
+}
+
+.rest-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(229, 178, 93, 0.3);
+}
+
+.rest-toggle input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 42px;
+    height: 22px;
+    background: rgba(255, 71, 87, 0.3);
+    border-radius: 20px;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rest-toggle input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    top: 2px;
+    left: 3px;
+    background: #888;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s;
+}
+
+.rest-toggle input[type="checkbox"]:checked {
+    background: var(--accent-gold, #E5B25D);
+    border-color: var(--accent-gold, #E5B25D);
+}
+
+.rest-toggle input[type="checkbox"]:checked::before {
+    transform: translateX(18px);
+    background: #000;
+}
+
+.rest-toggle input[type="checkbox"]:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.rest-estoque-deposito-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-default, rgba(229, 178, 93, 0.2));
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
