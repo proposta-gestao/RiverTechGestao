@@ -1048,7 +1048,7 @@
         const { data, error } = await sb.from('ficha_tecnica')
             .select(`
                 *,
-                products (name, price),
+                products (name, price, estoque_calculado, controle_estoque),
                 ficha_tecnica_itens (
                     id, quantidade, insumo_id, unidade_medida_id,
                     insumos (nome, custo_medio),
@@ -1082,6 +1082,10 @@
                 const itens = fichaAtiva.ficha_tecnica_itens || [];
                 const custo = fichaAtiva.custo_calculado || 0;
                 const margem = produto?.price ? ((produto.price - custo) / produto.price * 100).toFixed(1) : null;
+                const estoqueCalc = produto?.estoque_calculado;
+                const estoqueLabel = estoqueCalc != null
+                    ? `<span style="color:${estoqueCalc <= 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:600;">${estoqueCalc <= 0 ? '⚠️ 0 (sem estoque)' : estoqueCalc + ' disponíveis'}</span>`
+                    : '<span style="color:var(--text-muted);">N/A</span>';
                 return `
                 <div class="rest-ficha-card" style="display:flex; flex-direction:column; gap:10px; padding:12px;">
                     <!-- Linha 1: Nome, versão e switch ativo/inativo -->
@@ -1101,6 +1105,7 @@
                         ${produto?.price ? `<span>💵 Preço: <strong>${fmtBRL(produto.price)}</strong></span>` : ''}
                         ${margem !== null ? `<span>📈 Margem: <strong>${margem}%</strong></span>` : ''}
                         ${fichaAtiva.quantidade_produzida ? `<span>🍽️ Rende: ${fichaAtiva.quantidade_produzida} porções</span>` : ''}
+                        <span>📦 Estoque: ${estoqueLabel}</span>
                     </div>
 
                     <!-- Linha 3: Ingredientes -->
@@ -1543,8 +1548,16 @@
         fecharModalRest('modalRestInventarioVer');
         await carregarInventarios();
         renderInventarios();
+        // Safety net: recalcula estoques de todos os produtos com ficha técnica
+        // após inventário, pois pode ter havido ajustes em massa de insumos
+        try {
+            await sb.rpc('recalcular_todos_estoques_produtos');
+        } catch (e) {
+            console.warn('[Restaurante] Falha ao recalcular estoques pós-inventário:', e);
+        }
         toast('Inventário concluído!');
     };
+
 
     window.__RESTAURANTE.cancelarInventario = async function (inventarioId) {
         if (!confirm('Cancelar este inventário?')) return;

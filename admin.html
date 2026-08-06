@@ -1720,6 +1720,17 @@
                 </div>
             </div>
 
+            <!-- Controle de Estoque -->
+            <div class="form-row" style="margin-bottom:4px;">
+                <div class="form-group" style="flex:1">
+                    <label for="prodControleEstoque">Tipo de Controle de Estoque</label>
+                    <select id="prodControleEstoque" onchange="window._onControleEstoqueChange && window._onControleEstoqueChange(this.value)">
+                        <option value="manual">📦 Manual (entrada/saída no painel)</option>
+                        <option value="ficha_tecnica">📐 Por Ficha Técnica (calculado pelos insumos)</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="inventory-card" id="groupEstoqueCard">
                 <div class="inventory-header">
                     <div class="inventory-title">
@@ -1730,6 +1741,7 @@
                         <span class="inventory-current-badge">Estoque Atual: <span id="prodEstoqueDisplay">0</span></span>
                         <input type="hidden" id="prodEstoque">
                     </div>
+
                 </div>
 
                 <div class="inventory-body">

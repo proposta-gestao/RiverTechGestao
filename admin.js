@@ -1580,7 +1580,11 @@ async function carregarProdutos() {
     produtos = data || [];
 
     // Inativar automaticamente itens com estoque 0
-    const itensParaInativar = produtos.filter(p => p.active && p.stock <= 0 && !p.archived);
+    // IMPORTANTE: produtos com controle_estoque = 'ficha_tecnica' NUNCA devem ser
+    // inativados por esta lógica — eles têm stock = 0 intencionalmente
+    const itensParaInativar = produtos.filter(
+        p => p.active && p.stock <= 0 && !p.archived && p.controle_estoque !== 'ficha_tecnica'
+    );
     if (itensParaInativar.length > 0) {
         const ids = itensParaInativar.map(p => p.id);
         const { error: updErr } = await sb.from('products').update({ active: false }).in('id', ids);
@@ -1659,11 +1663,16 @@ function renderProdutos() {
     }
 
     tbody.innerHTML = produtos.map((p, i) => {
-        const isEsgotado = p.stock <= 0;
+        const isFicha = p.controle_estoque === 'ficha_tecnica';
+        const estoqueEfetivo = isFicha ? (p.estoque_calculado ?? 0) : (p.stock ?? 0);
+        const isEsgotado = estoqueEfetivo <= 0;
         const canDrag = !p.archived && p.active;
         const handleContent = canDrag ? '<span class="drag-handle" style="cursor:grab;">☰</span>' : '';
         const rowStyle = canDrag ? '' : 'cursor: default;';
-        let stockColor = isEsgotado ? '#FF4757' : (p.stock <= (p.min_stock_alert || 0) ? '#FAAD14' : 'inherit');
+        let stockColor = isEsgotado ? '#FF4757' : (estoqueEfetivo <= (p.min_stock_alert || 0) ? '#FAAD14' : 'inherit');
+        const stockDisplay = isFicha
+            ? `${estoqueEfetivo} <span style="font-size:0.7rem; color:var(--text-muted);">(calc.)</span>`
+            : `${estoqueEfetivo}`;
 
         let rowClass = '';
         if (p.archived) {
@@ -1716,7 +1725,7 @@ function renderProdutos() {
                     </td>
                     <td>${p.categories?.name || '-'}</td>
                     <td onclick="editarProduto('${p.id}')" style="cursor:pointer;" title="Clique para editar">${formatCurrency(p.price)}</td>
-                    <td class="col-estoque" onclick="editarProduto('${p.id}')" style="cursor:pointer; color:${stockColor}; font-weight: ${stockColor !== 'inherit' ? '700' : 'normal'}; ${isModuloAtivo('produtos_estoque') ? '' : 'display:none;'}" title="Clique para ajustar estoque">${p.stock}</td>
+                    <td class="col-estoque" onclick="editarProduto('${p.id}')" style="cursor:pointer; color:${stockColor}; font-weight: ${stockColor !== 'inherit' ? '700' : 'normal'}; ${isModuloAtivo('produtos_estoque') ? '' : 'display:none;'}" title="${isFicha ? 'Calculado via ficha técnica' : 'Clique para ajustar estoque'}">${stockDisplay}</td>
                     <td>${toggleHTML}</td>
                     <td>
                         <div class="actions-cell">
@@ -2142,6 +2151,7 @@ function abrirModalNovoProduto() {
     document.getElementById('prodMotivoSaidaId').value = '';
     document.getElementById('prodObsSaida').value = '';
 
+    document.getElementById('prodControleEstoque').value = 'manual';
     currentProductImages = [];
     renderizarMiniaturasProduto();
     carregarGaleria('');
@@ -2160,6 +2170,21 @@ document.getElementById('prodTipoMovimentacao').onchange = (e) => {
     } else {
         container.style.display = 'none';
         label.innerText = 'Quantidade de Entrada';
+    }
+};
+
+// Handler para mudança do tipo de controle de estoque
+window._onControleEstoqueChange = function(valor) {
+    const isFicha = valor === 'ficha_tecnica';
+    const rowTipo = document.getElementById('rowTipoMovimentacao');
+    const labelMov = document.getElementById('labelMovimentacaoEstoque');
+    const inputMov = document.getElementById('prodMovimentacaoEstoque');
+    if (rowTipo) rowTipo.style.display = isFicha ? 'none' : 'block';
+    if (labelMov) labelMov.innerText = isFicha ? 'Estoque gerenciado pela Ficha Técnica' : 'Estoque Inicial';
+    if (inputMov) {
+        inputMov.disabled = isFicha;
+        inputMov.placeholder = isFicha ? 'Gerenciado pela ficha técnica' : '0';
+        if (isFicha) inputMov.value = '';
     }
 };
 
@@ -2187,8 +2212,15 @@ function editarProduto(id) {
     document.getElementById('containerProdObsPlaceholder').style.display = permiteObs ? 'block' : 'none';
 
     document.getElementById('prodPreco').value = p.price;
+    // Popula o tipo de controle de estoque
+    const controleEl = document.getElementById('prodControleEstoque');
+    if (controleEl) controleEl.value = p.controle_estoque || 'manual';
+    const isFichaProduct = p.controle_estoque === 'ficha_tecnica';
+    const estoqueAtualDisplay = isFichaProduct ? (p.estoque_calculado ?? 0) : (p.stock ?? 0);
     document.getElementById('prodEstoque').value = p.stock;
-    document.getElementById('prodEstoqueDisplay').innerText = p.stock;
+    document.getElementById('prodEstoqueDisplay').innerText = isFichaProduct
+        ? `${estoqueAtualDisplay} (calculado via ficha técnica)`
+        : estoqueAtualDisplay;
     document.getElementById('prodMovimentacaoEstoque').value = '';
     document.getElementById('prodEstoqueMin').value = p.min_stock_alert;
     document.getElementById('prodCategoria').value = p.category_id;
@@ -2199,9 +2231,19 @@ function editarProduto(id) {
     atualizarPromoPreview();
 
     document.getElementById('groupEstoqueAtual').style.display = 'block';
-    document.getElementById('rowTipoMovimentacao').style.display = 'block';
+    // Oculta movimentação manual para produtos com ficha técnica
+    document.getElementById('rowTipoMovimentacao').style.display = isFichaProduct ? 'none' : 'block';
     document.getElementById('containerMotivoSaida').style.display = 'none';
-    document.getElementById('labelMovimentacaoEstoque').innerText = 'Adicionar ao Estoque';
+    document.getElementById('labelMovimentacaoEstoque').innerText = isFichaProduct
+        ? 'Estoque gerenciado pela Ficha Técnica'
+        : 'Adicionar ao Estoque';
+    if (isFichaProduct) {
+        document.getElementById('prodMovimentacaoEstoque').disabled = true;
+        document.getElementById('prodMovimentacaoEstoque').placeholder = 'Gerenciado pela ficha técnica';
+    } else {
+        document.getElementById('prodMovimentacaoEstoque').disabled = false;
+        document.getElementById('prodMovimentacaoEstoque').placeholder = '0';
+    }
     document.getElementById('prodTipoMovimentacao').value = 'entrada';
     document.getElementById('prodMotivoSaidaId').value = '';
     document.getElementById('prodObsSaida').value = '';
@@ -2278,13 +2320,20 @@ async function executarSalvarProduto() {
     btn.disabled = true;
     btn.textContent = 'Salvando...';
 
+    // Produtos com ficha_tecnica não têm stock gerenciado manualmente
+    const controleEstoque = document.getElementById('prodControleEstoque')?.value || 'manual';
+    payload.controle_estoque = controleEstoque;
+
     let finalStock = currentStock;
-    if (!id) {
-        finalStock = stockInput;
-    } else {
-        finalStock = (tipoMov === 'entrada') ? currentStock + stockInput : currentStock - stockInput;
+    if (controleEstoque !== 'ficha_tecnica') {
+        if (!id) {
+            finalStock = stockInput;
+        } else {
+            finalStock = (tipoMov === 'entrada') ? currentStock + stockInput : currentStock - stockInput;
+        }
+        payload.stock = finalStock;
     }
-    payload.stock = finalStock;
+    // Se ficha_tecnica: não altera payload.stock — será calculado pelo trigger
 
     let dbError;
     let savedProductId = id;

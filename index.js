@@ -136,6 +136,8 @@ async function carregarProdutos() {
             img: imgs[0] || '', // Capa
             imgs: imgs,         // Todas as fotos
             stock: p.stock,
+            controle_estoque: p.controle_estoque || 'manual',
+            estoque_calculado: p.estoque_calculado,
             cat: p.categories?.name || '',
             catSlug: p.categories?.slug || '',
             category_id: p.category_id,
@@ -365,10 +367,18 @@ function renderMenu() {
         return matchBusca && matchCat;
     });
 
+// Retorna o estoque efetivo com base no tipo de controle do produto
+function getEstoqueEfetivo(produto) {
+    if (produto.controle_estoque === 'ficha_tecnica') {
+        return produto.estoque_calculado != null ? produto.estoque_calculado : 0;
+    }
+    return produto.stock != null ? produto.stock : 0;
+}
+
     // Ordena: disponíveis primeiro, esgotados no final
     filtrados.sort((a, b) => {
-        const aEsg = a.stock <= 0 ? 1 : 0;
-        const bEsg = b.stock <= 0 ? 1 : 0;
+        const aEsg = getEstoqueEfetivo(a) <= 0 ? 1 : 0;
+        const bEsg = getEstoqueEfetivo(b) <= 0 ? 1 : 0;
         return aEsg - bEsg;
     });
 
@@ -378,12 +388,13 @@ function renderMenu() {
     }
 
     dom.menu.innerHTML = filtrados.map(p => {
-        const esgotado = p.stock <= 0;
+        const esgotado = getEstoqueEfetivo(p) <= 0;
+        const badgeLabel = p.controle_estoque === 'ficha_tecnica' ? 'Indisponível' : 'Esgotado';
         return `
         <article class="product-card${esgotado ? ' esgotado' : ''}" ${esgotado ? '' : `onclick="abrirModal('${p.id}')"`}>
             <div class="product-img-wrap">
                 <img src="${p.img}" alt="${p.nome}" loading="lazy" crossorigin="anonymous" referrerpolicy="no-referrer-when-downgrade" onerror="this.src='https://res.cloudinary.com/dzt571tv8/image/upload/v1777512400/placeholder_broken.png'; this.onerror=null;">
-                ${esgotado ? '<span class="badge-esgotado">Esgotado</span>' : ''}
+                ${esgotado ? `<span class="badge-esgotado">${badgeLabel}</span>` : ''}
                 ${!esgotado && p.promo_price > 0 ? `<span class="badge-promo">${Math.round((1 - (p.promo_price / p.preco)) * 100)}% OFF</span>` : ''}
             </div>
             <div class="product-info">
@@ -398,7 +409,7 @@ function renderMenu() {
                         }
                     </div>
                     <button class="btn-add" ${esgotado ? 'disabled' : ''}>
-                        ${esgotado ? 'Esgotado' : '+ Adicionar'}
+                        ${esgotado ? badgeLabel : '+ Adicionar'}
                     </button>
                 </div>
             </div>
@@ -703,7 +714,7 @@ async function buscarCepAuto() {
 
 window.abrirModal = (id) => {
     const produto = PRODUTOS.find(p => p.id === id);
-    if (!produto || produto.stock <= 0) return;
+    if (!produto || getEstoqueEfetivo(produto) <= 0) return;
     state.produtoSelecionado = produto;
     state.quantidadeAtual = 1;
 
@@ -869,7 +880,7 @@ window.toggleObs = () => {
 // =============================================
 
 document.getElementById("mais").onclick = () => {
-    const maxQty = state.produtoSelecionado?.stock || 0;
+    const maxQty = getEstoqueEfetivo(state.produtoSelecionado) || 0;
     if (state.quantidadeAtual < maxQty) {
         state.quantidadeAtual++;
         dom.qntText.innerText = state.quantidadeAtual;
@@ -1073,7 +1084,7 @@ document.getElementById("btnEnviar").onclick = async () => {
         const productIds = state.carrinho.map(p => p.id);
         const { data: freshStock, error: stockErr } = await sb
             .from('products')
-            .select('id, name, stock')
+            .select('id, name, stock, controle_estoque, estoque_calculado')
             .in('id', productIds);
             
         if (stockErr) throw stockErr;
@@ -1081,7 +1092,10 @@ document.getElementById("btnEnviar").onclick = async () => {
         let outOfStockItem = null;
         for (const itemCart of state.carrinho) {
             const dbItem = freshStock.find(p => p.id === itemCart.id);
-            if (!dbItem || dbItem.stock < itemCart.qnt) {
+            const estoqueEfetivo = (dbItem?.controle_estoque === 'ficha_tecnica')
+                ? (dbItem?.estoque_calculado ?? 0)
+                : (dbItem?.stock ?? 0);
+            if (!dbItem || estoqueEfetivo < itemCart.qnt) {
                 outOfStockItem = dbItem ? dbItem.name : itemCart.nome;
                 break;
             }
