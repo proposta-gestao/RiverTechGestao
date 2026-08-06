@@ -655,12 +655,13 @@
             const match = txt.match(/\(([^)]+)\)/);
             if (match) simbolo = match[1];
         }
-        
+        const custoFormatado = custoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const hintEl = document.getElementById('restInsumoCustoCalculadoHint');
         if (hintEl) {
-            hintEl.innerHTML = `Custo por unidade de uso: <strong style="color:#fff;">R$ ${custoMedio.toFixed(4)}</strong> por <strong>${simbolo}</strong>`;
+            hintEl.innerHTML = `Custo por unidade de uso: <strong style="color:#fff;">${custoFormatado}</strong> por <strong>${simbolo}</strong>`;
         }
     }
+
 
     window.__RESTAURANTE.novoInsumo = function () {
         state.editingInsumoId = null;
@@ -676,11 +677,13 @@
         document.getElementById('restInsumoControlaLote').checked = false;
         document.getElementById('restInsumoControlaValidade').checked = false;
         document.getElementById('restInsumoAtivo').checked = true;
+        document.getElementById('restInsumoEstoqueInicial').value = '';
+        document.getElementById('restInsumoEstoqueInicialRow').style.display = 'flex'; // mostra em novo insumo
         document.getElementById('modalRestInsumo').querySelector('h3').textContent = '🧂 Novo Insumo';
         
         // Reset do hint de custo calculado
         const hintEl = document.getElementById('restInsumoCustoCalculadoHint');
-        if (hintEl) hintEl.innerHTML = 'Custo por unidade de uso: R$ 0,0000';
+        if (hintEl) hintEl.innerHTML = 'Custo por unidade de uso: R$ 0,00';
         
         abrirModal('modalRestInsumo');
     };
@@ -705,6 +708,8 @@
         document.getElementById('restInsumoControlaLote').checked = ins.controla_lote;
         document.getElementById('restInsumoControlaValidade').checked = ins.controla_validade;
         document.getElementById('restInsumoAtivo').checked = ins.ativo;
+        document.getElementById('restInsumoEstoqueInicialRow').style.display = 'none'; // esconde em edição
+        document.getElementById('restInsumoEstoqueInicial').value = '';
         document.getElementById('modalRestInsumo').querySelector('h3').textContent = '✏️ Editar Insumo';
         
         // Atualiza o hint de custo calculado
@@ -739,13 +744,46 @@
             controla_validade: document.getElementById('restInsumoControlaValidade').checked,
             ativo: document.getElementById('restInsumoAtivo').checked,
         };
-        let error;
+        let error, savedId;
         if (state.editingInsumoId) {
             ({ error } = await sb.from('insumos').update(payload).eq('id', state.editingInsumoId));
+            savedId = state.editingInsumoId;
         } else {
-            ({ error } = await sb.from('insumos').insert(payload));
+            const { data, error: err } = await sb.from('insumos').insert(payload).select().single();
+            error = err;
+            savedId = data?.id;
         }
         if (error) { toast('Erro ao salvar insumo: ' + error.message, 'error'); return; }
+
+        // Estoque inicial (apenas em novo insumo)
+        if (!state.editingInsumoId && savedId) {
+            const estoqueInicialQtd = parseFloat(document.getElementById('restInsumoEstoqueInicial').value) || 0;
+            if (estoqueInicialQtd > 0) {
+                // Pega o depósito principal (primeiro ativo)
+                const depositoPrincipal = state.depositos.find(d => d.ativo);
+                if (depositoPrincipal) {
+                    await sb.from('estoque_insumos').upsert({
+                        empresa_id: tenantId,
+                        insumo_id: savedId,
+                        deposito_id: depositoPrincipal.id,
+                        estoque_atual: estoqueInicialQtd,
+                        estoque_minimo: 0,
+                        atualizado_em: new Date().toISOString(),
+                    }, { onConflict: 'empresa_id,insumo_id,deposito_id' });
+                    // Registra movimentação de estoque inicial
+                    await sb.from('movimentacoes_insumos').insert({
+                        empresa_id: tenantId,
+                        insumo_id: savedId,
+                        deposito_id: depositoPrincipal.id,
+                        tipo: 'entrada',
+                        quantidade: estoqueInicialQtd,
+                        custo_unitario: custoMedio,
+                        observacao: 'Estoque inicial',
+                    });
+                }
+            }
+        }
+        
         fecharModalRest('modalRestInsumo');
         await carregarInsumos();
         renderInsumos();
@@ -770,10 +808,18 @@
         document.getElementById('restEstoqueInsumoNome').textContent = ins.nome + ` (${unSimbolo})`;
         document.getElementById('restEstoqueInsumoId').value = insumoId;
 
+        // Painel de tipo de operação (sempre visível ao abrir o modal de edição)
+        const rowTipo = document.getElementById('restEstoqueRowTipo');
+        rowTipo.style.display = 'block';
+        document.getElementById('restEstoqueTipo').value = 'entrada';
+        document.getElementById('restEstoqueQtd').value = '';
+        document.getElementById('restEstoqueQtdLabel').textContent = 'Quantidade de Entrada';
+        document.getElementById('restEstoqueMotivoBox').style.display = 'none';
+        document.getElementById('restEstoqueMotivoId').value = '';
+        document.getElementById('restEstoqueObs').value = '';
+
         // Carrega estoque atual
         const estoqueAtual = ins.estoque_insumos || [];
-        // Lista depósitos disponíveis
-        const depositosComEstoque = new Set(estoqueAtual.map(e => e.deposito_id));
 
         let html = '';
         if (!state.depositos.length) {
@@ -781,19 +827,19 @@
         } else {
             html = state.depositos.filter(d => d.ativo).map(dep => {
                 const estEntry = estoqueAtual.find(e => e.deposito_id === dep.id);
+                const estoqueAtualVal = estEntry ? parseFloat(estEntry.estoque_atual).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00';
+                const estoqueMinVal = estEntry ? parseFloat(estEntry.estoque_minimo).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00';
                 return `
                 <div class="rest-estoque-deposito-item">
                     <strong>${dep.nome}</strong>
-                    <div class="form-row" style="margin-top:8px; align-items:flex-end; gap:8px;">
+                    <div class="form-row" style="margin-top:8px; gap:8px;">
                         <div class="form-group" style="flex:1">
-                            <label>Estoque Atual (${unSimbolo})</label>
-                            <input type="number" step="0.001" min="0"
-                                id="estAtual_${dep.id}"
-                                value="${estEntry ? estEntry.estoque_atual : 0}">
+                            <label style="color:var(--text-muted); font-size:0.8rem;">Saldo Atual (${unSimbolo})</label>
+                            <div style="padding:6px 10px; background:rgba(255,255,255,0.05); border-radius:6px; font-weight:600;">${estoqueAtualVal} ${unSimbolo}</div>
                         </div>
                         <div class="form-group" style="flex:1">
-                            <label>Estoque Mínimo (${unSimbolo})</label>
-                            <input type="number" step="0.001" min="0"
+                            <label for="estMin_${dep.id}">Estoque Mínimo (${unSimbolo})</label>
+                            <input type="number" step="0.01" min="0"
                                 id="estMin_${dep.id}"
                                 value="${estEntry ? estEntry.estoque_minimo : 0}">
                         </div>
@@ -805,25 +851,78 @@
         abrirModal('modalRestEstoque');
     };
 
+    // Listener para mostrar/ocultar motivo de saída no modal de estoque
+    (function () {
+        const sel = document.getElementById('restEstoqueTipo');
+        if (sel && !sel.dataset.listenerOk) {
+            sel.dataset.listenerOk = 'true';
+            sel.addEventListener('change', () => {
+                const isSaida = sel.value === 'saida';
+                document.getElementById('restEstoqueMotivoBox').style.display = isSaida ? 'block' : 'none';
+                document.getElementById('restEstoqueQtdLabel').textContent = isSaida ? 'Quantidade de Saída' : 'Quantidade de Entrada';
+            });
+        }
+    })();
+
     window.__RESTAURANTE.salvarEstoque = async function () {
         const insumoId = document.getElementById('restEstoqueInsumoId').value;
         const tenantId = getTenantId();
+        const ins = state.insumos.find(x => x.id === insumoId);
         const depositosAtivos = state.depositos.filter(d => d.ativo);
+        const tipo = document.getElementById('restEstoqueTipo')?.value || 'entrada';
+        const qtdMovimento = parseFloat(document.getElementById('restEstoqueQtd')?.value) || 0;
+        const motivo = document.getElementById('restEstoqueMotivoId')?.value || null;
+        const obs = document.getElementById('restEstoqueObs')?.value.trim() || null;
+
+        // Se foi informada quantidade de movimenta\u00e7\u00e3o, aplica delta no dep\u00f3sito selecionado
+        if (qtdMovimento > 0 && depositosAtivos.length > 0) {
+            // Aplica no primeiro dep\u00f3sito ativo como dep\u00f3sito padr\u00e3o se houver apenas 1
+            // ou no dep\u00f3sito que j\u00e1 tem saldo
+            const estoqueAtual = ins?.estoque_insumos || [];
+            let depositoAlvo = depositosAtivos.find(d => estoqueAtual.some(e => e.deposito_id === d.id)) || depositosAtivos[0];
+
+            const entryAtual = estoqueAtual.find(e => e.deposito_id === depositoAlvo.id);
+            const saldoAtual = entryAtual ? parseFloat(entryAtual.estoque_atual) : 0;
+            const novoSaldo = tipo === 'entrada' ? saldoAtual + qtdMovimento : Math.max(0, saldoAtual - qtdMovimento);
+
+            const { error: errEst } = await sb.from('estoque_insumos').upsert({
+                empresa_id: tenantId,
+                insumo_id: insumoId,
+                deposito_id: depositoAlvo.id,
+                estoque_atual: novoSaldo,
+                estoque_minimo: entryAtual?.estoque_minimo || 0,
+                atualizado_em: new Date().toISOString(),
+            }, { onConflict: 'empresa_id,insumo_id,deposito_id' });
+
+            if (!errEst) {
+                await sb.from('movimentacoes_insumos').insert({
+                    empresa_id: tenantId,
+                    insumo_id: insumoId,
+                    deposito_id: depositoAlvo.id,
+                    tipo,
+                    quantidade: qtdMovimento,
+                    custo_unitario: ins?.custo_medio || null,
+                    motivo: tipo === 'saida' ? (motivo || null) : null,
+                    observacao: tipo === 'saida' ? obs : (obs || null),
+                });
+            }
+        }
+
+        // Atualiza estoque m\u00ednimo de todos os dep\u00f3sitos
         let erros = 0;
         for (const dep of depositosAtivos) {
-            const estoqueAtualEl = document.getElementById(`estAtual_${dep.id}`);
             const estMinEl = document.getElementById(`estMin_${dep.id}`);
-            if (!estoqueAtualEl) continue;
-            const payload = {
+            if (!estMinEl) continue;
+            const estoqueAtual = ins?.estoque_insumos || [];
+            const entryAtual = estoqueAtual.find(e => e.deposito_id === dep.id);
+            const { error } = await sb.from('estoque_insumos').upsert({
                 empresa_id: tenantId,
                 insumo_id: insumoId,
                 deposito_id: dep.id,
-                estoque_atual: parseFloat(estoqueAtualEl.value) || 0,
-                estoque_minimo: parseFloat(estMinEl?.value) || 0,
+                estoque_atual: entryAtual ? parseFloat(entryAtual.estoque_atual) : 0,
+                estoque_minimo: parseFloat(estMinEl.value) || 0,
                 atualizado_em: new Date().toISOString(),
-            };
-            const { error } = await sb.from('estoque_insumos')
-                .upsert(payload, { onConflict: 'empresa_id,insumo_id,deposito_id' });
+            }, { onConflict: 'empresa_id,insumo_id,deposito_id' });
             if (error) erros++;
         }
         if (erros) { toast('Erro ao salvar alguns estoques.', 'error'); return; }
