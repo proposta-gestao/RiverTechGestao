@@ -422,7 +422,8 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    top: 2px;
+    top: 50%;
+    margin-top: -8px;
     left: 3px;
     background: #888;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s;

@@ -130,6 +130,20 @@
             await carregarMovimentacoes();
             renderMovimentacoes();
             renderConfig();
+
+            // Máscara de telefone para fornecedor
+            const inputTelefone = document.getElementById('restFornTelefone');
+            if (inputTelefone && !inputTelefone.dataset.maskInitialized) {
+                inputTelefone.dataset.maskInitialized = 'true';
+                inputTelefone.addEventListener('input', () => {
+                    let digits = inputTelefone.value.replace(/\D/g, '').slice(0, 11);
+                    let formatted = digits;
+                    if (digits.length > 2) formatted = `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+                    if (digits.length > 7) formatted = `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+                    inputTelefone.value = formatted;
+                });
+            }
+
             window.__RESTAURANTE_DADOS_CARREGADOS = true;
             console.log('[Restaurante] ✅ Módulo pronto!');
         } catch (err) {
@@ -284,12 +298,12 @@
                     <span class="rest-badge">${tipoLabel[d.tipo] || d.tipo}</span>
                     ${!d.ativo ? '<span class="rest-badge rest-badge--off">Inativo</span>' : ''}
                 </div>
-                <div class="rest-list-actions">
-                    <button class="btn-icon" title="Editar" onclick="window.__RESTAURANTE.editarDeposito('${d.id}')">✏️</button>
-                    <button class="btn-icon btn-danger" title="${d.ativo ? 'Desativar' : 'Ativar'}"
-                        onclick="window.__RESTAURANTE.toggleDeposito('${d.id}', ${!d.ativo})">
-                        ${d.ativo ? '🔴' : '🟢'}
-                    </button>
+                <div class="rest-list-actions" style="align-items: center; gap: 12px;">
+                    <label class="switch" title="${d.ativo ? 'Desativar' : 'Ativar'}">
+                        <input type="checkbox" ${d.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleDeposito('${d.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                    <button class="btn-sm btn-edit" onclick="window.__RESTAURANTE.editarDeposito('${d.id}')">Editar</button>
                 </div>
             </div>`).join('');
     }
@@ -377,12 +391,12 @@
                     ${f.contato ? `<span class="rest-list-detail">👤 ${f.contato}</span>` : ''}
                     ${!f.ativo ? '<span class="rest-badge rest-badge--off">Inativo</span>' : ''}
                 </div>
-                <div class="rest-list-actions">
-                    <button class="btn-icon" title="Editar" onclick="window.__RESTAURANTE.editarFornecedor('${f.id}')">✏️</button>
-                    <button class="btn-icon btn-danger" title="${f.ativo ? 'Desativar' : 'Ativar'}"
-                        onclick="window.__RESTAURANTE.toggleFornecedor('${f.id}', ${!f.ativo})">
-                        ${f.ativo ? '🔴' : '🟢'}
-                    </button>
+                <div class="rest-list-actions" style="align-items: center; gap: 12px;">
+                    <label class="switch" title="${f.ativo ? 'Desativar' : 'Ativar'}">
+                        <input type="checkbox" ${f.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleFornecedor('${f.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                    <button class="btn-sm btn-edit" onclick="window.__RESTAURANTE.editarFornecedor('${f.id}')">Editar</button>
                 </div>
             </div>`).join('');
     }
@@ -474,12 +488,12 @@
                     <span class="rest-list-nome">${c.nome}</span>
                     ${!c.ativo ? '<span class="rest-badge rest-badge--off">Inativa</span>' : ''}
                 </div>
-                <div class="rest-list-actions">
-                    <button class="btn-icon" title="Editar" onclick="window.__RESTAURANTE.editarCategoria('${c.id}')">✏️</button>
-                    <button class="btn-icon btn-danger" title="${c.ativo ? 'Desativar' : 'Ativar'}"
-                        onclick="window.__RESTAURANTE.toggleCategoria('${c.id}', ${!c.ativo})">
-                        ${c.ativo ? '🔴' : '🟢'}
-                    </button>
+                <div class="rest-list-actions" style="align-items: center; gap: 12px;">
+                    <label class="switch" title="${c.ativo ? 'Desativar' : 'Ativar'}">
+                        <input type="checkbox" ${c.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleCategoria('${c.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                    <button class="btn-sm btn-edit" onclick="window.__RESTAURANTE.editarCategoria('${c.id}')">Editar</button>
                 </div>
             </div>`).join('');
     }
@@ -597,13 +611,13 @@
                         ${alertaEstoque ? '<span class="rest-badge rest-badge--alerta">⚠️ Estoque mínimo</span>' : ''}
                         ${!ins.ativo ? '<span class="rest-badge rest-badge--off">Inativo</span>' : ''}
                     </div>
-                    <div class="rest-list-actions">
-                        <button class="btn-icon" title="Editar" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">✏️</button>
-                        <button class="btn-icon" title="Gerenciar Estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">📦</button>
-                        <button class="btn-icon btn-danger" title="${ins.ativo ? 'Desativar' : 'Ativar'}"
-                            onclick="window.__RESTAURANTE.toggleInsumo('${ins.id}', ${!ins.ativo})">
-                            ${ins.ativo ? '🔴' : '🟢'}
-                        </button>
+                    <div class="rest-list-actions" style="align-items: center; gap: 8px;">
+                        <label class="switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}">
+                            <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                        <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">Editar</button>
+                        <button class="btn-sm" style="padding: 5px 8px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" title="Gerenciar Estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">Estoque</button>
                     </div>
                 </div>
                 <div class="rest-insumo-details">
@@ -821,9 +835,9 @@
                             <span class="rest-badge">v${fichaAtiva.versao}</span>
                             ${fichaAtiva.ativo ? '<span class="rest-badge rest-badge--ok">Ativa</span>' : '<span class="rest-badge rest-badge--off">Inativa</span>'}
                         </div>
-                        <div class="rest-list-actions">
-                            <button class="btn-icon" title="Editar Ficha" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">✏️</button>
-                            <button class="btn-icon" title="Nova Versão" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">📋</button>
+                        <div class="rest-list-actions" style="align-items: center; gap: 8px;">
+                            <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">Editar Ficha</button>
+                            <button class="btn-sm" style="padding: 5px 8px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">Nova Versão</button>
                         </div>
                     </div>
                     <div class="rest-ficha-itens">
@@ -977,7 +991,7 @@
                     <span class="rest-ficha-item-qtd">${item.quantidade} ${item.unidade_simbolo}</span>
                     <span style="color:var(--text-muted)">${fmtBRL(item.custo_medio * item.quantidade)}</span>
                 </div>
-                <button class="btn-icon btn-danger" title="Remover" onclick="window.__RESTAURANTE.removerItemFicha('${item.insumo_id}')">🗑️</button>
+                <button class="btn-cancel btn-sm" title="Remover" onclick="window.__RESTAURANTE.removerItemFicha('${item.insumo_id}')">🗑️</button>
             </div>`).join('');
         updateCustoFicha();
     }
@@ -1098,13 +1112,13 @@
                     <span class="rest-badge">${statusLabel[inv.status] || inv.status}</span>
                     <span style="color:var(--text-muted); font-size:0.78rem">${data}</span>
                 </div>
-                <div class="rest-list-actions">
+                <div class="rest-list-actions" style="align-items: center; gap: 8px;">
                     ${inv.status === 'aberto' ? `
-                        <button class="btn-icon" title="Continuar inventário" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">📝</button>
-                        <button class="btn-icon" title="Concluir" onclick="window.__RESTAURANTE.concluirInventario('${inv.id}')">✅</button>
-                        <button class="btn-icon btn-danger" title="Cancelar" onclick="window.__RESTAURANTE.cancelarInventario('${inv.id}')">❌</button>
+                        <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">Contar</button>
+                        <button class="btn-sm" style="padding: 5px 8px; font-size: 0.75rem; background:rgba(0,184,148,0.1); color:var(--success); border:1px solid rgba(0,184,148,0.2);" onclick="window.__RESTAURANTE.concluirInventario('${inv.id}')">Concluir</button>
+                        <button class="btn-sm btn-delete" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.cancelarInventario('${inv.id}')">Cancelar</button>
                     ` : `
-                        <button class="btn-icon" title="Visualizar" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">👁️</button>
+                        <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">Visualizar</button>
                     `}
                 </div>
             </div>`;
