@@ -695,11 +695,8 @@ window.removerAdmin = async (userId, email) => {
     if (!confirm(`Deseja remover o acesso administrativo de ${email}?`)) return;
 
     try {
-        // Desvincular usuário
-        const { error } = await sb
-            .from('usuarios')
-            .delete()
-            .eq('id', userId);
+        // Excluir usuário completamente
+        const { error } = await sb.rpc('delete_user_entirely', { p_user_id: userId });
 
         if (error) throw error;
 
