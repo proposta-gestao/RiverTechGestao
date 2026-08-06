@@ -637,30 +637,33 @@
             const unSimbolo = ins.unidade_medida?.simbolo || '';
             const categoria = ins.categorias_insumos?.nome || '—';
             const fornecedor = ins.fornecedores?.nome || '—';
+            const totalEstoqueFormatted = totalEstoque.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
             return `
-            <div class="rest-insumo-card ${alertaEstoque ? 'alerta-minimo' : ''} ${!ins.ativo ? 'inativo' : ''}">
-                <div class="rest-insumo-header">
-                    <div>
-                        <span class="rest-insumo-nome">${ins.nome}</span>
-                        ${alertaEstoque ? '<span class="rest-badge rest-badge--alerta">⚠️ Estoque mínimo</span>' : ''}
-                        ${!ins.ativo ? '<span class="rest-badge rest-badge--off">Inativo</span>' : ''}
-                    </div>
-                    <div class="rest-list-actions" style="align-items: center; gap: 8px;">
-                        <label class="switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}">
-                            <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                        <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">Editar</button>
-                        <button class="btn-sm" style="padding: 5px 8px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" title="Gerenciar Estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">Estoque</button>
-                    </div>
+            <div class="rest-insumo-card ${alertaEstoque ? 'alerta-minimo' : ''} ${!ins.ativo ? 'inativo' : ''}" style="display:flex; flex-direction:column; gap:10px; padding:12px;">
+                <!-- Linha 1: Nome (com Código) e Switch Ativo/Inativo -->
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="rest-insumo-nome" style="font-weight:600; font-size:0.95rem;">
+                        ${ins.codigo_interno ? `<span style="color:var(--text-muted); font-size:0.85rem; margin-right:4px;">[${ins.codigo_interno}]</span> ` : ''}${ins.nome}
+                    </span>
+                    <label class="switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}" style="margin-bottom:0;">
+                        <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
                 </div>
-                <div class="rest-insumo-details">
+                <!-- Linha 2: Ações (Editar, Estoque) e Badges -->
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-sm btn-edit" style="padding: 4px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">Editar</button>
+                    <button class="btn-sm" style="padding: 4px 8px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" title="Gerenciar Estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">Estoque</button>
+                    ${alertaEstoque ? '<span class="rest-badge rest-badge--alerta">⚠️ Estoque mínimo</span>' : ''}
+                    ${!ins.ativo ? '<span class="rest-badge rest-badge--off">Inativo</span>' : ''}
+                </div>
+                <!-- Linha 3: Tags de detalhes -->
+                <div class="rest-insumo-details" style="margin-top:0; border-top:none; padding-top:0; display:flex; flex-wrap:wrap; gap:8px 12px; font-size:0.8rem;">
                     <span>🏷️ ${categoria}</span>
                     <span>🚚 ${fornecedor}</span>
                     <span>📏 ${unSimbolo}</span>
                     <span>💰 Custo: ${fmtBRL(ins.custo_medio)}/${unSimbolo}</span>
-                    <span class="${alertaEstoque ? 'text-danger' : ''}">📦 Estoque: ${totalEstoque.toFixed(3)} ${unSimbolo}</span>
-                    ${ins.codigo_interno ? `<span>🔖 ${ins.codigo_interno}</span>` : ''}
+                    <span class="${alertaEstoque ? 'text-danger' : ''}">📦 Estoque: ${totalEstoqueFormatted} ${unSimbolo}</span>
                 </div>
             </div>`;
         }).join('');
@@ -1420,21 +1423,24 @@
 
         const container = document.getElementById('restInventarioItensLista');
         container.innerHTML = (itens || []).map(item => {
-            const dif = (parseFloat(item.estoque_contado) - parseFloat(item.estoque_sistema)).toFixed(3);
-            const difClass = parseFloat(dif) < 0 ? 'text-danger' : parseFloat(dif) > 0 ? 'text-success' : '';
+            const diffVal = (parseFloat(item.estoque_contado) - parseFloat(item.estoque_sistema));
+            const dif = diffVal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+            const difClass = diffVal < 0 ? 'text-danger' : diffVal > 0 ? 'text-success' : '';
+            const sistemaVal = parseFloat(item.estoque_sistema).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+            const contadoVal = parseFloat(item.estoque_contado).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
             return `
             <tr>
                 <td>${item.insumos?.nome || '—'}</td>
-                <td>${parseFloat(item.estoque_sistema).toFixed(3)} ${item.insumos?.unidade_medida?.simbolo || ''}</td>
+                <td>${sistemaVal} ${item.insumos?.unidade_medida?.simbolo || ''}</td>
                 <td>
                     ${readonly
-                        ? `<span>${parseFloat(item.estoque_contado).toFixed(3)} ${item.insumos?.unidade_medida?.simbolo || ''}</span>`
+                        ? `<span>${contadoVal} ${item.insumos?.unidade_medida?.simbolo || ''}</span>`
                         : `<input type="number" step="0.001" min="0" class="inv-contado-input"
                             data-item-id="${item.id}" value="${item.estoque_contado}"
                             style="width:90px; padding:4px 8px;">`
                     }
                 </td>
-                <td class="${difClass}">${dif}</td>
+                <td class="${difClass}">${diffVal > 0 ? '+' : ''}${dif}</td>
                 <td>${item.ajuste_aplicado ? '✅' : '—'}</td>
             </tr>`;
         }).join('');
@@ -1524,7 +1530,7 @@
                 <td><strong>${m.insumo_nome}</strong></td>
                 <td>${m.deposito_nome || '—'}</td>
                 <td>${tipoBadge[m.tipo] || m.tipo}</td>
-                <td class="${qtyClass}">${sign}${parseFloat(m.quantidade).toFixed(3)} ${m.unidade || ''}</td>
+                <td class="${qtyClass}">${sign}${parseFloat(m.quantidade).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 })} ${m.unidade || ''}</td>
                 <td>${m.custo_unitario ? fmtBRL(m.custo_unitario) : '—'}</td>
                 <td><span style="font-size:0.85rem;">${m.observacao || '—'}</span></td>
             </tr>`;
