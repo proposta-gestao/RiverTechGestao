@@ -148,12 +148,15 @@
             const inpCusto = document.getElementById('restInsumoCusto');
             const inpQtd = document.getElementById('restInsumoQtdEmbalagem');
             const selUnid = document.getElementById('restInsumoUnidade');
+            const selUnidCompra = document.getElementById('restInsumoUnidadeCompra');
             if (inpCusto && !inpCusto.dataset.calcInitialized) {
                 inpCusto.dataset.calcInitialized = 'true';
                 inpCusto.addEventListener('input', atualizarHintCustoInsumo);
                 if (inpQtd) inpQtd.addEventListener('input', atualizarHintCustoInsumo);
                 if (selUnid) selUnid.addEventListener('change', atualizarHintCustoInsumo);
+                if (selUnidCompra) selUnidCompra.addEventListener('change', atualizarHintCustoInsumo);
             }
+
 
             window.__RESTAURANTE_DADOS_CARREGADOS = true;
             console.log('[Restaurante] ✅ Módulo pronto!');
@@ -192,6 +195,26 @@
             .order('nome');
         if (error) { console.error('[Restaurante] Erro ao carregar unidades:', error); return; }
         state.unidades = data || [];
+    }
+
+    // Helper: retorna fator_conversao de uma unidade pelo id
+    function getFator(unidadeId) {
+        const u = state.unidades.find(x => x.id === unidadeId);
+        return u ? (parseFloat(u.fator_conversao) || 1) : 1;
+    }
+
+    // Helper: calcula custo médio por unidade de uso
+    // valorPago = R$ total pago pela embalagem
+    // qtdEmbalagem = quantidade de unidades de compra na embalagem
+    // fatorCompra = fator_conversao da unidade de compra
+    // fatorUso = fator_conversao da unidade de uso
+    // Fórmula: valorPago / (qtdEmbalagem * fatorCompra / fatorUso)
+    // Exemplo: R$2.400 / (24 kg * 1000 / 1) = R$0,10 por grama
+    function calcularCustoMedio(valorPago, qtdEmbalagem, fatorCompra, fatorUso) {
+        const qtd = qtdEmbalagem > 0 ? qtdEmbalagem : 1;
+        const fC = fatorCompra > 0 ? fatorCompra : 1;
+        const fU = fatorUso > 0 ? fatorUso : 1;
+        return valorPago / (qtd * fC / fU);
     }
 
     function buildUnidadeOptions(selectedId = '') {
@@ -584,8 +607,8 @@
                 *,
                 categorias_insumos (nome),
                 fornecedores (nome),
-                unidade_medida:unidades_medida!insumos_unidade_medida_id_fkey (nome, simbolo),
-                unidade_compra:unidades_medida!insumos_unidade_compra_id_fkey (nome, simbolo),
+                unidade_medida:unidades_medida!insumos_unidade_medida_id_fkey (nome, simbolo, fator_conversao),
+                unidade_compra:unidades_medida!insumos_unidade_compra_id_fkey (nome, simbolo, fator_conversao),
                 estoque_insumos (estoque_atual, estoque_minimo, deposito_id, depositos(nome))
             `)
             .eq('empresa_id', tenantId)
@@ -646,19 +669,45 @@
     function atualizarHintCustoInsumo() {
         const valorPago = parseFloat(document.getElementById('restInsumoCusto').value) || 0;
         const qtdEmbalagem = parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || 1;
-        const custoMedio = valorPago / (qtdEmbalagem > 0 ? qtdEmbalagem : 1);
-        
-        const selectUnidade = document.getElementById('restInsumoUnidade');
-        let simbolo = 'un';
-        if (selectUnidade && selectUnidade.selectedIndex >= 0) {
-            const txt = selectUnidade.options[selectUnidade.selectedIndex].text;
+
+        // Obtém fator de conversão da unidade de USO
+        const selUso = document.getElementById('restInsumoUnidade');
+        const unidadeUsoId = selUso?.value || '';
+        const fatorUso = getFator(unidadeUsoId);
+        let simboloUso = 'un';
+        if (selUso && selUso.selectedIndex >= 0) {
+            const txt = selUso.options[selUso.selectedIndex].text;
             const match = txt.match(/\(([^)]+)\)/);
-            if (match) simbolo = match[1];
+            if (match) simboloUso = match[1];
         }
+
+        // Obtém fator de conversão da unidade de COMPRA
+        const selCompra = document.getElementById('restInsumoUnidadeCompra');
+        const unidadeCompraId = selCompra?.value || '';
+        const fatorCompra = unidadeCompraId ? getFator(unidadeCompraId) : fatorUso;
+        let simboloCompra = simboloUso;
+        if (selCompra && selCompra.selectedIndex >= 0 && selCompra.value) {
+            const txt = selCompra.options[selCompra.selectedIndex].text;
+            const match = txt.match(/\(([^)]+)\)/);
+            if (match) simboloCompra = match[1];
+        }
+
+        // Fórmula correta: valorPago / (qtdEmbalagem × fatorCompra / fatorUso)
+        // Exemplo: R$2.400 / (24 kg × 1000g/kg ÷ 1g) = R$0,10/g
+        const custoMedio = calcularCustoMedio(valorPago, qtdEmbalagem, fatorCompra, fatorUso);
         const custoFormatado = custoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Qtd total na embalagem em unidade de uso
+        const totalUsoUnits = qtdEmbalagem * fatorCompra / fatorUso;
+        const totalFormatado = totalUsoUnits.toLocaleString('pt-BR', { maximumFractionDigits: 3 });
+
         const hintEl = document.getElementById('restInsumoCustoCalculadoHint');
         if (hintEl) {
-            hintEl.innerHTML = `Custo por unidade de uso: <strong style="color:#fff;">${custoFormatado}</strong> por <strong>${simbolo}</strong>`;
+            hintEl.innerHTML =
+                `Custo por <strong>${simboloUso}</strong>: <strong style="color:#fff;">${custoFormatado}</strong>` +
+                (unidadeCompraId && unidadeCompraId !== unidadeUsoId
+                    ? ` <span style="color:var(--text-muted); font-size:0.8em;">(embalagem = ${totalFormatado} ${simboloUso})</span>`
+                    : '');
         }
     }
 
@@ -700,9 +749,14 @@
         document.getElementById('restInsumoUnidadeCompra').innerHTML = buildUnidadeOptions(ins.unidade_compra_id);
         document.getElementById('restInsumoQtdEmbalagem').value = ins.quantidade_por_embalagem || '';
         
-        // Custo exibido é o preço pago pela embalagem inteira (custo_medio * quantidade_por_embalagem)
-        const valorPago = (ins.custo_medio || 0) * (ins.quantidade_por_embalagem || 1);
-        document.getElementById('restInsumoCusto').value = valorPago > 0 ? valorPago.toFixed(2) : (ins.custo_medio || '');
+        // Custo exibido é o preço pago pela embalagem inteira
+        // Reconstrói: valorPago = custo_medio × qtdEmbalagem × fatorCompra / fatorUso
+        const fUso = parseFloat(ins.unidade_medida?.fator_conversao) || 1;
+        const fCompra = parseFloat(ins.unidade_compra?.fator_conversao) || fUso;
+        const qtdEmb = parseFloat(ins.quantidade_por_embalagem) || 1;
+        const valorPagoEdit = (ins.custo_medio || 0) * qtdEmb * fCompra / fUso;
+        document.getElementById('restInsumoCusto').value = valorPagoEdit > 0 ? valorPagoEdit.toFixed(2) : (ins.custo_medio || '');
+
         
         document.getElementById('restInsumoCodigo').value = ins.codigo_interno || '';
         document.getElementById('restInsumoControlaLote').checked = ins.controla_lote;
@@ -725,10 +779,18 @@
         if (!unidadeId) { toast('Unidade de medida é obrigatória.', 'error'); return; }
         const tenantId = getTenantId();
         
-        // Calcula o custo médio real (custo unitário de uso) dividindo o valor pago pela quantidade
+        // Obtém fatores de conversão para cálculo correto do custo unitário
+        const unidadeUsoId = document.getElementById('restInsumoUnidade').value;
+        const unidadeCompraId = document.getElementById('restInsumoUnidadeCompra').value || unidadeUsoId;
+        const fatorUso = getFator(unidadeUsoId);
+        const fatorCompra = getFator(unidadeCompraId);
         const valorPago = parseFloat(document.getElementById('restInsumoCusto').value) || 0;
         const qtdEmbalagem = parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || 1;
-        const custoMedio = valorPago / (qtdEmbalagem > 0 ? qtdEmbalagem : 1);
+
+        // Fórmula correta: valorPago / (qtdEmbalagem × fatorCompra / fatorUso)
+        // Ex: R$2.400 / (24 kg × 1000 / 1) = R$0,10 por grama
+        const custoMedio = calcularCustoMedio(valorPago, qtdEmbalagem, fatorCompra, fatorUso);
+
         
         const payload = {
             empresa_id: tenantId,
@@ -756,9 +818,13 @@
         if (error) { toast('Erro ao salvar insumo: ' + error.message, 'error'); return; }
 
         // Estoque inicial (apenas em novo insumo)
+        // O usuário informa a quantidade em UNIDADE DE COMPRA (ex: 24 KG)
+        // Converte para UNIDADE DE USO (ex: gramas) antes de salvar
         if (!state.editingInsumoId && savedId) {
-            const estoqueInicialQtd = parseFloat(document.getElementById('restInsumoEstoqueInicial').value) || 0;
-            if (estoqueInicialQtd > 0) {
+            const estoqueInicialCompra = parseFloat(document.getElementById('restInsumoEstoqueInicial').value) || 0;
+            if (estoqueInicialCompra > 0) {
+                // Converte para unidade de uso: qtd_compra × fatorCompra / fatorUso
+                const estoqueInicialUso = estoqueInicialCompra * fatorCompra / fatorUso;
                 // Pega o depósito principal (primeiro ativo)
                 const depositoPrincipal = state.depositos.find(d => d.ativo);
                 if (depositoPrincipal) {
@@ -766,7 +832,7 @@
                         empresa_id: tenantId,
                         insumo_id: savedId,
                         deposito_id: depositoPrincipal.id,
-                        estoque_atual: estoqueInicialQtd,
+                        estoque_atual: estoqueInicialUso,
                         estoque_minimo: 0,
                         atualizado_em: new Date().toISOString(),
                     }, { onConflict: 'empresa_id,insumo_id,deposito_id' });
@@ -776,7 +842,7 @@
                         insumo_id: savedId,
                         deposito_id: depositoPrincipal.id,
                         tipo: 'entrada',
-                        quantidade: estoqueInicialQtd,
+                        quantidade: estoqueInicialUso,
                         custo_unitario: custoMedio,
                         observacao: 'Estoque inicial',
                     });
