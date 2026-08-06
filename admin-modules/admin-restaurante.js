@@ -643,7 +643,7 @@
                 <!-- Linha 1: Nome (com Código) e Switch Ativo/Inativo -->
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <span class="rest-insumo-nome" style="font-weight:600; font-size:0.95rem;">
-                        ${ins.codigo_interno ? `<span style="color:var(--text-muted); font-size:0.85rem; margin-right:4px;">[${ins.codigo_interno}]</span> ` : ''}${ins.nome}
+                        ${ins.codigo_interno ? `<span style="color:var(--text-muted); font-size:0.85rem; margin-right:4px;">${ins.codigo_interno} -</span> ` : ''}${ins.nome}
                     </span>
                     <label class="switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}" style="margin-bottom:0;">
                         <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
@@ -1083,35 +1083,67 @@
                 const custo = fichaAtiva.custo_calculado || 0;
                 const margem = produto?.price ? ((produto.price - custo) / produto.price * 100).toFixed(1) : null;
                 return `
-                <div class="rest-ficha-card">
-                    <div class="rest-ficha-header">
-                        <div>
-                            <span class="rest-ficha-produto">${produto?.name || 'Produto removido'}</span>
-                            <span class="rest-badge">v${fichaAtiva.versao}</span>
-                            ${fichaAtiva.ativo ? '<span class="rest-badge rest-badge--ok">Ativa</span>' : '<span class="rest-badge rest-badge--off">Inativa</span>'}
-                        </div>
-                        <div class="rest-list-actions" style="align-items: center; gap: 8px;">
-                            <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">Editar Ficha</button>
-                            <button class="btn-sm" style="padding: 5px 8px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">Nova Versão</button>
-                        </div>
+                <div class="rest-ficha-card" style="display:flex; flex-direction:column; gap:10px; padding:12px;">
+                    <!-- Linha 1: Nome, versão e switch ativo/inativo -->
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="rest-ficha-produto" style="font-weight:600; font-size:1rem;">
+                            ${produto?.name || 'Produto removido'} <span style="color:var(--text-muted); font-size:0.8rem; margin-left:4px;">v${fichaAtiva.versao}</span>
+                        </span>
+                        <label class="switch" title="${fichaAtiva.ativo ? 'Desativar' : 'Ativar'}" style="margin-bottom:0;">
+                            <input type="checkbox" ${fichaAtiva.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleFicha('${fichaAtiva.id}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
                     </div>
-                    <div class="rest-ficha-itens">
-                        ${itens.map(it => `
-                            <span class="rest-ficha-item">
-                                ${it.insumos?.nome}: <strong>${it.quantidade} ${it.unidades_medida?.simbolo || ''}</strong>
-                                <em style="color:var(--text-muted)">(${fmtBRL(it.insumos?.custo_medio * it.quantidade)})</em>
-                            </span>`).join('')}
-                    </div>
-                    <div class="rest-ficha-footer">
+                    
+                    <!-- Linha 2: Informações (Sessão de informações primeiro) -->
+                    <div class="rest-ficha-footer" style="margin-top:0; border-top:none; padding-top:0; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; flex-wrap:wrap; gap:8px 12px; font-size:0.85rem;">
                         <span>💰 Custo: <strong>${fmtBRL(custo)}</strong></span>
                         ${produto?.price ? `<span>💵 Preço: <strong>${fmtBRL(produto.price)}</strong></span>` : ''}
                         ${margem !== null ? `<span>📈 Margem: <strong>${margem}%</strong></span>` : ''}
                         ${fichaAtiva.quantidade_produzida ? `<span>🍽️ Rende: ${fichaAtiva.quantidade_produzida} porções</span>` : ''}
                     </div>
+
+                    <!-- Linha 3: Ingredientes -->
+                    <div class="rest-ficha-itens" style="margin-top:0; font-size:0.85rem;">
+                        <p style="margin-bottom:6px; font-weight:600; color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">Ingredientes</p>
+                        ${itens.map(it => `
+                            <span class="rest-ficha-item" style="display:inline-block; margin-right:8px; margin-bottom:6px;">
+                                ${it.insumos?.nome}: <strong>${it.quantidade} ${it.unidades_medida?.simbolo || ''}</strong>
+                                <em style="color:var(--text-muted)">(${fmtBRL(it.insumos?.custo_medio * it.quantidade)})</em>
+                            </span>`).join('')}
+                    </div>
+
+                    <!-- Linha 4: Botões de ação -->
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                        <button class="btn-sm btn-edit" style="padding: 4px 10px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">Editar Ficha</button>
+                        <button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">Nova Versão</button>
+                        ${fichaAtiva.observacao ? `<button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(46,204,113,0.1); color:#2ecc71; border:1px solid rgba(46,204,113,0.2);" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖 Modo de Preparo</button>` : ''}
+                    </div>
                 </div>`;
             }).join('');
         });
     }
+
+    window.__RESTAURANTE.toggleFicha = async function (id, novoStatus) {
+        const { error } = await sb.from('ficha_tecnica').update({ ativo: novoStatus }).eq('id', id);
+        if (error) { toast('Erro ao alterar status da ficha.', 'error'); return; }
+        await carregarFichasTecnicas();
+        renderFichasTecnicas();
+    };
+
+    window.__RESTAURANTE.verPreparo = function(fichaId) {
+        let fichaEncontrada = null;
+        for (const f of state.fichasTecnicas) {
+            if (f.id === fichaId) {
+                fichaEncontrada = f;
+                break;
+            }
+        }
+        if (!fichaEncontrada) return;
+        document.getElementById('restPreparoNome').textContent = fichaEncontrada.products?.name || 'Produto';
+        document.getElementById('restPreparoTexto').innerHTML = (fichaEncontrada.observacao || 'Nenhum preparo informado.').replace(/\n/g, '<br>');
+        abrirModal('modalRestPreparo');
+    };
 
     window.__RESTAURANTE.novaFicha = function () {
         state.editingFichaId = null;
