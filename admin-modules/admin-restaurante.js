@@ -1117,7 +1117,7 @@
                     <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                         <button class="btn-sm btn-edit" style="padding: 4px 10px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">Editar Ficha</button>
                         <button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">Nova Versão</button>
-                        ${fichaAtiva.observacao ? `<button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(46,204,113,0.1); color:#2ecc71; border:1px solid rgba(46,204,113,0.2);" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖 Modo de Preparo</button>` : ''}
+                        ${fichaAtiva.observacoes ? `<button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(46,204,113,0.1); color:#2ecc71; border:1px solid rgba(46,204,113,0.2);" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖 Modo de Preparo</button>` : ''}
                     </div>
                 </div>`;
             }).join('');
@@ -1141,7 +1141,7 @@
         }
         if (!fichaEncontrada) return;
         document.getElementById('restPreparoNome').textContent = fichaEncontrada.products?.name || 'Produto';
-        document.getElementById('restPreparoTexto').innerHTML = (fichaEncontrada.observacao || 'Nenhum preparo informado.').replace(/\n/g, '<br>');
+        document.getElementById('restPreparoTexto').innerHTML = (fichaEncontrada.observacoes || 'Nenhum preparo informado.').replace(/\n/g, '<br>');
         abrirModal('modalRestPreparo');
     };
 
