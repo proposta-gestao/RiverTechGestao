@@ -698,7 +698,7 @@ window.removerAdmin = async (userId, email) => {
         // Desvincular usuário
         const { error } = await sb
             .from('usuarios')
-            .update({ empresa_id: null, role: 'atendente' }) // volta a ser atendente sem empresa ou cargo menor
+            .delete()
             .eq('id', userId);
 
         if (error) throw error;
