@@ -144,6 +144,17 @@
                 });
             }
 
+            // Eventos para cálculo dinâmico do custo do insumo
+            const inpCusto = document.getElementById('restInsumoCusto');
+            const inpQtd = document.getElementById('restInsumoQtdEmbalagem');
+            const selUnid = document.getElementById('restInsumoUnidade');
+            if (inpCusto && !inpCusto.dataset.calcInitialized) {
+                inpCusto.dataset.calcInitialized = 'true';
+                inpCusto.addEventListener('input', atualizarHintCustoInsumo);
+                if (inpQtd) inpQtd.addEventListener('input', atualizarHintCustoInsumo);
+                if (selUnid) selUnid.addEventListener('change', atualizarHintCustoInsumo);
+            }
+
             window.__RESTAURANTE_DADOS_CARREGADOS = true;
             console.log('[Restaurante] ✅ Módulo pronto!');
         } catch (err) {
@@ -632,6 +643,25 @@
         }).join('');
     }
 
+    function atualizarHintCustoInsumo() {
+        const valorPago = parseFloat(document.getElementById('restInsumoCusto').value) || 0;
+        const qtdEmbalagem = parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || 1;
+        const custoMedio = valorPago / (qtdEmbalagem > 0 ? qtdEmbalagem : 1);
+        
+        const selectUnidade = document.getElementById('restInsumoUnidade');
+        let simbolo = 'un';
+        if (selectUnidade && selectUnidade.selectedIndex >= 0) {
+            const txt = selectUnidade.options[selectUnidade.selectedIndex].text;
+            const match = txt.match(/\(([^)]+)\)/);
+            if (match) simbolo = match[1];
+        }
+        
+        const hintEl = document.getElementById('restInsumoCustoCalculadoHint');
+        if (hintEl) {
+            hintEl.innerHTML = `Custo por unidade de uso: <strong style="color:#fff;">R$ ${custoMedio.toFixed(4)}</strong> por <strong>${simbolo}</strong>`;
+        }
+    }
+
     window.__RESTAURANTE.novoInsumo = function () {
         state.editingInsumoId = null;
         document.getElementById('restInsumoId').value = '';
@@ -647,6 +677,11 @@
         document.getElementById('restInsumoControlaValidade').checked = false;
         document.getElementById('restInsumoAtivo').checked = true;
         document.getElementById('modalRestInsumo').querySelector('h3').textContent = '🧂 Novo Insumo';
+        
+        // Reset do hint de custo calculado
+        const hintEl = document.getElementById('restInsumoCustoCalculadoHint');
+        if (hintEl) hintEl.innerHTML = 'Custo por unidade de uso: R$ 0,0000';
+        
         abrirModal('modalRestInsumo');
     };
 
@@ -661,12 +696,20 @@
         document.getElementById('restInsumoUnidade').innerHTML = buildUnidadeOptions(ins.unidade_medida_id);
         document.getElementById('restInsumoUnidadeCompra').innerHTML = buildUnidadeOptions(ins.unidade_compra_id);
         document.getElementById('restInsumoQtdEmbalagem').value = ins.quantidade_por_embalagem || '';
-        document.getElementById('restInsumoCusto').value = ins.custo_medio || '';
+        
+        // Custo exibido é o preço pago pela embalagem inteira (custo_medio * quantidade_por_embalagem)
+        const valorPago = (ins.custo_medio || 0) * (ins.quantidade_por_embalagem || 1);
+        document.getElementById('restInsumoCusto').value = valorPago > 0 ? valorPago.toFixed(2) : (ins.custo_medio || '');
+        
         document.getElementById('restInsumoCodigo').value = ins.codigo_interno || '';
         document.getElementById('restInsumoControlaLote').checked = ins.controla_lote;
         document.getElementById('restInsumoControlaValidade').checked = ins.controla_validade;
         document.getElementById('restInsumoAtivo').checked = ins.ativo;
         document.getElementById('modalRestInsumo').querySelector('h3').textContent = '✏️ Editar Insumo';
+        
+        // Atualiza o hint de custo calculado
+        atualizarHintCustoInsumo();
+        
         abrirModal('modalRestInsumo');
     };
 
@@ -676,6 +719,12 @@
         if (!nome) { toast('Nome do insumo é obrigatório.', 'error'); return; }
         if (!unidadeId) { toast('Unidade de medida é obrigatória.', 'error'); return; }
         const tenantId = getTenantId();
+        
+        // Calcula o custo médio real (custo unitário de uso) dividindo o valor pago pela quantidade
+        const valorPago = parseFloat(document.getElementById('restInsumoCusto').value) || 0;
+        const qtdEmbalagem = parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || 1;
+        const custoMedio = valorPago / (qtdEmbalagem > 0 ? qtdEmbalagem : 1);
+        
         const payload = {
             empresa_id: tenantId,
             nome,
@@ -684,7 +733,7 @@
             unidade_medida_id: unidadeId,
             unidade_compra_id: document.getElementById('restInsumoUnidadeCompra').value || null,
             quantidade_por_embalagem: parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || null,
-            custo_medio: parseFloat(document.getElementById('restInsumoCusto').value) || 0,
+            custo_medio: custoMedio,
             codigo_interno: document.getElementById('restInsumoCodigo').value.trim() || null,
             controla_lote: document.getElementById('restInsumoControlaLote').checked,
             controla_validade: document.getElementById('restInsumoControlaValidade').checked,
