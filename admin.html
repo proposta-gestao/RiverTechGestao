@@ -2769,8 +2769,8 @@
                         <input type="text" id="restInsumoNome" placeholder="Ex: Hambúrguer Artesanal 180g">
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="restInsumoCodigo">Código Interno</label>
-                        <input type="text" id="restInsumoCodigo" placeholder="Opcional">
+                        <label for="restInsumoCodigo">Código Interno *</label>
+                        <input type="text" id="restInsumoCodigo" placeholder="Ex: 001">
                     </div>
                 </div>
                 <div class="form-row">
@@ -2791,7 +2791,7 @@
                     </div>
                     <div class="form-group" style="flex:1">
                         <label for="restInsumoCusto">Valor Pago na Embalagem/Compra *</label>
-                        <input type="number" id="restInsumoCusto" step="0.01" min="0" placeholder="Ex: 29.90">
+                        <input type="text" id="restInsumoCusto" placeholder="Ex: 1.200,00 ou 1200">
                         <small id="restInsumoCustoCalculadoHint" style="color:var(--primary); font-weight:600; display:block; margin-top:4px;">Custo por unidade de uso: R$ 0,0000</small>
                     </div>
                 </div>
@@ -2806,7 +2806,21 @@
                         <input type="number" id="restInsumoQtdEmbalagem" step="0.001" min="0" placeholder="Ex: 24 (unidades por caixa)">
                     </div>
                 </div>
-                <div class="form-row" style="gap:1rem; align-items:center;">
+                <!-- Estoque Inicial e Mínimo (só em novo insumo) -->
+                <div id="restInsumoEstoqueInicialRow" class="form-row" style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.07);">
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoEstoqueInicial">📦 Estoque Inicial</label>
+                        <input type="number" id="restInsumoEstoqueInicial" step="0.001" min="0" placeholder="0">
+                        <small style="color:var(--text-muted)">Qtd na unidade de compra</small>
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="restInsumoEstoqueMinimo">⚠️ Estoque Mínimo</label>
+                        <input type="number" id="restInsumoEstoqueMinimo" step="0.001" min="0" placeholder="0">
+                        <small style="color:var(--text-muted)">Qtd na unidade de uso</small>
+                    </div>
+                </div>
+
+                <div class="form-row" style="gap:1rem; align-items:center; margin-top:1rem;">
                     <label class="rest-toggle">
                         <input type="checkbox" id="restInsumoControlaLote">
                         <span>Controla Lote <small style="color:var(--text-muted)">(futuro)</small></span>
@@ -2819,14 +2833,6 @@
                         <input type="checkbox" id="restInsumoAtivo" checked>
                         <span>Ativo</span>
                     </label>
-                </div>
-                <!-- Estoque Inicial (só em novo insumo) -->
-                <div id="restInsumoEstoqueInicialRow" class="form-row" style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.07);">
-                    <div class="form-group" style="flex:1">
-                        <label for="restInsumoEstoqueInicial">📦 Estoque Inicial</label>
-                        <input type="number" id="restInsumoEstoqueInicial" step="0.001" min="0" placeholder="0">
-                        <small style="color:var(--text-muted)">Quantidade inicial em estoque — será adicionado ao depósito principal</small>
-                    </div>
                 </div>
             </div>
         </div>

@@ -669,8 +669,18 @@
         }).join('');
     }
 
+    function parseBRL(value) {
+        if (!value) return 0;
+        if (typeof value === 'number') return value;
+        let str = value.toString().trim();
+        if (str.includes(',')) {
+            str = str.replace(/\./g, '').replace(',', '.');
+        }
+        return parseFloat(str) || 0;
+    }
+
     function atualizarHintCustoInsumo() {
-        const valorPago = parseFloat(document.getElementById('restInsumoCusto').value) || 0;
+        const valorPago = parseBRL(document.getElementById('restInsumoCusto').value);
         const qtdEmbalagem = parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || 1;
 
         // Obtém fator de conversão da unidade de USO
@@ -730,6 +740,7 @@
         document.getElementById('restInsumoControlaValidade').checked = false;
         document.getElementById('restInsumoAtivo').checked = true;
         document.getElementById('restInsumoEstoqueInicial').value = '';
+        document.getElementById('restInsumoEstoqueMinimo').value = '';
         document.getElementById('restInsumoEstoqueInicialRow').style.display = 'flex'; // mostra em novo insumo
         document.getElementById('modalRestInsumo').querySelector('h3').textContent = '🧂 Novo Insumo';
         
@@ -767,6 +778,7 @@
         document.getElementById('restInsumoAtivo').checked = ins.ativo;
         document.getElementById('restInsumoEstoqueInicialRow').style.display = 'none'; // esconde em edição
         document.getElementById('restInsumoEstoqueInicial').value = '';
+        document.getElementById('restInsumoEstoqueMinimo').value = '';
         document.getElementById('modalRestInsumo').querySelector('h3').textContent = '✏️ Editar Insumo';
         
         // Atualiza o hint de custo calculado
@@ -778,23 +790,40 @@
     window.__RESTAURANTE.salvarInsumo = async function () {
         const nome = document.getElementById('restInsumoNome').value.trim();
         const unidadeId = document.getElementById('restInsumoUnidade').value;
+        const codigoInterno = document.getElementById('restInsumoCodigo').value.trim();
+
         if (!nome) { toast('Nome do insumo é obrigatório.', 'error'); return; }
         if (!unidadeId) { toast('Unidade de medida é obrigatória.', 'error'); return; }
+        if (!codigoInterno) { toast('Código Interno é obrigatório.', 'error'); return; }
+
         const tenantId = getTenantId();
-        
+
+        // Verifica se o código interno já existe para esta empresa
+        let queryValidaCod = sb.from('insumos')
+            .select('id')
+            .eq('empresa_id', tenantId)
+            .eq('codigo_interno', codigoInterno);
+        if (state.editingInsumoId) {
+            queryValidaCod = queryValidaCod.neq('id', state.editingInsumoId);
+        }
+        const { data: dataCod } = await queryValidaCod;
+        if (dataCod && dataCod.length > 0) {
+            toast('Já existe um insumo com este Código Interno.', 'error');
+            return;
+        }
+
         // Obtém fatores de conversão para cálculo correto do custo unitário
         const unidadeUsoId = document.getElementById('restInsumoUnidade').value;
         const unidadeCompraId = document.getElementById('restInsumoUnidadeCompra').value || unidadeUsoId;
         const fatorUso = getFator(unidadeUsoId);
         const fatorCompra = getFator(unidadeCompraId);
-        const valorPago = parseFloat(document.getElementById('restInsumoCusto').value) || 0;
+        const valorPago = parseBRL(document.getElementById('restInsumoCusto').value);
         const qtdEmbalagem = parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || 1;
 
         // Fórmula correta: valorPago / (qtdEmbalagem × fatorCompra / fatorUso)
         // Ex: R$2.400 / (24 kg × 1000 / 1) = R$0,10 por grama
         const custoMedio = calcularCustoMedio(valorPago, qtdEmbalagem, fatorCompra, fatorUso);
 
-        
         const payload = {
             empresa_id: tenantId,
             nome,
@@ -804,7 +833,7 @@
             unidade_compra_id: document.getElementById('restInsumoUnidadeCompra').value || null,
             quantidade_por_embalagem: parseFloat(document.getElementById('restInsumoQtdEmbalagem').value) || null,
             custo_medio: custoMedio,
-            codigo_interno: document.getElementById('restInsumoCodigo').value.trim() || null,
+            codigo_interno: codigoInterno,
             controla_lote: document.getElementById('restInsumoControlaLote').checked,
             controla_validade: document.getElementById('restInsumoControlaValidade').checked,
             ativo: document.getElementById('restInsumoAtivo').checked,
@@ -825,9 +854,15 @@
         // Converte para UNIDADE DE USO (ex: gramas) antes de salvar
         if (!state.editingInsumoId && savedId) {
             const estoqueInicialCompra = parseFloat(document.getElementById('restInsumoEstoqueInicial').value) || 0;
-            if (estoqueInicialCompra > 0) {
+            const estoqueMinimoCompra = parseFloat(document.getElementById('restInsumoEstoqueMinimo').value) || 0;
+            
+            if (estoqueInicialCompra > 0 || estoqueMinimoCompra > 0) {
                 // Converte para unidade de uso: qtd_compra × fatorCompra / fatorUso
                 const estoqueInicialUso = estoqueInicialCompra * fatorCompra / fatorUso;
+                
+                // O usuário digita o estoque mínimo já na unidade de USO (conforme hint na UI)
+                const estoqueMinimoUso = estoqueMinimoCompra;
+
                 // Pega o depósito principal (primeiro ativo)
                 const depositoPrincipal = state.depositos.find(d => d.ativo);
                 if (depositoPrincipal) {
@@ -836,19 +871,22 @@
                         insumo_id: savedId,
                         deposito_id: depositoPrincipal.id,
                         estoque_atual: estoqueInicialUso,
-                        estoque_minimo: 0,
+                        estoque_minimo: estoqueMinimoUso,
                         atualizado_em: new Date().toISOString(),
                     }, { onConflict: 'empresa_id,insumo_id,deposito_id' });
-                    // Registra movimentação de estoque inicial
-                    await sb.from('movimentacoes_insumos').insert({
-                        empresa_id: tenantId,
-                        insumo_id: savedId,
-                        deposito_id: depositoPrincipal.id,
-                        tipo: 'entrada',
-                        quantidade: estoqueInicialUso,
-                        custo_unitario: custoMedio,
-                        observacao: 'Estoque inicial',
-                    });
+                    
+                    // Registra movimentação de estoque inicial se houver quantidade
+                    if (estoqueInicialUso > 0) {
+                        await sb.from('movimentacoes_insumos').insert({
+                            empresa_id: tenantId,
+                            insumo_id: savedId,
+                            deposito_id: depositoPrincipal.id,
+                            tipo: 'entrada',
+                            quantidade: estoqueInicialUso,
+                            custo_unitario: custoMedio,
+                            observacao: 'Estoque inicial',
+                        });
+                    }
                 }
             }
         }
