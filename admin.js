@@ -2032,9 +2032,13 @@ window.selecionarImagemGaleria = (url, element, isCompletoStr) => {
 const elBtnUploadNovaImagem = document.getElementById('btnUploadNovaImagem');
 if (elBtnUploadNovaImagem) {
     elBtnUploadNovaImagem.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        await handleImageUpload(file);
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        if (typeof handleMultipleImageUpload === 'function') {
+            await handleMultipleImageUpload(files);
+        } else {
+            await handleImageUpload(files[0]);
+        }
         e.target.value = '';
     };
 }
@@ -2068,6 +2072,32 @@ async function handleCloudinaryUpload(file, subfolder = 'produtos') {
         window.showToast?.('Erro ao subir imagem: ' + error.message, 'error');
         return null;
     }
+}
+
+async function handleMultipleImageUpload(files) {
+    if (!files || files.length === 0) return;
+    
+    // Calcula quantas fotos ainda cabem (máximo 5)
+    const espacoDisponivel = 5 - currentProductImages.length;
+    
+    if (espacoDisponivel <= 0) {
+        showToast('Limite de 5 imagens atingido.', 'warning');
+        document.getElementById('uploadImagem').value = '';
+        return;
+    }
+    
+    // Pega apenas as primeiras imagens que cabem no limite
+    const filesArray = Array.from(files).slice(0, espacoDisponivel);
+    
+    if (files.length > espacoDisponivel) {
+        showToast(`Apenas ${espacoDisponivel} foto(s) foram selecionadas para respeitar o limite de 5.`, 'warning');
+    }
+    
+    for (const file of filesArray) {
+        await handleImageUpload(file);
+    }
+    
+    document.getElementById('uploadImagem').value = '';
 }
 
 async function handleImageUpload(file) {

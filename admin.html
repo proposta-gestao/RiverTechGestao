@@ -1796,7 +1796,7 @@
                 </div>
                 
                 <input type="hidden" id="prodImagemSelecionada">
-                <input type="file" id="uploadImagem" accept="image/*" style="display:none;" onchange="handleImageUpload(this.files[0])">
+                <input type="file" id="uploadImagem" accept="image/*" multiple style="display:none;" onchange="if(typeof handleMultipleImageUpload === 'function') handleMultipleImageUpload(this.files); else handleImageUpload(this.files[0]);">
 
                 <!-- COMENTADO: Galeria completa desativada - requer autenticação privada do Cloudinary -->
                 <!-- <div style="margin-top: 15px;">
@@ -2138,7 +2138,7 @@
                     <!-- Grade de miniaturas (preenchida por JS) -->
                     <div id="lojaGaleriaGrid" style="display:flex; gap:10px; flex-wrap:wrap; min-height:44px;"></div>
                     <input type="hidden" id="lojaProdImageUrl">
-                    <input type="file" id="lojaUploadImagem" accept="image/*" style="display:none;" onchange="window.__LOJA.uploadImagem(this.files[0])">
+                    <input type="file" id="lojaUploadImagem" accept="image/*" multiple style="display:none;" onchange="window.__LOJA.uploadImagemMultiple(this.files)">
                     <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">A 1ª foto é a imagem principal. Clique na estrela ⭐ para definir a favorita.</p>
                 </div>
 

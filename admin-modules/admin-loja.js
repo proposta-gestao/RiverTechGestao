@@ -449,7 +449,36 @@ async function _sincronizarGaleriaImagens(produtoId) {
     if (error) console.error('[Galeria] Erro ao sincronizar:', error);
 }
 
-window.__LOJA.uploadImagem = async function(file) {
+window.__LOJA.uploadImagemMultiple = async function(files) {
+    if (!files || files.length === 0) return;
+    
+    // Calcula quantas fotos ainda cabem (máximo 5)
+    const espacoDisponivel = 5 - lojaCurrentProdImages.length;
+    
+    if (espacoDisponivel <= 0) {
+        showToast('Limite de 5 imagens atingido.', 'warning');
+        document.getElementById('lojaUploadImagem').value = '';
+        return;
+    }
+    
+    // Pega apenas as primeiras imagens que cabem no limite
+    const filesArray = Array.from(files).slice(0, espacoDisponivel);
+    
+    if (files.length > espacoDisponivel) {
+        showToast(`Apenas ${espacoDisponivel} foto(s) foram selecionadas para respeitar o limite de 5.`, 'warning');
+    }
+    
+    // Reutiliza a lógica de upload individual para cada arquivo
+    for (const file of filesArray) {
+        await window.__LOJA.uploadImagem(file, false); // passa um flag opcional para não limpar o input a cada iteração (se necessário, ou limpar só no final)
+    }
+    
+    // Limpa o input no final
+    document.getElementById('lojaUploadImagem').value = '';
+};
+
+// Modifiquei a assinatura para aceitar um flag clearInput
+window.__LOJA.uploadImagem = async function(file, clearInput = true) {
     if (!file) return;
     if (lojaCurrentProdImages.length >= 5) {
         showToast('Limite de 5 imagens atingido.', 'warning');
@@ -471,8 +500,9 @@ window.__LOJA.uploadImagem = async function(file) {
     } finally {
         btn.disabled = lojaCurrentProdImages.length >= 5;
         btn.innerText = '+ Adicionar Foto';
-        // Limpar input para permitir re-seleção do mesmo arquivo
-        document.getElementById('lojaUploadImagem').value = '';
+        if (clearInput) {
+            document.getElementById('lojaUploadImagem').value = '';
+        }
     }
 };
 
