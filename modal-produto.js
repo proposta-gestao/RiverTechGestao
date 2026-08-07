@@ -337,33 +337,64 @@
 
     function _updateBotaoCompra() {
         const btn = document.getElementById('mp-btn-comprar');
-        const texto = document.getElementById('mp-btn-texto');
-        if (!btn || !texto) return;
+        if (!btn) return;
 
         const variacao = _getVariacaoSelecionada();
+        const iconSvg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`;
 
-        if (!selectedSize || !selectedColor) {
+        const temCores = variacoes.some(v => !!v.cor);
+        const temTamanhos = variacoes.some(v => !!v.tamanho);
+        
+        let pendente = false;
+        if (temCores && temTamanhos) {
+            if (!selectedSize || !selectedColor) pendente = true;
+        } else if (temCores) {
+            if (!selectedColor) pendente = true;
+        } else if (temTamanhos) {
+            if (!selectedSize) pendente = true;
+        }
+
+        if (pendente) {
             btn.disabled = true;
-            texto.textContent = 'Selecione tamanho e cor';
+            const falta = (temCores && temTamanhos) ? 'tamanho e cor' : (temCores ? 'a cor' : 'o tamanho');
+            btn.innerHTML = `${iconSvg} <span>Selecione ${falta}</span>`;
             btn.classList.remove('ready');
             return;
         }
 
         if (!variacao || variacao.estoque <= 0) {
             btn.disabled = true;
-            texto.textContent = 'Indisponível';
+            btn.innerHTML = `${iconSvg} <span>Indisponível</span>`;
             btn.classList.remove('ready');
             return;
         }
 
         btn.disabled = false;
-        texto.textContent = 'Comprar agora';
+        btn.innerHTML = `${iconSvg} <span>Comprar Agora</span>`;
         btn.classList.add('ready');
     }
 
     function _getVariacaoSelecionada() {
-        if (!selectedSize || !selectedColor) return null;
-        return variacoes.find(v => v.tamanho === selectedSize && v.cor === selectedColor) || null;
+        const temCores = variacoes.some(v => !!v.cor);
+        const temTamanhos = variacoes.some(v => !!v.tamanho);
+
+        let pendente = false;
+        if (temCores && temTamanhos) {
+            if (!selectedSize || !selectedColor) pendente = true;
+        } else if (temCores) {
+            if (!selectedColor) pendente = true;
+        } else if (temTamanhos) {
+            if (!selectedSize) pendente = true;
+        }
+        
+        if (pendente) return null;
+
+        return variacoes.find(v => {
+            let match = true;
+            if (temCores && selectedColor && v.cor !== selectedColor) match = false;
+            if (temTamanhos && selectedSize && v.tamanho !== selectedSize) match = false;
+            return match;
+        }) || null;
     }
 
     /* ══════════════════════════════════════════════

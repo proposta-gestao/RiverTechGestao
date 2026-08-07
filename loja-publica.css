@@ -611,7 +611,7 @@ body {
    9. CARROSSEL
    ══════════════════════════════════════════════ */
 .carousel { width:100%; display:flex; flex-direction:column; }
-.carousel-viewport { position:relative; width:100%; aspect-ratio:3/4; overflow:hidden; background:#0a0a0a; cursor:zoom-in; }
+.carousel-viewport { position:relative; width:100%; aspect-ratio:3/4; overflow:hidden; background:#0a0a0a; cursor:zoom-in; touch-action: pan-y; }
 .carousel-track { width:100%; height:100%; position:relative; }
 .carousel-slide {
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -907,10 +907,30 @@ body {
 @media (max-width: 900px) {
   /* Modal de Produto */
   .modal-content { grid-template-columns:1fr; max-height:100vh; height:100vh; border-radius:0; max-width:100%; }
-  .modal-left { border-radius:0; max-height:50vh; }
-  .modal-right { padding:1.4rem; }
+  .modal-left { border-radius:0; max-height:none; }
+  .modal-right { padding:1.4rem; padding-bottom: 2rem; position: relative; }
   .modal-backdrop { padding:0; }
   .modal-close { top:12px; right:12px; }
+  
+  /* Ajustes Carrossel Mobile */
+  .carousel-viewport { aspect-ratio:1/1 !important; }
+  .carousel-btn { opacity:1 !important; width:36px; height:36px; }
+  .carousel-thumbs { padding: 8px 12px; }
+  
+  /* Botão Comprar Sticky */
+  .mp-btn-comprar {
+    position: sticky;
+    bottom: -1.4rem; /* compensar o padding do modal-right */
+    margin-left: -1.4rem;
+    margin-right: -1.4rem;
+    margin-top: 1rem;
+    width: calc(100% + 2.8rem);
+    border-radius: 0;
+    padding: 16px;
+    z-index: 50;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.3);
+  }
+
   /* Checkout */
   .loja-checkout-content { border-radius:0; max-width:100%; max-height:100vh; height:100vh; }
 }
@@ -944,6 +964,6 @@ body {
   .card-btn-ver { padding:10px; font-size:0.82rem; }
   .var-chip { padding:6px 12px; font-size:0.82rem; }
   .var-color { width:36px; height:36px; }
-  .modal-left { max-height:40vh; }
+  .modal-left { max-height:none; }
   .loja-hero { min-height:260px; padding:2rem 1rem; }
 }
