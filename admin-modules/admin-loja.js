@@ -543,6 +543,8 @@ window.atualizarPreviewCombinacoes = function() {
         return;
     }
 
+    const hasEstoque = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
+
     div.style.display = 'block';
     let html = '';
     
