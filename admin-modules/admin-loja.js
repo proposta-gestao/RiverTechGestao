@@ -275,7 +275,16 @@ window.__LOJA.editarProduto = async function(id) {
         .order('ordem', { ascending: true });
     
     if (galeriaData && galeriaData.length > 0) {
-        lojaCurrentProdImages = galeriaData.map(g => ({ id: g.id, url: g.url, ordem: g.ordem || 0, produto_id: g.produto_id }));
+        // Remove duplicatas locais (caso o banco tenha ficado com lixo de bugs anteriores)
+        const unique = [];
+        const seen = new Set();
+        galeriaData.forEach(g => {
+            if (!seen.has(g.url)) {
+                seen.add(g.url);
+                unique.push({ id: g.id, url: g.url, ordem: g.ordem || 0, produto_id: g.produto_id });
+            }
+        });
+        lojaCurrentProdImages = unique;
     } else {
         // Compatibilidade: imagem_url antiga
         lojaCurrentProdImages = prod.imagem_url ? [{ id: null, url: prod.imagem_url, ordem: 0, produto_id: id }] : [];
