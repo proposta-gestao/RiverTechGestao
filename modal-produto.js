@@ -231,13 +231,23 @@
     // Troca a foto do carrossel para a imagem específica da variação selecionada
     function _atualizarFotoVariacao() {
         if (!carousel) return;
-        if (!selectedColor && !selectedSize) return;
+
+        // Verifica o que o produto exige
+        const temCores = variacoes.some(v => !!v.cor);
+        const temTamanhos = variacoes.some(v => !!v.tamanho);
+
+        // Só muda a foto quando todas as dimensões disponíveis no produto estiverem selecionadas
+        if (temCores && temTamanhos) {
+            if (!selectedColor || !selectedSize) return;
+        } else {
+            if (!selectedColor && !selectedSize) return;
+        }
 
         // Procura a variação que bate com a seleção atual
         const variacao = variacoes.find(v => {
             let match = true;
-            if (selectedColor && v.cor !== selectedColor) match = false;
-            if (selectedSize && v.tamanho !== selectedSize) match = false;
+            if (temCores && selectedColor && v.cor !== selectedColor) match = false;
+            if (temTamanhos && selectedSize && v.tamanho !== selectedSize) match = false;
             return match;
         });
 
