@@ -95,12 +95,24 @@
         if (carouselEl) {
             if (carousel) carousel.destroy();
             carousel = new ProductCarousel(carouselEl);
-            // galeria_imagens.url (coluna url na tabela)
-            const galeria = (prod.galeria_imagens || []).slice().sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-            const imgs = galeria.length > 0
-                ? galeria.map(g => g.url).filter(Boolean)
-                : [prod.imagem_url].filter(Boolean);
-            carousel.setImages(imgs);
+            
+            // 1. Galeria de imagens ordenada
+            const galeria = (prod.galeria_imagens || []).slice().sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(g => g.url).filter(Boolean);
+            
+            // 2. Capa principal (se não estiver na galeria)
+            if (prod.imagem_url && !galeria.includes(prod.imagem_url)) {
+                galeria.unshift(prod.imagem_url);
+            }
+            
+            // 3. Imagens específicas das variações (se não estiverem na galeria)
+            const varImgs = (prod.loja_variacoes || []).map(v => v.imagem_url).filter(Boolean);
+            varImgs.forEach(url => {
+                if (!galeria.includes(url)) {
+                    galeria.push(url);
+                }
+            });
+
+            carousel.setImages(galeria.length > 0 ? galeria : []);
             window._lojaCarousel = carousel;
         }
 
@@ -218,18 +230,23 @@
 
     // Troca a foto do carrossel para a imagem específica da variação selecionada
     function _atualizarFotoVariacao() {
-        if (!carousel || !selectedColor) return;
-        // Procura a variação que bate com a cor selecionada (+ tamanho se já escolhido)
+        if (!carousel) return;
+        if (!selectedColor && !selectedSize) return;
+
+        // Procura a variação que bate com a seleção atual
         const variacao = variacoes.find(v => {
-            if (selectedSize) return v.cor === selectedColor && v.tamanho === selectedSize;
-            return v.cor === selectedColor;
+            let match = true;
+            if (selectedColor && v.cor !== selectedColor) match = false;
+            if (selectedSize && v.tamanho !== selectedSize) match = false;
+            return match;
         });
-        if (variacao?.imagem_url) {
-            // Injetar a foto da variação no início do carrossel e ir para ela
-            const galeria = (produto.galeria_imagens || []).slice().sort((a,b) => (a.ordem||0)-(b.ordem||0)).map(g => g.url).filter(Boolean);
-            const todasFotos = [variacao.imagem_url, ...galeria.filter(u => u !== variacao.imagem_url)];
-            if (produto.imagem_url && !todasFotos.includes(produto.imagem_url)) todasFotos.push(produto.imagem_url);
-            carousel.setImages(todasFotos);
+
+        if (variacao && variacao.imagem_url) {
+            const index = carousel.images.indexOf(variacao.imagem_url);
+            if (index !== -1) {
+                // Navega de forma suave para a imagem da variação
+                carousel.goTo(index);
+            }
         }
     }
 
