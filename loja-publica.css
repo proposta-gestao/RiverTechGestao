@@ -907,15 +907,26 @@ body {
 @media (max-width: 900px) {
   /* Modal de Produto */
   .modal-content { grid-template-columns:1fr; max-height:100vh; height:100vh; border-radius:0; max-width:100%; }
-  .modal-left { border-radius:0; max-height:none; }
   .modal-right { padding:1.4rem; padding-bottom: 100px !important; position: relative; }
   .modal-backdrop { padding:0; }
-  .modal-close { top:12px; right:12px; }
-  
   /* Ajustes Carrossel Mobile */
-  .carousel-viewport { aspect-ratio:1/1 !important; touch-action: none !important; }
+  .carousel-viewport { aspect-ratio:4/3 !important; touch-action: pan-y pinch-zoom !important; }
   .carousel-btn { opacity:1 !important; width:36px; height:36px; }
-  .carousel-thumbs { padding: 8px 12px; }
+  .carousel-thumbs { padding: 12px; }
+  
+  /* Botão Voltar Mobile */
+  .modal-close { 
+    top: 12px; left: 12px; right: auto; 
+    width: auto; height: 38px; padding: 0 16px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(10px);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .modal-close svg { display: none; }
+  .modal-close::before { content: "←"; font-size: 1.2rem; font-weight: bold; margin-right: 6px; }
+  .modal-close::after { content: "Voltar"; font-size: 0.88rem; font-weight: 600; }
   
   /* Botão Comprar Fixo no Rodapé da Tela */
   .mp-btn-comprar {

@@ -99,20 +99,32 @@
             // 1. Galeria de imagens ordenada
             const galeria = (prod.galeria_imagens || []).slice().sort((a, b) => (a.ordem || 0) - (b.ordem || 0)).map(g => g.url).filter(Boolean);
             
+            // Deduplicador de URLs para lidar com resíduos de banco de dados
+            const uniqueGaleria = [];
+            const seenUrls = new Set();
+            galeria.forEach(url => {
+                if (!seenUrls.has(url)) {
+                    seenUrls.add(url);
+                    uniqueGaleria.push(url);
+                }
+            });
+
             // 2. Capa principal (se não estiver na galeria)
-            if (prod.imagem_url && !galeria.includes(prod.imagem_url)) {
-                galeria.unshift(prod.imagem_url);
+            if (prod.imagem_url && !seenUrls.has(prod.imagem_url)) {
+                uniqueGaleria.unshift(prod.imagem_url);
+                seenUrls.add(prod.imagem_url);
             }
             
             // 3. Imagens específicas das variações (se não estiverem na galeria)
             const varImgs = (prod.loja_variacoes || []).map(v => v.imagem_url).filter(Boolean);
             varImgs.forEach(url => {
-                if (!galeria.includes(url)) {
-                    galeria.push(url);
+                if (!seenUrls.has(url)) {
+                    seenUrls.add(url);
+                    uniqueGaleria.push(url);
                 }
             });
 
-            carousel.setImages(galeria.length > 0 ? galeria : []);
+            carousel.setImages(uniqueGaleria.length > 0 ? uniqueGaleria : []);
             window._lojaCarousel = carousel;
         }
 
@@ -126,6 +138,50 @@
         backdrop.classList.add('active');
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', _onKeyDown);
+
+        // --- Swipe Down to Close (Mobile) ---
+        modal = document.getElementById('modalProdutoContent');
+        if (modal) {
+            let startY = 0;
+            let startScrollTop = 0;
+            let isDraggingDown = false;
+            
+            modal._swipeHandler = (e) => {
+                // Não intercepta se o toque foi dentro do carrossel para não conflitar com zoom/swipe de foto
+                if (e.target.closest('#mp-carousel')) return;
+                
+                if (e.type === 'touchstart') {
+                    startY = e.touches[0].clientY;
+                    startScrollTop = modal.scrollTop;
+                    isDraggingDown = false;
+                    modal.style.transition = 'none';
+                } else if (e.type === 'touchmove') {
+                    if (startScrollTop <= 0) { // No topo do modal
+                        const diffY = e.touches[0].clientY - startY;
+                        if (diffY > 0) { // Arrastando para baixo
+                            isDraggingDown = true;
+                            modal.style.transform = `translateY(${diffY}px)`;
+                            if (e.cancelable) e.preventDefault();
+                        }
+                    }
+                } else if (e.type === 'touchend') {
+                    if (isDraggingDown) {
+                        const diffY = e.changedTouches[0].clientY - startY;
+                        if (diffY > 120) {
+                            fechar();
+                        } else {
+                            modal.style.transition = 'transform 0.3s ease';
+                            modal.style.transform = '';
+                        }
+                        isDraggingDown = false;
+                    }
+                }
+            };
+            
+            modal.addEventListener('touchstart', modal._swipeHandler, { passive: true });
+            modal.addEventListener('touchmove', modal._swipeHandler, { passive: false });
+            modal.addEventListener('touchend', modal._swipeHandler);
+        }
     }
 
     /* ══════════════════════════════════════════════
@@ -139,6 +195,16 @@
         document.removeEventListener('keydown', _onKeyDown);
 
         if (carousel) { carousel.destroy(); carousel = null; }
+        
+        if (modal && modal._swipeHandler) {
+            modal.removeEventListener('touchstart', modal._swipeHandler);
+            modal.removeEventListener('touchmove', modal._swipeHandler);
+            modal.removeEventListener('touchend', modal._swipeHandler);
+            modal.style.transform = '';
+            modal.style.transition = '';
+            delete modal._swipeHandler;
+        }
+        
         produto = null;
         selectedSize = null;
         selectedColor = null;
