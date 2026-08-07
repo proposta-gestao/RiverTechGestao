@@ -432,12 +432,29 @@ function _renderGaleriaGrid() {
 
 // Sincroniza lojaCurrentProdImages com a tabela galeria_imagens
 async function _sincronizarGaleriaImagens(produtoId) {
-    // Apagar registros antigos deste produto
-    await sb.from('galeria_imagens').delete().eq('produto_id', produtoId);
+    if (!produtoId) return;
+
+    // Apagar registros antigos deste produto usando a função RPC para contornar falhas silenciosas de RLS
+    const { error: delError } = await sb.rpc('delete_galeria_by_produto', { p_produto_id: produtoId });
+    if (delError) {
+        console.error('[Galeria] Erro ao deletar antigas (RPC):', delError);
+        // Fallback para delete direto caso RPC falhe ou não exista
+        await sb.from('galeria_imagens').delete().eq('produto_id', produtoId);
+    }
     
     if (lojaCurrentProdImages.length === 0) return;
 
-    const registros = lojaCurrentProdImages.map((img, idx) => ({
+    // Remover duplicatas exatas de URL (caso existam no array local por algum bug)
+    const uniqueImages = [];
+    const seenUrls = new Set();
+    for (const img of lojaCurrentProdImages) {
+        if (!seenUrls.has(img.url)) {
+            seenUrls.add(img.url);
+            uniqueImages.push(img);
+        }
+    }
+
+    const registros = uniqueImages.map((img, idx) => ({
         empresa_id: getTenantId(),
         produto_id: produtoId,
         url: img.url,
