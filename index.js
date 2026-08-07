@@ -13,6 +13,15 @@ function formatCurrency(val) {
     return (parseFloat(val) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
+// Retorna o estoque efetivo com base no tipo de controle do produto
+function getEstoqueEfetivo(produto) {
+    if (!produto) return 0;
+    if (produto.controle_estoque === 'ficha_tecnica') {
+        return produto.estoque_calculado != null ? produto.estoque_calculado : 0;
+    }
+    return produto.stock != null ? produto.stock : 0;
+}
+
 // --- Dados dinâmicos (Supabase) ---
 let PRODUTOS = [];
 let CATEGORIAS = [];
@@ -366,14 +375,6 @@ function renderMenu() {
         const matchCat = state.categoriaAtiva === 'todos' || p.catSlug === state.categoriaAtiva || p.cat === state.categoriaAtiva;
         return matchBusca && matchCat;
     });
-
-// Retorna o estoque efetivo com base no tipo de controle do produto
-function getEstoqueEfetivo(produto) {
-    if (produto.controle_estoque === 'ficha_tecnica') {
-        return produto.estoque_calculado != null ? produto.estoque_calculado : 0;
-    }
-    return produto.stock != null ? produto.stock : 0;
-}
 
     // Ordena: disponíveis primeiro, esgotados no final
     filtrados.sort((a, b) => {
