@@ -135,7 +135,24 @@ async function carregarProdutos() {
     if (error) throw error;
     PRODUTOS = (data || []).map(p => {
         // Garantir que temos um array de imagens
-        const imgs = Array.isArray(p.image_url) ? p.image_url : (p.image_url ? [p.image_url] : []);
+        let imgs = [];
+        if (Array.isArray(p.image_url)) {
+            imgs = p.image_url;
+        } else if (typeof p.image_url === 'string') {
+            try {
+                imgs = JSON.parse(p.image_url);
+                if (!Array.isArray(imgs)) imgs = [p.image_url];
+            } catch (e) {
+                // Tenta dividir por vírgula se for uma string simples com várias URLs (backup)
+                if (p.image_url.includes(',')) {
+                    imgs = p.image_url.split(',').map(s => s.trim());
+                } else {
+                    imgs = [p.image_url];
+                }
+            }
+        } else if (p.image_url) {
+            imgs = [p.image_url];
+        }
         return {
             id: p.id,
             nome: p.name,
