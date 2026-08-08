@@ -274,20 +274,20 @@ document.getElementById('btnLogin').onclick = async () => {
         }
 
         // Check if admin (SaaS aware)
-        let { data: adminData, error: adminError } = await sb.from('admin_users').select('id').eq('user_id', data.user.id).single();
+        let { data: adminData, error: adminError } = await sb.from('admin_users').select('id, senha_alterada').eq('user_id', data.user.id).single();
 
         // Fallback 1: Verificar se é Super Admin
         const { data: isSuper } = await sb.rpc('is_super_admin', { _user_id: data.user.id });
         
         if (isSuper) {
             console.info('[Admin] Super Admin detectado. Ignorando verificações de permissão local.');
-            adminData = { id: 'super-admin', role: 'super' };
+            adminData = { id: 'super-admin', role: 'super', senha_alterada: true };
             adminError = null;
         } else if (adminError || !adminData) {
             // Fallback 2: Verificar na tabela de usuários do SaaS caso a tabela legada não tenha o registro
             const { data: saasUser, error: saasError } = await sb
                 .from('usuarios')
-                .select('id, role')
+                .select('id, role, senha_alterada')
                 .eq('id', data.user.id)
                 .eq('role', 'admin')
                 .single();
@@ -318,10 +318,68 @@ document.getElementById('btnLogin').onclick = async () => {
             return;
         }
 
-        await showAdmin();
-
         // Reiniciar o botão visualmente caso deslogue depois
         btn.disabled = false;
+             // Force password change on first login
+        if (adminData.senha_alterada === false) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('firstLoginScreen').style.display = 'flex';
+            
+            // Set up save button listener once
+            const btnSaveNew = document.getElementById('btnSaveNewPassword');
+            btnSaveNew.onclick = async () => {
+                const pass1 = document.getElementById('newPassword').value;
+                const pass2 = document.getElementById('confirmNewPassword').value;
+                const errFirst = document.getElementById('firstLoginError');
+                
+                if (!pass1 || !pass2) {
+                    errFirst.textContent = 'Preencha os dois campos.';
+                    errFirst.style.display = 'block';
+                    return;
+                }
+                if (pass1.length < 6) {
+                    errFirst.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+                    errFirst.style.display = 'block';
+                    return;
+                }
+                if (pass1 !== pass2) {
+                    errFirst.textContent = 'As senhas não coincidem.';
+                    errFirst.style.display = 'block';
+                    return;
+                }
+                
+                btnSaveNew.disabled = true;
+                btnSaveNew.textContent = 'Salvando...';
+                errFirst.style.display = 'none';
+                
+                const { error: updateAuthErr } = await sb.auth.updateUser({ password: pass1 });
+                if (updateAuthErr) {
+                    errFirst.textContent = 'Erro ao atualizar a senha: ' + updateAuthErr.message;
+                    errFirst.style.display = 'block';
+                    btnSaveNew.disabled = false;
+                    btnSaveNew.textContent = 'Salvar e Continuar';
+                    return;
+                }
+                
+                // Update DB to mark as changed
+                if (adminData.role === 'admin' && adminData.id) {
+                    await sb.from('usuarios').update({ senha_alterada: true }).eq('id', adminData.id);
+                } else {
+                    await sb.from('admin_users').update({ senha_alterada: true }).eq('user_id', data.user.id);
+                }
+                
+                document.getElementById('firstLoginScreen').style.display = 'none';
+                document.getElementById('adminLayout').style.display = 'flex';
+                await showAdmin();
+            };
+            return;
+        }
+
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminLayout').style.display = 'flex';
+
+        await showAdmin();
+
         btn.textContent = 'Entrar';
 
     } catch (err) {
