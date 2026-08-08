@@ -1047,8 +1047,10 @@ function aplicarFiltrosDeModulos() {
 
     // 7. EXTRAS
     const mCardapio = isModuloAtivo('cardapio');
+    const mLojaBtn = isModuloAtivo('loja_roupas');
+    const mAgendaBtn = isModuloAtivo('agendamento_ativo');
     const btnCardapio = document.querySelector('.btn-link-cardapio');
-    if (btnCardapio) toggleElement(btnCardapio, mCardapio);
+    if (btnCardapio) toggleElement(btnCardapio, mCardapio || mLojaBtn || mAgendaBtn);
 
     // 8. LOJA DE ROUPAS
     const mLoja = isModuloAtivo('loja_roupas');
