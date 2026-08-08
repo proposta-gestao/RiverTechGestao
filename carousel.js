@@ -234,9 +234,11 @@ class ProductCarousel {
         if (!this.isDragging) return;
         this.touchDeltaX = e.touches[0].clientX - this.touchStartX;
         const deltaY = Math.abs(e.touches[0].clientY - this.touchStartY);
-        // Se movimento horizontal > vertical, prevenir scroll da página
+        // Se movimento horizontal > vertical, prevenir scroll da página E bloquear propagação
+        // para que o handler do modal pai não aplique translateY na foto
         if (Math.abs(this.touchDeltaX) > deltaY && Math.abs(this.touchDeltaX) > 10) {
             e.preventDefault();
+            e.stopPropagation(); // impede que o modal pai receba e desloque a foto verticalmente
         }
     }
 

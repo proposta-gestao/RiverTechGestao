@@ -143,8 +143,9 @@
         modal = document.getElementById('modalProdutoContent');
         if (modal) {
             let startY = 0;
-            let startScrollTop = 0;
             let isDraggingDown = false;
+            // Flag: se o usuário rolou para cima (scrollTop > 0) no início do gesto, cancelar drag
+            let gestureStartedAtTop = false;
             
             modal._swipeHandler = (e) => {
                 // Não intercepta se o toque foi dentro do carrossel para não conflitar com zoom/swipe de foto
@@ -152,17 +153,35 @@
                 
                 if (e.type === 'touchstart') {
                     startY = e.touches[0].clientY;
-                    startScrollTop = modal.scrollTop;
                     isDraggingDown = false;
+                    // Só habilita o arrasto se o modal estiver no topo no início do gesto
+                    gestureStartedAtTop = (modal.scrollTop <= 0);
                     modal.style.transition = 'none';
                 } else if (e.type === 'touchmove') {
-                    if (startScrollTop <= 0) { // No topo do modal
+                    // Só faz drag se o gesto começou com o modal no topo
+                    // E verifica novamente que ainda está no topo (não houve scroll durante o gesto)
+                    if (gestureStartedAtTop && modal.scrollTop <= 0) {
                         const diffY = e.touches[0].clientY - startY;
                         if (diffY > 0) { // Arrastando para baixo
                             isDraggingDown = true;
                             modal.style.transform = `translateY(${diffY}px)`;
                             if (e.cancelable) e.preventDefault();
+                        } else {
+                            // Usuário está tentando rolar para cima mas já está no topo:
+                            // reseta o drag para não acionar o fechar
+                            if (isDraggingDown) {
+                                modal.style.transform = '';
+                                isDraggingDown = false;
+                            }
                         }
+                    } else {
+                        // Modal foi rolado — cancela qualquer drag em andamento
+                        if (isDraggingDown) {
+                            modal.style.transition = 'transform 0.2s ease';
+                            modal.style.transform = '';
+                            isDraggingDown = false;
+                        }
+                        gestureStartedAtTop = false;
                     }
                 } else if (e.type === 'touchend') {
                     if (isDraggingDown) {
