@@ -727,6 +727,7 @@
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
                         <button class="subtab-btn" data-subtab="config-equipe">Equipe / Atendentes</button>
                         <button class="subtab-btn" data-subtab="config-whatsapp">WhatsApp</button>
+                        <button class="subtab-btn" data-subtab="config-pagamentos">💳 Pagamentos</button>
                     </div>
                 </div>
 
@@ -1158,6 +1159,80 @@
                     </div>
                 </div>
                 <!-- Subtabs de Premium movidos para Area Premium -->
+                
+                <!-- Subtab: Pagamentos -->
+                <div class="subtab-content" id="subtab-config-pagamentos">
+                    <div class="config-card">
+                        <div class="config-card-header">
+                            <h2>💳 Pagamentos Online</h2>
+                            <span class="badge" style="background: rgba(0, 158, 227, 0.1); color: #009ee3; font-size: 0.75rem;">Mercado Pago</span>
+                        </div>
+                        <div class="config-card-body">
+                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
+                                Conecte sua conta do Mercado Pago para receber pagamentos via PIX e Cartão de Crédito diretamente na plataforma.
+                            </p>
+                            
+                            <div id="mpOAuthContainer" style="background: #f8f9fa; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem;">
+                                <!-- State: Disconnected -->
+                                <div id="mpOAuthDisconnected">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">❌</div>
+                                    <h3 style="margin-bottom: 0.5rem; color: var(--color-text);">Conta não conectada</h3>
+                                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Você ainda não conectou uma conta do Mercado Pago.</p>
+                                    <button class="btn-primary" onclick="iniciarOAuthMercadoPago()" style="background-color: #009ee3; border-color: #009ee3; padding: 12px 24px; font-size: 1rem;">
+                                        🤝 Conectar com Mercado Pago
+                                    </button>
+                                </div>
+
+                                <!-- State: Connected -->
+                                <div id="mpOAuthConnected" style="display: none;">
+                                    <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                                    <h3 style="margin-bottom: 0.5rem; color: #00a650;">Conta conectada!</h3>
+                                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Sua loja já pode receber pagamentos.</p>
+                                    <button class="btn-outline" onclick="desconectarMercadoPago()" style="border-color: #f23d4f; color: #f23d4f;">
+                                        Desconectar Conta
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr class="modal-divider" style="margin: 2rem 0;">
+
+                            <h3>Opções de Pagamento</h3>
+                            
+                            <div class="form-row" style="margin-top: 1.5rem;">
+                                <div class="form-group" style="flex:1">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px;">
+                                        <div>
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <strong>PIX Automático</strong>
+                                                <span class="badge" style="background:rgba(0,166,80,0.1); color:#00a650; font-size:0.7rem;">Liberação Imediata</span>
+                                            </div>
+                                            <span style="font-size:0.85rem; color:var(--text-muted);">Gera QR Code dinâmico e aprova sozinho.</span>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="confPixAtivo" onchange="salvarConfigPagamentos()">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" style="flex:1">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px;">
+                                        <div>
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <strong>Cartão de Crédito</strong>
+                                            </div>
+                                            <span style="font-size:0.85rem; color:var(--text-muted);">Aceita pagamentos no crédito.</span>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="confCartaoAtivo" onchange="salvarConfigPagamentos()">
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
 

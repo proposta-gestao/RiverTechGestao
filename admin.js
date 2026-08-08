@@ -2703,7 +2703,7 @@ async function carregarConfiguracoes() {
     const [settingsRes, zonasRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at'),
-        sb.from('empresas').select('nome, tema_cor_primaria, tema_cor_botao, tema_cor_texto').eq('id', empresaId).single()
+        sb.from('empresas').select('nome, tema_cor_primaria, tema_cor_botao, tema_cor_texto, mp_oauth_connected_at, pix_habilitado, cartao_habilitado').eq('id', empresaId).single()
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
@@ -2732,6 +2732,17 @@ async function carregarConfiguracoes() {
         if (loginTitle) {
             loginTitle.textContent = nomeEmpresa;
         }
+
+        const conectado = !!e.mp_oauth_connected_at;
+        const mpConnected = document.getElementById('mpOAuthConnected');
+        const mpDisconnected = document.getElementById('mpOAuthDisconnected');
+        if (mpConnected) mpConnected.style.display = conectado ? 'block' : 'none';
+        if (mpDisconnected) mpDisconnected.style.display = conectado ? 'none' : 'block';
+        
+        const confPix = document.getElementById('confPixAtivo');
+        const confCartao = document.getElementById('confCartaoAtivo');
+        if (confPix) confPix.checked = !!e.pix_habilitado;
+        if (confCartao) confCartao.checked = !!e.cartao_habilitado;
     }
 
     if (settingsRes.data) {
@@ -5015,3 +5026,79 @@ window.__PREMIUM_DASH = {
 setTimeout(() => {
     if (window.__PREMIUM_DASH) window.__PREMIUM_DASH.init();
 }, 1000);
+
+// =================== MERCADO PAGO OAUTH ===================
+window.iniciarOAuthMercadoPago = () => {
+    // Adiciona validação genérica de config
+    const empresaId = getTenantId();
+    if (!empresaId) {
+        showToast('Erro: Empresa não identificada', 'error');
+        return;
+    }
+    
+    localStorage.setItem('mp_oauth_empresa_id', empresaId);
+    localStorage.setItem('supabase_url', window.APP_CONFIG.SUPABASE_URL);
+    localStorage.setItem('supabase_anon_key', window.APP_CONFIG.SUPABASE_ANON_KEY);
+
+    const MP_CLIENT_ID = '6375705446578625'; 
+    const REDIRECT_URI = window.location.origin + '/mp-callback.html';
+
+    const authUrl = `https://auth.mercadopago.com/authorization?client_id=${MP_CLIENT_ID}&response_type=code&platform_id=mp&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    
+    window.open(authUrl, 'mp_oauth', 'width=600,height=700');
+};
+
+window.addEventListener('message', async (event) => {
+    if (event.data && event.data.type === 'MP_OAUTH_SUCCESS') {
+        showToast('Conta do Mercado Pago conectada com sucesso!', 'success');
+        await carregarConfiguracoes();
+    } else if (event.data && event.data.type === 'MP_OAUTH_ERROR') {
+        showToast('Erro ao conectar Mercado Pago: ' + event.data.error, 'error');
+    }
+});
+
+window.desconectarMercadoPago = async () => {
+    if (!await customConfirm('Desconectar Mercado Pago', 'Deseja realmente desconectar sua conta? Você não poderá mais receber via PIX ou Cartão.')) return;
+    
+    const btn = document.querySelector('#mpOAuthConnected .btn-outline');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Desconectando...';
+    }
+
+    const { error } = await sb.from('empresas').update({
+        mp_access_token: null,
+        mp_refresh_token: null,
+        mp_oauth_connected_at: null,
+        pix_habilitado: false,
+        cartao_habilitado: false
+    }).eq('id', getTenantId());
+
+    if (error) {
+        showToast('Erro ao desconectar: ' + error.message, 'error');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Desconectar Conta';
+        }
+    } else {
+        showToast('Conta desconectada.', 'info');
+        await carregarConfiguracoes();
+    }
+};
+
+window.salvarConfigPagamentos = async () => {
+    const pixAtivo = document.getElementById('confPixAtivo').checked;
+    const cartaoAtivo = document.getElementById('confCartaoAtivo').checked;
+    
+    const { error } = await sb.from('empresas').update({
+        pix_habilitado: pixAtivo,
+        cartao_habilitado: cartaoAtivo
+    }).eq('id', getTenantId());
+    
+    if (error) {
+        showToast('Erro ao salvar opções de pagamento.', 'error');
+        await carregarConfiguracoes(); // reverte estado visual
+    } else {
+        showToast('Opções de pagamento atualizadas.', 'success');
+    }
+};

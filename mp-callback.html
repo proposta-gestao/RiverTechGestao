@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conectando Mercado Pago...</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #009ee3;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-icon {
+            font-size: 3rem;
+            color: #00a650;
+            display: none;
+            margin-bottom: 1rem;
+        }
+        .error-icon {
+            font-size: 3rem;
+            color: #f23d4f;
+            display: none;
+            margin-bottom: 1rem;
+        }
+        h2 { margin-top: 0; color: #333; }
+        p { color: #666; line-height: 1.5; }
+        .close-btn {
+            background: #009ee3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            display: none;
+        }
+        .close-btn:hover { background: #008cd1; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="spinner" id="spinner"></div>
+        <div class="success-icon" id="successIcon">✓</div>
+        <div class="error-icon" id="errorIcon">✕</div>
+        
+        <h2 id="statusTitle">Conectando...</h2>
+        <p id="statusMessage">Aguarde enquanto vinculamos sua conta do Mercado Pago.</p>
+        
+        <button class="close-btn" id="closeBtn" onclick="window.close()">Fechar Janela</button>
+    </div>
+
+    <script>
+        async function processCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            const empresaId = localStorage.getItem('mp_oauth_empresa_id');
+            const supabaseUrl = localStorage.getItem('supabase_url');
+            const supabaseAnonKey = localStorage.getItem('supabase_anon_key');
+
+            const setTitle = (title, message, isSuccess = true, isError = false) => {
+                document.getElementById('statusTitle').innerText = title;
+                document.getElementById('statusMessage').innerText = message;
+                document.getElementById('spinner').style.display = 'none';
+                
+                if (isSuccess) document.getElementById('successIcon').style.display = 'block';
+                if (isError) document.getElementById('errorIcon').style.display = 'block';
+                
+                document.getElementById('closeBtn').style.display = 'inline-block';
+            };
+
+            if (error) {
+                setTitle('Conexão Recusada', 'Você não autorizou a conexão com o Mercado Pago.', false, true);
+                if (window.opener) {
+                    window.opener.postMessage({ type: 'MP_OAUTH_ERROR', error: error }, '*');
+                }
+                return;
+            }
+
+            if (!code) {
+                setTitle('Erro Inesperado', 'Código de autorização não encontrado.', false, true);
+                return;
+            }
+
+            if (!empresaId || !supabaseUrl || !supabaseAnonKey) {
+                setTitle('Erro', 'Dados da sessão não encontrados. Tente fechar e abrir o painel novamente.', false, true);
+                return;
+            }
+
+            // We need to send this to our Edge Function
+            try {
+                // The current redirect URI needs to be sent to the function exactly as registered in MP
+                const redirectUri = window.location.origin + window.location.pathname;
+
+                const response = await fetch(`${supabaseUrl}/functions/v1/mercadopago-oauth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${supabaseAnonKey}`
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        empresaId: empresaId,
+                        redirectUri: redirectUri
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    setTitle('Conectado com Sucesso!', 'Sua conta do Mercado Pago foi vinculada. Você já pode fechar esta janela.');
+                    // Notify the parent window
+                    if (window.opener) {
+                        window.opener.postMessage({ type: 'MP_OAUTH_SUCCESS' }, '*');
+                    }
+                } else {
+                    console.error("Function error:", data);
+                    setTitle('Erro na Conexão', data.error || 'Não foi possível vincular a conta.', false, true);
+                }
+            } catch (err) {
+                console.error("Fetch error:", err);
+                setTitle('Erro de Rede', 'Ocorreu um erro ao comunicar com o servidor.', false, true);
+            }
+        }
+
+        // Run when page loads
+        window.addEventListener('DOMContentLoaded', processCallback);
+    </script>
+</body>
+</html>
