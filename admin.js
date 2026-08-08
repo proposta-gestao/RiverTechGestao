@@ -2703,7 +2703,7 @@ async function carregarConfiguracoes() {
     const [settingsRes, zonasRes, empresaRes] = await Promise.all([
         sb.from('store_settings').select('*').eq('empresa_id', empresaId).single(),
         sb.from('shipping_zones').select('*').eq('empresa_id', empresaId).order('created_at'),
-        sb.from('empresas').select('nome, tema_cor_primaria, tema_cor_botao, tema_cor_texto, mp_oauth_connected_at, pix_habilitado, cartao_habilitado').eq('id', empresaId).single()
+        sb.from('empresas').select('nome, tema_cor_primaria, tema_cor_botao, tema_cor_texto, mp_oauth_connected_at, mp_account_name, pix_habilitado, cartao_habilitado').eq('id', empresaId).single()
     ]);
 
     if (settingsRes.error && settingsRes.error.code !== 'PGRST116') {
@@ -2736,8 +2736,15 @@ async function carregarConfiguracoes() {
         const conectado = !!e.mp_oauth_connected_at;
         const mpConnected = document.getElementById('mpOAuthConnected');
         const mpDisconnected = document.getElementById('mpOAuthDisconnected');
-        if (mpConnected) mpConnected.style.display = conectado ? 'block' : 'none';
-        if (mpDisconnected) mpDisconnected.style.display = conectado ? 'none' : 'block';
+        
+        if (mpConnected) {
+            mpConnected.style.display = conectado ? 'flex' : 'none';
+            if (conectado) {
+                const nameDisplay = document.getElementById('mpAccountNameDisplay');
+                if (nameDisplay) nameDisplay.textContent = e.mp_account_name || 'Conta Conectada';
+            }
+        }
+        if (mpDisconnected) mpDisconnected.style.display = conectado ? 'none' : 'flex';
         
         const confPix = document.getElementById('confPixAtivo');
         const confCartao = document.getElementById('confCartaoAtivo');
@@ -5070,6 +5077,7 @@ window.desconectarMercadoPago = async () => {
         mp_access_token: null,
         mp_refresh_token: null,
         mp_oauth_connected_at: null,
+        mp_account_name: null,
         pix_habilitado: false,
         cartao_habilitado: false
     }).eq('id', getTenantId());

@@ -49,6 +49,24 @@ serve(async (req) => {
       throw new Error(tokenData.message || 'Failed to exchange token');
     }
 
+    // Fetch user details to get the account name
+    let mpAccountName = 'Conta Mercado Pago';
+    try {
+      const userResponse = await fetch('https://api.mercadopago.com/users/me', {
+        headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
+      });
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        if (userData.first_name) {
+          mpAccountName = `${userData.first_name} ${userData.last_name || ''}`.trim();
+        } else if (userData.nickname) {
+          mpAccountName = userData.nickname;
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching user info:', e);
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -59,7 +77,8 @@ serve(async (req) => {
       .update({
         mp_access_token: tokenData.access_token,
         mp_refresh_token: tokenData.refresh_token,
-        mp_oauth_connected_at: new Date().toISOString()
+        mp_oauth_connected_at: new Date().toISOString(),
+        mp_account_name: mpAccountName
       })
       .eq('id', empresaId);
 
