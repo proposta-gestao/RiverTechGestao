@@ -532,24 +532,23 @@ function switchTab(tabId, btn, persist = true) {
     // Atualiza o link de visualização no topo
     const btnLink = document.getElementById('btnVisualizarLink');
     if (btnLink) {
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        let label = 'Ver Cardápio';
+        let route = 'cardapio.html';
         
-        if (tabId === 'loja') {
-            btnLink.href = isLocal 
-                ? `/loja.html?loja=${window.TENANT.slug}` 
-                : `/loja.html?loja=${window.TENANT.slug}`;
-            btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Loja ↗</span><span class="d-md-none">Loja</span>';
+        // Se a aba for loja ou não tiver restaurante mas tiver loja
+        if (tabId === 'loja' || (!window.__MODULOS?.restaurante && window.__MODULOS?.loja)) {
+            label = 'Ver Loja';
+            route = 'loja.html';
         } else if (tabId === 'agenda') {
-            btnLink.href = isLocal 
-                ? `/agendamento.html?loja=${window.TENANT.slug}` 
-                : `/agendamento.html?loja=${window.TENANT.slug}`;
-            btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Agendamento ↗</span><span class="d-md-none">Agendamento</span>';
-        } else {
-            btnLink.href = isLocal 
-                ? `/cardapio.html?loja=${window.TENANT.slug}` 
-                : `/${window.TENANT.slug}`;
-            btnLink.innerHTML = '<span class="d-none d-md-inline">Ver Cardápio ↗</span><span class="d-md-none">Cardápio</span>';
+            label = 'Ver Agenda';
+            route = 'agendamento.html';
+        } else if (tabId === 'restaurante') {
+            label = 'Ver Cardápio';
+            route = 'cardapio.html';
         }
+        
+        btnLink.href = `/${route}?loja=${window.TENANT.slug}`;
+        btnLink.innerHTML = `<span class="d-none d-md-inline">${label} ↗</span><span class="d-md-none">${label.split(' ')[1]}</span>`;
     }
 
     // Lazy Load do módulo de Agenda
@@ -1522,7 +1521,7 @@ function renderPedidosFiltrados(filtrados = null) {
         const statusLabel = (p.status === 'concluido' || p.status === 'finalizado') ? 'Concluído' : p.status?.charAt(0).toUpperCase() + p.status?.slice(1);
         
         return `
-                    <tr id="pedido-row-${p.id}">
+                    <tr id="pedido-row-${p.id}" onclick="abrirModalDetalhesPedido('${p.id}')" style="cursor: pointer;" class="hover-row">
                         <td>
                             <div style="font-weight: 700; font-size: 0.85rem;">${dataStr}</div>
                             <div style="color: var(--text-muted); font-size: 0.75rem;">${horaStr}</div>
@@ -1542,7 +1541,7 @@ function renderPedidosFiltrados(filtrados = null) {
                             ${isAgendamento ? '<br><small style="color:var(--primary); font-size:0.7rem; font-weight:600;">(Agendamento)</small>' : ''}
                         </td>
                         <td><strong>${formatCurrency(p.total)}</strong></td>
-                        <td>
+                        <td onclick="event.stopPropagation();">
                             <div style="display:flex; gap: 5px; justify-content: flex-end;">
                                 ${isAgendamento ? `
                                     <button class="btn-sm" onclick="document.getElementById('nav-agenda').click();" style="background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid var(--primary); font-size:0.7rem; padding: 4px 8px; border-radius: 6px;">Ver na Agenda</button>
@@ -1562,6 +1561,49 @@ function renderPedidosFiltrados(filtrados = null) {
                 `;
     }).join('');
 }
+
+window.abrirModalDetalhesPedido = function(orderId) {
+    const pedido = pedidos.find(p => p.id === orderId);
+    if (!pedido) return;
+    
+    const isAgendamento = pedido.is_agendamento === true;
+    const infoP = document.getElementById('modalAdminOrderInfo');
+    const itemsDiv = document.getElementById('modalAdminOrderItems');
+    
+    if (infoP) {
+        const d = new Date(pedido.created_at);
+        const dataStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        infoP.innerHTML = `
+            <strong>Cliente:</strong> ${pedido.customer_name || 'Desconhecido'}<br>
+            <strong>Atendente:</strong> ${pedido.atendente_nome || '—'}<br>
+            <strong>Data/Hora:</strong> ${dataStr}<br>
+            <strong>Total:</strong> ${formatCurrency(pedido.total)}
+        `;
+    }
+    
+    if (itemsDiv) {
+        if (isAgendamento) {
+            itemsDiv.innerHTML = `<p style="margin:0; font-weight:600;">Agendamento de Serviço</p><p style="margin:5px 0 0; color:var(--text-muted); font-size:0.9rem;">${pedido.order_items?.[0]?.product_name || 'Serviço'}</p>`;
+        } else if (pedido.order_items && pedido.order_items.length > 0) {
+            itemsDiv.innerHTML = pedido.order_items.map(item => `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">
+                    <div>
+                        <span style="font-weight: 700;">${item.quantity}x</span> ${item.product_name}
+                        ${item.variacao_nome ? `<br><small style="color:var(--text-muted);">${item.variacao_nome}</small>` : ''}
+                        ${item.observacao ? `<br><small style="color:var(--warning);">Obs: ${item.observacao}</small>` : ''}
+                    </div>
+                    <div style="font-weight: 600;">
+                        ${formatCurrency(item.price * item.quantity)}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            itemsDiv.innerHTML = '<p style="color:var(--text-muted);">Nenhum item detalhado.</p>';
+        }
+    }
+    
+    abrirModal('modalDetalhesPedido');
+};
 
 let adminRealtimeChannel = null;
 
