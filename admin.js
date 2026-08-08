@@ -1756,15 +1756,18 @@ function renderProdutos() {
         if (p.image_url) {
             if (Array.isArray(p.image_url) && p.image_url.length > 0) {
                 primeiraImagem = p.image_url[0];
-            } else if (typeof p.image_url === 'string' && p.image_url.startsWith('[')) {
-                try {
-                    const parsed = JSON.parse(p.image_url);
-                    if (Array.isArray(parsed) && parsed.length > 0) primeiraImagem = parsed[0];
-                } catch(e) {
+            } else if (typeof p.image_url === 'string') {
+                if (p.image_url.startsWith('[')) {
+                    try {
+                        const parsed = JSON.parse(p.image_url);
+                        if (Array.isArray(parsed) && parsed.length > 0) primeiraImagem = parsed[0];
+                    } catch(e) { primeiraImagem = p.image_url; }
+                } else if (p.image_url.startsWith('{') && p.image_url.endsWith('}')) {
+                    const stripped = p.image_url.slice(1, -1);
+                    if (stripped) primeiraImagem = stripped.split(',')[0].replace(/^"|"$|^'|'$/g, '').trim();
+                } else if (p.image_url.trim() !== '') {
                     primeiraImagem = p.image_url;
                 }
-            } else if (typeof p.image_url === 'string' && p.image_url.trim() !== '') {
-                primeiraImagem = p.image_url;
             }
         }
 
@@ -2337,11 +2340,35 @@ function editarProduto(id) {
     document.getElementById('prodObsSaida').value = '';
 
     // --- Múltiplas Imagens ---
-    if (Array.isArray(p.image_url)) {
-        currentProductImages = [...p.image_url];
-    } else {
-        currentProductImages = p.image_url ? [p.image_url] : [];
+    function parseImages(imgData) {
+        if (!imgData) return [];
+        if (Array.isArray(imgData)) {
+            let res = [];
+            for (let item of imgData) {
+                if (typeof item === 'string' && item.startsWith('[')) {
+                    try { res.push(...parseImages(JSON.parse(item))); } catch(e) { res.push(item); }
+                } else if (item) {
+                    res.push(item);
+                }
+            }
+            return res;
+        }
+        if (typeof imgData === 'string') {
+            if (imgData.startsWith('[')) {
+                try { return parseImages(JSON.parse(imgData)); } catch(e) { return [imgData]; }
+            }
+            if (imgData.startsWith('{') && imgData.endsWith('}')) {
+                // Handle PostgreSQL array literal conversion just in case
+                const stripped = imgData.slice(1, -1);
+                return stripped ? stripped.split(',').map(s => s.replace(/^"|"$|^'|'$/g, '').trim()) : [];
+            }
+            return imgData.trim() ? [imgData] : [];
+        }
+        return [];
     }
+
+    currentProductImages = parseImages(p.image_url);
+    
     renderizarMiniaturasProduto();
 
     carregarGaleria(currentProductImages[0] || '');
@@ -2385,7 +2412,7 @@ async function executarSalvarProduto() {
         min_stock_alert: parseInt(document.getElementById('prodEstoqueMin').value) || 0,
         category_id:     document.getElementById('prodCategoria').value || null,
         active:          document.getElementById('prodAtivo').value === 'true',
-        image_url:       currentProductImages,
+        image_url:       currentProductImages.length > 0 ? JSON.stringify(currentProductImages) : null,
         permite_observacao: document.getElementById('prodPermiteObs').checked,
         observacao_placeholder: document.getElementById('prodObsPlaceholder').value.trim(),
         promo_price:     (() => {
