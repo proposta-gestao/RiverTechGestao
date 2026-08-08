@@ -162,7 +162,16 @@ function renderLojaProdutos() {
         const corEstoque = estoqueTotal <= 0 ? 'var(--danger)' : 'inherit';
         const hasEstoque = typeof isModuloAtivo === 'function' ? isModuloAtivo('loja_estoque') : true;
         // Imagem principal: primeiro da galeria ou imagem_url
-        const galeria = (p.galeria_imagens || []).sort((a,b) => (a.ordem||0)-(b.ordem||0));
+        const galeriaRaw = (p.galeria_imagens || []).sort((a,b) => (a.ordem||0)-(b.ordem||0));
+        const galeriaUnique = [];
+        const seenG = new Set();
+        for (let g of galeriaRaw) {
+            if (!seenG.has(g.url)) {
+                seenG.add(g.url);
+                galeriaUnique.push(g);
+            }
+        }
+        const galeria = galeriaUnique;
         const imgSrc = galeria[0]?.url || p.imagem_url || 'Logo.png';
         const numFotos = galeria.length || (p.imagem_url ? 1 : 0);
 
@@ -443,17 +452,27 @@ function _renderGaleriaGrid() {
 async function _sincronizarGaleriaImagens(produtoId) {
     if (!produtoId) return;
 
-    // Apagar registros antigos deste produto usando a função RPC para contornar falhas silenciosas de RLS
+    // Tentar apagar registros antigos deste produto (pode falhar silenciosamente por RLS)
     const { error: delError } = await sb.rpc('delete_galeria_by_produto', { p_produto_id: produtoId });
     if (delError) {
-        console.error('[Galeria] Erro ao deletar antigas (RPC):', delError);
-        // Fallback para delete direto caso RPC falhe ou não exista
         await sb.from('galeria_imagens').delete().eq('produto_id', produtoId);
     }
     
-    if (lojaCurrentProdImages.length === 0) return;
+    // Obter as imagens atuais no banco para comparar e evitar duplicatas em caso de falha no delete
+    const { data: dbImages } = await sb.from('galeria_imagens').select('id, url').eq('produto_id', produtoId);
+    const dbImageUrls = (dbImages || []).map(img => img.url);
 
-    // Remover duplicatas exatas de URL (caso existam no array local por algum bug)
+    if (lojaCurrentProdImages.length === 0) {
+        // Se todas as fotos foram removidas, tentar forçar o delete uma a uma caso ainda existam
+        if (dbImages && dbImages.length > 0) {
+            for (let dbImg of dbImages) {
+                await sb.from('galeria_imagens').delete().eq('id', dbImg.id);
+            }
+        }
+        return;
+    }
+
+    // Remover duplicatas exatas de URL do array local
     const uniqueImages = [];
     const seenUrls = new Set();
     for (const img of lojaCurrentProdImages) {
@@ -462,17 +481,36 @@ async function _sincronizarGaleriaImagens(produtoId) {
             uniqueImages.push(img);
         }
     }
+    const currentUrls = uniqueImages.map(img => img.url);
 
-    const registros = uniqueImages.map((img, idx) => ({
-        empresa_id: getTenantId(),
-        produto_id: produtoId,
-        url: img.url,
-        tipo: 'produto',
-        ordem: idx
-    }));
+    // 1. Deletar as que foram removidas pelo usuário (caso o RPC não tenha funcionado)
+    const toDeleteIds = (dbImages || []).filter(img => !currentUrls.includes(img.url)).map(img => img.id);
+    for (let delId of toDeleteIds) {
+        await sb.from('galeria_imagens').delete().eq('id', delId);
+    }
 
-    const { error } = await sb.from('galeria_imagens').insert(registros);
-    if (error) console.error('[Galeria] Erro ao sincronizar:', error);
+    // 2. Inserir as novas fotos que ainda não estão no banco
+    const newImages = uniqueImages.filter(img => !dbImageUrls.includes(img.url));
+    if (newImages.length > 0) {
+        const registros = newImages.map(img => ({
+            empresa_id: getTenantId(),
+            produto_id: produtoId,
+            url: img.url,
+            tipo: 'produto',
+            ordem: uniqueImages.findIndex(u => u.url === img.url)
+        }));
+        await sb.from('galeria_imagens').insert(registros);
+    }
+
+    // 3. Atualizar a ordem das fotos que já existiam no banco
+    const existingImages = uniqueImages.filter(img => dbImageUrls.includes(img.url));
+    for (const img of existingImages) {
+        const dbImg = (dbImages || []).find(d => d.url === img.url);
+        if (dbImg) {
+            const newOrdem = uniqueImages.findIndex(u => u.url === img.url);
+            await sb.from('galeria_imagens').update({ ordem: newOrdem }).eq('id', dbImg.id);
+        }
+    }
 }
 
 window.__LOJA.uploadImagemMultiple = async function(files) {
