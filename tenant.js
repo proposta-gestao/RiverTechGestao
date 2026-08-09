@@ -306,22 +306,21 @@ function _aplicarWhiteLabel(data) {
             }
         });
 
-        // Atualizar Favicon Dinamicamente
-        let favicon = document.querySelector('link[rel="icon"]');
-        if (!favicon) {
-            favicon = document.createElement('link');
-            favicon.rel = 'icon';
-            document.head.appendChild(favicon);
-        }
-        favicon.href = data.logo_url;
-        
-        let shortcutIcon = document.querySelector('link[rel="shortcut icon"]');
-        if (!shortcutIcon) {
-            shortcutIcon = document.createElement('link');
-            shortcutIcon.rel = 'shortcut icon';
-            document.head.appendChild(shortcutIcon);
-        }
-        shortcutIcon.href = data.logo_url;
+        // Remover favicons existentes
+        document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').forEach(el => el.remove());
+
+        // Forçar navegador a recarregar adicionando time no final do url
+        const cacheBusterUrl = data.logo_url + (data.logo_url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+        const newFavicon = document.createElement('link');
+        newFavicon.rel = 'icon';
+        newFavicon.href = cacheBusterUrl;
+        document.head.appendChild(newFavicon);
+
+        const newShortcutIcon = document.createElement('link');
+        newShortcutIcon.rel = 'shortcut icon';
+        newShortcutIcon.href = cacheBusterUrl;
+        document.head.appendChild(newShortcutIcon);
     }
 
     if (brandName) {
