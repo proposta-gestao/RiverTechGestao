@@ -3234,6 +3234,16 @@ document.getElementById('btnSalvarPersonalizacao').onclick = async () => {
     if (error) {
         showToast('Erro ao salvar visual: ' + error.message, 'error');
     } else {
+        // Sincronizar logotipo e nome com a tabela empresas principal para que o tenant.js carregue corretamente no refresh
+        try {
+            await sb.from('empresas').update({
+                logo_url: payload.logo_url,
+                nome: payload.brand_name || window.TENANT.nome
+            }).eq('id', getTenantId());
+        } catch (syncErr) {
+            console.error('Erro ao sincronizar com empresas:', syncErr);
+        }
+
         showToast('Personalização visual salva!', 'success');
 
         if (window.TENANT) {
