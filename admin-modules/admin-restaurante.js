@@ -595,6 +595,7 @@
         if (error) { console.error('[Restaurante] Erro produtos:', error); return; }
         state.produtosCardapio = data || [];
     }
+    window.__RESTAURANTE.carregarProdutosCardapio = carregarProdutosCardapio;
 
     // ============================================================
     // INSUMOS

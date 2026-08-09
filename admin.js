@@ -2548,6 +2548,9 @@ async function executarSalvarProduto() {
             window._isFromFichaTecnica = false;
             if (typeof switchTab === 'function') switchTab('restaurante');
             if (window.__RESTAURANTE) {
+                if (typeof window.__RESTAURANTE.carregarProdutosCardapio === 'function') {
+                    await window.__RESTAURANTE.carregarProdutosCardapio();
+                }
                 setTimeout(() => {
                     window.__RESTAURANTE.novaFicha();
                     setTimeout(() => {
