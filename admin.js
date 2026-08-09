@@ -535,16 +535,22 @@ function switchTab(tabId, btn, persist = true) {
         let label = 'Ver Cardápio';
         let route = 'cardapio.html';
         
-        // Se a aba for loja ou não tiver restaurante mas tiver loja
-        if (tabId === 'loja' || (!window.__MODULOS?.restaurante && window.__MODULOS?.loja)) {
+        const hasLoja = typeof isModuloAtivo === 'function' && isModuloAtivo('loja_roupas');
+        const hasAgenda = typeof isModuloAtivo === 'function' && isModuloAtivo('agendamento_ativo');
+        const hasCardapio = typeof isModuloAtivo === 'function' && isModuloAtivo('cardapio');
+        
+        if (tabId === 'loja' || (hasLoja && !hasCardapio && tabId !== 'agenda')) {
             label = 'Ver Loja';
             route = 'loja.html';
-        } else if (tabId === 'agenda') {
+        } else if (tabId === 'agenda' || (hasAgenda && !hasCardapio && !hasLoja)) {
             label = 'Ver Agenda';
             route = 'agendamento.html';
-        } else if (tabId === 'restaurante') {
+        } else if (tabId === 'restaurante' || hasCardapio) {
             label = 'Ver Cardápio';
             route = 'cardapio.html';
+        } else if (hasLoja) {
+            label = 'Ver Loja';
+            route = 'loja.html';
         }
         
         btnLink.href = `/${route}?loja=${window.TENANT.slug}`;
