@@ -1802,7 +1802,7 @@ function renderProdutos() {
             ? `<button class="btn-sm btn-unarchive" onclick="desarquivarProduto('${p.id}')">Desarquivar</button>`
             : `<button class="btn-sm btn-archive" onclick="arquivarProduto('${p.id}')">Arquivar</button>`;
 
-        let primeiraImagem = 'Logo.png';
+        let primeiraImagem = '';
         if (p.image_url) {
             if (Array.isArray(p.image_url) && p.image_url.length > 0) {
                 primeiraImagem = p.image_url[0];
@@ -1821,10 +1821,14 @@ function renderProdutos() {
             }
         }
 
+        const imgHtml = primeiraImagem 
+            ? `<img src="${primeiraImagem}" alt="Img" style="width:40px;height:40px;object-fit:cover;border-radius:6px;">`
+            : `<div style="width:40px;height:40px;background:var(--card-border);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.6rem;text-align:center;line-height:1;">Sem<br>Img</div>`;
+
         return `
                 <tr class="${rowClass}" data-id="${p.id}" style="${rowStyle}">
                     <td style="color: var(--text-muted); text-align: center; font-size: 1.2rem;">${handleContent}</td>
-                    <td><img src="${primeiraImagem}" alt="Img" style="width:40px;height:40px;object-fit:cover;border-radius:6px;"></td>
+                    <td>${imgHtml}</td>
                     <td onclick="editarProduto('${p.id}')" style="cursor:pointer;" title="Clique para editar">
                         <div class="product-name-container">
                             <strong class="clickable-row-name">${p.name}</strong>
@@ -2466,7 +2470,7 @@ async function executarSalvarProduto() {
         min_stock_alert: parseInt(document.getElementById('prodEstoqueMin').value) || 0,
         category_id:     document.getElementById('prodCategoria').value || null,
         active:          document.getElementById('prodAtivo').value === 'true',
-        image_url:       currentProductImages.length > 0 ? JSON.stringify(currentProductImages) : null,
+        image_url:       currentProductImages.length > 0 ? currentProductImages : null,
         permite_observacao: document.getElementById('prodPermiteObs').checked,
         observacao_placeholder: document.getElementById('prodObsPlaceholder').value.trim(),
         promo_price:     (() => {
