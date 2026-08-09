@@ -1,10 +1,10 @@
-/* Esconde elementos cujos módulos estão desativados */
+/* Esconde elementos cujos mÃ³dulos estÃ£o desativados */
 .module-hidden {
     display: none !important;
 }
 
 /* ============================================================
-   Popup de Ativação de Alertas Sonoros (Fullscreen Overlay)
+   Popup de AtivaÃ§Ã£o de Alertas Sonoros (Fullscreen Overlay)
    ============================================================ */
 .sound-alert-overlay {
     position: fixed;
@@ -104,7 +104,7 @@
 }
 
 /* ============================================================
-   Configurações WhatsApp — Toggles e Formulário
+   ConfiguraÃ§Ãµes WhatsApp â€” Toggles e FormulÃ¡rio
    ============================================================ */
 .wa-toggles-section {
     background: var(--color-surface, #1a1a1a);
@@ -315,7 +315,7 @@
     margin: 0;
 }
 
-/* Barra de variáveis */
+/* Barra de variÃ¡veis */
 .wa-vars-bar {
     background: rgba(var(--rgb-brand-500), 0.04);
     border: 1px solid rgba(var(--rgb-brand-500), 0.1);
@@ -846,7 +846,7 @@
 }
 
 :root {
-    /* === IDENTIDADE (personalizável pelo Admin Master) === */
+    /* === IDENTIDADE (personalizÃ¡vel pelo Admin Master) === */
     --color-primary:        #E5B25D;
     --color-primary-hover:  #d4a14c;
     --color-secondary:      #1E90FF;
@@ -854,17 +854,17 @@
     --color-primary-10:     rgba(var(--rgb-brand-500),0.10);
     --color-primary-30:     rgba(var(--rgb-brand-500),0.30);
 
-    /* === BOTÕES === */
+    /* === BOTÃ•ES === */
     --color-button:         var(--color-primary);
     --color-button-hover:   var(--color-primary-hover);
     --color-button-text:    #000000;
 
-    /* === BACKGROUNDS (personalizável pelo Admin Master) === */
+    /* === BACKGROUNDS (personalizÃ¡vel pelo Admin Master) === */
     --color-bg:             #0d0d0d;
     --color-surface:        #1a1a1a;
     --color-surface-hover:  #222222;
 
-    /* === TEXTO (fixo — não personalizável pelo cliente) === */
+    /* === TEXTO (fixo â€” nÃ£o personalizÃ¡vel pelo cliente) === */
     --color-text:           #ffffff;
     --color-text-muted:     #a0a0a0;
 
@@ -876,7 +876,7 @@
     --color-warning:        #FDCB6E;
     --color-danger:         #FF4757;
 
-    /* === ALIASES DE COMPATIBILIDADE (para não quebrar código existente) === */
+    /* === ALIASES DE COMPATIBILIDADE (para nÃ£o quebrar cÃ³digo existente) === */
     --primary:              var(--color-primary);
     --primary-hover:        var(--color-primary-hover);
     --bg-body:              var(--color-bg);
@@ -888,7 +888,7 @@
     --warning:              var(--color-warning);
     --danger:               var(--color-danger);
 
-    /* === UTILITÁRIOS === */
+    /* === UTILITÃRIOS === */
     --shadow:    0 12px 40px rgba(0,0,0,0.6);
     --radius:    16px;
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1045,7 +1045,7 @@ body {
     flex: 1;
     overflow-y: auto;
     width: 100%;
-    padding-bottom: 80px; /* Garante que o conteúdo final não seja cortado */
+    padding-bottom: 80px; /* Garante que o conteÃºdo final nÃ£o seja cortado */
     -webkit-overflow-scrolling: touch;
 }
 
@@ -1077,12 +1077,12 @@ body {
     flex-shrink: 0;
 }
 
-/* Estilos base do botão de menu mobile */
+/* Estilos base do botÃ£o de menu mobile */
 .btn-mobile-toggle {
-    display: none; /* Escondido por padrão, mostrado via media query */
+    display: none; /* Escondido por padrÃ£o, mostrado via media query */
     background: none;
     border: none;
-    color: #ffffff !important; /* Força cor branca para visibilidade */
+    color: #ffffff !important; /* ForÃ§a cor branca para visibilidade */
     font-size: 1.8rem;
     cursor: pointer;
     padding: 8px;
@@ -1292,12 +1292,12 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-/* Botão de Menu Mobile - Oculto por padrão no Desktop */
+/* BotÃ£o de Menu Mobile - Oculto por padrÃ£o no Desktop */
 
 /* 
-   LOGICA DE NAVEGAÇÃO RESPONSIVA
+   LOGICA DE NAVEGAÃ‡ÃƒO RESPONSIVA
    ----------------------------------------------
-   Abaixo de 1024px: Menu via Botão (Drawer)
+   Abaixo de 1024px: Menu via BotÃ£o (Drawer)
    Acima de 1024px: Menu via Sidebar (Fixo)
 */
 
@@ -1354,7 +1354,7 @@ body {
         flex-wrap: wrap;
         align-items: center;
         gap: 8px;
-        white-space: normal; /* Permite quebra para não estourar */
+        white-space: normal; /* Permite quebra para nÃ£o estourar */
     }
 
     .admin-header-actions {
@@ -1409,7 +1409,7 @@ body {
     }
 }
 
-/* === Área Premium — Tab Button VIP (dourado mesmo inativo) === */
+/* === Ãrea Premium â€” Tab Button VIP (dourado mesmo inativo) === */
 .tab-btn--premium {
     color: var(--primary) !important;
 }
@@ -1419,12 +1419,12 @@ body {
     background: rgba(var(--rgb-brand-500), 0.05);
 }
 
-/* === Área Premium — Sidebar Mobile VIP === */
+/* === Ãrea Premium â€” Sidebar Mobile VIP === */
 .nav-item--premium {
     color: var(--primary) !important;
 }
 
-/* === Área Premium — Banner Header VIP === */
+/* === Ãrea Premium â€” Banner Header VIP === */
 .premium-area-header {
     display: flex;
     align-items: center;
@@ -1570,7 +1570,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* Dashboard Filters — improved */
+/* Dashboard Filters â€” improved */
 
 
 .filters-header {
@@ -1829,11 +1829,11 @@ body {
     text-align: center;
 }
 
-/* Otimização de Colunas - Tabela de Pedidos */
+/* OtimizaÃ§Ã£o de Colunas - Tabela de Pedidos */
 #tab-dashboard .admin-table {
     table-layout: auto;
     width: 100%;
-    min-width: 1000px; /* Garante que não esmague em telas pequenas */
+    min-width: 1000px; /* Garante que nÃ£o esmague em telas pequenas */
 }
 
 #pedidosBody td,
@@ -1844,7 +1844,7 @@ body {
     vertical-align: middle;
 }
 
-/* Otimização de Colunas - Tabela de Pedidos */
+/* OtimizaÃ§Ã£o de Colunas - Tabela de Pedidos */
 #tab-dashboard .admin-table {
     table-layout: auto;
     width: 100%;
@@ -1857,7 +1857,7 @@ body {
     white-space: normal;
     word-wrap: break-word;
     vertical-align: middle;
-    text-align: center; /* Centralização geral */
+    text-align: center; /* CentralizaÃ§Ã£o geral */
 }
 
 #pedidosBody td:nth-child(1), /* Data */
@@ -1891,7 +1891,7 @@ body {
     width: 110px;
 }
 
-#pedidosBody td:nth-child(7), /* Ações */
+#pedidosBody td:nth-child(7), /* AÃ§Ãµes */
 #tab-dashboard .admin-table thead th:nth-child(7) {
     width: 190px;
 }
@@ -1900,7 +1900,7 @@ body {
     display: table-cell;
 }
 
-/* Otimização de Colunas - Tabela de Produtos */
+/* OtimizaÃ§Ã£o de Colunas - Tabela de Produtos */
 #tab-produtos .admin-table {
     table-layout: auto !important;
     width: 100% !important;
@@ -1920,7 +1920,7 @@ body {
     min-width: 120px;
 }
 
-#produtosBody td:nth-child(5), /* Preço */
+#produtosBody td:nth-child(5), /* PreÃ§o */
 #produtosBody td:nth-child(6) { /* Estoque */
     width: 100px;
 }
@@ -1929,7 +1929,7 @@ body {
     width: 80px;
 }
 
-#produtosBody td:nth-child(8) { /* Ações */
+#produtosBody td:nth-child(8) { /* AÃ§Ãµes */
     width: 110px !important; /* Ainda mais reduzido */
 }
 
@@ -1938,7 +1938,7 @@ body {
     gap: 5px;
 }
 
-/* ===== Centralização e Estilo Geral de Tabelas (Desktop/Notebook) ===== */
+/* ===== CentralizaÃ§Ã£o e Estilo Geral de Tabelas (Desktop/Notebook) ===== */
 .admin-table th,
 .admin-table td {
     text-align: center !important;
@@ -1946,16 +1946,16 @@ body {
     padding: 14px 10px !important;
 }
 
-/* Ajustes Específicos para Categorias */
+/* Ajustes EspecÃ­ficos para Categorias */
 #categoriasBody td:nth-child(1) { min-width: 200px; text-align: left !important; padding-left: 20px !important; } /* Nome */
 #categoriasBody td:nth-child(2) { color: var(--text-muted); font-size: 0.85rem; } /* Slug */
-#categoriasBody td:nth-child(4) { width: 120px; } /* Ações */
+#categoriasBody td:nth-child(4) { width: 120px; } /* AÃ§Ãµes */
 
-/* Ajustes Específicos para Cupons */
-#cuponsBody td:nth-child(1) { font-family: 'Courier New', Courier, monospace; font-weight: 700; color: var(--primary); } /* Código */
-#cuponsBody td:nth-child(4) { width: 120px; } /* Ações */
+/* Ajustes EspecÃ­ficos para Cupons */
+#cuponsBody td:nth-child(1) { font-family: 'Courier New', Courier, monospace; font-weight: 700; color: var(--primary); } /* CÃ³digo */
+#cuponsBody td:nth-child(4) { width: 120px; } /* AÃ§Ãµes */
 
-/* Ajustes Específicos para Estoque */
+/* Ajustes EspecÃ­ficos para Estoque */
 #motivosEstoqueBody td:nth-child(1) { text-align: left !important; padding-left: 20px !important; }
 #motivosEstoqueBody td:nth-child(3) { width: 120px; }
 
@@ -2116,7 +2116,7 @@ body {
 
 @media (min-width: 1024px) {
     .admin-modal-backdrop {
-        left: 280px; /* Faz o backdrop começar logo após a sidebar, centralizando o modal no espaço restante */
+        left: 280px; /* Faz o backdrop comeÃ§ar logo apÃ³s a sidebar, centralizando o modal no espaÃ§o restante */
     }
 }
 
@@ -2222,7 +2222,7 @@ body {
     flex: 1;
 }
 
-/* ===== Perfil Cardápio — Layout Duas Colunas ===== */
+/* ===== Perfil CardÃ¡pio â€” Layout Duas Colunas ===== */
 
 /* Modal largo */
 .pc-modal-wide {
@@ -2261,7 +2261,7 @@ body {
 }
 
 /* ===============================
-   Perfil Cardápio — Árvore Accordion
+   Perfil CardÃ¡pio â€” Ãrvore Accordion
    =============================== */
 
 #pcArvoreContainer {
@@ -2314,7 +2314,7 @@ body {
     min-width: 12px;
 }
 
-/* Switch idêntico ao do super admin */
+/* Switch idÃªntico ao do super admin */
 .pc-switch {
     position: relative;
     display: inline-block;
@@ -2347,7 +2347,7 @@ body {
 .pc-switch input:checked + .pc-slider { background-color: var(--primary, #e5b25d); }
 .pc-switch input:checked + .pc-slider:before { transform: translateX(16px); }
 
-/* Conteúdo colapsável do grupo */
+/* ConteÃºdo colapsÃ¡vel do grupo */
 .pc-grupo-content {
     display: flex;
     flex-direction: column;
@@ -2626,7 +2626,7 @@ body {
 }
 
 .toast::before {
-    content: '✨';
+    content: 'âœ¨';
 }
 
 .toast.show {
@@ -2639,7 +2639,7 @@ body {
 }
 
 .toast.error::before {
-    content: '❌';
+    content: 'âŒ';
 }
 
 .toast.success {
@@ -2648,7 +2648,7 @@ body {
 }
 
 .toast.success::before {
-    content: '✅';
+    content: 'âœ…';
 }
 
 /* Image Gallery */
@@ -2700,7 +2700,7 @@ body {
 }
 
 .gallery-item.selected::after {
-    content: '✓';
+    content: 'âœ“';
     position: absolute;
     top: 5px;
     right: 5px;
@@ -2797,7 +2797,7 @@ body {
 }
 
 .gallery-item.selected::after {
-    content: '✓';
+    content: 'âœ“';
     position: absolute;
     top: 4px;
     right: 4px;
@@ -2833,7 +2833,7 @@ body {
         width: auto;
     }
 
-    /* Estilo mobile para os links e botões do topo */
+    /* Estilo mobile para os links e botÃµes do topo */
     .btn-link-cardapio,
     .btn-logout {
         width: auto;
@@ -2899,7 +2899,7 @@ body {
         /* Garante comportamento de tabela */
     }
 
-    /* Coluna Preço (4) - 20% */
+    /* Coluna PreÃ§o (4) - 20% */
     .admin-table th:nth-child(4),
     .admin-table td:nth-child(4) {
         width: 20%;
@@ -2913,14 +2913,14 @@ body {
         text-align: center;
     }
 
-    /* Coluna Ações (7) - 17% */
+    /* Coluna AÃ§Ãµes (7) - 17% */
     .admin-table th:nth-child(7),
     .admin-table td:nth-child(7) {
         width: 17%;
         text-align: right;
     }
 
-    /* Esconder botões secundários no mobile */
+    /* Esconder botÃµes secundÃ¡rios no mobile */
     .btn-archive,
     .btn-unarchive {
         display: none !important;
@@ -2966,7 +2966,7 @@ body {
         text-align: center;
         padding: 1.2rem 0.8rem;
         display: block !important;
-        /* Garantir que todos os cards apareçam */
+        /* Garantir que todos os cards apareÃ§am */
     }
 
     .stats-row .stat-card .stat-label {
@@ -3008,7 +3008,7 @@ body {
 
     /* Exibir apenas Cliente e Atendente no Mobile conforme pedido anteriormente */
     .filter-row>div:nth-child(1),
-    /* Período */
+    /* PerÃ­odo */
     .filter-row>div:nth-child(4),
     /* Valor */
     .filter-row>div:nth-child(5) {
@@ -3051,7 +3051,7 @@ body {
     /* Itens */
     #tab-dashboard .admin-table th:nth-child(7),
     #tab-dashboard .admin-table td:nth-child(7) {
-        /* Ações */
+        /* AÃ§Ãµes */
         display: none !important;
     }
 
@@ -3076,13 +3076,13 @@ body {
 
 #subtab-lista-produtos .admin-table th:nth-child(8),
 #subtab-lista-produtos .admin-table td:nth-child(8) {
-    /* Ações */
+    /* AÃ§Ãµes */
     width: 120px !important;
     text-align: center !important;
     display: table-cell !important;
 }
 /* ===== Table Mobile Refinement: Categories List ===== */
-/* 1: Nome, 2: Slug, 3: Ordem, 4: Ações */
+/* 1: Nome, 2: Slug, 3: Ordem, 4: AÃ§Ãµes */
 #subtab-lista-categorias .admin-table th:nth-child(2),
 #subtab-lista-categorias .admin-table td:nth-child(2),
 #subtab-lista-categorias .admin-table th:nth-child(3),
@@ -3099,14 +3099,14 @@ body {
 
 #subtab-lista-categorias .admin-table th:nth-child(4),
 #subtab-lista-categorias .admin-table td:nth-child(4) {
-    /* Ações */
+    /* AÃ§Ãµes */
     width: 30% !important;
     text-align: right !important;
     display: table-cell !important;
 }
 
 /* ===== Table Mobile Refinement: Stock Adjustments ===== */
-/* 1: Handle, 2: Nome, 3: Status, 4: Ações */
+/* 1: Handle, 2: Nome, 3: Status, 4: AÃ§Ãµes */
 #subtab-lista-estoque .admin-table th:nth-child(1),
 #subtab-lista-estoque .admin-table td:nth-child(1) {
     /* Handle */
@@ -3131,7 +3131,7 @@ body {
 
 #subtab-lista-estoque .admin-table th:nth-child(4),
 #subtab-lista-estoque .admin-table td:nth-child(4) {
-    /* Ações */
+    /* AÃ§Ãµes */
     display: table-cell !important;
     width: 150px !important;
     text-align: right !important;
@@ -3161,7 +3161,7 @@ body {
 
 
 
-/* ===== Config Card (Configurações Tab) ===== */
+/* ===== Config Card (ConfiguraÃ§Ãµes Tab) ===== */
 .config-card {
     background: var(--bg-card);
     border-radius: var(--radius);
@@ -3196,7 +3196,7 @@ body {
     margin-bottom: 1.5rem;
     display: none;
     border: 1px solid rgba(255, 71, 87, 0.2);
-    position: relative; /* Para o botão fechar */
+    position: relative; /* Para o botÃ£o fechar */
 }
 
 .btn-close-alert {
@@ -3427,7 +3427,7 @@ input:checked+.slider:before {
     }
 }
 
-/* ===== Personalização Visual — Preview de Imagem ===== */
+/* ===== PersonalizaÃ§Ã£o Visual â€” Preview de Imagem ===== */
 .visual-upload-row {
     display: flex;
     gap: 20px;
@@ -3490,7 +3490,7 @@ input:checked+.slider:before {
     min-width: 280px;
 }
 
-/* ===== Botões de Upload Destacados ===== */
+/* ===== BotÃµes de Upload Destacados ===== */
 .btn-upload-gallery.highlight {
     background: var(--color-button);
     color: var(--color-button-text, #000);
@@ -3509,7 +3509,7 @@ input:checked+.slider:before {
     transform: translateY(-3px);
 }
 
-/* Botão de URL Secundário mas visível */
+/* BotÃ£o de URL SecundÃ¡rio mas visÃ­vel */
 .btn-url-toggle {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
@@ -3543,7 +3543,7 @@ input:checked+.slider:before {
     }
 }
 
-/* ===== Edição de Taxa Inline ===== */
+/* ===== EdiÃ§Ã£o de Taxa Inline ===== */
 .fee-editable {
     cursor: pointer;
     padding: 6px 12px;
@@ -3578,7 +3578,7 @@ input:checked+.slider:before {
 }
 
 
-/* ===== Seção de Estoque Premium ===== */
+/* ===== SeÃ§Ã£o de Estoque Premium ===== */
 .inventory-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3681,7 +3681,7 @@ input:checked+.slider:before {
 
     /* Exibir apenas Cliente e Atendente no Mobile */
     .filter-row>div:nth-child(1),
-    /* Período */
+    /* PerÃ­odo */
     .filter-row>div:nth-child(4),
     /* Valor */
     .filter-row>div:nth-child(5) {
@@ -3700,13 +3700,13 @@ input:checked+.slider:before {
         gap: 15px;
     }
 
-    /* Ocultar botões de excluir no mobile conforme solicitado */
+    /* Ocultar botÃµes de excluir no mobile conforme solicitado */
     .admin-table .btn-delete {
         display: none !important;
     }
 }
 
-/* Ocultar setas de aumentar/diminuir (spinners) em campos numéricos */
+/* Ocultar setas de aumentar/diminuir (spinners) em campos numÃ©ricos */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -3904,7 +3904,7 @@ input[type=number] {
         display: inline-block;
         vertical-align: middle;
     }
-    /* Fallback se data-short ainda não foi definido */
+    /* Fallback se data-short ainda nÃ£o foi definido */
     .header-brand-name:not([data-short]) {
         max-width: 110px;
         overflow: hidden;
@@ -3933,7 +3933,7 @@ input[type=number] {
         border-radius: 18px !important;
     }
 
-    /* ---- 4. Tabela de Produtos (módulo padrão): Imagem + Preço + Ações ---- */
+    /* ---- 4. Tabela de Produtos (mÃ³dulo padrÃ£o): Imagem + PreÃ§o + AÃ§Ãµes ---- */
     /* Esconder: handle(1), nome(3), categoria(4), estoque(6), toggle(7) */
     #subtab-lista-produtos .admin-table th:nth-child(1),
     #subtab-lista-produtos .admin-table td:nth-child(1),
@@ -3954,7 +3954,7 @@ input[type=number] {
         width: 60px !important;
         text-align: center !important;
     }
-    /* Preço (5) */
+    /* PreÃ§o (5) */
     #subtab-lista-produtos .admin-table th:nth-child(5),
     #subtab-lista-produtos .admin-table td:nth-child(5) {
         display: table-cell !important;
@@ -3963,7 +3963,7 @@ input[type=number] {
         font-weight: 800 !important;
         color: var(--primary) !important;
     }
-    /* Ações (8) */
+    /* AÃ§Ãµes (8) */
     #subtab-lista-produtos .admin-table th:nth-child(8),
     #subtab-lista-produtos .admin-table td:nth-child(8) {
         display: table-cell !important;
@@ -3975,8 +3975,8 @@ input[type=number] {
         width: 100% !important;
     }
 
-    /* ---- 5. Tabela Loja: Imagem + Nome + Ações ---- */
-    /* Esconder: handle(1), categoria(4), variações(5), estoque(6), status(7) */
+    /* ---- 5. Tabela Loja: Imagem + Nome + AÃ§Ãµes ---- */
+    /* Esconder: handle(1), categoria(4), variaÃ§Ãµes(5), estoque(6), status(7) */
     #subtab-loja-produtos .admin-table th:nth-child(1),
     #subtab-loja-produtos .admin-table td:nth-child(1),
     #subtab-loja-produtos .admin-table th:nth-child(4),
@@ -4004,7 +4004,7 @@ input[type=number] {
         white-space: normal !important;
         word-break: break-word;
     }
-    /* Ações (8) */
+    /* AÃ§Ãµes (8) */
     #subtab-loja-produtos .admin-table th:nth-child(8),
     #subtab-loja-produtos .admin-table td:nth-child(8) {
         display: table-cell !important;
@@ -4016,7 +4016,7 @@ input[type=number] {
         width: 100% !important;
     }
 
-    /* ---- 6. Botão Salvar Configurações: fixo no rodapé ---- */
+    /* ---- 6. BotÃ£o Salvar ConfiguraÃ§Ãµes: fixo no rodapÃ© ---- */
     .config-card-header {
         position: sticky;
         top: 0;
@@ -4024,19 +4024,19 @@ input[type=number] {
         background: var(--bg-card);
     }
 
-    /* Adicionar espaço no final da tab de configurações */
+    /* Adicionar espaÃ§o no final da tab de configuraÃ§Ãµes */
     #tab-configuracoes .subtab-content.active {
         padding-bottom: 90px !important;
     }
 
-    /* ---- 7. Garantia extra: Botão salvar do header dos config-cards ---- */
+    /* ---- 7. Garantia extra: BotÃ£o salvar do header dos config-cards ---- */
     #tab-configuracoes .config-card:first-of-type .config-card-header {
         top: 0;
     }
 }
 
 /* ========================================= */
-/* IMPRESSÃO (PDF) DASHBOARD PREMIUM         */
+/* IMPRESSÃƒO (PDF) DASHBOARD PREMIUM         */
 /* ========================================= */
 @media print {
     body * {
@@ -4098,7 +4098,7 @@ input[type=number] {
 }
 }
 
-/* Força a ocultação de módulos desativados independentemente de media queries mobile ou desktop */
+/* ForÃ§a a ocultaÃ§Ã£o de mÃ³dulos desativados independentemente de media queries mobile ou desktop */
 .sidebar .tab-btn.module-hidden,
 .sidebar .subtab-btn.module-hidden,
 .module-hidden,
@@ -4107,47 +4107,44 @@ input[type=number] {
     display: none !important;
 }
 
+/* ============================================================
+   GLOBAL SELECT (INPUTS DE LISTAS) STYLING TO MATCH BUTTONS
+   ============================================================ */
+select, 
+.admin-modal select, 
+.filter-group select, 
+.admin-select, 
+.metrics-selectors select, 
+.loja-select,
+.rest-section-header select {
+    background-color: var(--color-button, var(--primary)) !important;
+    color: var(--color-button-text, #000) !important;
+    border: 1px solid var(--color-button, var(--primary)) !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+}
 
- / *   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
-       G L O B A L   S E L E C T   ( I N P U T S   D E   L I S T A S )   S T Y L I N G   T O   M A T C H   B U T T O N S 
-       = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =   * / 
- s e l e c t ,   
- . a d m i n - m o d a l   s e l e c t ,   
- . f i l t e r - g r o u p   s e l e c t ,   
- . a d m i n - s e l e c t ,   
- . m e t r i c s - s e l e c t o r s   s e l e c t ,   
- . l o j a - s e l e c t , 
- . r e s t - s e c t i o n - h e a d e r   s e l e c t   { 
-         b a c k g r o u n d - c o l o r :   v a r ( - - c o l o r - b u t t o n )   ! i m p o r t a n t ; 
-         c o l o r :   v a r ( - - c o l o r - b u t t o n - t e x t ,   # 0 0 0 )   ! i m p o r t a n t ; 
-         b o r d e r :   1 p x   s o l i d   v a r ( - - c o l o r - b u t t o n )   ! i m p o r t a n t ; 
-         f o n t - w e i g h t :   7 0 0   ! i m p o r t a n t ; 
-         c u r s o r :   p o i n t e r   ! i m p o r t a n t ; 
- } 
- 
- s e l e c t : f o c u s ,   
- . a d m i n - m o d a l   s e l e c t : f o c u s ,   
- . f i l t e r - g r o u p   s e l e c t : f o c u s ,   
- . a d m i n - s e l e c t : f o c u s ,   
- . m e t r i c s - s e l e c t o r s   s e l e c t : f o c u s ,   
- . l o j a - s e l e c t : f o c u s , 
- . r e s t - s e c t i o n - h e a d e r   s e l e c t : f o c u s   { 
-         b a c k g r o u n d - c o l o r :   v a r ( - - c o l o r - b u t t o n - h o v e r ,   v a r ( - - c o l o r - b u t t o n ) )   ! i m p o r t a n t ; 
-         c o l o r :   v a r ( - - c o l o r - b u t t o n - t e x t ,   # 0 0 0 )   ! i m p o r t a n t ; 
-         b o r d e r - c o l o r :   v a r ( - - c o l o r - b u t t o n - h o v e r ,   v a r ( - - c o l o r - b u t t o n ) )   ! i m p o r t a n t ; 
-         b o x - s h a d o w :   0   4 p x   1 5 p x   r g b a ( 0 , 0 , 0 , 0 . 2 )   ! i m p o r t a n t ; 
- } 
- 
- s e l e c t   o p t i o n   { 
-         b a c k g r o u n d - c o l o r :   # 2 2 2   ! i m p o r t a n t ; 
-         c o l o r :   # f f f   ! i m p o r t a n t ; 
-         f o n t - w e i g h t :   5 0 0   ! i m p o r t a n t ; 
- } 
- 
- s e l e c t   o p t i o n : c h e c k e d , 
- s e l e c t   o p t i o n : h o v e r   { 
-         b a c k g r o u n d - c o l o r :   v a r ( - - c o l o r - b u t t o n )   ! i m p o r t a n t ; 
-         c o l o r :   v a r ( - - c o l o r - b u t t o n - t e x t ,   # 0 0 0 )   ! i m p o r t a n t ; 
- } 
-  
- 
+select:focus, 
+.admin-modal select:focus, 
+.filter-group select:focus, 
+.admin-select:focus, 
+.metrics-selectors select:focus, 
+.loja-select:focus,
+.rest-section-header select:focus {
+    background-color: var(--color-button-hover, var(--color-button, var(--primary-hover, var(--primary)))) !important;
+    color: var(--color-button-text, #000) !important;
+    border-color: var(--color-button-hover, var(--color-button, var(--primary-hover, var(--primary)))) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+}
+
+select option {
+    background-color: #222 !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+}
+
+select option:checked,
+select option:hover {
+    background-color: var(--color-button, var(--primary)) !important;
+    color: var(--color-button-text, #000) !important;
+}
