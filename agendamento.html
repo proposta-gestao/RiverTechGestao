@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR" class="tenant-loading">
 <head>
     <meta charset="UTF-8">
@@ -27,7 +27,7 @@
             transition: opacity 180ms ease-in !important;
         }
     </style>
-    <meta name="description" content="Agende seu horário de forma rápida e fácil.">
+    <meta name="description" content="Agende seu horÃ¡rio de forma rÃ¡pida e fÃ¡cil.">
     <meta name="theme-color" content="#E5B25D">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,7 +63,7 @@
         <div class="ag-progress-steps" id="agProgressSteps">
             <div class="ag-step active" data-step="1">
                 <div class="ag-step-dot">1</div>
-                <span class="ag-step-label">Serviço</span>
+                <span class="ag-step-label">ServiÃ§o</span>
             </div>
             <div class="ag-step" data-step="2">
                 <div class="ag-step-dot">2</div>
@@ -75,7 +75,7 @@
             </div>
             <div class="ag-step" data-step="4">
                 <div class="ag-step-dot">4</div>
-                <span class="ag-step-label">Horário</span>
+                <span class="ag-step-label">HorÃ¡rio</span>
             </div>
             <div class="ag-step" data-step="5">
                 <div class="ag-step-dot">5</div>
@@ -88,50 +88,50 @@
     <main class="ag-main">
 
         <!-- ======================================================
-             STEP 1 — ESCOLHER SERVIÇO
+             STEP 1 â€” ESCOLHER SERVIÃ‡O
              ====================================================== -->
         <div class="ag-step-panel active" id="step-1">
-            <h2 class="ag-step-title">O que você precisa? ✂️</h2>
-            <p class="ag-step-subtitle">Escolha o serviço que deseja agendar.</p>
+            <h2 class="ag-step-title">O que vocÃª precisa? âœ‚ï¸</h2>
+            <p class="ag-step-subtitle">Escolha o serviÃ§o que deseja agendar.</p>
             <div class="ag-grid" id="servicosGrid">
                 <!-- Preenchido pelo JS -->
             </div>
             <div class="ag-step-nav">
                 <button class="ag-btn-next" id="btnStep1Next" disabled onclick="agendarApp.irPara(2)">
-                    Continuar →
+                    Continuar â†’
                 </button>
             </div>
         </div>
 
         <!-- ======================================================
-             STEP 2 — ESCOLHER PROFISSIONAL
+             STEP 2 â€” ESCOLHER PROFISSIONAL
              ====================================================== -->
         <div class="ag-step-panel" id="step-2">
-            <h2 class="ag-step-title">Com quem? 👥</h2>
-            <p class="ag-step-subtitle">Escolha o profissional de sua preferência.</p>
+            <h2 class="ag-step-title">Com quem? ðŸ‘¥</h2>
+            <p class="ag-step-subtitle">Escolha o profissional de sua preferÃªncia.</p>
             <div class="ag-grid" id="profissionaisGrid">
                 <!-- Preenchido pelo JS -->
             </div>
             <div class="ag-step-nav">
-                <button class="ag-btn-back" onclick="agendarApp.irPara(1)">← Voltar</button>
+                <button class="ag-btn-back" onclick="agendarApp.irPara(1)">â† Voltar</button>
                 <button class="ag-btn-next" id="btnStep2Next" disabled onclick="agendarApp.irPara(3)">
-                    Continuar →
+                    Continuar â†’
                 </button>
             </div>
         </div>
 
         <!-- ======================================================
-             STEP 3 — ESCOLHER DATA
+             STEP 3 â€” ESCOLHER DATA
              ====================================================== -->
         <div class="ag-step-panel" id="step-3">
-            <h2 class="ag-step-title">Qual dia? 📅</h2>
+            <h2 class="ag-step-title">Qual dia? ðŸ“…</h2>
             <p class="ag-step-subtitle">Escolha a data do seu agendamento.</p>
 
             <div class="ag-calendar">
                 <div class="ag-cal-header">
-                    <button class="ag-cal-nav" id="calPrev" onclick="agendarApp.navMes(-1)">‹</button>
+                    <button class="ag-cal-nav" id="calPrev" onclick="agendarApp.navMes(-1)">â€¹</button>
                     <span class="ag-cal-month" id="calMonthLabel">--</span>
-                    <button class="ag-cal-nav" id="calNext" onclick="agendarApp.navMes(1)">›</button>
+                    <button class="ag-cal-nav" id="calNext" onclick="agendarApp.navMes(1)">â€º</button>
                 </div>
                 <div class="ag-cal-grid" id="calGrid">
                     <!-- Preenchido pelo JS -->
@@ -139,91 +139,91 @@
             </div>
 
             <div class="ag-step-nav">
-                <button class="ag-btn-back" onclick="agendarApp.irPara(2)">← Voltar</button>
+                <button class="ag-btn-back" onclick="agendarApp.irPara(2)">â† Voltar</button>
                 <button class="ag-btn-next" id="btnStep3Next" disabled onclick="agendarApp.irPara(4)">
-                    Ver Horários →
+                    Ver HorÃ¡rios â†’
                 </button>
             </div>
         </div>
 
         <!-- ======================================================
-             STEP 4 — ESCOLHER HORÁRIO
+             STEP 4 â€” ESCOLHER HORÃRIO
              ====================================================== -->
         <div class="ag-step-panel" id="step-4">
             <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:0.5rem; flex-wrap:wrap;">
-                <h2 class="ag-step-title" style="margin-bottom:0;">Que horas? 🕐</h2>
-                <button onclick="agendarApp.abrirListaEspera()" style="background:var(--color-primary); color:#000; border:none; padding:8px 18px; border-radius:50px; font-size:0.85rem; font-weight:700; cursor:pointer; flex-shrink:0; transition:all 0.2s; box-shadow: 0 4px 15px rgba(229,178,93,0.3);">📝 Fila de Espera</button>
+                <h2 class="ag-step-title" style="margin-bottom:0;">Que horas? ðŸ•</h2>
+                <button onclick="agendarApp.abrirListaEspera()" style="background:var(--color-primary); color:#000; border:none; padding:8px 18px; border-radius:50px; font-size:0.85rem; font-weight:700; cursor:pointer; flex-shrink:0; transition:all 0.2s; box-shadow: 0 4px 15px rgba(229,178,93,0.3);">ðŸ“ Fila de Espera</button>
             </div>
-            <p class="ag-step-subtitle" id="step4Subtitle">Escolha um horário disponível.</p>
+            <p class="ag-step-subtitle" id="step4Subtitle">Escolha um horÃ¡rio disponÃ­vel.</p>
 
             <div class="ag-slots-wrap">
-                <div class="ag-slots-title" id="slotsTitle">Horários disponíveis</div>
+                <div class="ag-slots-title" id="slotsTitle">HorÃ¡rios disponÃ­veis</div>
                 <div id="slotsContainer">
                     <!-- Preenchido pelo JS -->
                 </div>
             </div>
 
             <div class="ag-step-nav">
-                <button class="ag-btn-back" onclick="agendarApp.irPara(3)">← Voltar</button>
+                <button class="ag-btn-back" onclick="agendarApp.irPara(3)">â† Voltar</button>
                 <button class="ag-btn-next" id="btnStep4Next" disabled onclick="agendarApp.irPara(5)">
-                    Continuar →
+                    Continuar â†’
                 </button>
             </div>
         </div>
 
         <!-- ======================================================
-             STEP 5 — DADOS DO CLIENTE + CONFIRMAÇÃO
+             STEP 5 â€” DADOS DO CLIENTE + CONFIRMAÃ‡ÃƒO
              ====================================================== -->
         <div class="ag-step-panel" id="step-5">
-            <h2 class="ag-step-title">Seus dados 👤</h2>
-            <p class="ag-step-subtitle">Quase lá! Preencha seus dados para confirmar.</p>
+            <h2 class="ag-step-title">Seus dados ðŸ‘¤</h2>
+            <p class="ag-step-subtitle">Quase lÃ¡! Preencha seus dados para confirmar.</p>
 
             <!-- Resumo -->
             <div class="ag-summary">
-                <h3>📋 Resumo do Agendamento</h3>
+                <h3>ðŸ“‹ Resumo do Agendamento</h3>
                 <div class="ag-summary-row">
-                    <span class="ag-summary-label">Serviço</span>
-                    <span class="ag-summary-value" id="sumServico">—</span>
+                    <span class="ag-summary-label">ServiÃ§o</span>
+                    <span class="ag-summary-value" id="sumServico">â€”</span>
                 </div>
                 <div class="ag-summary-row">
                     <span class="ag-summary-label">Profissional</span>
-                    <span class="ag-summary-value" id="sumProfissional">—</span>
+                    <span class="ag-summary-value" id="sumProfissional">â€”</span>
                 </div>
                 <div class="ag-summary-row">
                     <span class="ag-summary-label">Data e Hora</span>
-                    <span class="ag-summary-value" id="sumDataHora">—</span>
+                    <span class="ag-summary-value" id="sumDataHora">â€”</span>
                 </div>
                 <div class="ag-summary-row">
-                    <span class="ag-summary-label">Duração</span>
-                    <span class="ag-summary-value" id="sumDuracao">—</span>
+                    <span class="ag-summary-label">DuraÃ§Ã£o</span>
+                    <span class="ag-summary-value" id="sumDuracao">â€”</span>
                 </div>
                 <div class="ag-summary-row">
                     <span class="ag-summary-label">Valor</span>
-                    <span class="ag-summary-value price" id="sumPreco">—</span>
+                    <span class="ag-summary-value price" id="sumPreco">â€”</span>
                 </div>
             </div>
 
-            <!-- Formulário -->
+            <!-- FormulÃ¡rio -->
             <div class="ag-form-card">
-                <h3>📞 Seus Dados</h3>
+                <h3>ðŸ“ž Seus Dados</h3>
                 <div class="ag-form-group">
                     <label for="clienteNome">Seu nome completo *</label>
-                    <input type="text" id="clienteNome" placeholder="Ex: João Silva" autocomplete="name">
+                    <input type="text" id="clienteNome" placeholder="Ex: JoÃ£o Silva" autocomplete="name">
                 </div>
                 <div class="ag-form-group">
                     <label for="clienteTel">Seu celular / WhatsApp *</label>
                     <input type="text" inputmode="numeric" id="clienteTel" placeholder="(11) 99999-9999" autocomplete="tel" maxlength="15">
                 </div>
                 <div class="ag-form-group">
-                    <label for="clienteObs">Observação (opcional)</label>
-                    <textarea id="clienteObs" placeholder="Alguma preferência ou informação adicional..."></textarea>
+                    <label for="clienteObs">ObservaÃ§Ã£o (opcional)</label>
+                    <textarea id="clienteObs" placeholder="Alguma preferÃªncia ou informaÃ§Ã£o adicional..."></textarea>
                 </div>
             </div>
 
             <div class="ag-step-nav">
-                <button class="ag-btn-back" onclick="agendarApp.irPara(4)">← Voltar</button>
+                <button class="ag-btn-back" onclick="agendarApp.irPara(4)">â† Voltar</button>
                 <button class="ag-btn-next" id="btnConfirmar" disabled onclick="agendarApp.confirmarAgendamento()">
-                    ✅ Confirmar Agendamento
+                    âœ… Confirmar Agendamento
                 </button>
             </div>
         </div>
@@ -232,27 +232,27 @@
              SUCESSO
              ====================================================== -->
         <div class="ag-step-panel" id="step-sucesso">
-            <div class="ag-success-icon">✅</div>
+            <div class="ag-success-icon">âœ…</div>
             <h2 class="ag-success-title">Agendado com sucesso!</h2>
             <p class="ag-success-sub" id="successMsg">
-                Seu horário foi reservado. Te esperamos!
+                Seu horÃ¡rio foi reservado. Te esperamos!
             </p>
             <div class="ag-success-card">
                 <div class="ag-summary-row">
-                    <span class="ag-summary-label">Serviço</span>
-                    <span class="ag-summary-value" id="confServico">—</span>
+                    <span class="ag-summary-label">ServiÃ§o</span>
+                    <span class="ag-summary-value" id="confServico">â€”</span>
                 </div>
                 <div class="ag-summary-row">
                     <span class="ag-summary-label">Profissional</span>
-                    <span class="ag-summary-value" id="confProfissional">—</span>
+                    <span class="ag-summary-value" id="confProfissional">â€”</span>
                 </div>
                 <div class="ag-summary-row">
                     <span class="ag-summary-label">Data e Hora</span>
-                    <span class="ag-summary-value" id="confDataHora">—</span>
+                    <span class="ag-summary-value" id="confDataHora">â€”</span>
                 </div>
                 <div class="ag-summary-row">
                     <span class="ag-summary-label">Valor</span>
-                    <span class="ag-summary-value price" id="confPreco">—</span>
+                    <span class="ag-summary-value price" id="confPreco">â€”</span>
                 </div>
             </div>
             <button class="ag-btn-novo" onclick="agendarApp.novoAgendamento()">
@@ -269,18 +269,18 @@
                     <h3 style="margin:0; font-size:1.2rem; color:var(--text-color);">Entrar na Lista de Espera</h3>
                     <button onclick="agendarApp.fecharListaEspera()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
                 </div>
-                <p style="font-size:0.85rem; color:var(--color-muted); margin-bottom:15px;">Preencha seus dados. Entraremos em contato caso algum horário fique disponível.</p>
+                <p style="font-size:0.85rem; color:var(--color-muted); margin-bottom:15px;">Preencha seus dados. Entraremos em contato caso algum horÃ¡rio fique disponÃ­vel.</p>
                 
                 <div class="ag-form-group" style="margin-bottom:10px;">
                     <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">Nome completo *</label>
-                    <input type="text" id="wlNome" placeholder="Ex: João Silva" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
+                    <input type="text" id="wlNome" placeholder="Ex: JoÃ£o Silva" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
                     <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">WhatsApp *</label>
                     <input type="text" inputmode="numeric" id="wlTel" placeholder="(11) 99999-9999" maxlength="15" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
-                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">Serviço Desejado *</label>
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">ServiÃ§o Desejado *</label>
                     <select id="wlServico" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);"></select>
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
@@ -292,21 +292,21 @@
                     <input type="date" id="wlData" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
-                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">1ª Opção de Horário</label>
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">1Âª OpÃ§Ã£o de HorÃ¡rio</label>
                     <select id="wlHorario1" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
-                        <option value="">Qualquer horário</option>
+                        <option value="">Qualquer horÃ¡rio</option>
                     </select>
                 </div>
                 <div class="ag-form-group" style="margin-bottom:10px;">
-                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">2ª Opção de Horário</label>
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">2Âª OpÃ§Ã£o de HorÃ¡rio</label>
                     <select id="wlHorario2" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
-                        <option value="">Qualquer horário</option>
+                        <option value="">Qualquer horÃ¡rio</option>
                     </select>
                 </div>
                 <div class="ag-form-group" style="margin-bottom:15px;">
-                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">3ª Opção de Horário</label>
+                    <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:var(--color-primary);">3Âª OpÃ§Ã£o de HorÃ¡rio</label>
                     <select id="wlHorario3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--color-border); background:var(--color-bg); color:var(--text-color);">
-                        <option value="">Qualquer horário</option>
+                        <option value="">Qualquer horÃ¡rio</option>
                     </select>
                 </div>
                 
@@ -324,7 +324,7 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <!-- Tenant System -->
-    <script src="/tenant.js"></script>
+    <script src="/tenant.js?v=2.6"></script>
     <!-- App Logic -->
     <script src="/agendamento.js"></script>
 </body>

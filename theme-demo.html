@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -245,10 +245,10 @@
         <!-- Header -->
         <div class="demo-section">
             <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent-primary);">
-                🎨 RiverTech Theming System
+                ðŸŽ¨ RiverTech Theming System
             </h1>
             <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
-                Arquitetura de Design Tokens com suporte a múltiplos temas por nicho
+                Arquitetura de Design Tokens com suporte a mÃºltiplos temas por nicho
             </p>
         </div>
 
@@ -257,27 +257,27 @@
             <h2>Selecione um Tema</h2>
             <div class="theme-buttons">
                 <button class="theme-btn active" onclick="updateTheme('default')">
-                    🏳️ Default
+                    ðŸ³ï¸ Default
                 </button>
                 <button class="theme-btn" onclick="updateTheme('clothing')">
-                    👕 Clothing
+                    ðŸ‘• Clothing
                 </button>
                 <button class="theme-btn" onclick="updateTheme('restaurant')">
-                    🍕 Restaurant
+                    ðŸ• Restaurant
                 </button>
                 <button class="theme-btn" onclick="updateTheme('barbershop')">
-                    ✂️ Barbershop
+                    âœ‚ï¸ Barbershop
                 </button>
                 <button class="theme-btn" onclick="updateTheme('beverage')">
-                    🥤 Beverage
+                    ðŸ¥¤ Beverage
                 </button>
             </div>
         </div>
 
         <!-- Info Box -->
         <div class="info-box">
-            <strong>💡 Dica:</strong> Os temas são aplicados dinamicamente via CSS variables. 
-            Use <code>updateTheme(themeName, overrides)</code> para aplicar temas + customizações.
+            <strong>ðŸ’¡ Dica:</strong> Os temas sÃ£o aplicados dinamicamente via CSS variables. 
+            Use <code>updateTheme(themeName, overrides)</code> para aplicar temas + customizaÃ§Ãµes.
         </div>
 
         <!-- Color Palette -->
@@ -293,11 +293,11 @@
                     <p>--bg-card</p>
                 </div>
                 <div class="color-box" style="background: var(--accent-primary); color: var(--color-neutral-950);">
-                    <h4>Primária</h4>
+                    <h4>PrimÃ¡ria</h4>
                     <p>--accent-primary</p>
                 </div>
                 <div class="color-box" style="background: var(--btn-primary-bg); color: var(--btn-primary-text);">
-                    <h4>Botão Primary</h4>
+                    <h4>BotÃ£o Primary</h4>
                     <p>--btn-primary-bg</p>
                 </div>
                 <div class="color-box" style="background: var(--accent-success); color: white;">
@@ -324,20 +324,20 @@
             <h2>Componentes</h2>
             <div class="component-showcase">
                 <div class="component-card">
-                    <h3>Botões</h3>
+                    <h3>BotÃµes</h3>
                     <button class="btn btn-primary" style="margin-bottom: 0.5rem; width: 100%;">
-                        Botão Primário
+                        BotÃ£o PrimÃ¡rio
                     </button>
                     <button class="btn btn-secondary" style="width: 100%;">
-                        Botão Secundário
+                        BotÃ£o SecundÃ¡rio
                     </button>
                 </div>
 
                 <div class="component-card">
                     <h3>Estados</h3>
                     <div style="margin-bottom: 1rem;">
-                        <span class="badge badge-success">✓ Ativo</span>
-                        <span class="badge badge-warning">⚠ Alerta</span>
+                        <span class="badge badge-success">âœ“ Ativo</span>
+                        <span class="badge badge-warning">âš  Alerta</span>
                     </div>
                 </div>
 
@@ -350,12 +350,12 @@
 
         <!-- Customization Example -->
         <div class="demo-section">
-            <h2>Customização Dinâmica</h2>
+            <h2>CustomizaÃ§Ã£o DinÃ¢mica</h2>
             <div class="info-box">
-                <strong>⚙️ Exemplo:</strong> Aplique um tema e customize cores específicas em tempo real.
+                <strong>âš™ï¸ Exemplo:</strong> Aplique um tema e customize cores especÃ­ficas em tempo real.
             </div>
             <div class="override-demo">
-                <label>Cor Primária Customizada:</label>
+                <label>Cor PrimÃ¡ria Customizada:</label>
                 <input type="color" id="customColorInput" value="#E5B25D" 
                        onchange="customizeTheme()" 
                        style="width: 50px; height: 50px; cursor: pointer; border: none; border-radius: var(--radius-md);">
@@ -390,7 +390,7 @@
                 <pre>// Aplicar tema por nicho
 updateTheme('restaurant');
 
-// Aplicar tema + customizações
+// Aplicar tema + customizaÃ§Ãµes
 updateTheme('barbershop', {
   '--btn-primary-bg': '#d4af37',
   '--accent-primary': '#c4952e'
@@ -399,11 +399,11 @@ updateTheme('barbershop', {
 // Obter tema atual
 themeManager.getCurrentTheme();
 
-// Exportar configuração (para salvar no banco)
+// Exportar configuraÃ§Ã£o (para salvar no banco)
 const config = themeManager.exportThemeConfig();</pre>
             </div>
 
-            <h3 style="color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 1rem;">4. Escutar Mudanças</h3>
+            <h3 style="color: var(--text-secondary); margin-top: 1.5rem; margin-bottom: 1rem;">4. Escutar MudanÃ§as</h3>
             <div class="usage-section">
                 <pre>document.addEventListener('themechange', (e) => {
   console.log('Novo tema:', e.detail.theme);
@@ -414,19 +414,19 @@ const config = themeManager.exportThemeConfig();</pre>
 
         <!-- Token Reference -->
         <div class="demo-section">
-            <h2>Referência de Tokens Semânticos</h2>
+            <h2>ReferÃªncia de Tokens SemÃ¢nticos</h2>
             <table class="token-table">
                 <thead>
                     <tr>
                         <th>Token</th>
-                        <th>Propósito</th>
+                        <th>PropÃ³sito</th>
                         <th>Tipo</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><code>--bg-page</code></td>
-                        <td>Fundo principal da página</td>
+                        <td>Fundo principal da pÃ¡gina</td>
                         <td>Background</td>
                     </tr>
                     <tr>
@@ -441,22 +441,22 @@ const config = themeManager.exportThemeConfig();</pre>
                     </tr>
                     <tr>
                         <td><code>--text-muted</code></td>
-                        <td>Texto secundário (labels, hints)</td>
+                        <td>Texto secundÃ¡rio (labels, hints)</td>
                         <td>Text</td>
                     </tr>
                     <tr>
                         <td><code>--border-default</code></td>
-                        <td>Bordas padrão</td>
+                        <td>Bordas padrÃ£o</td>
                         <td>Border</td>
                     </tr>
                     <tr>
                         <td><code>--btn-primary-bg</code></td>
-                        <td>Fundo botão primário</td>
+                        <td>Fundo botÃ£o primÃ¡rio</td>
                         <td>Button</td>
                     </tr>
                     <tr>
                         <td><code>--btn-primary-hover</code></td>
-                        <td>Fundo botão primário (hover)</td>
+                        <td>Fundo botÃ£o primÃ¡rio (hover)</td>
                         <td>Button</td>
                     </tr>
                     <tr>
@@ -500,7 +500,7 @@ const config = themeManager.exportThemeConfig();</pre>
 --color-success-500: #00B894;</pre>
 
                 <h3 style="color: var(--accent-primary); margin-bottom: 1.5rem;">Layer 2: Semantic Tokens</h3>
-                <p style="margin-bottom: 1rem;">Tokens com significado (ÚNICA camada usada no CSS)</p>
+                <p style="margin-bottom: 1rem;">Tokens com significado (ÃšNICA camada usada no CSS)</p>
                 <pre style="background: var(--color-neutral-900); padding: 1rem; border-radius: var(--radius-md); overflow-x: auto; color: var(--color-success-500);">--bg-page: var(--color-neutral-900);
 --accent-primary: var(--color-brand-500);
 --btn-primary-bg: var(--color-brand-500);
@@ -511,8 +511,8 @@ const config = themeManager.exportThemeConfig();</pre>
         <!-- Footer -->
         <div style="text-align: center; padding: 3rem 0; color: var(--text-muted); border-top: 1px solid var(--border-default); margin-top: 3rem;">
             <p>
-                <strong>RiverTech Theming System</strong> • 
-                <a href="#" style="color: var(--accent-primary); text-decoration: none;">Documentação</a> • 
+                <strong>RiverTech Theming System</strong> â€¢ 
+                <a href="#" style="color: var(--accent-primary); text-decoration: none;">DocumentaÃ§Ã£o</a> â€¢ 
                 <a href="#" style="color: var(--accent-primary); text-decoration: none;">GitHub</a>
             </p>
         </div>

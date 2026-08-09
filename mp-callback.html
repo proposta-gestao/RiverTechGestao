@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -65,8 +65,8 @@
 
     <div class="container">
         <div class="spinner" id="spinner"></div>
-        <div class="success-icon" id="successIcon">✓</div>
-        <div class="error-icon" id="errorIcon">✕</div>
+        <div class="success-icon" id="successIcon">âœ“</div>
+        <div class="error-icon" id="errorIcon">âœ•</div>
         
         <h2 id="statusTitle">Conectando...</h2>
         <p id="statusMessage">Aguarde enquanto vinculamos sua conta do Mercado Pago.</p>
@@ -95,7 +95,7 @@
             };
 
             if (error) {
-                setTitle('Conexão Recusada', 'Você não autorizou a conexão com o Mercado Pago.', false, true);
+                setTitle('ConexÃ£o Recusada', 'VocÃª nÃ£o autorizou a conexÃ£o com o Mercado Pago.', false, true);
                 if (window.opener) {
                     window.opener.postMessage({ type: 'MP_OAUTH_ERROR', error: error }, '*');
                 }
@@ -103,12 +103,12 @@
             }
 
             if (!code) {
-                setTitle('Erro Inesperado', 'Código de autorização não encontrado.', false, true);
+                setTitle('Erro Inesperado', 'CÃ³digo de autorizaÃ§Ã£o nÃ£o encontrado.', false, true);
                 return;
             }
 
             if (!empresaId || !supabaseUrl || !supabaseAnonKey) {
-                setTitle('Erro', 'Dados da sessão não encontrados. Tente fechar e abrir o painel novamente.', false, true);
+                setTitle('Erro', 'Dados da sessÃ£o nÃ£o encontrados. Tente fechar e abrir o painel novamente.', false, true);
                 return;
             }
 
@@ -133,14 +133,14 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    setTitle('Conectado com Sucesso!', 'Sua conta do Mercado Pago foi vinculada. Você já pode fechar esta janela.');
+                    setTitle('Conectado com Sucesso!', 'Sua conta do Mercado Pago foi vinculada. VocÃª jÃ¡ pode fechar esta janela.');
                     // Notify the parent window
                     if (window.opener) {
                         window.opener.postMessage({ type: 'MP_OAUTH_SUCCESS' }, '*');
                     }
                 } else {
                     console.error("Function error:", data);
-                    setTitle('Erro na Conexão', data.error || 'Não foi possível vincular a conta.', false, true);
+                    setTitle('Erro na ConexÃ£o', data.error || 'NÃ£o foi possÃ­vel vincular a conta.', false, true);
                 }
             } catch (err) {
                 console.error("Fetch error:", err);

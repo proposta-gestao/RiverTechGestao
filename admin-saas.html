@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
@@ -66,7 +66,7 @@
             overflow: hidden;
         }
         .clickable-metric::after {
-            content: '👁️ Ver detalhes';
+            content: 'ðŸ‘ï¸ Ver detalhes';
             position: absolute;
             bottom: -30px;
             right: 15px;
@@ -97,21 +97,21 @@
 
 <body>
 
-    <!-- Toast de Notificações -->
+    <!-- Toast de NotificaÃ§Ãµes -->
     <div class="toast" id="toast"></div>
 
     <!-- Login Screen (Super Admin) -->
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <h1>SaaS Admin</h1>
-            <p>Painel Global de Gestão</p>
+            <p>Painel Global de GestÃ£o</p>
             <div class="form-group">
                 <label for="loginEmail">E-mail Super Admin</label>
                 <input type="email" id="loginEmail" placeholder="super@admin.com">
             </div>
             <div class="form-group">
                 <label for="loginSenha">Senha</label>
-                <input type="password" id="loginSenha" placeholder="••••••••">
+                <input type="password" id="loginSenha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
             </div>
             <button class="btn-login" id="btnLogin">Entrar no Sistema</button>
             <p class="login-error" id="loginError"></p>
@@ -125,21 +125,21 @@
         <header class="admin-topbar">
             <div class="topbar-container">
                 <!-- Mobile Toggle first for mobile layout -->
-                <button id="btnMobileMenu" class="btn-mobile-toggle">☰</button>
+                <button id="btnMobileMenu" class="btn-mobile-toggle">â˜°</button>
 
                 <nav class="admin-tabs">
                     <button class="nav-tab active" data-target="dashboard">
-                        <span class="tab-icon">📊</span>
+                        <span class="tab-icon">ðŸ“Š</span>
                         <span class="tab-text">Dashboard</span>
                     </button>
                     <button class="nav-tab" data-target="empresas">
-                        <span class="tab-icon">🏢</span>
+                        <span class="tab-icon">ðŸ¢</span>
                         <span class="tab-text">Empresas</span>
                     </button>
                 </nav>
 
                 <div class="topbar-actions">
-                    <button id="btnLimparVendas" class="btn-outline" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(239, 68, 68, 0.3); color: #ef4444; margin-right: 10px;">🧹 Limpar Vendas</button>
+                    <button id="btnLimparVendas" class="btn-outline" style="font-size: 0.8rem; padding: 6px 12px; border-color: rgba(239, 68, 68, 0.3); color: #ef4444; margin-right: 10px;">ðŸ§¹ Limpar Vendas</button>
                     <button id="btnSair" class="btn-logout">Sair</button>
                 </div>
             </div>
@@ -155,8 +155,8 @@
                 <button id="btnCloseMobile" class="btn-close-mobile">&times;</button>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-target="dashboard">📊 Dashboard</a>
-                <a href="#" class="nav-item" data-target="empresas">🏢 Empresas</a>
+                <a href="#" class="nav-item active" data-target="dashboard">ðŸ“Š Dashboard</a>
+                <a href="#" class="nav-item" data-target="empresas">ðŸ¢ Empresas</a>
             </nav>
         </aside>
 
@@ -166,7 +166,7 @@
             <!-- Dashboard View -->
             <div id="view-dashboard" class="view-section active">
                 <header class="section-header">
-                    <h1>Visão Geral da Plataforma</h1>
+                    <h1>VisÃ£o Geral da Plataforma</h1>
                 </header>
 
                 <div class="metrics-grid">
@@ -196,7 +196,7 @@
             <!-- Empresas View -->
             <div id="view-empresas" class="view-section">
                 <header class="section-header">
-                    <h1>Gestão de Empresas</h1>
+                    <h1>GestÃ£o de Empresas</h1>
                     <button class="btn-primary" id="btnNovaEmpresa">+ Nova Empresa</button>
                 </header>
 
@@ -207,7 +207,7 @@
                                 <th>Empresa</th>
                                 <th>Plano</th>
                                 <th>Status</th>
-                                <th>Ações</th>
+                                <th>AÃ§Ãµes</th>
                             </tr>
                         </thead>
                         <tbody id="listaEmpresas">
@@ -229,8 +229,8 @@
 
             <!-- Tabs Navigation -->
             <div class="modal-tabs">
-                <button class="tab-btn active" data-tab="tab-geral" onclick="switchTab('modalNovaEmpresa', 'tab-geral')">1. Dados Básicos</button>
-                <button class="tab-btn" data-tab="tab-modulos" onclick="switchTab('modalNovaEmpresa', 'tab-modulos')">2. Módulos Ativos</button>
+                <button class="tab-btn active" data-tab="tab-geral" onclick="switchTab('modalNovaEmpresa', 'tab-geral')">1. Dados BÃ¡sicos</button>
+                <button class="tab-btn" data-tab="tab-modulos" onclick="switchTab('modalNovaEmpresa', 'tab-modulos')">2. MÃ³dulos Ativos</button>
                 <button class="tab-btn" data-tab="tab-tema" onclick="switchTab('modalNovaEmpresa', 'tab-tema')">3. Identidade Visual</button>
             </div>
 
@@ -242,31 +242,31 @@
                         <input type="text" id="empNome" required placeholder="Ex: RiverTech - Matriz">
                     </div>
                     <div class="form-group">
-                        <label>Nome da Marca (Público)</label>
+                        <label>Nome da Marca (PÃºblico)</label>
                         <input type="text" id="empBrandName" required placeholder="Ex: Burger Premium">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Endereço da Loja (Link / Slug)</label>
+                    <label>EndereÃ§o da Loja (Link / Slug)</label>
                     <input type="text" id="empSlug" required placeholder="burger-premium">
-                    <small>A loja ficará acessível em: river-tech-gestao.vercel.app/<strong>slug</strong></small>
+                    <small>A loja ficarÃ¡ acessÃ­vel em: river-tech-gestao.vercel.app/<strong>slug</strong></small>
                     
                     <div class="url-previews" id="urlPreviews" style="display: none;">
                         <div class="url-preview-item">
-                            <label>🔗 Cardápio (Cliente)</label>
+                            <label>ðŸ”— CardÃ¡pio (Cliente)</label>
                             <code id="previewMenu">...</code>
                         </div>
                         <div class="url-preview-item">
-                            <label>📅 Agendamento</label>
+                            <label>ðŸ“… Agendamento</label>
                             <code id="previewAgendamento">...</code>
                         </div>
                         <div class="url-preview-item">
-                            <label>⚙️ Painel de Gestão (Admin)</label>
+                            <label>âš™ï¸ Painel de GestÃ£o (Admin)</label>
                             <code id="previewAdmin">...</code>
                         </div>
                         <div class="url-preview-item">
-                            <label>🎴 Apresentação Comercial</label>
+                            <label>ðŸŽ´ ApresentaÃ§Ã£o Comercial</label>
                             <code id="previewApresentacao">...</code>
                         </div>
                     </div>
@@ -276,7 +276,7 @@
                     <div class="form-group">
                         <label>Plano de Assinatura</label>
                         <select id="empPlano">
-                            <option value="basico">Básico</option>
+                            <option value="basico">BÃ¡sico</option>
                             <option value="pro">Pro</option>
                             <option value="premium" selected>Premium</option>
                         </select>
@@ -284,10 +284,10 @@
                     <div class="form-group">
                         <label>Segmento da Empresa</label>
                         <select id="empSegmento" onchange="aplicarPresetSegmento(this.value)">
-                            <option value="">— Selecione —</option>
-                            <option value="restaurante">🍽️ Bares / Restaurantes</option>
-                            <option value="barbearia">💈 Barbearia</option>
-                            <option value="loja_roupas">👗 Loja de Roupas</option>
+                            <option value="">â€” Selecione â€”</option>
+                            <option value="restaurante">ðŸ½ï¸ Bares / Restaurantes</option>
+                            <option value="barbearia">ðŸ’ˆ Barbearia</option>
+                            <option value="loja_roupas">ðŸ‘— Loja de Roupas</option>
                         </select>
                     </div>
                 </div>
@@ -300,15 +300,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Senha de Acesso Provisória</label>
+                    <label>Senha de Acesso ProvisÃ³ria</label>
                     <input type="text" id="empAdminSenha" required value="Mudar123!">
                 </div>
             </div>
 
-            <!-- Tab: Módulos -->
+            <!-- Tab: MÃ³dulos -->
             <div id="tab-modulos" class="tab-content" style="max-height: 50vh; overflow-y: auto;">
                 <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1.5rem;">
-                    Selecione quais recursos estarão disponíveis para este cliente.
+                    Selecione quais recursos estarÃ£o disponÃ­veis para este cliente.
                 </p>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
                     
@@ -316,10 +316,10 @@
                     <div class="module-card">
                         <div class="module-header" onclick="toggleAccordionNovo('n_grupo_produtos')">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="accordion-icon" id="icon_n_grupo_produtos">▼</span>
+                                <span class="accordion-icon" id="icon_n_grupo_produtos">â–¼</span>
                                 <div>
-                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📦 PRODUTOS</h4>
-                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Catálogo e Estoque</small>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ“¦ PRODUTOS</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">CatÃ¡logo e Estoque</small>
                                 </div>
                             </div>
                             <label class="switch" onclick="event.stopPropagation()">
@@ -341,15 +341,15 @@
                                 <label class="switch"><input type="checkbox" id="n_mod_produtos_estoque" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>👥 Equipe / Atendentes</span>
+                                <span>ðŸ‘¥ Equipe / Atendentes</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_produtos_equipe" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>🍴 Cardápio Digital</span>
+                                <span>ðŸ´ CardÃ¡pio Digital</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_cardapio" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>🍽️ Ficha Técnica (Restaurante)</span>
+                                <span>ðŸ½ï¸ Ficha TÃ©cnica (Restaurante)</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_ficha_tecnica"><span class="slider"></span></label>
                             </div>
                         </div>
@@ -359,10 +359,10 @@
                     <div class="module-card">
                         <div class="module-header" onclick="toggleAccordionNovo('n_grupo_vendas')">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="accordion-icon" id="icon_n_grupo_vendas">▼</span>
+                                <span class="accordion-icon" id="icon_n_grupo_vendas">â–¼</span>
                                 <div>
-                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📊 VENDAS</h4>
-                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Métricas e Histórico</small>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ“Š VENDAS</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">MÃ©tricas e HistÃ³rico</small>
                                 </div>
                             </div>
                             <label class="switch" onclick="event.stopPropagation()">
@@ -372,27 +372,27 @@
                         </div>
                         <div class="grupo-content collapsed" id="n_grupo_vendas">
                             <div class="module-item">
-                                <span>Histórico de Vendas</span>
+                                <span>HistÃ³rico de Vendas</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_vendas_visao_geral" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>Dashboard de Métricas</span>
+                                <span>Dashboard de MÃ©tricas</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_metricas_dashboard" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>Performance Analítica</span>
+                                <span>Performance AnalÃ­tica</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_metricas_performance_vendas" checked><span class="slider"></span></label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Grupo: Operações -->
+                    <!-- Grupo: OperaÃ§Ãµes -->
                     <div class="module-card">
                         <div class="module-header" onclick="toggleAccordionNovo('n_grupo_ops')">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="accordion-icon" id="icon_n_grupo_ops">▼</span>
+                                <span class="accordion-icon" id="icon_n_grupo_ops">â–¼</span>
                                 <div>
-                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">⚙️ OPERAÇÕES</h4>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">âš™ï¸ OPERAÃ‡Ã•ES</h4>
                                     <small style="font-size: 0.7rem; color: var(--text-secondary);">Frete, Cupons e Pagamentos</small>
                                 </div>
                             </div>
@@ -403,7 +403,7 @@
                         </div>
                         <div class="grupo-content collapsed" id="n_grupo_ops">
                             <div class="module-item">
-                                <span>Gestão de Frete</span>
+                                <span>GestÃ£o de Frete</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_config_frete" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
@@ -415,7 +415,7 @@
                                 <label class="switch"><input type="checkbox" id="n_mod_cupons" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>Cardápio Ativo</span>
+                                <span>CardÃ¡pio Ativo</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_cardapio" checked><span class="slider"></span></label>
                             </div>
                         </div>
@@ -425,10 +425,10 @@
                     <div class="module-card">
                         <div class="module-header" onclick="toggleAccordionNovo('n_grupo_agendamento')">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="accordion-icon" id="icon_n_grupo_agendamento">▼</span>
+                                <span class="accordion-icon" id="icon_n_grupo_agendamento">â–¼</span>
                                 <div>
-                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📅 AGENDAMENTO</h4>
-                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e Serviços por Hora</small>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ“… AGENDAMENTO</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e ServiÃ§os por Hora</small>
                                 </div>
                             </div>
                             <label class="switch" onclick="event.stopPropagation()">
@@ -438,23 +438,23 @@
                         </div>
                         <div class="grupo-content collapsed" id="n_grupo_agendamento">
                             <div class="module-item">
-                                <span>📅 Agendamento Online</span>
+                                <span>ðŸ“… Agendamento Online</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_agendamento_ativo" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>👥 Multi-Profissional</span>
+                                <span>ðŸ‘¥ Multi-Profissional</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_agendamento_multi_profissional" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>⏳ Lista de Espera</span>
+                                <span>â³ Lista de Espera</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_agendamento_lista_espera" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>💬 Mensagens Automáticas</span>
+                                <span>ðŸ’¬ Mensagens AutomÃ¡ticas</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_agendamento_mensagens" checked><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>🏆 Clube de Fidelidade</span>
+                                <span>ðŸ† Clube de Fidelidade</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_agendamento_fidelidade" checked><span class="slider"></span></label>
                             </div>
                         </div>
@@ -464,10 +464,10 @@
                     <div class="module-card">
                         <div class="module-header" onclick="toggleAccordionNovo('n_grupo_loja')">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="accordion-icon" id="icon_n_grupo_loja">▼</span>
+                                <span class="accordion-icon" id="icon_n_grupo_loja">â–¼</span>
                                 <div>
-                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">👗 LOJA DE ROUPAS</h4>
-                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">Variações, Estoque e Vitrine</small>
+                                    <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ‘— LOJA DE ROUPAS</h4>
+                                    <small style="font-size: 0.7rem; color: var(--text-secondary);">VariaÃ§Ãµes, Estoque e Vitrine</small>
                                 </div>
                             </div>
                             <label class="switch" onclick="event.stopPropagation()">
@@ -477,11 +477,11 @@
                         </div>
                         <div class="grupo-content disabled" id="n_grupo_loja">
                             <div class="module-item">
-                                <span>👗 Módulo Loja Ativo</span>
+                                <span>ðŸ‘— MÃ³dulo Loja Ativo</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_loja_roupas"><span class="slider"></span></label>
                             </div>
                             <div class="module-item">
-                                <span>📦 Controle de Estoque (Loja)</span>
+                                <span>ðŸ“¦ Controle de Estoque (Loja)</span>
                                 <label class="switch"><input type="checkbox" id="n_mod_loja_estoque" checked><span class="slider"></span></label>
                             </div>
                         </div>
@@ -495,56 +495,56 @@
                 <div class="theme-editor" style="margin-top:0;">
                     <div class="theme-editor-grid">
                         <div class="theme-color-field">
-                            <label>🎨 Cor Primária</label>
+                            <label>ðŸŽ¨ Cor PrimÃ¡ria</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorPrimaria" value="#E5B25D" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorPrimariaHex" value="#E5B25D" oninput="syncColorPicker('n_editTemaCorPrimaria','n_editTemaCorPrimariaHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>💙 Cor Secundária</label>
+                            <label>ðŸ’™ Cor SecundÃ¡ria</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorSecundaria" value="#1E90FF" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorSecundariaHex" value="#1E90FF" oninput="syncColorPicker('n_editTemaCorSecundaria','n_editTemaCorSecundariaHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>🖱️ Botões</label>
+                            <label>ðŸ–±ï¸ BotÃµes</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorBotao" value="#E5B25D" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorBotaoHex" value="#E5B25D" oninput="syncColorPicker('n_editTemaCorBotao','n_editTemaCorBotaoHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>🖱️ Hover (Botões)</label>
+                            <label>ðŸ–±ï¸ Hover (BotÃµes)</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorHover" value="#d4a14c" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorHoverHex" value="#d4a14c" oninput="syncColorPicker('n_editTemaCorHover','n_editTemaCorHoverHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>🌑 Fundo</label>
+                            <label>ðŸŒ‘ Fundo</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorBg" value="#0d0d0d" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorBgHex" value="#0d0d0d" oninput="syncColorPicker('n_editTemaCorBg','n_editTemaCorBgHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>🃏 Superfície</label>
+                            <label>ðŸƒ SuperfÃ­cie</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorSurface" value="#1a1a1a" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorSurfaceHex" value="#1a1a1a" oninput="syncColorPicker('n_editTemaCorSurface','n_editTemaCorSurfaceHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>🔲 Bordas</label>
+                            <label>ðŸ”² Bordas</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorBorda" value="#333333" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorBordaHex" value="#333333" oninput="syncColorPicker('n_editTemaCorBorda','n_editTemaCorBordaHex')">
                             </div>
                         </div>
                         <div class="theme-color-field">
-                            <label>📝 Texto</label>
+                            <label>ðŸ“ Texto</label>
                             <div class="color-input-wrap">
                                 <input type="color" id="n_editTemaCorTexto" value="#ffffff" oninput="previewTemaNovo()">
                                 <input type="text" id="n_editTemaCorTextoHex" value="#ffffff" oninput="syncColorPicker('n_editTemaCorTexto','n_editTemaCorTextoHex')">
@@ -556,7 +556,7 @@
                     <div class="theme-preview" id="n_themePreview">
                         <div class="theme-preview-header">
                             <span>Preview</span>
-                            <button class="theme-preview-btn" id="n_themePreviewBtn">Botão</button>
+                            <button class="theme-preview-btn" id="n_themePreviewBtn">BotÃ£o</button>
                         </div>
                         <div class="theme-preview-card" id="n_themePreviewCard">
                             <div class="theme-preview-title">Exemplo de Produto</div>
@@ -591,7 +591,7 @@
                 <div class="form-group">
                     <label>Plano</label>
                     <select id="editEmpPlano">
-                        <option value="basico">Básico</option>
+                        <option value="basico">BÃ¡sico</option>
                         <option value="pro">Pro</option>
                         <option value="premium">Premium</option>
                     </select>
@@ -599,10 +599,10 @@
                 <div class="form-group">
                     <label>Segmento</label>
                     <select id="editEmpSegmento">
-                        <option value="">— Selecione —</option>
-                        <option value="restaurante">🍽️ Bares / Restaurantes</option>
-                        <option value="barbearia">💈 Barbearia</option>
-                        <option value="loja_roupas">👗 Loja de Roupas</option>
+                        <option value="">â€” Selecione â€”</option>
+                        <option value="restaurante">ðŸ½ï¸ Bares / Restaurantes</option>
+                        <option value="barbearia">ðŸ’ˆ Barbearia</option>
+                        <option value="loja_roupas">ðŸ‘— Loja de Roupas</option>
                     </select>
                 </div>
             </div>
@@ -617,23 +617,23 @@
             </div>
 
             <hr class="modal-divider">
-            <h3>🎨 Identidade Visual</h3>
+            <h3>ðŸŽ¨ Identidade Visual</h3>
             <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:1rem;">
-                Configure as cores que serão aplicadas no cardápio, admin e atendente da loja.
+                Configure as cores que serÃ£o aplicadas no cardÃ¡pio, admin e atendente da loja.
             </p>
 
             <div class="theme-editor">
                 <div class="theme-editor-grid">
                     <div class="theme-color-field">
-                        <label>🎨 Cor Primária</label>
+                        <label>ðŸŽ¨ Cor PrimÃ¡ria</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorPrimaria" value="#E5B25D" oninput="previewTema()">
                             <input type="text" id="editTemaCorPrimariaHex" value="#E5B25D" oninput="syncColorPicker('editTemaCorPrimaria','editTemaCorPrimariaHex')">
                         </div>
-                        <small>Botões, preços e destaques</small>
+                        <small>BotÃµes, preÃ§os e destaques</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>💙 Cor Secundária</label>
+                        <label>ðŸ’™ Cor SecundÃ¡ria</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorSecundaria" value="#1E90FF" oninput="previewTema()">
                             <input type="text" id="editTemaCorSecundariaHex" value="#1E90FF" oninput="syncColorPicker('editTemaCorSecundaria','editTemaCorSecundariaHex')">
@@ -641,39 +641,39 @@
                         <small>Links, sub-destaques</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>🖱️ Cor dos Botões</label>
+                        <label>ðŸ–±ï¸ Cor dos BotÃµes</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorBotao" value="#E5B25D" oninput="previewTema()">
                             <input type="text" id="editTemaCorBotaoHex" value="#E5B25D" oninput="syncColorPicker('editTemaCorBotao','editTemaCorBotaoHex')">
                         </div>
-                        <small>Botão de comprar, confirmar e ações</small>
+                        <small>BotÃ£o de comprar, confirmar e aÃ§Ãµes</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>🖱️ Hover (Botões)</label>
+                        <label>ðŸ–±ï¸ Hover (BotÃµes)</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorHover" value="#d4a14c" oninput="previewTema()">
                             <input type="text" id="editTemaCorHoverHex" value="#d4a14c" oninput="syncColorPicker('editTemaCorHover','editTemaCorHoverHex')">
                         </div>
-                        <small>Cor do botão ao passar o mouse</small>
+                        <small>Cor do botÃ£o ao passar o mouse</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>🌑 Fundo Geral</label>
+                        <label>ðŸŒ‘ Fundo Geral</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorBg" value="#0d0d0d" oninput="previewTema()">
                             <input type="text" id="editTemaCorBgHex" value="#0d0d0d" oninput="syncColorPicker('editTemaCorBg','editTemaCorBgHex')">
                         </div>
-                        <small>Background da página</small>
+                        <small>Background da pÃ¡gina</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>🃏 Fundo dos Cards</label>
+                        <label>ðŸƒ Fundo dos Cards</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorSurface" value="#1a1a1a" oninput="previewTema()">
                             <input type="text" id="editTemaCorSurfaceHex" value="#1a1a1a" oninput="syncColorPicker('editTemaCorSurface','editTemaCorSurfaceHex')">
                         </div>
-                        <small>Cards, modais e painéis</small>
+                        <small>Cards, modais e painÃ©is</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>🔲 Bordas</label>
+                        <label>ðŸ”² Bordas</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorBorda" value="#333333" oninput="previewTema()">
                             <input type="text" id="editTemaCorBordaHex" value="#333333" oninput="syncColorPicker('editTemaCorBorda','editTemaCorBordaHex')">
@@ -681,7 +681,7 @@
                         <small>Bordas de inputs, modais e separadores</small>
                     </div>
                     <div class="theme-color-field">
-                        <label>📝 Texto</label>
+                        <label>ðŸ“ Texto</label>
                         <div class="color-input-wrap">
                             <input type="color" id="editTemaCorTexto" value="#ffffff" oninput="previewTema()">
                             <input type="text" id="editTemaCorTextoHex" value="#ffffff" oninput="syncColorPicker('editTemaCorTexto','editTemaCorTextoHex')">
@@ -694,7 +694,7 @@
                 <div class="theme-preview" id="themePreview">
                     <div class="theme-preview-header">
                         <span>Preview ao Vivo</span>
-                        <button class="theme-preview-btn" id="themePreviewBtn">Botão</button>
+                        <button class="theme-preview-btn" id="themePreviewBtn">BotÃ£o</button>
                     </div>
                     <div class="theme-preview-card" id="themePreviewCard">
                         <div class="theme-preview-title" id="themePreviewTitle">Nome do Produto</div>
@@ -705,7 +705,7 @@
 
                 <div style="display:flex; gap:10px; margin-top:0.5rem;">
                     <button class="btn-outline" onclick="restaurarTemapadrao()" style="font-size:0.8rem; padding:8px 14px;">
-                        ↺ Restaurar Padrão
+                        â†º Restaurar PadrÃ£o
                     </button>
                 </div>
 
@@ -715,7 +715,7 @@
 
             <div class="modal-actions">
                 <button class="btn-outline" onclick="fecharModal('modalEditarEmpresa')">Cancelar</button>
-                <button class="btn-primary" id="btnSalvarEdicaoEmpresa">Salvar Alterações</button>
+                <button class="btn-primary" id="btnSalvarEdicaoEmpresa">Salvar AlteraÃ§Ãµes</button>
             </div>
         </div>
     </div>
@@ -725,18 +725,18 @@
         <div class="modal-content" style="max-width: 650px;">
             <span class="modal-close" onclick="fecharModal('modalFaturamentoLojas')">&times;</span>
             <div style="margin-bottom: 1.5rem;">
-                <h2 style="margin-bottom: 5px;">💰 Faturamento por Loja</h2>
-                <p class="modal-subtitle">Detalhamento das vendas concluídas (Produtos + Serviços) por estabelecimento.</p>
+                <h2 style="margin-bottom: 5px;">ðŸ’° Faturamento por Loja</h2>
+                <p class="modal-subtitle">Detalhamento das vendas concluÃ­das (Produtos + ServiÃ§os) por estabelecimento.</p>
             </div>
             
             <div class="table-container" style="max-height: 60vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;">
                 <table class="saas-table compact">
                     <thead style="position: sticky; top: 0; background: var(--surface-bg, #1a1a1a); z-index: 2;">
                         <tr>
-                            <th>🏢 Empresa</th>
-                            <th style="text-align: right;">📦 Produtos</th>
-                            <th style="text-align: right;">✂️ Serviços</th>
-                            <th style="text-align: right;">💎 Total</th>
+                            <th>ðŸ¢ Empresa</th>
+                            <th style="text-align: right;">ðŸ“¦ Produtos</th>
+                            <th style="text-align: right;">âœ‚ï¸ ServiÃ§os</th>
+                            <th style="text-align: right;">ðŸ’Ž Total</th>
                         </tr>
                     </thead>
                     <tbody id="listaFaturamentoLojas">
@@ -754,7 +754,7 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     
-    <!-- Script Específico do SaaS Admin -->
+    <!-- Script EspecÃ­fico do SaaS Admin -->
     <script src="/admin-saas.js"></script>
 </body>
 

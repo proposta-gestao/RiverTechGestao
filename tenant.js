@@ -305,6 +305,23 @@ function _aplicarWhiteLabel(data) {
                 el.style.backgroundPosition = 'center';
             }
         });
+
+        // Atualizar Favicon Dinamicamente
+        let favicon = document.querySelector('link[rel="icon"]');
+        if (!favicon) {
+            favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            document.head.appendChild(favicon);
+        }
+        favicon.href = data.logo_url;
+        
+        let shortcutIcon = document.querySelector('link[rel="shortcut icon"]');
+        if (!shortcutIcon) {
+            shortcutIcon = document.createElement('link');
+            shortcutIcon.rel = 'shortcut icon';
+            document.head.appendChild(shortcutIcon);
+        }
+        shortcutIcon.href = data.logo_url;
     }
 
     if (brandName) {
