@@ -1150,6 +1150,79 @@
         abrirModal('modalRestPreparo');
     };
 
+    window.abrirModalCriarProdutoRapido = async function () {
+        document.getElementById('fichaRapidoNome').value = '';
+        document.getElementById('fichaRapidoPreco').value = '';
+        document.getElementById('fichaRapidoAtivo').checked = true;
+
+        const tenantId = getTenantId();
+        const selCat = document.getElementById('fichaRapidoCategoria');
+        selCat.innerHTML = '<option value="">Carregando...</option>';
+        abrirModal('modalCriarProdutoRapido');
+
+        // Fetch categorias
+        const { data: categorias, error } = await sb.from('categories')
+            .select('id, name')
+            .eq('empresa_id', tenantId)
+            .order('name');
+        
+        if (!error && categorias) {
+            selCat.innerHTML = '<option value="">Selecione a Categoria</option>' + 
+                categorias.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        } else {
+            selCat.innerHTML = '<option value="">Erro ao carregar</option>';
+        }
+    };
+
+    window.salvarProdutoFichaRapido = async function () {
+        const tenantId = getTenantId();
+        const nome = document.getElementById('fichaRapidoNome').value.trim();
+        const preco = parseFloat(document.getElementById('fichaRapidoPreco').value);
+        const categoryId = document.getElementById('fichaRapidoCategoria').value;
+        const ativo = document.getElementById('fichaRapidoAtivo').checked;
+
+        if (!nome) return toast('Informe o nome do produto', 'error');
+        if (isNaN(preco) || preco < 0) return toast('Informe um preço válido', 'error');
+        if (!categoryId) return toast('Selecione uma categoria', 'error');
+
+        const btn = document.querySelector('#modalCriarProdutoRapido .btn-save');
+        btn.disabled = true;
+        btn.textContent = 'Salvando...';
+
+        const payload = {
+            empresa_id: tenantId,
+            name: nome,
+            price: preco,
+            category_id: categoryId,
+            active: ativo,
+            controle_estoque: 'ficha_tecnica'
+        };
+
+        const { data, error } = await sb.from('products').insert(payload).select().single();
+        
+        btn.disabled = false;
+        btn.textContent = 'Salvar';
+
+        if (error) {
+            toast('Erro ao criar produto: ' + error.message, 'error');
+        } else {
+            toast('Produto criado com sucesso!', 'success');
+            document.getElementById('modalCriarProdutoRapido').classList.remove('active');
+            
+            // Adicionar à state local e atualizar select
+            if (!state.produtosCardapio) state.produtosCardapio = [];
+            state.produtosCardapio.push(data);
+            state.produtosCardapio.sort((a, b) => a.name.localeCompare(b.name));
+            
+            const select = document.getElementById('restFichaProduto');
+            if (select) {
+                select.innerHTML = '<option value="">Selecione o produto...</option>' +
+                    state.produtosCardapio.map(p => `<option value="${p.id}">${p.name} (${fmtBRL(p.price)})</option>`).join('');
+                select.value = data.id; // Pré-seleciona o novo produto
+            }
+        }
+    };
+
     window.__RESTAURANTE.novaFicha = function () {
         state.editingFichaId = null;
         state.editingFichaItens = [];
