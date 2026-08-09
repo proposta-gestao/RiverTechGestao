@@ -298,11 +298,15 @@ function _aplicarWhiteLabel(data) {
             if (el.tagName === 'IMG') {
                 el.src = data.logo_url;
                 el.alt = brandName || 'Logo';
+                el.style.borderRadius = '50%';
+                el.style.objectFit = 'cover';
+                el.style.aspectRatio = '1 / 1';
             } else {
                 el.style.backgroundImage = `url(${data.logo_url})`;
                 el.style.backgroundSize = 'contain';
                 el.style.backgroundRepeat = 'no-repeat';
                 el.style.backgroundPosition = 'center';
+                el.style.borderRadius = '50%';
             }
         });
 
