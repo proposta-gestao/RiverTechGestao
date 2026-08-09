@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR" class="tenant-loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Atendente â€” RiverTech</title>
+    <title>Painel do Atendente — RiverTech</title>
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png">
     <style>
         html.tenant-loading body > :not(.tenant-loader) {
@@ -47,16 +47,16 @@
 </head>
 <body>
 
-    <!-- Barra de AtivaÃ§Ã£o de Som -->
+    <!-- Barra de Ativação de Som -->
     <div id="soundAlertBar" onclick="unlockAudio()">
-        ðŸ”” Alertas sonoros desativados. Clique aqui para ativar!
+        🔔 Alertas sonoros desativados. Clique aqui para ativar!
     </div>
 
-    <!-- Overlay de PermissÃ£o de Ãudio -->
+    <!-- Overlay de Permissão de Áudio -->
     <div id="audioOverlay" class="audio-permission-overlay">
         <div class="login-card">
             <h2>Bem-vindo de volta!</h2>
-            <p style="color: #888; margin-bottom: 2rem;">Para ouvirmos a campainha dos novos pedidos, precisamos da sua permissÃ£o.</p>
+            <p style="color: #888; margin-bottom: 2rem;">Para ouvirmos a campainha dos novos pedidos, precisamos da sua permissão.</p>
             <button class="btn-login" id="btnAudioEnable">Ativar Sons e Iniciar Painel</button>
         </div>
     </div>
@@ -72,7 +72,7 @@
             </div>
             <div class="form-group">
                 <label>SENHA</label>
-                <input type="password" id="loginSenha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢">
+                <input type="password" id="loginSenha" placeholder="••••••">
             </div>
             <p id="errorMsg" style="color: #ff4757; font-size: 0.85rem; display: none; margin-bottom: 1rem;"></p>
             <button class="btn-login" id="btnLogin">Entrar</button>
@@ -89,7 +89,7 @@
             <button class="btn-logout" id="btnLogout">SAIR</button>
         </header>
 
-        <!-- NavegaÃ§Ã£o por Abas (Mobile) -->
+        <!-- Navegação por Abas (Mobile) -->
         <nav class="tabs-nav">
             <div class="tab-item active" data-tab="pendente" onclick="switchTab('pendente')">
                 <span>NOVOS</span>
@@ -105,7 +105,7 @@
             <!-- Novos Pedidos -->
             <div class="board-column active" id="colPendente">
                 <div class="column-header">
-                    <span class="column-title" style="color: var(--status-pendente)">ðŸ”” Novos Pedidos</span>
+                    <span class="column-title" style="color: var(--status-pendente)">🔔 Novos Pedidos</span>
                     <span class="badge-count" id="countPendente">0</span>
                 </div>
                 <div id="listPendente"></div>
@@ -114,7 +114,7 @@
             <!-- Na Cozinha -->
             <div class="board-column" id="colCozinha">
                 <div class="column-header">
-                    <span class="column-title" style="color: var(--status-cozinha)">ðŸ³ Cozinha / Bar</span>
+                    <span class="column-title" style="color: var(--status-cozinha)">🍳 Cozinha / Bar</span>
                     <span class="badge-count" id="countCozinha">0</span>
                 </div>
                 <div id="listCozinha"></div>
@@ -127,7 +127,7 @@
         <div class="modal-card">
             <div class="modal-header" style="position: relative;">
                 <button onclick="fecharModalConfirmacao()" style="position: absolute; right: 15px; top: 15px; background: transparent; border: none; color: #555; font-size: 1.5rem; cursor: pointer;">&times;</button>
-                <h2>ðŸ“ Detalhes do Pedido</h2>
+                <h2>📝 Detalhes do Pedido</h2>
                 <p id="modalOrderInfo" style="margin: 5px 0 0; font-size: 0.85rem; color: #888;"></p>
             </div>
             <div class="modal-body" id="modalOrderItems">
@@ -135,21 +135,21 @@
             </div>
             <div class="modal-footer">
                 <button class="btn-modal-kitchen" id="btnModalEnviarCozinha">
-                    CONFIRMAR PAGAMENTO E ENVIAR ðŸ³
+                    CONFIRMAR PAGAMENTO E ENVIAR 🍳
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Popup de ConfirmaÃ§Ã£o Personalizado -->
+    <!-- Popup de Confirmação Personalizado -->
     <div id="modalAviso" class="modal-backdrop" style="z-index: 3000;">
         <div class="modal-aviso-card">
-            <span class="modal-aviso-icon">ðŸ’°</span>
+            <span class="modal-aviso-icon">💰</span>
             <h3 class="modal-aviso-title" id="avisoTitle">Confirmar Pagamento?</h3>
-            <p class="modal-aviso-text" id="avisoText">VocÃª estÃ¡ prestes a marcar este pedido como PAGO e enviÃ¡-lo para a cozinha.</p>
+            <p class="modal-aviso-text" id="avisoText">Você está prestes a marcar este pedido como PAGO e enviá-lo para a cozinha.</p>
             <div class="modal-aviso-footer">
-                <button class="btn-confirm-pop" id="btnAvisoConfirm">SIM, CONFIRMAR âœ…</button>
-                <button class="btn-cancel-pop" onclick="fecharAviso()">NÃ£o, voltar</button>
+                <button class="btn-confirm-pop" id="btnAvisoConfirm">SIM, CONFIRMAR ✅</button>
+                <button class="btn-cancel-pop" onclick="fecharAviso()">Não, voltar</button>
             </div>
         </div>
     </div>
@@ -158,7 +158,7 @@
     <script src="/config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/theme-manager.js"></script>
-    <script src="/tenant.js?v=2.6"></script>
+    <script src="/tenant.js"></script>
     <script src="/atendente.js"></script>
 
     <!-- PWA: Registro do Service Worker -->

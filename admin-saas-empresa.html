@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GestÃ£o da Empresa | Admin Master</title>
+    <title>Gestão da Empresa | Admin Master</title>
     <link rel="stylesheet" href="admin-saas.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Config Central (deve vir antes do Supabase) -->
@@ -46,7 +46,7 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: 1.6fr 0.9fr; /* Mais espaÃ§o para os dados bÃ¡sicos */
+            grid-template-columns: 1.6fr 0.9fr; /* Mais espaço para os dados básicos */
             gap: 1.5rem;
         }
 
@@ -164,7 +164,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        /* Estilo das abas da pÃ¡gina */
+        /* Estilo das abas da página */
         .page-tabs {
             display: flex;
             gap: 10px;
@@ -278,7 +278,7 @@
         #toast.show { transform: translateY(0); }
         /* Switch Premium Unificado - RESET TOTAL DE LARGURA */
         .switch {
-            all: initial; /* Limpa heranÃ§as indesejadas */
+            all: initial; /* Limpa heranças indesejadas */
             position: relative;
             display: inline-block !important;
             width: 34px !important;
@@ -351,7 +351,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px; /* Padding interno da funÃ§Ã£o */
+            padding: 12px 15px; /* Padding interno da função */
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.03);
             border-radius: 10px;
@@ -366,13 +366,13 @@
 </head>
 <body>
 
-    <div id="toast">NotificaÃ§Ã£o</div>
+    <div id="toast">Notificação</div>
 
     <div class="company-page-container">
         
         <header class="page-header">
             <div>
-                <a href="admin-saas.html" class="back-link">â† Voltar para lista</a>
+                <a href="admin-saas.html" class="back-link">← Voltar para lista</a>
                 <h1 id="empresaNome" style="margin-top: 0; font-family: 'Outfit', sans-serif;">Carregando...</h1>
             </div>
             <div id="empresaStatusBadge"></div>
@@ -380,20 +380,20 @@
 
         <!-- Page Tabs -->
         <div class="page-tabs">
-            <button class="page-tab-btn active" data-tab="edit-dashboard" onclick="switchPageTab('edit-dashboard')">ðŸ“Š Dashboard</button>
-            <button class="page-tab-btn" data-tab="edit-config" onclick="switchPageTab('edit-config')">âš™ï¸ ConfiguraÃ§Ã£o</button>
-            <button class="page-tab-btn" data-tab="edit-modulos" onclick="switchPageTab('edit-modulos')">ðŸ§© MÃ³dulos</button>
-            <button class="page-tab-btn" data-tab="edit-pix" onclick="switchPageTab('edit-pix')">ðŸ’³ Pagamentos Online</button>
-            <button class="page-tab-btn" data-tab="edit-equipe" onclick="switchPageTab('edit-equipe')">ðŸ‘¥ Equipe</button>
-            <button class="page-tab-btn" data-tab="edit-propostas" onclick="switchPageTab('edit-propostas')">ðŸŽ´ Propostas</button>
+            <button class="page-tab-btn active" data-tab="edit-dashboard" onclick="switchPageTab('edit-dashboard')">📊 Dashboard</button>
+            <button class="page-tab-btn" data-tab="edit-config" onclick="switchPageTab('edit-config')">⚙️ Configuração</button>
+            <button class="page-tab-btn" data-tab="edit-modulos" onclick="switchPageTab('edit-modulos')">🧩 Módulos</button>
+            <button class="page-tab-btn" data-tab="edit-pix" onclick="switchPageTab('edit-pix')">💳 Pagamentos Online</button>
+            <button class="page-tab-btn" data-tab="edit-equipe" onclick="switchPageTab('edit-equipe')">👥 Equipe</button>
+            <button class="page-tab-btn" data-tab="edit-propostas" onclick="switchPageTab('edit-propostas')">🎴 Propostas</button>
         </div>
 
         <!-- Tab: Propostas -->
         <div id="edit-propostas" class="tab-content">
             <div class="section-card" style="max-width: 900px;">
-                <h3>ðŸŽ´ Propostas Comerciais</h3>
+                <h3>🎴 Propostas Comerciais</h3>
                 <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    ApresentaÃ§Ãµes comerciais, mockups e documentos de vendas exclusivos para esta empresa.
+                    Apresentações comerciais, mockups e documentos de vendas exclusivos para esta empresa.
                 </p>
                 <div id="propostasContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
                     <!-- Gerado via JS -->
@@ -412,7 +412,7 @@
                     </div>
                 </div>
                 <div class="section-card metric-card-centered">
-                    <div class="metric-label">Faturamento (MÃªs)</div>
+                    <div class="metric-label">Faturamento (Mês)</div>
                     <div class="metric-value-wrap">
                         <span class="metric-symbol">R$</span>
                         <div id="faturamentoMes" class="metric-number" style="color: var(--accent-green);">0,00</div>
@@ -426,7 +426,7 @@
                     </div>
                 </div>
                 <div class="section-card metric-card-centered">
-                    <div class="metric-label">Ticket MÃ©dio</div>
+                    <div class="metric-label">Ticket Médio</div>
                     <div class="metric-value-wrap">
                         <span class="metric-symbol">R$</span>
                         <div id="ticketMedio" class="metric-number">0,00</div>
@@ -435,7 +435,7 @@
             </div>
 
             <div class="section-card centered-info-card">
-                <h3>â„¹ï¸ InformaÃ§Ãµes da Empresa</h3>
+                <h3>ℹ️ Informações da Empresa</h3>
                 <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
                     
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
@@ -446,8 +446,8 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                         <span style="color: var(--text-secondary); font-size: 0.9rem;">Paleta de Cores:</span>
                         <div class="color-swatch-group" id="infoColorSwatches">
-                            <div class="color-swatch" id="swatch-primaria" title="PrimÃ¡ria"></div>
-                            <button class="color-swatch" id="swatch-botao" title="BotÃ£o" style="border-radius: 50%;"></button>
+                            <div class="color-swatch" id="swatch-primaria" title="Primária"></div>
+                            <button class="color-swatch" id="swatch-botao" title="Botão" style="border-radius: 50%;"></button>
                             <div class="color-swatch" id="swatch-bg" title="Fundo"></div>
                             <div class="color-swatch" id="swatch-surface" title="Cards"></div>
                         </div>
@@ -455,11 +455,11 @@
 
                     <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                         <span style="color: var(--text-secondary); font-size: 0.9rem;">Painel Admin:</span>
-                        <a href="#" id="infoUrlAdmin" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-size: 0.85rem; font-family: monospace;">Acessar Painel â†—</a>
+                        <a href="#" id="infoUrlAdmin" target="_blank" style="color: var(--accent-blue); text-decoration: none; font-size: 0.85rem; font-family: monospace;">Acessar Painel ↗</a>
                     </div>
 
                     <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Ãšltimo Pedido:</span>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Último Pedido:</span>
                         <span id="infoUltimoPedido" style="font-weight: 600; font-size: 0.9rem;">...</span>
                     </div>
 
@@ -469,7 +469,7 @@
                     </div>
 
                     <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Ticket MÃ©dio Geral:</span>
+                        <span style="color: var(--text-secondary); font-size: 0.9rem;">Ticket Médio Geral:</span>
                         <span id="infoTicketGeral" style="font-weight: 600; color: var(--accent-green);">...</span>
                     </div>
 
@@ -482,11 +482,11 @@
             </div>
         </div>
 
-        <!-- Tab: ConfiguraÃ§Ã£o -->
+        <!-- Tab: Configuração -->
         <div id="edit-config" class="tab-content">
             <div class="info-grid">
                 <div class="section-card">
-                    <h3>âš™ï¸ Dados BÃ¡sicos e Branding</h3>
+                    <h3>⚙️ Dados Básicos e Branding</h3>
                     
                     <div class="form-group" style="margin-bottom: 1rem;">
                         <label>CNPJ da Empresa</label>
@@ -501,8 +501,8 @@
 
                     <div class="form-group" style="margin-bottom: 1rem;">
                         <label style="display:flex; align-items:center; gap:8px;">
-                            ðŸ”— URL da Loja (Slug)
-                            <span style="font-size:0.72rem; color:var(--accent-red); font-weight:400;">âš ï¸ Alterar muda todos os links pÃºblicos</span>
+                            🔗 URL da Loja (Slug)
+                            <span style="font-size:0.72rem; color:var(--accent-red); font-weight:400;">⚠️ Alterar muda todos os links públicos</span>
                         </label>
                         <div style="display:flex; align-items:center; margin-top:5px; background:#000; border:1px solid var(--border-color); border-radius:6px; overflow:hidden;">
                             <span style="padding:12px 10px; color:var(--text-secondary); font-size:0.8rem; white-space:nowrap; font-family:monospace; border-right:1px solid var(--border-color); background:rgba(255,255,255,0.03);">gestaotech.vercel.app/</span>
@@ -513,11 +513,11 @@
 
                     <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 1rem;">
                         <div class="form-group" style="flex: 1;">
-                            <label>Nome da Marca (ExibiÃ§Ã£o PÃºblica)</label>
+                            <label>Nome da Marca (Exibição Pública)</label>
                             <input type="text" id="editBrandName" placeholder="Ex: Burguer King" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
                         </div>
                         <div class="form-group" style="flex: 1;">
-                            <label>SubtÃ­tulo da Loja</label>
+                            <label>Subtítulo da Loja</label>
                             <input type="text" id="editBrandSubtitle" placeholder="Ex: O melhor hamburguer da cidade" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
                         </div>
                     </div>
@@ -525,7 +525,7 @@
                         <div class="form-group" style="flex: 1;">
                             <label>Plano Atual</label>
                             <select id="editEmpPlano" style="width: 100%; margin-top: 5px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
-                                <option value="basico">BÃ¡sico</option>
+                                <option value="basico">Básico</option>
                                 <option value="pro">Pro</option>
                                 <option value="premium">Premium</option>
                             </select>
@@ -542,10 +542,10 @@
                         <div class="form-group" style="flex: 1;">
                             <label>Segmento</label>
                             <select id="editEmpSegmento" style="width: 100%; margin-top: 5px; background: #000; color: #fff; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px;">
-                                <option value="">â€” Selecione â€”</option>
-                                <option value="restaurante">ðŸ½ï¸ Bares / Restaurantes</option>
-                                <option value="barbearia">ðŸ’ˆ Barbearia</option>
-                                <option value="loja_roupas">ðŸ‘— Loja de Roupas</option>
+                                <option value="">— Selecione —</option>
+                                <option value="restaurante">🍽️ Bares / Restaurantes</option>
+                                <option value="barbearia">💈 Barbearia</option>
+                                <option value="loja_roupas">👗 Loja de Roupas</option>
                             </select>
                         </div>
                         <div class="form-group" style="flex: 1;">
@@ -553,55 +553,55 @@
                             <input type="date" id="editPlanoVencimento" style="width: 100%; margin-top: 5px; padding: 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
                         </div>
                     </div>
-                    <button class="btn-primary" id="btnSalvarConfig" style="width: 100%; margin-top: 2rem; padding: 14px;">Atualizar ConfiguraÃ§Ãµes</button>
+                    <button class="btn-primary" id="btnSalvarConfig" style="width: 100%; margin-top: 2rem; padding: 14px;">Atualizar Configurações</button>
                     
                     <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(239, 68, 68, 0.2);">
-                        <h4 style="color: #ef4444; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">âš ï¸ Zona de Perigo</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Ao excluir esta empresa, todos os dados, agendamentos, clientes e configuraÃ§Ãµes serÃ£o permanentemente apagados.</p>
-                        <button class="btn-primary" id="btnExcluirEmpresa" style="width: 100%; padding: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; font-weight: 700;">ðŸ—‘ï¸ Excluir Empresa Permanentemente</button>
+                        <h4 style="color: #ef4444; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">⚠️ Zona de Perigo</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Ao excluir esta empresa, todos os dados, agendamentos, clientes e configurações serão permanentemente apagados.</p>
+                        <button class="btn-primary" id="btnExcluirEmpresa" style="width: 100%; padding: 14px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; font-weight: 700;">🗑️ Excluir Empresa Permanentemente</button>
                     </div>
                 </div>
 
                 <div class="section-card">
-                    <h3>ðŸ”— URLs de Acesso</h3>
+                    <h3>🔗 URLs de Acesso</h3>
                     <div class="url-box" style="margin-bottom: 2px;">
-                        <label>ðŸ“ CardÃ¡pio Digital</label>
+                        <label>📍 Cardápio Digital</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlMenu">...</a>
-                            <button class="btn-icon-copy" onclick="copyToClipboard('urlMenu')">ðŸ“‹</button>
+                            <button class="btn-icon-copy" onclick="copyToClipboard('urlMenu')">📋</button>
                         </div>
                     </div>
                     <div class="url-box" style="margin-bottom: 2px;">
-                        <label>ðŸ›ï¸ Loja Online</label>
+                        <label>🛍️ Loja Online</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlLoja">...</a>
-                            <button class="btn-icon-copy" onclick="copyToClipboard('urlLoja')">ðŸ“‹</button>
+                            <button class="btn-icon-copy" onclick="copyToClipboard('urlLoja')">📋</button>
                         </div>
                     </div>
                     <div class="url-box" style="margin-bottom: 2px;">
-                        <label>âš™ï¸ Painel Admin</label>
+                        <label>⚙️ Painel Admin</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlAdmin">...</a>
-                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAdmin')">ðŸ“‹</button>
+                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAdmin')">📋</button>
                         </div>
                     </div>
                     <div class="url-box" style="margin-bottom: 2px;">
-                        <label>ðŸ“… Agendamento Online</label>
+                        <label>📅 Agendamento Online</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlAgendamento">...</a>
-                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAgendamento')">ðŸ“‹</button>
+                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAgendamento')">📋</button>
                         </div>
                     </div>
                     <div class="url-box" style="margin-bottom: 10px;">
-                        <label>ðŸŽ§ Painel Atendente</label>
+                        <label>🎧 Painel Atendente</label>
                         <div class="url-content">
                             <a href="#" target="_blank" class="url-text" id="urlAtendente">...</a>
-                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAtendente')">ðŸ“‹</button>
+                            <button class="btn-icon-copy" onclick="copyToClipboard('urlAtendente')">📋</button>
                         </div>
                     </div>
-                    <button class="copy-btn-all" onclick="copyAllUrls()" style="width: 100%; margin-bottom: 1rem; padding: 12px; background: var(--bg-hover); border: 1px dashed var(--accent-gold); color: var(--accent-gold); border-radius: 8px; cursor: pointer; font-weight: 600;">ðŸ“‹ Copiar links</button>
+                    <button class="copy-btn-all" onclick="copyAllUrls()" style="width: 100%; margin-bottom: 1rem; padding: 12px; background: var(--bg-hover); border: 1px dashed var(--accent-gold); color: var(--accent-gold); border-radius: 8px; cursor: pointer; font-weight: 600;">📋 Copiar links</button>
 
-                    <h3 style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">ðŸŽ¨ Identidade Visual</h3>
+                    <h3 style="margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">🎨 Identidade Visual</h3>
                     <style>
                         .color-pair { display: flex; flex-direction: column; gap: 4px; }
                         .color-pair label { font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; }
@@ -613,34 +613,34 @@
                     </style>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem;">
                         <div class="theme-color-field" style="grid-column: 1 / -1; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); margin-bottom: 5px;">
-                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">Destaques e BotÃµes</span>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">Destaques e Botões</span>
                         </div>
                         <div class="color-pair">
-                            <label>PRIMÃRIA</label>
-                            <small>PreÃ§os, destaques e badges</small>
+                            <label>PRIMÁRIA</label>
+                            <small>Preços, destaques e badges</small>
                             <div class="color-input-row">
                                 <input type="color" id="editTemaCorPrimaria" oninput="syncHex('editTemaCorPrimaria','editTemaCorPrimariaHex'); previewTema();">
                                 <input type="text" id="editTemaCorPrimariaHex" placeholder="#E5B25D" maxlength="7" oninput="syncPicker('editTemaCorPrimaria','editTemaCorPrimariaHex'); previewTema();">
                             </div>
                         </div>
                         <div class="color-pair">
-                            <label>SECUNDÃRIA</label>
-                            <small>Detalhes secundÃ¡rios</small>
+                            <label>SECUNDÁRIA</label>
+                            <small>Detalhes secundários</small>
                             <div class="color-input-row">
                                 <input type="color" id="editTemaCorSecundaria" oninput="syncHex('editTemaCorSecundaria','editTemaCorSecundariaHex'); previewTema();">
                                 <input type="text" id="editTemaCorSecundariaHex" placeholder="#1E90FF" maxlength="7" oninput="syncPicker('editTemaCorSecundaria','editTemaCorSecundariaHex'); previewTema();">
                             </div>
                         </div>
                         <div class="color-pair">
-                            <label>BOTÃ•ES</label>
-                            <small>Fundo de botÃµes principais</small>
+                            <label>BOTÕES</label>
+                            <small>Fundo de botões principais</small>
                             <div class="color-input-row">
                                 <input type="color" id="editTemaCorBotao" oninput="syncHex('editTemaCorBotao','editTemaCorBotaoHex'); previewTema();">
                                 <input type="text" id="editTemaCorBotaoHex" placeholder="#E5B25D" maxlength="7" oninput="syncPicker('editTemaCorBotao','editTemaCorBotaoHex'); previewTema();">
                             </div>
                         </div>
                         <div class="color-pair">
-                            <label>HOVER (BOTÃ•ES)</label>
+                            <label>HOVER (BOTÕES)</label>
                             <small>Cor ao passar o mouse</small>
                             <div class="color-input-row">
                                 <input type="color" id="editTemaCorHover" oninput="syncHex('editTemaCorHover','editTemaCorHoverHex'); previewTema();">
@@ -653,7 +653,7 @@
                         </div>
                         <div class="color-pair">
                             <label>FUNDO GERAL</label>
-                            <small>Fundo principal da pÃ¡gina</small>
+                            <small>Fundo principal da página</small>
                             <div class="color-input-row">
                                 <input type="color" id="editTemaCorBg" oninput="syncHex('editTemaCorBg','editTemaCorBgHex'); previewTema();">
                                 <input type="text" id="editTemaCorBgHex" placeholder="#0d0d0d" maxlength="7" oninput="syncPicker('editTemaCorBg','editTemaCorBgHex'); previewTema();">
@@ -669,7 +669,7 @@
                         </div>
                         <div class="color-pair">
                             <label>BORDAS</label>
-                            <small>DivisÃ³rias e linhas</small>
+                            <small>Divisórias e linhas</small>
                             <div class="color-input-row">
                                 <input type="color" id="editTemaCorBorda" oninput="syncHex('editTemaCorBorda','editTemaCorBordaHex'); previewTema();">
                                 <input type="text" id="editTemaCorBordaHex" placeholder="#333333" maxlength="7" oninput="syncPicker('editTemaCorBorda','editTemaCorBordaHex'); previewTema();">
@@ -689,16 +689,16 @@
                         <div id="previewCard" style="padding: 10px; border-radius: 8px; margin-bottom: 10px; font-weight: 700; font-size: 0.8rem;">Preview</div>
                         <button id="previewBtn" style="padding: 8px 15px; border-radius: 6px; border: none; font-weight: 800; font-size: 0.75rem;">COMPRAR</button>
                     </div>
-                    <button class="btn-outline" onclick="restaurarTemaPadrao()" style="width: 100%; font-size: 0.8rem; padding: 8px;">â†º Restaurar PadrÃ£o</button>
+                    <button class="btn-outline" onclick="restaurarTemaPadrao()" style="width: 100%; font-size: 0.8rem; padding: 8px;">↺ Restaurar Padrão</button>
                 </div>
             </div>
         </div>
 
-        <!-- Tab: MÃ³dulos -->
+        <!-- Tab: Módulos -->
         <div id="edit-modulos" class="tab-content">
             <div style="margin-bottom: 2rem;">
-                <h2 style="font-size: 1.5rem; margin-bottom: 5px;">ðŸ§© GestÃ£o de MÃ³dulos</h2>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Controle quais funcionalidades estÃ£o disponÃ­veis para esta empresa.</p>
+                <h2 style="font-size: 1.5rem; margin-bottom: 5px;">🧩 Gestão de Módulos</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Controle quais funcionalidades estão disponíveis para esta empresa.</p>
             </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
@@ -707,10 +707,10 @@
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_produtos')">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="accordion-icon" id="icon_grupo_produtos">â–¼</span>
+                            <span class="accordion-icon" id="icon_grupo_produtos">▼</span>
                             <div>
-                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ“¦ PRODUTOS</h4>
-                                <small style="font-size: 0.7rem; color: var(--text-secondary);">CatÃ¡logo e Estoque</small>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📦 PRODUTOS</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Catálogo e Estoque</small>
                             </div>
                         </div>
                         <label class="switch" onclick="event.stopPropagation()">
@@ -741,21 +741,21 @@
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ‘¥ Equipe / Atendentes</span>
+                            <span>👥 Equipe / Atendentes</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_produtos_equipe" onchange="atualizarModulo('produtos_equipe', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ´ CardÃ¡pio Digital</span>
+                            <span>🍴 Cardápio Digital</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_cardapio" onchange="atualizarModulo('cardapio', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ½ï¸ Ficha TÃ©cnica (Restaurante)</span>
+                            <span>🍽️ Ficha Técnica (Restaurante)</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_ficha_tecnica" onchange="atualizarModulo('ficha_tecnica', this.checked)">
                                 <span class="slider"></span>
@@ -768,10 +768,10 @@
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_vendas')">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="accordion-icon" id="icon_grupo_vendas">â–¼</span>
+                            <span class="accordion-icon" id="icon_grupo_vendas">▼</span>
                             <div>
-                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ“Š VENDAS</h4>
-                                <small style="font-size: 0.7rem; color: var(--text-secondary);">MÃ©tricas e HistÃ³rico</small>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📊 VENDAS</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Métricas e Histórico</small>
                             </div>
                         </div>
                         <label class="switch" onclick="event.stopPropagation()">
@@ -795,28 +795,28 @@
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>HistÃ³rico de Vendas</span>
+                            <span>Histórico de Vendas</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_vendas_visao_geral" onchange="atualizarModulo('vendas_visao_geral', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>Dashboard de MÃ©tricas</span>
+                            <span>Dashboard de Métricas</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_metricas_dashboard" onchange="atualizarModulo('metricas_dashboard', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>AnÃ¡lise de Tempo (Picos)</span>
+                            <span>Análise de Tempo (Picos)</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_metricas_analise_tempo" onchange="atualizarModulo('metricas_analise_tempo', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>Performance AnalÃ­tica</span>
+                            <span>Performance Analítica</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_metricas_performance_vendas" onchange="atualizarModulo('metricas_performance_vendas', this.checked)">
                                 <span class="slider"></span>
@@ -832,13 +832,13 @@
                     </div>
                 </div>
 
-                <!-- Grupo: OperaÃ§Ãµes -->
+                <!-- Grupo: Operações -->
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_ops')">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="accordion-icon" id="icon_grupo_ops">â–²</span>
+                            <span class="accordion-icon" id="icon_grupo_ops">▲</span>
                             <div>
-                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">âš™ï¸ OPERAÃ‡Ã•ES</h4>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">⚙️ OPERAÇÕES</h4>
                                 <small style="font-size: 0.7rem; color: var(--text-secondary);">Frete, Cupons e Pagamentos</small>
                             </div>
                         </div>
@@ -849,7 +849,7 @@
                     </div>
                     <div class="grupo-content" id="grupo_ops">
                         <div class="module-item">
-                            <span>GestÃ£o de Frete</span>
+                            <span>Gestão de Frete</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_config_frete" onchange="atualizarModulo('config_frete', this.checked)">
                                 <span class="slider"></span>
@@ -863,7 +863,7 @@
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>Pedido na Mesa (Mesa/PosiÃ§Ã£o)</span>
+                            <span>Pedido na Mesa (Mesa/Posição)</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_pedido_mesa" onchange="atualizarModulo('pedido_mesa', this.checked)">
                                 <span class="slider"></span>
@@ -884,10 +884,10 @@
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_agendamento')">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="accordion-icon" id="icon_grupo_agendamento">â–¼</span>
+                            <span class="accordion-icon" id="icon_grupo_agendamento">▼</span>
                             <div>
-                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ“… AGENDAMENTO</h4>
-                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e ServiÃ§os por Hora</small>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">📅 AGENDAMENTO</h4>
+                                <small style="font-size: 0.7rem; color: var(--text-secondary);">Barbearia e Serviços por Hora</small>
                             </div>
                         </div>
                         <label class="switch" onclick="event.stopPropagation()">
@@ -897,35 +897,35 @@
                     </div>
                     <div class="grupo-content collapsed" id="grupo_agendamento">
                         <div class="module-item">
-                            <span>ðŸ“… Agendamento Online</span>
+                            <span>📅 Agendamento Online</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_agendamento_ativo" onchange="atualizarModulo('agendamento_ativo', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ‘¥ Multi-Profissional</span>
+                            <span>👥 Multi-Profissional</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_agendamento_multi_profissional" onchange="atualizarModulo('agendamento_multi_profissional', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>â³ Lista de Espera</span>
+                            <span>⏳ Lista de Espera</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_agendamento_lista_espera" onchange="atualizarModulo('agendamento_lista_espera', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ’¬ Mensagens AutomÃ¡ticas</span>
+                            <span>💬 Mensagens Automáticas</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_agendamento_mensagens" onchange="atualizarModulo('agendamento_mensagens', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ† Clube de Fidelidade</span>
+                            <span>🏆 Clube de Fidelidade</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_agendamento_fidelidade" onchange="atualizarModulo('agendamento_fidelidade', this.checked)">
                                 <span class="slider"></span>
@@ -934,13 +934,13 @@
                     </div>
                 </div>
 
-                <!-- Grupo: Loja ðŸ†• -->
+                <!-- Grupo: Loja 🆕 -->
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_loja')">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="accordion-icon" id="icon_grupo_loja">â–¼</span>
+                            <span class="accordion-icon" id="icon_grupo_loja">▼</span>
                             <div>
-                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ›ï¸ LOJA DE ROUPAS</h4>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">🛍️ LOJA DE ROUPAS</h4>
                                 <small style="font-size: 0.7rem; color: var(--text-secondary);">Varejo e Grade de Produtos</small>
                             </div>
                         </div>
@@ -951,14 +951,14 @@
                     </div>
                     <div class="grupo-content collapsed" id="grupo_loja">
                         <div class="module-item">
-                            <span>ðŸ›ï¸ MÃ³dulo Loja Ativo</span>
+                            <span>🛍️ Módulo Loja Ativo</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_loja_roupas" onchange="atualizarModulo('loja_roupas', this.checked)">
                                 <span class="slider"></span>
                             </label>
                         </div>
                         <div class="module-item">
-                            <span>ðŸ“¦ Controle de Estoque (Loja)</span>
+                            <span>📦 Controle de Estoque (Loja)</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_loja_estoque" onchange="atualizarModulo('loja_estoque', this.checked)">
                                 <span class="slider"></span>
@@ -967,13 +967,13 @@
                     </div>
                 </div>
 
-                <!-- Grupo: Clientes Premium ðŸ†• -->
+                <!-- Grupo: Clientes Premium 🆕 -->
                 <div class="module-card">
                     <div class="module-header" onclick="toggleAccordionNovo('grupo_premium')">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="accordion-icon" id="icon_grupo_premium">â–¼</span>
+                            <span class="accordion-icon" id="icon_grupo_premium">▼</span>
                             <div>
-                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">ðŸ‘‘ CLIENTES PREMIUM</h4>
+                                <h4 style="color: var(--accent-gold); margin:0; font-size: 0.9rem;">👑 CLIENTES PREMIUM</h4>
                                 <small style="font-size: 0.7rem; color: var(--text-secondary);">Login VIP, Comanda e Teto de Gastos</small>
                             </div>
                         </div>
@@ -984,7 +984,7 @@
                     </div>
                     <div class="grupo-content collapsed" id="grupo_premium">
                         <div class="module-item">
-                            <span>ðŸ‘‘ MÃ³dulo Clientes Premium</span>
+                            <span>👑 Módulo Clientes Premium</span>
                             <label class="switch">
                                 <input type="checkbox" id="mod_clientes_premium" onchange="atualizarModulo('clientes_premium', this.checked)">
                                 <span class="slider"></span>
@@ -1000,17 +1000,17 @@
         <div id="edit-pix" class="tab-content">
             <div style="max-width: 700px;">
                 <div style="margin-bottom: 2rem;">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 5px;">ðŸ’³ IntegraÃ§Ã£o Mercado Pago</h2>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Configure a conta do Mercado Pago desta empresa para receber pagamentos via PIX e CartÃ£o diretamente.</p>
+                    <h2 style="font-size: 1.5rem; margin-bottom: 5px;">💳 Integração Mercado Pago</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Configure a conta do Mercado Pago desta empresa para receber pagamentos via PIX e Cartão diretamente.</p>
                 </div>
 
                 <!-- Status Card -->
                 <div class="section-card" style="margin-bottom: 1.5rem;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <div id="pixStatusIcon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(239, 68, 68, 0.1);">âš ï¸</div>
+                            <div id="pixStatusIcon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; background: rgba(239, 68, 68, 0.1);">⚠️</div>
                             <div>
-                                <div id="pixStatusTitle" style="font-weight: 700; font-size: 1rem;">Pagamento nÃ£o configurado</div>
+                                <div id="pixStatusTitle" style="font-weight: 700; font-size: 1rem;">Pagamento não configurado</div>
                                 <div id="pixStatusDesc" style="font-size: 0.8rem; color: var(--text-secondary);">Configure o token do Mercado Pago abaixo.</div>
                             </div>
                         </div>
@@ -1020,7 +1020,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <strong style="display: block; font-size: 0.95rem;">Habilitar PIX</strong>
-                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Exibe a opÃ§Ã£o de pagar com PIX (QR Code).</span>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Exibe a opção de pagar com PIX (QR Code).</span>
                             </div>
                             <label class="switch">
                                 <input type="checkbox" id="pixHabilitadoToggle" onchange="togglePagamento('pix', this.checked)">
@@ -1030,8 +1030,8 @@
                         
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <strong style="display: block; font-size: 0.95rem;">Habilitar CartÃ£o (Checkout Pro)</strong>
-                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Redireciona para o Mercado Pago para pagar com CartÃ£o.</span>
+                                <strong style="display: block; font-size: 0.95rem;">Habilitar Cartão (Checkout Pro)</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Redireciona para o Mercado Pago para pagar com Cartão.</span>
                             </div>
                             <label class="switch">
                                 <input type="checkbox" id="cartaoHabilitadoToggle" onchange="togglePagamento('cartao', this.checked)">
@@ -1041,8 +1041,8 @@
 
                         <div style="display: flex; justify-content: space-between; align-items: center; padding-left: 20px; border-left: 2px solid var(--border-color);">
                             <div>
-                                <strong style="display: block; font-size: 0.95rem;">Permitir Parcelamento no CartÃ£o</strong>
-                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Se desligado, limita a compra no cartÃ£o a 1x (Ã  vista).</span>
+                                <strong style="display: block; font-size: 0.95rem;">Permitir Parcelamento no Cartão</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">Se desligado, limita a compra no cartão a 1x (à vista).</span>
                             </div>
                             <label class="switch">
                                 <input type="checkbox" id="cartaoParcelamentoToggle" onchange="togglePagamento('parcelamento', this.checked)">
@@ -1052,60 +1052,60 @@
                     </div>
 
                     <div style="padding: 1rem; background: rgba(229, 178, 93, 0.05); border: 1px solid rgba(229, 178, 93, 0.15); border-radius: 10px; margin-top: 1.5rem;">
-                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-gold); margin-bottom: 8px;">â„¹ï¸ Como funciona</div>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">Cada empresa precisa de sua prÃ³pria conta Mercado Pago. O dinheiro cai <strong style="color: #fff;">diretamente na conta da empresa</strong>. Nenhum dado financeiro Ã© compartilhado entre empresas.</p>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-gold); margin-bottom: 8px;">ℹ️ Como funciona</div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; margin: 0;">Cada empresa precisa de sua própria conta Mercado Pago. O dinheiro cai <strong style="color: #fff;">diretamente na conta da empresa</strong>. Nenhum dado financeiro é compartilhado entre empresas.</p>
                     </div>
                 </div>
 
-                <!-- ConfiguraÃ§Ã£o -->
+                <!-- Configuração -->
                 <div class="section-card" id="pixConfigSection">
-                    <h3>ðŸ”‘ Credenciais do Mercado Pago</h3>
+                    <h3>🔑 Credenciais do Mercado Pago</h3>
 
-                    <!-- ALERTA: DiferenÃ§a entre Access Token e Public Key -->
+                    <!-- ALERTA: Diferença entre Access Token e Public Key -->
                     <div style="padding: 1rem; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 10px; margin-bottom: 1.5rem;">
-                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #60a5fa; margin-bottom: 10px;">ðŸ“Œ Qual credencial usar aqui?</div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #60a5fa; margin-bottom: 10px;">📌 Qual credencial usar aqui?</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <div style="padding: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px;">
-                                <div style="font-size: 0.7rem; font-weight: 800; color: #10b981; margin-bottom: 4px;">âœ… ACCESS TOKEN â€” USE ESTE</div>
-                                <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5;">ComeÃ§a com <code style="background:#111; padding:1px 4px; border-radius:3px; color:#10b981;">APP_USR-</code> e tem <strong style="color:#fff;">~70 caracteres</strong>. Ã‰ o token de <strong style="color:#fff;">servidor</strong>. Encontrado em: <em>Seu App â†’ Credenciais de ProduÃ§Ã£o â†’ Access Token</em></div>
+                                <div style="font-size: 0.7rem; font-weight: 800; color: #10b981; margin-bottom: 4px;">✅ ACCESS TOKEN — USE ESTE</div>
+                                <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5;">Começa com <code style="background:#111; padding:1px 4px; border-radius:3px; color:#10b981;">APP_USR-</code> e tem <strong style="color:#fff;">~70 caracteres</strong>. É o token de <strong style="color:#fff;">servidor</strong>. Encontrado em: <em>Seu App → Credenciais de Produção → Access Token</em></div>
                             </div>
                             <div style="padding: 10px; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px;">
-                                <div style="font-size: 0.7rem; font-weight: 800; color: #ef4444; margin-bottom: 4px;">âŒ PUBLIC KEY â€” NÃƒO USE</div>
-                                <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5;">TambÃ©m comeÃ§a com <code style="background:#111; padding:1px 4px; border-radius:3px; color:#ef4444;">APP_USR-</code> mas tem ~20 chars. Ã‰ para uso no <strong style="color:#fff;">frontend</strong>. Inserir aqui causa o erro <em>"UNAUTHORIZED"</em>.</div>
+                                <div style="font-size: 0.7rem; font-weight: 800; color: #ef4444; margin-bottom: 4px;">❌ PUBLIC KEY — NÃO USE</div>
+                                <div style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.5;">Também começa com <code style="background:#111; padding:1px 4px; border-radius:3px; color:#ef4444;">APP_USR-</code> mas tem ~20 chars. É para uso no <strong style="color:#fff;">frontend</strong>. Inserir aqui causa o erro <em>"UNAUTHORIZED"</em>.</div>
                             </div>
                         </div>
                         <div style="margin-top: 10px; font-size: 0.75rem; color: var(--text-secondary);">
-                            ðŸ‘‰ Acesse: <a href="https://www.mercadopago.com.br/developers/panel/app" target="_blank" style="color: #60a5fa; font-weight: 700;">mercadopago.com.br/developers/panel/app</a> â†’ Selecione sua aplicaÃ§Ã£o â†’ <strong style="color:#fff;">Credenciais de ProduÃ§Ã£o</strong> â†’ copie o <strong style="color:#fff;">Access Token</strong> (campo mais longo).
+                            👉 Acesse: <a href="https://www.mercadopago.com.br/developers/panel/app" target="_blank" style="color: #60a5fa; font-weight: 700;">mercadopago.com.br/developers/panel/app</a> → Selecione sua aplicação → <strong style="color:#fff;">Credenciais de Produção</strong> → copie o <strong style="color:#fff;">Access Token</strong> (campo mais longo).
                         </div>
                     </div>
                     
                     <div class="form-group" style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 8px; font-weight: 700;">Access Token de ProduÃ§Ã£o <span style="font-size: 0.7rem; color: var(--accent-red); font-weight: 400;">(~70 caracteres â€” NÃƒO Ã© a Public Key)</span></label>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 700;">Access Token de Produção <span style="font-size: 0.7rem; color: var(--accent-red); font-weight: 400;">(~70 caracteres — NÃO é a Public Key)</span></label>
                         <div style="position: relative;">
                             <input type="password" id="pixAccessToken" placeholder="APP_USR-XXXXXXXXXXXXXXXX-XXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXXXX" 
                                 style="width: 100%; padding: 12px 45px 12px 12px; background: #000; border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-family: monospace; font-size: 0.8rem;">
                             <button onclick="toggleTokenVisibility()" id="btnToggleToken" 
                                 style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.1rem;" 
-                                title="Mostrar/ocultar token">ðŸ‘ï¸</button>
+                                title="Mostrar/ocultar token">👁️</button>
                         </div>
-                        <small style="color: var(--text-secondary); font-size: 0.7rem; display: block; margin-top: 6px;">ðŸ”’ Este token Ã© armazenado de forma segura e nunca Ã© exposto ao frontend pÃºblico.</small>
+                        <small style="color: var(--text-secondary); font-size: 0.7rem; display: block; margin-top: 6px;">🔒 Este token é armazenado de forma segura e nunca é exposto ao frontend público.</small>
                     </div>
 
                     <div style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
-                        <button class="btn-primary" id="btnSalvarPix" onclick="salvarConfigPix()" style="flex: 1; padding: 12px;">Salvar ConfiguraÃ§Ã£o de Pagamentos</button>
-                        <button class="btn-outline" id="btnTestarPix" onclick="testarConexaoPix()" style="padding: 12px 20px;">ðŸ§ª Testar ConexÃ£o</button>
+                        <button class="btn-primary" id="btnSalvarPix" onclick="salvarConfigPix()" style="flex: 1; padding: 12px;">Salvar Configuração de Pagamentos</button>
+                        <button class="btn-outline" id="btnTestarPix" onclick="testarConexaoPix()" style="padding: 12px 20px;">🧪 Testar Conexão</button>
                     </div>
 
                     <div id="pixTestResult" style="display: none; padding: 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem;"></div>
 
                     <div style="padding: 1rem; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 10px;">
-                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-red); margin-bottom: 8px;">âš ï¸ Passo a passo</div>
+                        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-red); margin-bottom: 8px;">⚠️ Passo a passo</div>
                         <ol style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 20px;">
                             <li>A empresa precisa ter uma conta no <a href="https://www.mercadopago.com.br/developers" target="_blank" style="color: var(--accent-gold);">Mercado Pago Developers</a></li>
-                            <li>Criar ou selecionar uma <strong style="color: #fff;">AplicaÃ§Ã£o</strong> no painel do MP</li>
-                            <li>Ir em <strong style="color: #fff;">Credenciais de ProduÃ§Ã£o</strong> (nÃ£o sandbox/teste)</li>
+                            <li>Criar ou selecionar uma <strong style="color: #fff;">Aplicação</strong> no painel do MP</li>
+                            <li>Ir em <strong style="color: #fff;">Credenciais de Produção</strong> (não sandbox/teste)</li>
                             <li>Copiar o <strong style="color: #fff;">Access Token</strong> (campo longo, ~70 caracteres)</li>
-                            <li>Colar aqui e clicar em "Salvar" depois em "Testar ConexÃ£o"</li>
+                            <li>Colar aqui e clicar em "Salvar" depois em "Testar Conexão"</li>
                         </ol>
                     </div>
                 </div>
@@ -1116,8 +1116,8 @@
         <!-- Tab: Equipe -->
         <div id="edit-equipe" class="tab-content">
             <div class="section-card" style="max-width: 700px;">
-                <h3>ðŸ‘¥ Administradores da Loja (<span id="countAdmins">0</span>)</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">UsuÃ¡rios que possuem acesso total ao painel administrativo desta empresa.</p>
+                <h3>👥 Administradores da Loja (<span id="countAdmins">0</span>)</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Usuários que possuem acesso total ao painel administrativo desta empresa.</p>
                 <ul class="admin-list" id="adminList"></ul>
                 <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
                     <button class="btn-primary" onclick="abrirModal('modalNovoAdmin')" style="padding: 12px 24px; width: auto;">+ Adicionar Administrador</button>
@@ -1131,14 +1131,14 @@
     <div id="modalNovoAdmin" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center;">
         <div class="section-card" style="width: 100%; max-width: 400px; position:relative;">
             <button onclick="fecharModal('modalNovoAdmin')" style="position:absolute; top:15px; right:15px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
-            <h3>ðŸ‘¥ Novo Administrador</h3>
+            <h3>👥 Novo Administrador</h3>
             <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:1.5rem;">Crie uma nova conta de acesso.</p>
             <div class="form-group">
                 <label>E-mail de Acesso</label>
                 <input type="email" id="newAdminEmail" placeholder="exemplo@email.com" style="width:100%; padding:10px; margin-top:5px; background:#000; border:1px solid var(--border-color); color:#fff; border-radius:6px;">
             </div>
             <div class="form-group" style="margin-top:1rem;">
-                <label>Senha ProvisÃ³ria</label>
+                <label>Senha Provisória</label>
                 <input type="text" id="newAdminPassword" placeholder="Defina uma senha..." style="width:100%; padding:10px; margin-top:5px; background:#000; border:1px solid var(--border-color); color:#fff; border-radius:6px;">
             </div>
             <div style="margin-top:2rem; display:flex; gap:10px;">

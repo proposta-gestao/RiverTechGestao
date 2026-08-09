@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="pt-br" class="tenant-loading">
 
@@ -67,14 +67,14 @@
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <h1>RiverTech</h1>
-            <p>Painel de AdministraÃ§Ã£o</p>
+            <p>Painel de Administração</p>
             <div class="form-group">
                 <label for="loginEmail">E-mail</label>
                 <input type="email" id="loginEmail" placeholder="admin@email.com">
             </div>
             <div class="form-group">
                 <label for="loginSenha">Senha</label>
-                <input type="password" id="loginSenha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
+                <input type="password" id="loginSenha" placeholder="••••••••">
             </div>
             <button class="btn-login" id="btnLogin">Entrar</button>
             <p class="login-error" id="loginError"></p>
@@ -85,16 +85,16 @@
     <div class="login-screen" id="firstLoginScreen" style="display: none; z-index: 10000; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-body); justify-content: center; align-items: center;">
         <div class="login-card" style="max-width: 400px; width: 90%; padding: 30px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 3rem; margin-bottom: 10px;">ðŸ‘‹</div>
+                <div style="font-size: 3rem; margin-bottom: 10px;">👋</div>
                 <h2 style="color: var(--color-text); margin-bottom: 10px;">Bem-vindo!</h2>
                 <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;">
-                    Como este Ã© o seu primeiro acesso, precisamos que vocÃª cadastre uma nova senha por motivos de seguranÃ§a.
+                    Como este é o seu primeiro acesso, precisamos que você cadastre uma nova senha por motivos de segurança.
                 </p>
             </div>
             
             <div class="form-group" style="margin-bottom: 15px;">
                 <label for="newPassword">Nova Senha</label>
-                <input type="password" id="newPassword" placeholder="MÃ­nimo 6 caracteres">
+                <input type="password" id="newPassword" placeholder="Mínimo 6 caracteres">
             </div>
             
             <div class="form-group" style="margin-bottom: 25px;">
@@ -114,16 +114,16 @@
         <div class="admin-topbar">
             <header class="admin-header">
                 <div style="display: flex; align-items: center; gap: 12px;">
-                    <button id="btnMobileMenu" class="btn-mobile-toggle">â˜°</button>
+                    <button id="btnMobileMenu" class="btn-mobile-toggle">☰</button>
                     <h1><span class="brand-name header-brand-name">RiverTech</span><span class="admin-header-label">Admin</span></h1>
                 </div>
                 <div class="admin-header-actions">
                     <a href="cardapio" class="btn-link-cardapio" target="_blank" id="btnVisualizarLink">
-                        <span class="d-none d-md-inline">Ver CardÃ¡pio â†—</span>
-                        <span class="d-md-none">CardÃ¡pio</span>
+                        <span class="d-none d-md-inline">Ver Cardápio ↗</span>
+                        <span class="d-md-none">Cardápio</span>
                     </a>
                     <button class="btn-logout" id="btnLogout">
-                        <span>Sair</span><span class="d-none d-md-inline"> ðŸ‘‹</span>
+                        <span>Sair</span><span class="d-none d-md-inline"> 👋</span>
                     </button>
                 </div>
             </header>
@@ -131,27 +131,27 @@
             <!-- Popup de Ativacao de Alertas Sonoros (fullscreen overlay) -->
             <div id="soundAlertBar" class="sound-alert-overlay" style="display: none;">
                 <div class="sound-alert-card">
-                    <div class="sound-alert-icon">ðŸ””</div>
+                    <div class="sound-alert-icon">🔔</div>
                     <h2 class="sound-alert-title">Ativar Alertas Sonoros</h2>
-                    <p class="sound-alert-desc">Para receber notificaÃ§Ãµes sonoras quando um novo agendamento for realizado, clique no botÃ£o abaixo.</p>
+                    <p class="sound-alert-desc">Para receber notificações sonoras quando um novo agendamento for realizado, clique no botão abaixo.</p>
                     <button class="sound-alert-btn" id="btnAtivarSom">
-                        <span>ðŸ”Š</span> Ativar Alertas
+                        <span>🔊</span> Ativar Alertas
                     </button>
-                    <p class="sound-alert-hint">Seu navegador precisa de uma interaÃ§Ã£o para permitir sons.</p>
+                    <p class="sound-alert-hint">Seu navegador precisa de uma interação para permitir sons.</p>
                 </div>
             </div>
 
 
             <nav class="admin-tabs">
-                <button class="tab-btn active" data-tab="produtos" id="nav-produtos">ðŸ“¦ Produtos</button>
-                <button class="tab-btn" data-tab="agenda" id="nav-agenda" style="display:none;">ðŸ“… Agenda</button>
-                <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">ðŸ“Š Vendas & Performance</button>
-                <button class="tab-btn" data-tab="loja" id="nav-loja" style="display:none;">ðŸ‘— Loja</button>
-                <!-- MÃ³dulo Restaurante: visÃ­vel apenas com ficha_tecnica ativo -->
-                <button class="tab-btn" data-tab="restaurante" id="nav-restaurante" style="display:none;">ðŸ½ï¸ Restaurante</button>
-                <button class="tab-btn" data-tab="cupons" id="nav-cupons">ðŸŽ« Cupons</button>
-                <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">âš™ï¸ ConfiguraÃ§Ãµes</button>
-                <button class="tab-btn tab-btn--premium" data-tab="area-premium" id="nav-area-premium" style="display:none;">ðŸ‘‘ Ãrea Premium</button>
+                <button class="tab-btn active" data-tab="produtos" id="nav-produtos">📦 Produtos</button>
+                <button class="tab-btn" data-tab="agenda" id="nav-agenda" style="display:none;">📅 Agenda</button>
+                <button class="tab-btn" data-tab="dashboard" id="nav-dashboard">📊 Vendas & Performance</button>
+                <button class="tab-btn" data-tab="loja" id="nav-loja" style="display:none;">👗 Loja</button>
+                <!-- Módulo Restaurante: visível apenas com ficha_tecnica ativo -->
+                <button class="tab-btn" data-tab="restaurante" id="nav-restaurante" style="display:none;">🍽️ Restaurante</button>
+                <button class="tab-btn" data-tab="cupons" id="nav-cupons">🎫 Cupons</button>
+                <button class="tab-btn" data-tab="configuracoes" id="nav-configuracoes">⚙️ Configurações</button>
+                <button class="tab-btn tab-btn--premium" data-tab="area-premium" id="nav-area-premium" style="display:none;">👑 Área Premium</button>
             </nav>
         </div>
 
@@ -160,58 +160,58 @@
             <!-- Agenda Tab (Lazy Loaded) -->
             <div class="tab-content" id="tab-agenda">
 
-                <!-- Sub-navegaÃ§Ã£o (TOPO) -->
+                <!-- Sub-navegação (TOPO) -->
                 <div class="agenda-subtabs">
-                    <button class="agenda-subtab-btn active" data-subtab="agenda" onclick="window.__AGENDA.renderSubtab('agenda')">ðŸ“… Agenda do Dia</button>
-                    <button class="agenda-subtab-btn" data-subtab="profissionais" onclick="window.__AGENDA.renderSubtab('profissionais')">ðŸ‘¥ Profissionais</button>
-                    <button class="agenda-subtab-btn" data-subtab="servicos" onclick="window.__AGENDA.renderSubtab('servicos')">âœ‚ï¸ ServiÃ§os</button>
-                    <button class="agenda-subtab-btn" data-subtab="horarios" onclick="window.__AGENDA.renderSubtab('horarios')">ðŸ•’ HorÃ¡rios</button>
-                    <button class="agenda-subtab-btn" data-subtab="lista" onclick="window.__AGENDA.renderSubtab('lista')">ðŸ“ Lista de Espera</button>
+                    <button class="agenda-subtab-btn active" data-subtab="agenda" onclick="window.__AGENDA.renderSubtab('agenda')">📅 Agenda do Dia</button>
+                    <button class="agenda-subtab-btn" data-subtab="profissionais" onclick="window.__AGENDA.renderSubtab('profissionais')">👥 Profissionais</button>
+                    <button class="agenda-subtab-btn" data-subtab="servicos" onclick="window.__AGENDA.renderSubtab('servicos')">✂️ Serviços</button>
+                    <button class="agenda-subtab-btn" data-subtab="horarios" onclick="window.__AGENDA.renderSubtab('horarios')">🕒 Horários</button>
+                    <button class="agenda-subtab-btn" data-subtab="lista" onclick="window.__AGENDA.renderSubtab('lista')">📝 Lista de Espera</button>
                 </div>
 
-                <!-- Stats Row (visÃ­vel no desktop, substituÃ­do no mobile pela barra compacta) -->
+                <!-- Stats Row (visível no desktop, substituído no mobile pela barra compacta) -->
                 <div class="agenda-stats" id="agendaStatsCards">
                     <div class="agenda-stat-card">
-                        <div class="agenda-stat-label">ðŸ“… Hoje</div>
+                        <div class="agenda-stat-label">📅 Hoje</div>
                         <div class="agenda-stat-value" id="agendaStat_total">0</div>
                     </div>
                     <div class="agenda-stat-card">
-                        <div class="agenda-stat-label">âœ… ConcluÃ­dos</div>
+                        <div class="agenda-stat-label">✅ Concluídos</div>
                         <div class="agenda-stat-value" id="agendaStat_concluidos" style="color:#22c55e;">0</div>
                     </div>
                     <div class="agenda-stat-card">
-                        <div class="agenda-stat-label">â³ Pendentes</div>
+                        <div class="agenda-stat-label">⏳ Pendentes</div>
                         <div class="agenda-stat-value" id="agendaStat_pendentes" style="color:#f59e0b;">0</div>
                     </div>
                     <div class="agenda-stat-card">
-                        <div class="agenda-stat-label">ðŸ’° Faturamento do Dia</div>
+                        <div class="agenda-stat-label">💰 Faturamento do Dia</div>
                         <div class="agenda-stat-value" id="agendaStat_faturamento" style="font-size:1.1rem;">R$ 0,00</div>
                     </div>
                 </div>
 
-                <!-- Barra compacta de stats (visÃ­vel apenas no mobile) -->
+                <!-- Barra compacta de stats (visível apenas no mobile) -->
                 <div class="agenda-stats-mobile-bar" id="agendaStatsMobileBar">
                     <div class="agenda-stats-mobile-info">
-                        <span>ðŸ“… Hoje: <strong id="agendaStatM_total">0</strong></span>
-                        <span>ðŸ’° <strong id="agendaStatM_faturamento">R$ 0,00</strong></span>
-                        <span>â³ Pend: <strong id="agendaStatM_pendentes" style="color:#f59e0b;">0</strong></span>
-                        <span>âœ… Conc: <strong id="agendaStatM_concluidos" style="color:#22c55e;">0</strong></span>
+                        <span>📅 Hoje: <strong id="agendaStatM_total">0</strong></span>
+                        <span>💰 <strong id="agendaStatM_faturamento">R$ 0,00</strong></span>
+                        <span>⏳ Pend: <strong id="agendaStatM_pendentes" style="color:#f59e0b;">0</strong></span>
+                        <span>✅ Conc: <strong id="agendaStatM_concluidos" style="color:#22c55e;">0</strong></span>
                     </div>
                 </div>
 
                 <!-- Subtab: Agenda do Dia -->
                 <div class="agenda-subtab-content active" id="agendaTab_agenda">
                     <div class="agenda-layout">
-                        <!-- Sidebar: CalendÃ¡rio apenas -->
+                        <!-- Sidebar: Calendário apenas -->
                         <div style="display:flex; flex-direction:column; gap:1rem;">
-                            <!-- Mini CalendÃ¡rio -->
+                            <!-- Mini Calendário -->
                             <div class="agenda-card">
                                 <div class="agenda-card-body">
                                     <div class="mini-cal">
                                         <div class="mini-cal-nav">
-                                            <button onclick="window.__AGENDA.navMes(-1)">â€¹</button>
+                                            <button onclick="window.__AGENDA.navMes(-1)">‹</button>
                                             <span id="miniCalLabel">--</span>
-                                            <button onclick="window.__AGENDA.navMes(1)">â€º</button>
+                                            <button onclick="window.__AGENDA.navMes(1)">›</button>
                                         </div>
                                         <div class="mini-cal-grid" id="miniCalGrid"></div>
                                     </div>
@@ -230,10 +230,10 @@
                                 <div class="agenda-card-body" id="agendaTimeline" style="max-height:70vh; overflow-y:auto; padding: 1rem;"></div>
                             </div>
 
-                            <!-- PrÃ³ximos Agendamentos -->
+                            <!-- Próximos Agendamentos -->
                             <div class="agenda-card">
                                 <div class="agenda-card-header">
-                                    <div class="timeline-date-label">PrÃ³ximos Agendamentos</div>
+                                    <div class="timeline-date-label">Próximos Agendamentos</div>
                                 </div>
                                 <div class="agenda-card-body" id="agendaTimelineFuturo" style="max-height:70vh; overflow-y:auto; padding: 1rem;"></div>
                             </div>
@@ -249,18 +249,18 @@
                     <div id="profissionaisTabList"></div>
                 </div>
 
-                <!-- Subtab: ServiÃ§os -->
+                <!-- Subtab: Serviços -->
                 <div class="agenda-subtab-content" id="agendaTab_servicos" style="display:none;">
                     <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
-                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.editarServico('')">+ Novo ServiÃ§o</button>
+                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.editarServico('')">+ Novo Serviço</button>
                     </div>
                     <div id="servicosTabList"></div>
                 </div>
 
-                <!-- Subtab: HorÃ¡rios de Funcionamento -->
+                <!-- Subtab: Horários de Funcionamento -->
                 <div class="agenda-subtab-content" id="agendaTab_horarios" style="display:none;">
                     <div class="agenda-card" style="margin-bottom:1rem;">
-                        <div class="agenda-card-header"><h3>ðŸ•’ HorÃ¡rio de Funcionamento da Loja</h3></div>
+                        <div class="agenda-card-header"><h3>🕒 Horário de Funcionamento da Loja</h3></div>
                         <div class="agenda-card-body" id="horariosTabContent"></div>
                     </div>
                 </div>
@@ -268,10 +268,10 @@
                 <!-- Subtab: Lista de Espera -->
                 <div class="agenda-subtab-content" id="agendaTab_lista" style="display:none;">
                     <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
-                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.abrirModalListaEspera()">+ Adicionar Ã  Lista</button>
+                        <button class="btn-primary btn-sm" onclick="window.__AGENDA.abrirModalListaEspera()">+ Adicionar à Lista</button>
                     </div>
                     <div class="agenda-card">
-                        <div class="agenda-card-header"><h3>ðŸ“ Clientes em Espera</h3></div>
+                        <div class="agenda-card-header"><h3>📝 Clientes em Espera</h3></div>
                         <div class="agenda-card-body" id="listaEsperaTabContent"></div>
                     </div>
                 </div>
@@ -283,27 +283,27 @@
                     <h2>Vendas e Performances</h2>
                 </div>
 
-                <!-- NavegaÃ§Ã£o Principal do Dashboard -->
+                <!-- Navegação Principal do Dashboard -->
                 <div class="admin-subtabs" style="margin-bottom: 2rem;">
-                    <button class="subtab-btn active" data-subtab="dashboard-operacional">ðŸ  VisÃ£o Geral</button>
-                    <button class="subtab-btn" data-subtab="dashboard-metricas">ðŸ“Š MÃ©tricas e Performance</button>
+                    <button class="subtab-btn active" data-subtab="dashboard-operacional">🏠 Visão Geral</button>
+                    <button class="subtab-btn" data-subtab="dashboard-metricas">📊 Métricas e Performance</button>
                 </div>
 
-                <!-- Subtab: VisÃ£o Geral (Operacional) -->
+                <!-- Subtab: Visão Geral (Operacional) -->
                 <div class="subtab-content active" id="subtab-dashboard-operacional">
                     
                     <div class="admin-toolbar" style="margin-bottom: 1.5rem; justify-content: center;">
                         <div class="admin-subtabs" style="margin-bottom: 0;">
                             <button class="subtab-btn active" id="btnModoHojeOp" onclick="setModoDashboard('hoje-op')">Hoje (Op)</button>
                             <button class="subtab-btn" id="btnModoOntemOp" onclick="setModoDashboard('ontem-op')">Ontem (Op)</button>
-                            <button class="subtab-btn" id="btnModoGeral" onclick="setModoDashboard('geral')">VisÃ£o Geral</button>
+                            <button class="subtab-btn" id="btnModoGeral" onclick="setModoDashboard('geral')">Visão Geral</button>
                         </div>
                     </div>
 
-                    <!-- Info PerÃ­odo Operacional -->
+                    <!-- Info Período Operacional -->
                     <div id="infoPeriodoOperacional" class="stock-alert-panel" style="display: none; margin-bottom: 1rem; background: rgba(229, 178, 93, 0.1); border-color: var(--primary);">
                         <p style="margin: 0; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                            ðŸ•’ <span id="txtPeriodoOperacional">PerÃ­odo Operacional Ativo</span>
+                            🕒 <span id="txtPeriodoOperacional">Período Operacional Ativo</span>
                         </p>
                     </div>
 
@@ -321,7 +321,7 @@
                             <div class="stat-value" id="dashTotalItems">0</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label">Ticket MÃ©dio</div>
+                            <div class="stat-label">Ticket Médio</div>
                             <div class="stat-value" id="dashAvgTicket" style="color:var(--primary)">R$ 0,00</div>
                         </div>
                     </div>
@@ -329,12 +329,12 @@
                     <!-- Filtros de Busca -->
                     <div class="dashboard-filters">
                         <div class="filters-header">
-                            <span class="filters-title">ðŸ”Ž Filtrar Pedidos</span>
+                            <span class="filters-title">🔎 Filtrar Pedidos</span>
                         </div>
                         <div class="filters-body">
                             <div class="filter-row">
                                 <div class="filter-group filter-group--date">
-                                    <label for="filtroDataInicio">ðŸ“… PerÃ­odo</label>
+                                    <label for="filtroDataInicio">📅 Período</label>
                                     <div class="filter-date-range">
                                         <input type="date" id="filtroDataInicio" title="Data inicial">
                                         <span class="date-separator">a</span>
@@ -342,35 +342,35 @@
                                     </div>
                                 </div>
                                 <div class="filter-group">
-                                    <label for="filtroCliente">ðŸ‘¤ Cliente</label>
+                                    <label for="filtroCliente">👤 Cliente</label>
                                     <input type="text" id="filtroCliente" placeholder="Nome ou celular...">
                                 </div>
                                 <div class="filter-group">
-                                    <label for="filtroAtendente" id="labelFiltroAtendente">ðŸ‘¨â€ðŸ’¼ Atendente</label>
+                                    <label for="filtroAtendente" id="labelFiltroAtendente">👨‍💼 Atendente</label>
                                     <select id="filtroAtendente">
                                         <option value="">Todos os atendentes</option>
                                     </select>
                                 </div>
                                 <div class="filter-group filter-group--range">
-                                    <label>ðŸ’° Valor (R$)</label>
+                                    <label>💰 Valor (R$)</label>
                                     <div class="filter-value-range">
-                                        <input type="number" id="filtroValorMin" min="0" step="0.01" placeholder="MÃ­n.">
-                                        <span class="date-separator">â€”</span>
-                                        <input type="number" id="filtroValorMax" min="0" step="0.01" placeholder="MÃ¡x.">
+                                        <input type="number" id="filtroValorMin" min="0" step="0.01" placeholder="Mín.">
+                                        <span class="date-separator">—</span>
+                                        <input type="number" id="filtroValorMax" min="0" step="0.01" placeholder="Máx.">
                                     </div>
                                 </div>
                                 <div class="filter-group filter-group--status">
-                                    <label>ðŸŸ¡ Status</label>
+                                    <label>🟡 Status</label>
                                     <select id="filtroStatus">
                                         <option value="">Todos os status</option>
                                         <option value="pendente">Pendente</option>
-                                        <option value="concluido">ConcluÃ­do</option>
+                                        <option value="concluido">Concluído</option>
                                         <option value="cancelado">Cancelado</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="filters-actions">
-                                <button class="btn-cancel" id="btnLimparFiltros" style="width: 100%; justify-content: center;">âœ• Limpar filtros</button>
+                                <button class="btn-cancel" id="btnLimparFiltros" style="width: 100%; justify-content: center;">✕ Limpar filtros</button>
                             </div>
                         </div>
                     </div>
@@ -388,7 +388,7 @@
                                     <th>Status</th>
                                     <th>Itens</th>
                                     <th>Total</th>
-                                    <th>AÃ§Ãµes</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="pedidosBody">
@@ -400,16 +400,16 @@
                     </div>
                 </div>
 
-                <!-- Subtab: MÃ©tricas e Performance (AnalÃ­tico) -->
+                <!-- Subtab: Métricas e Performance (Analítico) -->
                 <div class="subtab-content" id="subtab-dashboard-metricas">
                     <div class="admin-toolbar" style="margin-top: 0.5rem; justify-content: center; flex-direction: column; gap: 15px;">
-                        <h2>AnÃ¡lise EstratÃ©gica</h2>
+                        <h2>Análise Estratégica</h2>
                         <div class="metrics-selectors">
                             <select id="selectAgrupamentoMetricas" class="admin-select" onchange="atualizarGraficoMetricas()">
-                                <option value="dia">ðŸ“… Por Dia</option>
-                                <option value="semana">ðŸ—“ï¸ Por Dia da Semana</option>
-                                <option value="mes">ðŸ“† Por MÃªs</option>
-                                <option value="hora">ðŸ•’ Por HorÃ¡rio</option>
+                                <option value="dia">📅 Por Dia</option>
+                                <option value="semana">🗓️ Por Dia da Semana</option>
+                                <option value="mes">📆 Por Mês</option>
+                                <option value="hora">🕒 Por Horário</option>
                             </select>
                         </div>
                     </div>
@@ -421,70 +421,70 @@
                     <!-- Frase de Insight Inteligente -->
                     <div id="insightFraseWrapper" class="stock-alert-panel" style="margin-bottom: 2rem; background: rgba(229, 178, 93, 0.05); border-color: var(--primary);">
                         <p style="margin: 0; color: var(--text-color); font-weight: 500; font-style: italic; font-size: 1.1rem; text-align: center;">
-                            âœ¨ <span id="txtInsightInteligente">Analisando seus dados para gerar recomendaÃ§Ãµes...</span>
+                            ✨ <span id="txtInsightInteligente">Analisando seus dados para gerar recomendações...</span>
                         </p>
                     </div>
 
-                    <!-- SeÃ§Ã£o: Tempo -->
+                    <!-- Seção: Tempo -->
                     <div id="section-metricas-tempo">
-                        <h3 class="metrics-section-title">ðŸ•’ AnÃ¡lise de Tempo</h3>
+                        <h3 class="metrics-section-title">🕒 Análise de Tempo</h3>
                         <div class="insights-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                             <div class="stat-card" style="border-left: 4px solid var(--primary);">
-                                <div class="stat-label">ðŸ”¥ HorÃ¡rio de Pico</div>
+                                <div class="stat-label">🔥 Horário de Pico</div>
                                 <div class="stat-value" id="insightMelhorHora" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtInsightHora" style="font-size: 0.8rem; margin-top: 5px;">Carregando...</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid var(--success);">
-                                <div class="stat-label">ðŸ† Melhor Dia da Semana</div>
+                                <div class="stat-label">🏆 Melhor Dia da Semana</div>
                                 <div class="stat-value" id="insightMelhorDia" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtInsightMelhor" style="font-size: 0.8rem; margin-top: 5px;">Carregando...</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid var(--danger);">
-                                <div class="stat-label">ðŸ“‰ Pior Dia da Semana</div>
+                                <div class="stat-label">📉 Pior Dia da Semana</div>
                                 <div class="stat-value" id="insightPiorDia" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtInsightPior" style="font-size: 0.8rem; margin-top: 5px;">Carregando...</div>
                             </div>
                         </div>
                     </div>
  
-                    <!-- SeÃ§Ã£o: Performance de Vendas -->
+                    <!-- Seção: Performance de Vendas -->
                     <div id="section-metricas-performance">
-                        <h3 class="metrics-section-title">ðŸ’° Performance de Vendas</h3>
+                        <h3 class="metrics-section-title">💰 Performance de Vendas</h3>
                         <div class="insights-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                             <div class="stat-card" style="border-left: 4px solid var(--warning);">
-                                <div class="stat-label">ðŸŽ« Ticket MÃ©dio</div>
+                                <div class="stat-label">🎫 Ticket Médio</div>
                                 <div class="stat-value" id="insightTicketMedio" style="font-size: 1.2rem;">R$ 0,00</div>
-                                <div class="stat-label" id="txtTicketMedio" style="font-size: 0.8rem; margin-top: 5px;">MÃ©dia por pedido</div>
+                                <div class="stat-label" id="txtTicketMedio" style="font-size: 0.8rem; margin-top: 5px;">Média por pedido</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid var(--primary);">
-                                <div class="stat-label">ðŸ“Š MÃ©dia Pedidos/Dia</div>
+                                <div class="stat-label">📊 Média Pedidos/Dia</div>
                                 <div class="stat-value" id="insightMediaPedidos" style="font-size: 1.2rem;">0</div>
-                                <div class="stat-label" id="txtMediaPedidos" style="font-size: 0.8rem; margin-top: 5px;">No perÃ­odo filtrado</div>
+                                <div class="stat-label" id="txtMediaPedidos" style="font-size: 0.8rem; margin-top: 5px;">No período filtrado</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid var(--danger);">
-                                <div class="stat-label">ðŸš« Taxa de Cancelamento</div>
+                                <div class="stat-label">🚫 Taxa de Cancelamento</div>
                                 <div class="stat-value" id="insightTaxaCancelamento" style="font-size: 1.2rem;">0%</div>
                                 <div class="stat-label" id="txtTaxaCancelamento" style="font-size: 0.8rem; margin-top: 5px;">Pedidos cancelados</div>
                             </div>
                         </div>
                     </div>
  
-                    <!-- SeÃ§Ã£o: Top Performance -->
+                    <!-- Seção: Top Performance -->
                     <div id="section-metricas-destaques">
-                        <h3 class="metrics-section-title">â­ Destaques</h3>
+                        <h3 class="metrics-section-title">⭐ Destaques</h3>
                         <div class="insights-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                             <div class="stat-card" style="border-left: 4px solid #e5b25d;">
-                                <div class="stat-label" id="labelProdutoTop">ðŸŽ Produto Estrela</div>
+                                <div class="stat-label" id="labelProdutoTop">🍎 Produto Estrela</div>
                                 <div class="stat-value" id="insightProdutoTop" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtProdutoTop" style="font-size: 0.8rem; margin-top: 5px;">Mais vendido (Qtd)</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid #e5b25d;">
-                                <div class="stat-label" id="labelCategoriaTop">ðŸ“‚ Categoria LÃ­der</div>
+                                <div class="stat-label" id="labelCategoriaTop">📂 Categoria Líder</div>
                                 <div class="stat-value" id="insightCategoriaTop" style="font-size: 1.2rem;">--</div>
                                 <div class="stat-label" id="txtCategoriaTop" style="font-size: 0.8rem; margin-top: 5px;">Maior faturamento</div>
                             </div>
                             <div class="stat-card" style="border-left: 4px solid var(--success);">
-                                <div class="stat-label">ðŸ“… Top 3 Dias (Faturamento)</div>
+                                <div class="stat-label">📅 Top 3 Dias (Faturamento)</div>
                                 <div class="stat-value" id="insightTopDias" style="font-size: 0.9rem; text-align: left; line-height: 1.4;">
                                     1. --<br>
                                     2. --<br>
@@ -507,8 +507,8 @@
 
                 <!-- Painel de Alerta de Baixo Estoque -->
                 <div class="stock-alert-panel" id="stockAlertPanel">
-                    <button type="button" class="btn-close-alert" onclick="this.parentElement.style.display='none'" title="Fechar alerta">âœ•</button>
-                    <h3>âš ï¸ Alerta de Baixo Estoque</h3>
+                    <button type="button" class="btn-close-alert" onclick="this.parentElement.style.display='none'" title="Fechar alerta">✕</button>
+                    <h3>⚠️ Alerta de Baixo Estoque</h3>
                     <ul class="stock-alert-list" id="stockAlertList"></ul>
                 </div>
 
@@ -524,7 +524,7 @@
                 <!-- Subtab: Gerenciar Produtos -->
                 <div class="subtab-content active" id="subtab-lista-produtos">
                     <div class="admin-toolbar">
-                        <h2>Produtos <span style="font-size: 0.8rem;">(Arraste para ordenar no cardÃ¡pio)</span></h2>
+                        <h2>Produtos <span style="font-size: 0.8rem;">(Arraste para ordenar no cardápio)</span></h2>
                         <button class="btn-primary" id="btnNovoProduto" onclick="abrirModalNovoProduto()">+ Novo Produto</button>
                     </div>
                     <div class="admin-table-wrapper">
@@ -535,10 +535,10 @@
                                     <th>Imagem</th>
                                     <th>Nome</th>
                                     <th>Categoria</th>
-                                    <th>PreÃ§o</th>
+                                    <th>Preço</th>
                                     <th class="col-estoque">Estoque</th>
                                     <th>Status</th>
-                                    <th>AÃ§Ãµes</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="produtosBody"></tbody>
@@ -559,7 +559,7 @@
                                     <th>Nome</th>
                                     <th>Slug</th>
                                     <th>Ordem</th>
-                                    <th>AÃ§Ãµes</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="categoriasBody"></tbody>
@@ -571,12 +571,12 @@
                 <div class="subtab-content" id="subtab-lista-estoque">
                     <div class="config-card" style="margin-top: 1rem;">
                         <div class="config-card-header">
-                            <h2>ðŸ“¦ Ajustes de Estoque</h2>
+                            <h2>📦 Ajustes de Estoque</h2>
                             <button class="btn-primary btn-sm" id="btnNovoMotivoEstoque">+ Novo Motivo</button>
                         </div>
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1rem;">
-                                Cadastre os motivos para entradas e saÃ­das manuais de estoque (Ex: Avaria, Vencimento).
+                                Cadastre os motivos para entradas e saídas manuais de estoque (Ex: Avaria, Vencimento).
                             </p>
                             
                             <div class="admin-table-wrapper">
@@ -586,7 +586,7 @@
                                             <th style="width: 40px;"></th>
                                             <th>Nome do Motivo</th>
                                             <th style="text-align: center; width: 100px;">Status</th>
-                                            <th style="width: 150px; text-align: center;">AÃ§Ãµes</th>
+                                            <th style="width: 150px; text-align: center;">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="motivosEstoqueBody">
@@ -608,10 +608,10 @@
                 <!-- Sub-abas -->
                 <div class="produtos-toolbar">
                     <div class="admin-subtabs">
-                        <button class="subtab-btn active" data-subtab="loja-produtos">ðŸ‘• Gerenciar Produtos</button>
-                        <button class="subtab-btn" data-subtab="loja-categorias">ðŸ·ï¸ Categorias</button>
-                        <button class="subtab-btn" data-subtab="loja-estoque">ðŸ“¦ Estoque</button>
-                        <button class="subtab-btn" data-subtab="loja-motivos">ðŸ“‹ Motivos</button>
+                        <button class="subtab-btn active" data-subtab="loja-produtos">👕 Gerenciar Produtos</button>
+                        <button class="subtab-btn" data-subtab="loja-categorias">🏷️ Categorias</button>
+                        <button class="subtab-btn" data-subtab="loja-estoque">📦 Estoque</button>
+                        <button class="subtab-btn" data-subtab="loja-motivos">📋 Motivos</button>
                     </div>
                 </div>
 
@@ -636,10 +636,10 @@
                                     <th>Imagem</th>
                                     <th>Nome</th>
                                     <th>Categoria</th>
-                                    <th>VariaÃ§Ãµes</th>
+                                    <th>Variações</th>
                                     <th>Estoque Total</th>
                                     <th>Status</th>
-                                    <th>AÃ§Ãµes</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="lojaProdutosBody"></tbody>
@@ -661,7 +661,7 @@
                                     <th>Nome</th>
                                     <th style="text-align:center;">Ordem</th>
                                     <th style="text-align:center;">Status</th>
-                                    <th>AÃ§Ãµes</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="lojaCategoriasBody"></tbody>
@@ -680,7 +680,7 @@
                                     <th>Cor</th>
                                     <th>Tamanho</th>
                                     <th style="text-align:center;">Estoque Atual</th>
-                                    <th style="text-align:center;">AÃ§Ãµes</th>
+                                    <th style="text-align:center;">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="lojaEstoqueBody">
@@ -694,12 +694,12 @@
                 <div class="subtab-content" id="subtab-loja-motivos">
                     <div class="config-card" style="margin-top:15px;">
                         <div class="config-card-header">
-                            <h3>Motivos de MovimentaÃ§Ã£o</h3>
+                            <h3>Motivos de Movimentação</h3>
                             <button class="btn-save" id="btnNovoMotivoEstoqueLoja" style="padding:6px 12px; font-size:0.9rem;">+ Novo Motivo</button>
                         </div>
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1rem;">
-                                Cadastre os motivos para entradas e saÃ­das manuais de estoque (Ex: Avaria, Vencimento).
+                                Cadastre os motivos para entradas e saídas manuais de estoque (Ex: Avaria, Vencimento).
                             </p>
                             <div class="admin-table-wrapper">
                                 <table class="admin-table">
@@ -708,7 +708,7 @@
                                             <th style="width: 40px;"></th>
                                             <th>Nome do Motivo</th>
                                             <th style="text-align: center; width: 100px;">Status</th>
-                                            <th style="width: 150px; text-align: center;">AÃ§Ãµes</th>
+                                            <th style="width: 150px; text-align: center;">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="lojaMotivosEstoqueBody">
@@ -731,11 +731,11 @@
                     <table class="admin-table">
                         <thead>
                             <tr>
-                                <th>CÃ³digo</th>
+                                <th>Código</th>
                                 <th>Desconto</th>
                                 <th>Uso (Cont / Lim)</th>
                                 <th>Status</th>
-                                <th>AÃ§Ãµes</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody id="cuponsBody"></tbody>
@@ -743,19 +743,19 @@
                 </div>
             </div>
 
-            <!-- ConfiguraÃ§Ãµes Tab -->
+            <!-- Configurações Tab -->
             <div class="tab-content" id="tab-configuracoes">
                 <div class="admin-toolbar" style="margin-bottom: 1rem; justify-content: center;">
-                    <h2>ConfiguraÃ§Ãµes do Sistema</h2>
+                    <h2>Configurações do Sistema</h2>
                 </div>
                 <div class="produtos-toolbar" style="margin-bottom: 1.5rem; overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding-bottom: 4px;">
                     <div class="admin-subtabs" style="margin-bottom: 0; min-width: max-content;">
                         <button class="subtab-btn active" data-subtab="config-dados-empresa">Dados da Empresa</button>
-                        <button class="subtab-btn" data-subtab="config-visual">PersonalizaÃ§Ã£o Visual</button>
+                        <button class="subtab-btn" data-subtab="config-visual">Personalização Visual</button>
                         <button class="subtab-btn" data-subtab="config-frete" id="nav-sub-frete">Frete e Entrega</button>
                         <button class="subtab-btn" data-subtab="config-equipe">Equipe / Atendentes</button>
                         <button class="subtab-btn" data-subtab="config-whatsapp">WhatsApp</button>
-                        <button class="subtab-btn" data-subtab="config-pagamentos">ðŸ’³ Pagamentos</button>
+                        <button class="subtab-btn" data-subtab="config-pagamentos">💳 Pagamentos</button>
                     </div>
                 </div>
 
@@ -763,8 +763,8 @@
                 <!-- Store Address -->
                 <div class="config-card">
                     <div class="config-card-header">
-                        <h2>ðŸ¢ Dados da Empresa</h2>
-                        <button class="btn-primary" id="btnSalvarConfig">Salvar ConfiguraÃ§Ãµes</button>
+                        <h2>🏢 Dados da Empresa</h2>
+                        <button class="btn-primary" id="btnSalvarConfig">Salvar Configurações</button>
                     </div>
                     <div class="config-card-body">
                         <div class="form-row">
@@ -783,7 +783,7 @@
                                 <input type="text" id="confLogradouro" placeholder="Rua, Avenida...">
                             </div>
                             <div class="form-group" style="flex:0.3">
-                                <label for="confNumero">NÂº</label>
+                                <label for="confNumero">Nº</label>
                                 <input type="text" id="confNumero" placeholder="123">
                             </div>
                         </div>
@@ -807,19 +807,19 @@
                                 <input type="text" id="confComplemento" placeholder="Apto, sala...">
                             </div>
                             <div class="form-group" style="flex:1.5">
-                                <label for="confReferencia">Ponto de ReferÃªncia</label>
-                                <input type="text" id="confReferencia" placeholder="Ex: PrÃ³ximo ao mercado X">
+                                <label for="confReferencia">Ponto de Referência</label>
+                                <input type="text" id="confReferencia" placeholder="Ex: Próximo ao mercado X">
                             </div>
                         </div>
 
-                        <!-- ConfiguraÃ§Ã£o de Dia Operacional -->
+                        <!-- Configuração de Dia Operacional -->
                         <div class="form-row" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); gap: 20px;">
                             <div class="form-group" style="flex:1">
-                                <label for="confOpeningTime" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">ðŸ•’ Abertura do Dia</label>
+                                <label for="confOpeningTime" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">🕒 Abertura do Dia</label>
                                 <input type="time" id="confOpeningTime" value="18:00" class="input-time-modern">
                             </div>
                             <div class="form-group" style="flex:1">
-                                <label for="confClosingTime" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">ðŸ•’ Fechamento do Dia</label>
+                                <label for="confClosingTime" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">🕒 Fechamento do Dia</label>
                                 <input type="time" id="confClosingTime" value="02:00" class="input-time-modern">
                             </div>
                         </div>
@@ -828,10 +828,10 @@
                 </div> <!-- Fechamento da sub-aba config-dados-empresa -->
 
                 <div class="subtab-content" id="subtab-config-visual">
-                <!-- PersonalizaÃ§Ã£o Visual -->
+                <!-- Personalização Visual -->
                 <div class="config-card">
                     <div class="config-card-header">
-                        <h2>ðŸŽ¨ PersonalizaÃ§Ã£o Visual</h2>
+                        <h2>🎨 Personalização Visual</h2>
                         <button class="btn-primary" id="btnSalvarPersonalizacao">Salvar Visual</button>
                     </div>
                     <div class="config-card-body">
@@ -841,25 +841,25 @@
                                 <input type="text" id="confBrandName" placeholder="Ex: RiverTech">
                             </div>
                             <div class="form-group" style="flex:1">
-                                <label for="confBrandSubtitle">SubtÃ­tulo</label>
-                                <input type="text" id="confBrandSubtitle" placeholder="Ex: Seu jogo em outro nÃ­vel">
+                                <label for="confBrandSubtitle">Subtítulo</label>
+                                <input type="text" id="confBrandSubtitle" placeholder="Ex: Seu jogo em outro nível">
                             </div>
                         </div>
 
                         <!-- Banner -->
                         <div class="form-group" style="margin-top: 2rem;">
-                            <label>Banner do CardÃ¡pio</label>
+                            <label>Banner do Cardápio</label>
                             <div class="visual-upload-row">
                                 <div class="visual-preview" id="previewBanner">
                                     <div class="visual-preview-placeholder">
-                                        <strong>ðŸ–¼ï¸ Banner</strong>
+                                        <strong>🖼️ Banner</strong>
                                         Recomendado: 1200x300px
                                     </div>
                                 </div>
                                 <div class="visual-upload-controls">
                                     <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-                                        <label for="uploadBanner" class="btn-upload-gallery highlight">ðŸ“¤ Fazer Upload</label>
-                                        <button class="btn-url-toggle" onclick="toggleUrlInput('containerBannerUrl')">ðŸ”— Usar URL</button>
+                                        <label for="uploadBanner" class="btn-upload-gallery highlight">📤 Fazer Upload</label>
+                                        <button class="btn-url-toggle" onclick="toggleUrlInput('containerBannerUrl')">🔗 Usar URL</button>
                                     </div>
                                     <input type="file" id="uploadBanner" accept="image/*" style="display:none;">
 
@@ -880,14 +880,14 @@
                             <div class="visual-upload-row">
                                 <div class="visual-preview visual-preview--logo" id="previewLogo">
                                     <div class="visual-preview-placeholder">
-                                        <strong>ðŸŽ¯ Logo</strong>
+                                        <strong>🎯 Logo</strong>
                                         500x500px
                                     </div>
                                 </div>
                                 <div class="visual-upload-controls">
                                     <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-                                        <label for="uploadLogo" class="btn-upload-gallery highlight">ðŸ“¤ Fazer Upload</label>
-                                        <button class="btn-url-toggle" onclick="toggleUrlInput('containerLogoUrl')">ðŸ”— Usar URL</button>
+                                        <label for="uploadLogo" class="btn-upload-gallery highlight">📤 Fazer Upload</label>
+                                        <button class="btn-url-toggle" onclick="toggleUrlInput('containerLogoUrl')">🔗 Usar URL</button>
                                     </div>
                                     <input type="file" id="uploadLogo" accept="image/*" style="display:none;">
 
@@ -908,11 +908,11 @@
                         <div class="premium-theme-container">
                             <div class="theme-header-premium">
                                 <div class="theme-title-wrap">
-                                    <h3>ðŸŽ¨ Identidade Visual</h3>
+                                    <h3>🎨 Identidade Visual</h3>
                                     <p>Configure a paleta de cores que define a alma da sua marca.</p>
                                 </div>
                                 <div class="theme-actions-top">
-                                    <button class="btn-sm btn-outline" id="btnRestaurarTemaEmpresa">Restaurar PadrÃ£o</button>
+                                    <button class="btn-sm btn-outline" id="btnRestaurarTemaEmpresa">Restaurar Padrão</button>
                                     <button class="btn-sm btn-primary" id="btnSalvarTemaEmpresa">Salvar Cores</button>
                                 </div>
                             </div>
@@ -923,8 +923,8 @@
                                     <div class="color-card-premium">
                                         <div class="color-card-info">
                                             <span class="color-tag">Sotaque</span>
-                                            <h4>Cor PrimÃ¡ria</h4>
-                                            <p>Destaques no carrinho, preÃ§os de produtos, bordas em destaque e badges importantes.</p>
+                                            <h4>Cor Primária</h4>
+                                            <p>Destaques no carrinho, preços de produtos, bordas em destaque e badges importantes.</p>
                                         </div>
                                         <div class="color-card-input">
                                             <input type="color" id="confTemaPrimaria" oninput="previewTemaEmpresa()">
@@ -934,9 +934,9 @@
 
                                     <div class="color-card-premium">
                                         <div class="color-card-info">
-                                            <span class="color-tag">AÃ§Ã£o</span>
-                                            <h4>Cor dos BotÃµes</h4>
-                                            <p>Fundo dos botÃµes "Adicionar" ao carrinho, finalizar compra e aÃ§Ãµes principais do menu.</p>
+                                            <span class="color-tag">Ação</span>
+                                            <h4>Cor dos Botões</h4>
+                                            <p>Fundo dos botões "Adicionar" ao carrinho, finalizar compra e ações principais do menu.</p>
                                         </div>
                                         <div class="color-card-input">
                                             <input type="color" id="confTemaBotao" oninput="previewTemaEmpresa()">
@@ -946,9 +946,9 @@
 
                                     <div class="color-card-premium">
                                         <div class="color-card-info">
-                                            <span class="color-tag">InteraÃ§Ã£o</span>
-                                            <h4>Cor de Hover (BotÃµes)</h4>
-                                            <p>Cor que aparece quando o cliente passa o mouse sobre os botÃµes.</p>
+                                            <span class="color-tag">Interação</span>
+                                            <h4>Cor de Hover (Botões)</h4>
+                                            <p>Cor que aparece quando o cliente passa o mouse sobre os botões.</p>
                                         </div>
                                         <div class="color-card-input">
                                             <input type="color" id="confTemaHover" oninput="previewTemaEmpresa()">
@@ -960,7 +960,7 @@
                                         <div class="color-card-info">
                                             <span class="color-tag">Texto</span>
                                             <h4>Cor das Letras</h4>
-                                            <p>Cor dos textos em geral, como nomes de produtos, categorias e descriÃ§Ãµes na loja.</p>
+                                            <p>Cor dos textos em geral, como nomes de produtos, categorias e descrições na loja.</p>
                                         </div>
                                         <div class="color-card-input">
                                             <input type="color" id="confTemaTexto" oninput="previewTemaEmpresa()">
@@ -972,16 +972,16 @@
                                 <!-- Preview Column -->
                                 <div class="theme-preview-column">
                                     <div class="preview-device-frame">
-                                        <div class="preview-header">PRÃ‰VIA EM TEMPO REAL</div>
+                                        <div class="preview-header">PRÉVIA EM TEMPO REAL</div>
                                         <div class="preview-content-premium" id="empLivePreview">
                                             <div class="preview-card-mockup">
                                                 <div class="mockup-image">
                                                     <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=400" alt="Mockup">
-                                                    <span class="mockup-badge" id="empLiveBadge">PROMOÃ‡ÃƒO</span>
+                                                    <span class="mockup-badge" id="empLiveBadge">PROMOÇÃO</span>
                                                 </div>
                                                 <div class="mockup-details">
                                                     <h5 id="empLiveTitle">Produto Premium</h5>
-                                                    <p id="empLiveDesc">DescriÃ§Ã£o curta e elegante do seu melhor produto.</p>
+                                                    <p id="empLiveDesc">Descrição curta e elegante do seu melhor produto.</p>
                                                     <div class="mockup-footer">
                                                         <span class="mockup-price" id="empLivePrice">R$ 89,90</span>
                                                         <button class="mockup-btn" id="empLiveBtn">Adicionar</button>
@@ -1001,7 +1001,7 @@
                 <!-- Frete e Entrega -->
                 <div class="config-card">
                     <div class="config-card-header">
-                        <h2>ðŸšš Frete e Entrega</h2>
+                        <h2>🚚 Frete e Entrega</h2>
                         <div style="display:flex;align-items:center;gap:12px;">
                             <span style="font-size:0.9rem;color:var(--text-muted);">Habilitar entrega com frete</span>
                             <label class="switch">
@@ -1024,7 +1024,7 @@
                                         <th>Bairros Atendidos</th>
                                         <th>Taxa (R$)</th>
                                         <th>Status</th>
-                                        <th>AÃ§Ãµes</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="zonasBody"></tbody>
@@ -1039,14 +1039,14 @@
                     <div class="config-card">
                         <div class="config-card-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <h2>ðŸ‘¨â€ðŸ’¼ GestÃ£o da Equipe</h2>
+                                <h2>👨‍💼 Gestão da Equipe</h2>
                                 <span class="badge" style="background: rgba(229,178,93,0.1); color: var(--primary); font-size: 0.75rem;">Acesso ao Painel de Pedidos</span>
                             </div>
                             <button class="btn-primary" onclick="abrirModalAtendente()">+ Novo Atendente</button>
                         </div>
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
-                                Cadastre os colaboradores que terÃ£o acesso ao painel de pedidos. Eles utilizarÃ£o o CPF e a senha definida aqui para entrar.
+                                Cadastre os colaboradores que terão acesso ao painel de pedidos. Eles utilizarão o CPF e a senha definida aqui para entrar.
                             </p>
                             
                             <div class="admin-table-wrapper">
@@ -1056,7 +1056,7 @@
                                             <th>Nome</th>
                                             <th>CPF (Login)</th>
                                             <th>Criado em</th>
-                                            <th style="width: 150px; text-align: center;">AÃ§Ãµes</th>
+                                            <th style="width: 150px; text-align: center;">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="atendentesListaBody">
@@ -1072,23 +1072,23 @@
                 <div class="subtab-content" id="subtab-config-whatsapp">
                     <div class="config-card">
                         <div class="config-card-header">
-                            <h2>ðŸ’¬ ConfiguraÃ§Ãµes do WhatsApp</h2>
+                            <h2>💬 Configurações do WhatsApp</h2>
                             <button class="btn-primary" id="btnSalvarWhatsapp">Salvar WhatsApp</button>
                         </div>
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
-                                Configure o redirecionamento do cliente ao WhatsApp apÃ³s finalizar o pedido.
-                                VocÃª pode ativar/desativar por tipo de retirada e personalizar a mensagem.
+                                Configure o redirecionamento do cliente ao WhatsApp após finalizar o pedido.
+                                Você pode ativar/desativar por tipo de retirada e personalizar a mensagem.
                             </p>
 
-                            <!-- NÃºmero do WhatsApp -->
+                            <!-- Número do WhatsApp -->
                             <div class="form-group">
-                                <label for="confWhatsappNumero">NÃºmero do WhatsApp</label>
+                                <label for="confWhatsappNumero">Número do WhatsApp</label>
                                 <div class="wa-phone-input">
-                                    <span class="wa-phone-prefix">ðŸ‡§ðŸ‡· +55</span>
+                                    <span class="wa-phone-prefix">🇧🇷 +55</span>
                                     <input type="text" id="confWhatsappNumero" placeholder="31999999999" maxlength="11" inputmode="numeric">
                                 </div>
-                                <small style="color:var(--text-muted);">Digite apenas DDD + nÃºmero. Ex: 31999999999</small>
+                                <small style="color:var(--text-muted);">Digite apenas DDD + número. Ex: 31999999999</small>
                             </div>
 
                             <!-- Toggles por tipo de retirada -->
@@ -1097,10 +1097,10 @@
                                 
                                 <div class="wa-toggle-row">
                                     <div class="wa-toggle-info">
-                                        <span class="wa-toggle-icon">ðŸ½ï¸</span>
+                                        <span class="wa-toggle-icon">🍽️</span>
                                         <div>
                                             <strong>Pedido na Mesa</strong>
-                                            <small>Cliente estÃ¡ no local e pediu na mesa</small>
+                                            <small>Cliente está no local e pediu na mesa</small>
                                         </div>
                                     </div>
                                     <label class="wa-switch">
@@ -1111,7 +1111,7 @@
 
                                 <div class="wa-toggle-row">
                                     <div class="wa-toggle-info">
-                                        <span class="wa-toggle-icon">ðŸª</span>
+                                        <span class="wa-toggle-icon">🏪</span>
                                         <div>
                                             <strong>Retirada no Local</strong>
                                             <small>Cliente vai buscar o pedido</small>
@@ -1125,10 +1125,10 @@
 
                                 <div class="wa-toggle-row">
                                     <div class="wa-toggle-info">
-                                        <span class="wa-toggle-icon">ðŸšš</span>
+                                        <span class="wa-toggle-icon">🚚</span>
                                         <div>
                                             <strong>Entrega</strong>
-                                            <small>Pedido serÃ¡ entregue no endereÃ§o do cliente</small>
+                                            <small>Pedido será entregue no endereço do cliente</small>
                                         </div>
                                     </div>
                                     <label class="wa-switch">
@@ -1138,50 +1138,50 @@
                                 </div>
                             </div>
 
-                            <!-- Mensagem Personalizada â€” Layout AmigÃ¡vel -->
+                            <!-- Mensagem Personalizada — Layout Amigável -->
                             <div class="wa-msg-section">
                                 <div class="wa-msg-header">
                                     <div>
-                                        <h3>âœï¸ Mensagem do Pedido</h3>
-                                        <p>Monte o texto que serÃ¡ enviado no WhatsApp quando um cliente fizer um pedido. Use os botÃµes abaixo para inserir os dados do pedido automaticamente.</p>
+                                        <h3>✍️ Mensagem do Pedido</h3>
+                                        <p>Monte o texto que será enviado no WhatsApp quando um cliente fizer um pedido. Use os botões abaixo para inserir os dados do pedido automaticamente.</p>
                                     </div>
                                     <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end;">
                                         <button class="wa-premium-btn" id="btnResetWaTemplate" title="Restaura a mensagem para o formato original">
-                                            <span class="wa-btn-icon">ðŸ”„</span>
-                                            <span>Restaurar PadrÃ£o</span>
+                                            <span class="wa-btn-icon">🔄</span>
+                                            <span>Restaurar Padrão</span>
                                         </button>
                                         <button class="btn-primary" id="btnSalvarWhatsappFooter" style="font-size: 0.8rem; padding: 6px 14px; border-radius: 8px;">Salvar WhatsApp</button>
                                     </div>
                                 </div>
 
-                                <!-- Dados do Pedido â€” BotÃµes amigÃ¡veis -->
+                                <!-- Dados do Pedido — Botões amigáveis -->
                                 <div class="wa-vars-bar">
-                                    <span class="wa-vars-label">ðŸ“‹ Dados do pedido â€” clique para inserir no texto:</span>
+                                    <span class="wa-vars-label">📋 Dados do pedido — clique para inserir no texto:</span>
                                     <div class="wa-placeholders-grid">
-                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" draggable="true">ðŸ‘¤ Nome do cliente</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" draggable="true">ðŸ“± Telefone</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" draggable="true">ðŸ“ Tipo de retirada</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}" draggable="true">ðŸ  EndereÃ§o</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{itens}}" draggable="true">ðŸ›’ Lista de itens</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}" draggable="true">ðŸ’µ Subtotal</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}" draggable="true">ðŸŽŸï¸ Desconto</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{frete}}" draggable="true">ðŸ“¦ Frete</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{total}}" draggable="true">ðŸ’° Total</button>
-                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}" draggable="true">ðŸ’³ Forma de pagamento</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_nome}}" draggable="true">👤 Nome do cliente</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{cliente_telefone}}" draggable="true">📱 Telefone</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{tipo_entrega}}" draggable="true">📍 Tipo de retirada</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{endereco}}" draggable="true">🏠 Endereço</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{itens}}" draggable="true">🛒 Lista de itens</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{subtotal}}" draggable="true">💵 Subtotal</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{desconto}}" draggable="true">🎟️ Desconto</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{frete}}" draggable="true">📦 Frete</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{total}}" draggable="true">💰 Total</button>
+                                        <button class="wa-placeholder-tag" data-ph="{{pagamento}}" draggable="true">💳 Forma de pagamento</button>
                                     </div>
                                 </div>
 
                                 <div class="wa-editor-container">
                                     <div class="wa-editor-toolbar">
                                         <button type="button" class="wa-format-btn" onclick="document.execCommand('bold', false, null)" title="Negrito (Ctrl+B)"><b>B</b></button>
-                                        <button type="button" class="wa-format-btn" onclick="document.execCommand('italic', false, null)" title="ItÃ¡lico (Ctrl+I)"><i>I</i></button>
+                                        <button type="button" class="wa-format-btn" onclick="document.execCommand('italic', false, null)" title="Itálico (Ctrl+I)"><i>I</i></button>
                                         <button type="button" class="wa-format-btn" onclick="document.execCommand('strikeThrough', false, null)" title="Riscado"><s>S</s></button>
                                         <div class="wa-toolbar-divider"></div>
                                         <span class="wa-toolbar-hint">Selecione o texto e clique para formatar</span>
                                     </div>
-                                    <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que serÃ¡ enviada no WhatsApp..."></div>
+                                    <div id="confWhatsappTemplate" class="wa-template-editor" contenteditable="true" data-placeholder="Escreva aqui a mensagem que será enviada no WhatsApp..."></div>
                                 </div>
-                                <small class="wa-msg-hint">ðŸ’¡ Dica: Clique nos botÃµes azuis acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
+                                <small class="wa-msg-hint">💡 Dica: Clique nos botões azuis acima ou <strong>arraste-os</strong> para dentro da caixa de texto.</small>
                             </div>
                         </div>
                     </div>
@@ -1192,25 +1192,25 @@
                 <div class="subtab-content" id="subtab-config-pagamentos">
                     <div class="config-card">
                         <div class="config-card-header">
-                            <h2>ðŸ’³ Pagamentos Online</h2>
+                            <h2>💳 Pagamentos Online</h2>
                             <span class="badge" style="background: rgba(0, 158, 227, 0.1); color: #009ee3; font-size: 0.75rem;">Mercado Pago</span>
                         </div>
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
-                                Configure suas opÃ§Ãµes de pagamento. Para receber via PIX automÃ¡tico ou CartÃ£o, conecte sua conta do Mercado Pago.
+                                Configure suas opções de pagamento. Para receber via PIX automático ou Cartão, conecte sua conta do Mercado Pago.
                             </p>
                             
-                            <h3>OpÃ§Ãµes de Recebimento</h3>
+                            <h3>Opções de Recebimento</h3>
                             
                             <div class="form-row" style="margin-top: 1rem; margin-bottom: 2rem;">
                                 <div class="form-group" style="flex:1">
                                     <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px;">
                                         <div>
                                             <div style="display:flex; align-items:center; gap:8px;">
-                                                <strong>PIX AutomÃ¡tico</strong>
-                                                <span class="badge" style="background:rgba(0,166,80,0.1); color:#00a650; font-size:0.7rem;">LiberaÃ§Ã£o Imediata</span>
+                                                <strong>PIX Automático</strong>
+                                                <span class="badge" style="background:rgba(0,166,80,0.1); color:#00a650; font-size:0.7rem;">Liberação Imediata</span>
                                             </div>
-                                            <span style="font-size:0.85rem; color:var(--text-muted);">Gera QR Code dinÃ¢mico e aprova sozinho.</span>
+                                            <span style="font-size:0.85rem; color:var(--text-muted);">Gera QR Code dinâmico e aprova sozinho.</span>
                                         </div>
                                         <label class="switch">
                                             <input type="checkbox" id="confPixAtivo" onchange="salvarConfigPagamentos()">
@@ -1223,9 +1223,9 @@
                                     <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; border:1px solid var(--border-color); border-radius:8px; margin-bottom:10px;">
                                         <div>
                                             <div style="display:flex; align-items:center; gap:8px;">
-                                                <strong>CartÃ£o de CrÃ©dito</strong>
+                                                <strong>Cartão de Crédito</strong>
                                             </div>
-                                            <span style="font-size:0.85rem; color:var(--text-muted);">Aceita pagamentos no crÃ©dito.</span>
+                                            <span style="font-size:0.85rem; color:var(--text-muted);">Aceita pagamentos no crédito.</span>
                                         </div>
                                         <label class="switch">
                                             <input type="checkbox" id="confCartaoAtivo" onchange="salvarConfigPagamentos()">
@@ -1235,16 +1235,16 @@
                                 </div>
                             </div>
 
-                            <h3>IntegraÃ§Ã£o com Mercado Pago</h3>
+                            <h3>Integração com Mercado Pago</h3>
                             <div id="mpOAuthContainer" style="margin-top: 1rem; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center;">
                                 <!-- State: Disconnected -->
                                 <div id="mpOAuthDisconnected" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
                                     <div>
-                                        <strong style="display: block; font-size: 1rem; color: var(--text-color);">Conta nÃ£o conectada</strong>
+                                        <strong style="display: block; font-size: 1rem; color: var(--text-color);">Conta não conectada</strong>
                                         <span style="font-size: 0.85rem; color: var(--text-muted);">Vincule sua conta para habilitar as formas de pagamento acima.</span>
                                     </div>
                                     <button class="btn-primary" onclick="iniciarOAuthMercadoPago()" style="background-color: var(--success); border-color: var(--success); color: white;">
-                                        ðŸ¤ Conectar Conta
+                                        🤝 Conectar Conta
                                     </button>
                                 </div>
 
@@ -1252,11 +1252,11 @@
                                 <div id="mpOAuthConnected" style="display: none; width: 100%; justify-content: space-between; align-items: center;">
                                     <div style="display: flex; align-items: center; gap: 12px;">
                                         <div style="width: 40px; height: 40px; background: rgba(0, 166, 80, 0.2); color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                                            âœ“
+                                            ✓
                                         </div>
                                         <div>
                                             <strong style="display: block; font-size: 1rem; color: var(--text-color);">Conectado como <span id="mpAccountNameDisplay" style="color: var(--primary);">--</span></strong>
-                                            <span style="font-size: 0.85rem; color: var(--text-muted);">Sua loja estÃ¡ pronta para receber pagamentos.</span>
+                                            <span style="font-size: 0.85rem; color: var(--text-muted);">Sua loja está pronta para receber pagamentos.</span>
                                         </div>
                                     </div>
                                     <button class="btn-outline" onclick="desconectarMercadoPago()" style="border-color: var(--danger); color: var(--danger); font-size: 0.9rem;">
@@ -1271,16 +1271,16 @@
 
 
             <!-- ========================================= -->
-            <!-- Tab: Ãrea Premium                         -->
+            <!-- Tab: Área Premium                         -->
             <!-- ========================================= -->
             <div class="tab-content" id="tab-area-premium">
 
                 <!-- Banner Header Premium -->
                 <div class="premium-area-header">
-                    <div class="premium-area-header-icon">ðŸ‘‘</div>
+                    <div class="premium-area-header-icon">👑</div>
                     <div class="premium-area-header-text">
-                        <h2>Ãrea Premium</h2>
-                        <p>Gerencie clientes VIP com acesso personalizado e cardÃ¡pios exclusivos.</p>
+                        <h2>Área Premium</h2>
+                        <p>Gerencie clientes VIP com acesso personalizado e cardápios exclusivos.</p>
                     </div>
                     <div class="premium-area-header-badge">VIP</div>
                 </div>
@@ -1288,9 +1288,9 @@
                 <!-- Sub-abas -->
                 <div class="produtos-toolbar" style="margin-bottom: 1.5rem; overflow-x: auto; overflow-y: hidden; white-space: nowrap; padding-bottom: 4px;">
                     <div class="admin-subtabs" style="margin-bottom: 0; min-width: max-content;">
-                        <button class="subtab-btn active" data-subtab="config-clientes-premium" id="nav-sub-clientes-premium">ðŸ‘‘ Clientes Premium</button>
-                        <button class="subtab-btn" data-subtab="config-perfis-cardapio" id="nav-sub-perfis-cardapio">ðŸ“‹ Perfis de CardÃ¡pio</button>
-                        <button class="subtab-btn" data-subtab="config-premium-dashboard" id="nav-sub-premium-dashboard">ðŸ“Š Dashboard Premium</button>
+                        <button class="subtab-btn active" data-subtab="config-clientes-premium" id="nav-sub-clientes-premium">👑 Clientes Premium</button>
+                        <button class="subtab-btn" data-subtab="config-perfis-cardapio" id="nav-sub-perfis-cardapio">📋 Perfis de Cardápio</button>
+                        <button class="subtab-btn" data-subtab="config-premium-dashboard" id="nav-sub-premium-dashboard">📊 Dashboard Premium</button>
                     </div>
                 </div>
 
@@ -1299,14 +1299,14 @@
                     <div class="config-card">
                         <div class="config-card-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <h2>ðŸ‘‘ Clientes Premium</h2>
+                                <h2>👑 Clientes Premium</h2>
                                 <span class="badge" style="background: rgba(229,178,93,0.1); color: var(--primary); font-size: 0.75rem;">Login VIP + Teto de Gastos</span>
                             </div>
                             <button class="btn-primary" onclick="abrirModalClientePremium()">+ Novo Cliente</button>
                         </div>
                         <div class="config-card-body">
                             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1.5rem;">
-                                Cadastre clientes especiais (VIP, funcionÃ¡rios, diretoria) com acesso a cardÃ¡pios personalizados e limites de gastos.
+                                Cadastre clientes especiais (VIP, funcionários, diretoria) com acesso a cardápios personalizados e limites de gastos.
                             </p>
                             <div class="admin-table-wrapper">
                                 <table class="admin-table">
@@ -1318,7 +1318,7 @@
                                             <th>Perfil</th>
                                             <th>Teto Mensal</th>
                                             <th>Consumido</th>
-                                            <th style="width: 120px; text-align: center;">AÃ§Ãµes</th>
+                                            <th style="width: 120px; text-align: center;">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="clientesPremiumBody">
@@ -1330,12 +1330,12 @@
                     </div>
                 </div>
 
-                <!-- Subtab: Perfis de CardÃ¡pio -->
+                <!-- Subtab: Perfis de Cardápio -->
                 <div class="subtab-content" id="subtab-config-perfis-cardapio">
                     <div class="config-card">
                         <div class="config-card-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <h2>ðŸ“‹ Perfis de CardÃ¡pio</h2>
+                                <h2>📋 Perfis de Cardápio</h2>
                             </div>
                             <button class="btn-primary" onclick="abrirModalPerfilCardapio()">+ Novo Perfil</button>
                         </div>
@@ -1351,25 +1351,25 @@
                     <div class="config-card">
                         <div class="config-card-header">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <h2>ðŸ“Š Dashboard Premium</h2>
-                                <span class="badge" style="background: rgba(46, 204, 113, 0.1); color: var(--success); font-size: 0.75rem;">VisÃ£o Geral e RelatÃ³rios</span>
+                                <h2>📊 Dashboard Premium</h2>
+                                <span class="badge" style="background: rgba(46, 204, 113, 0.1); color: var(--success); font-size: 0.75rem;">Visão Geral e Relatórios</span>
                             </div>
                             <div class="modal-actions" style="display:flex; gap: 10px;">
-                                <button class="btn-outline" onclick="window.__PREMIUM_DASH.imprimirRelatorioPremium()">ðŸ–¨ï¸ Imprimir PDF</button>
-                                <button class="btn-primary" onclick="window.__PREMIUM_DASH.exportarRelatorioPremiumExcel()" style="background-color: #217346; color: white; border-color: #217346;">ðŸ“¥ Exportar Excel</button>
+                                <button class="btn-outline" onclick="window.__PREMIUM_DASH.imprimirRelatorioPremium()">🖨️ Imprimir PDF</button>
+                                <button class="btn-primary" onclick="window.__PREMIUM_DASH.exportarRelatorioPremiumExcel()" style="background-color: #217346; color: white; border-color: #217346;">📥 Exportar Excel</button>
                             </div>
                         </div>
                         <div class="config-card-body">
-                            <!-- Filtros (PadrÃ£o Vendas e Performance) -->
+                            <!-- Filtros (Padrão Vendas e Performance) -->
                             <div class="dashboard-filters premium-dashboard-filters" style="background: linear-gradient(135deg, rgba(229, 178, 93, 0.08) 0%, rgba(229, 178, 93, 0.02) 100%); border: 1px solid rgba(229, 178, 93, 0.25); border-radius: 12px; margin-bottom: 2rem; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
                                 <div class="filters-header" style="background: rgba(229, 178, 93, 0.05); border-bottom: 1.5px solid rgba(229, 178, 93, 0.2);">
-                                    <span class="filters-title" style="color: var(--primary); display: flex; align-items: center; gap: 8px;">ðŸ‘‘ Filtrar Dashboard Premium</span>
+                                    <span class="filters-title" style="color: var(--primary); display: flex; align-items: center; gap: 8px;">👑 Filtrar Dashboard Premium</span>
                                 </div>
                                 <div class="filters-body">
                                     <div class="filter-row">
                                         
                                         <div class="filter-group filter-group--date">
-                                            <label for="dashPremiumDataInicio" style="color: var(--primary);">ðŸ“… PerÃ­odo</label>
+                                            <label for="dashPremiumDataInicio" style="color: var(--primary);">📅 Período</label>
                                             <div class="filter-date-range">
                                                 <input type="date" id="dashPremiumDataInicio" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2);">
                                                 <span class="date-separator" style="color: var(--primary);">a</span>
@@ -1378,14 +1378,14 @@
                                         </div>
 
                                         <div class="filter-group">
-                                            <label for="dashPremiumFiltroPerfil" style="color: var(--primary);">ðŸ“‹ Perfil</label>
+                                            <label for="dashPremiumFiltroPerfil" style="color: var(--primary);">📋 Perfil</label>
                                             <select id="dashPremiumFiltroPerfil" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2);">
                                                 <option value="">Todos os perfis</option>
                                             </select>
                                         </div>
 
                                         <div class="filter-group filter-group--status">
-                                            <label for="dashPremiumFiltroStatus" style="color: var(--primary);">ðŸ“Š Status</label>
+                                            <label for="dashPremiumFiltroStatus" style="color: var(--primary);">📊 Status</label>
                                             <select id="dashPremiumFiltroStatus" style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2);">
                                                 <option value="">Todas (Abertas e Fechadas)</option>
                                                 <option value="aberta">Apenas Abertas</option>
@@ -1394,16 +1394,16 @@
                                         </div>
                                         
                                         <div class="filter-group">
-                                            <label for="dashPremiumFiltroCliente" style="color: var(--primary);">ðŸ‘‘ Cliente VIP</label>
+                                            <label for="dashPremiumFiltroCliente" style="color: var(--primary);">👑 Cliente VIP</label>
                                             <input type="text" id="dashPremiumFiltroCliente" list="listaPremiumClientesVIP" placeholder="Digite o nome..." style="border: 1px solid rgba(229, 178, 93, 0.3); background: rgba(0,0,0,0.2); outline: none; width: 100%; color: var(--text-color); padding: 0.75rem; border-radius: 8px;">
                                             <datalist id="listaPremiumClientesVIP"></datalist>
                                         </div>
                                     </div>
                                     
                                     <div class="filters-actions" style="border-top: 1px solid rgba(229, 178, 93, 0.2);">
-                                        <button class="btn-cancel" onclick="document.getElementById('dashPremiumDataInicio').value=''; document.getElementById('dashPremiumDataFim').value=''; document.getElementById('dashPremiumFiltroPerfil').value=''; document.getElementById('dashPremiumFiltroCliente').value=''; document.getElementById('dashPremiumFiltroStatus').value=''; window.__PREMIUM_DASH.carregarDashboardPremium();" style="border: 1px solid rgba(229, 178, 93, 0.3); color: var(--primary); background: transparent;">âœ• Limpar filtros</button>
+                                        <button class="btn-cancel" onclick="document.getElementById('dashPremiumDataInicio').value=''; document.getElementById('dashPremiumDataFim').value=''; document.getElementById('dashPremiumFiltroPerfil').value=''; document.getElementById('dashPremiumFiltroCliente').value=''; document.getElementById('dashPremiumFiltroStatus').value=''; window.__PREMIUM_DASH.carregarDashboardPremium();" style="border: 1px solid rgba(229, 178, 93, 0.3); color: var(--primary); background: transparent;">✕ Limpar filtros</button>
                                         <button class="wa-premium-btn" onclick="window.__PREMIUM_DASH.carregarDashboardPremium()" style="padding: 10px 20px;">
-                                            <span class="wa-btn-icon">ðŸ”</span> Filtrar Resultados
+                                            <span class="wa-btn-icon">🔍</span> Filtrar Resultados
                                         </button>
                                     </div>
                                 </div>
@@ -1420,7 +1420,7 @@
                                     <div id="dashPremiumTotalComandas" style="font-size: 1.8rem; font-weight: bold; color: var(--text-color);">0</div>
                                 </div>
                                 <div class="stat-card" style="background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
-                                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Ticket MÃ©dio Premium</div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Ticket Médio Premium</div>
                                     <div id="dashPremiumTicketMedio" style="font-size: 1.8rem; font-weight: bold; color: var(--success);">R$ 0,00</div>
                                 </div>
                             </div>
@@ -1428,7 +1428,7 @@
                             <div style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
                                 <!-- Ranking de Clientes -->
                                 <div class="ranking-section">
-                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">ðŸ† Top Clientes (Maior Consumo)</h3>
+                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🏆 Top Clientes (Maior Consumo)</h3>
                                     <div class="admin-table-wrapper" style="max-height: 300px; overflow-y: auto;">
                                         <table class="admin-table">
                                             <thead>
@@ -1439,15 +1439,15 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="dashPremiumRankingBody">
-                                                <tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum dado encontrado para o perÃ­odo.</td></tr>
+                                                <tr><td colspan="3" style="text-align:center;color:var(--text-muted);">Nenhum dado encontrado para o período.</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
 
-                                <!-- RelatÃ³rio de Comandas -->
+                                <!-- Relatório de Comandas -->
                                 <div class="relatorio-section">
-                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">ðŸ§¾ RelatÃ³rio de Comandas</h3>
+                                    <h3 style="margin-bottom: 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">🧾 Relatório de Comandas</h3>
                                     <div class="admin-table-wrapper print-wrapper" style="max-height: 400px; overflow-y: auto;" id="printRelatorioContainer">
                                         <table class="admin-table" id="tabelaRelatorioPremium">
                                             <thead>
@@ -1460,7 +1460,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="dashPremiumComandasBody">
-                                                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhuma comanda encontrada para o perÃ­odo.</td></tr>
+                                                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Nenhuma comanda encontrada para o período.</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -1473,29 +1473,29 @@
             </div> <!-- Fechamento tab-area-premium -->
 
             <!-- =============================================================== -->
-            <!-- TAB: Restaurante â€” Ficha TÃ©cnica                               -->
+            <!-- TAB: Restaurante — Ficha Técnica                               -->
             <!-- =============================================================== -->
             <div class="tab-content" id="tab-restaurante">
-                <!-- Sub-navegaÃ§Ã£o -->
+                <!-- Sub-navegação -->
                 <div class="rest-subtabs">
-                    <button class="rest-subtab-btn" onclick="switchTab('produtos', document.getElementById('nav-produtos'))">ðŸ” Produtos</button>
-                    <button class="rest-subtab-btn active" data-subtab="insumos">ðŸ§‚ Insumos</button>
-                    <button class="rest-subtab-btn" data-subtab="fichas">ðŸ“‹ Fichas TÃ©cnicas</button>
-                    <button class="rest-subtab-btn" data-subtab="inventario">ðŸ“¦ InventÃ¡rio</button>
-                    <button class="rest-subtab-btn" data-subtab="movimentos">ðŸ”„ MovimentaÃ§Ãµes</button>
-                    <button class="rest-subtab-btn" data-subtab="cadastros">ðŸ—ƒï¸ Cadastros</button>
-                    <button class="rest-subtab-btn" data-subtab="config">âš™ï¸ ConfiguraÃ§Ãµes</button>
+                    <button class="rest-subtab-btn" onclick="switchTab('produtos', document.getElementById('nav-produtos'))">🍔 Produtos</button>
+                    <button class="rest-subtab-btn active" data-subtab="insumos">🧂 Insumos</button>
+                    <button class="rest-subtab-btn" data-subtab="fichas">📋 Fichas Técnicas</button>
+                    <button class="rest-subtab-btn" data-subtab="inventario">📦 Inventário</button>
+                    <button class="rest-subtab-btn" data-subtab="movimentos">🔄 Movimentações</button>
+                    <button class="rest-subtab-btn" data-subtab="cadastros">🗃️ Cadastros</button>
+                    <button class="rest-subtab-btn" data-subtab="config">⚙️ Configurações</button>
                 </div>
 
-                <!-- â”€â”€ Insumos â”€â”€ -->
+                <!-- ── Insumos ── -->
                 <div class="rest-subtab-content active" id="rest-subtab-insumos">
                     <div class="rest-section-header">
                         <div>
-                            <h2>ðŸ§‚ Insumos</h2>
-                            <p class="rest-section-desc">Ingredientes, bebidas, embalagens e matÃ©rias-primas</p>
+                            <h2>🧂 Insumos</h2>
+                            <p class="rest-section-desc">Ingredientes, bebidas, embalagens e matérias-primas</p>
                         </div>
                         <div style="display:flex;gap:8px;align-items:center;">
-                            <input type="text" id="restInsumoBusca" placeholder="ðŸ” Buscar insumo..." oninput="window.__RESTAURANTE.filtrarInsumos()" style="min-width:180px;">
+                            <input type="text" id="restInsumoBusca" placeholder="🔍 Buscar insumo..." oninput="window.__RESTAURANTE.filtrarInsumos()" style="min-width:180px;">
                             <select id="restInsumoCategoriaFiltro" onchange="window.__RESTAURANTE.filtrarInsumos()" style="min-width:150px;">
                                 <option value="">Todas categorias</option>
                             </select>
@@ -1505,38 +1505,38 @@
                     <div id="rest-insumos-lista" class="rest-insumos-grid"></div>
                 </div>
 
-                <!-- â”€â”€ Fichas TÃ©cnicas â”€â”€ -->
+                <!-- ── Fichas Técnicas ── -->
                 <div class="rest-subtab-content" id="rest-subtab-fichas">
                     <div class="rest-section-header">
                         <div>
-                            <h2>ðŸ“‹ Fichas TÃ©cnicas</h2>
-                            <p class="rest-section-desc">ComposiÃ§Ã£o de cada item do cardÃ¡pio</p>
+                            <h2>📋 Fichas Técnicas</h2>
+                            <p class="rest-section-desc">Composição de cada item do cardápio</p>
                         </div>
                         <button class="btn-primary" onclick="window.__RESTAURANTE.novaFicha()">+ Nova Ficha</button>
                     </div>
                     <div id="rest-fichas-lista" class="rest-fichas-grid"></div>
                 </div>
 
-                <!-- â”€â”€ InventÃ¡rio â”€â”€ -->
+                <!-- ── Inventário ── -->
                 <div class="rest-subtab-content" id="rest-subtab-inventario">
                     <div class="rest-section-header">
                         <div>
-                            <h2>ðŸ“¦ InventÃ¡rio FÃ­sico</h2>
-                            <p class="rest-section-desc">ConferÃªncia de estoque e geraÃ§Ã£o de ajustes</p>
+                            <h2>📦 Inventário Físico</h2>
+                            <p class="rest-section-desc">Conferência de estoque e geração de ajustes</p>
                         </div>
-                        <button class="btn-primary" onclick="window.__RESTAURANTE.novoInventario()">+ Novo InventÃ¡rio</button>
+                        <button class="btn-primary" onclick="window.__RESTAURANTE.novoInventario()">+ Novo Inventário</button>
                     </div>
                     <div id="rest-inventarios-lista"></div>
                 </div>
 
-                <!-- â”€â”€ MovimentaÃ§Ãµes â”€â”€ -->
+                <!-- ── Movimentações ── -->
                 <div class="rest-subtab-content" id="rest-subtab-movimentos">
                     <div class="rest-section-header">
                         <div>
-                            <h2>ðŸ”„ HistÃ³rico de MovimentaÃ§Ãµes</h2>
-                            <p class="rest-section-desc">Entradas, saÃ­das, perdas e ajustes de estoque</p>
+                            <h2>🔄 Histórico de Movimentações</h2>
+                            <p class="rest-section-desc">Entradas, saídas, perdas e ajustes de estoque</p>
                         </div>
-                        <button class="btn-primary" onclick="window.__RESTAURANTE.novaMovimentacao()">+ Nova MovimentaÃ§Ã£o</button>
+                        <button class="btn-primary" onclick="window.__RESTAURANTE.novaMovimentacao()">+ Nova Movimentação</button>
                     </div>
                     <div style="overflow-x:auto;">
                         <table class="rest-table">
@@ -1544,7 +1544,7 @@
                                 <tr>
                                     <th>Data</th>
                                     <th>Insumo</th>
-                                    <th>DepÃ³sito</th>
+                                    <th>Depósito</th>
                                     <th>Tipo</th>
                                     <th>Qtd</th>
                                     <th>Custo Un.</th>
@@ -1556,13 +1556,13 @@
                     </div>
                 </div>
 
-                <!-- â”€â”€ Cadastros â”€â”€ -->
+                <!-- ── Cadastros ── -->
                 <div class="rest-subtab-content" id="rest-subtab-cadastros">
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;">
-                        <!-- DepÃ³sitos -->
+                        <!-- Depósitos -->
                         <div class="rest-card">
                             <div class="rest-card-header">
-                                <h3>ðŸª DepÃ³sitos</h3>
+                                <h3>🏪 Depósitos</h3>
                                 <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoDeposito()">+ Novo</button>
                             </div>
                             <div id="rest-depositos-lista" class="rest-card-body"></div>
@@ -1570,7 +1570,7 @@
                         <!-- Fornecedores -->
                         <div class="rest-card">
                             <div class="rest-card-header">
-                                <h3>ðŸšš Fornecedores</h3>
+                                <h3>🚚 Fornecedores</h3>
                                 <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novoFornecedor()">+ Novo</button>
                             </div>
                             <div id="rest-fornecedores-lista" class="rest-card-body"></div>
@@ -1578,7 +1578,7 @@
                         <!-- Categorias -->
                         <div class="rest-card">
                             <div class="rest-card-header">
-                                <h3>ðŸ·ï¸ Categorias</h3>
+                                <h3>🏷️ Categorias</h3>
                                 <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.novaCategoria()">+ Nova</button>
                             </div>
                             <div id="rest-categorias-lista" class="rest-card-body"></div>
@@ -1586,7 +1586,7 @@
                     </div>
                 </div>
 
-                <!-- â”€â”€ ConfiguraÃ§Ãµes â”€â”€ -->
+                <!-- ── Configurações ── -->
                 <div class="rest-subtab-content" id="rest-subtab-config">
                     <div id="rest-config-container"></div>
                 </div>
@@ -1605,7 +1605,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalNovoAgendamento')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ“… Agendamento</h3>
+                    <h3>📅 Agendamento</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__AGENDA.salvarAgendamento()">Salvar</button>
@@ -1619,7 +1619,7 @@
                         <select id="agendaModalProfissional" onchange="window.__AGENDA.carregarSlotsAdmin()"></select>
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="agendaModalServico">ServiÃ§o</label>
+                        <label for="agendaModalServico">Serviço</label>
                         <select id="agendaModalServico" onchange="window.__AGENDA.carregarSlotsAdmin()"></select>
                     </div>
                 </div>
@@ -1631,9 +1631,9 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label>HorÃ¡rios DisponÃ­veis</label>
+                        <label>Horários Disponíveis</label>
                         <div id="agendaModalSlotsContainer" class="slots-grid-admin">
-                            <span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Selecione profissional, serviÃ§o e data</span>
+                            <span style="color:var(--text-muted);font-size:0.8rem;padding:4px;">Selecione profissional, serviço e data</span>
                         </div>
                         <input type="hidden" id="agendaModalHora">
                         <input type="hidden" id="agendaModalSlotInicio">
@@ -1643,7 +1643,7 @@
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="agendaModalCliente">Nome do Cliente *</label>
-                        <input type="text" id="agendaModalCliente" placeholder="Ex: JoÃ£o Silva">
+                        <input type="text" id="agendaModalCliente" placeholder="Ex: João Silva">
                     </div>
                     <div class="form-group" style="flex:1">
                         <label for="agendaModalTelefone">Telefone *</label>
@@ -1651,8 +1651,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="agendaModalObs">ObservaÃ§Ãµes</label>
-                    <textarea id="agendaModalObs" placeholder="Alguma preferÃªncia ou observaÃ§Ã£o..."></textarea>
+                    <label for="agendaModalObs">Observações</label>
+                    <textarea id="agendaModalObs" placeholder="Alguma preferência ou observação..."></textarea>
                 </div>
             </div>
         </div>
@@ -1668,7 +1668,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalProfissional')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ‘¤ Profissional</h3>
+                    <h3>👤 Profissional</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__AGENDA.salvarProfissional()">Salvar</button>
@@ -1692,7 +1692,7 @@
                 </div>
                 <div class="form-group">
                     <label for="profModalBio">Bio</label>
-                    <textarea id="profModalBio" placeholder="Uma breve descriÃ§Ã£o..."></textarea>
+                    <textarea id="profModalBio" placeholder="Uma breve descrição..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Foto do Profissional</label>
@@ -1703,7 +1703,7 @@
                             <input type="hidden" id="profModalFoto">
                             <button class="btn-primary btn-sm" type="button" onclick="document.getElementById('btnUploadFotoProf').click()">Subir Foto</button>
                             <input type="file" id="btnUploadFotoProf" style="display:none" accept="image/*">
-                            <p style="font-size:0.7rem; color:var(--text-muted); margin-top:5px;">WebP, PNG ou JPG (MÃ¡x 2MB)</p>
+                            <p style="font-size:0.7rem; color:var(--text-muted); margin-top:5px;">WebP, PNG ou JPG (Máx 2MB)</p>
                         </div>
                     </div>
                 </div>
@@ -1712,7 +1712,7 @@
     </div>
 
     <!-- =============================================================== -->
-    <!-- MODAL: ServiÃ§o                                                   -->
+    <!-- MODAL: Serviço                                                   -->
     <!-- =============================================================== -->
     <div class="admin-modal-backdrop" id="modalServico">
         <div class="admin-modal" style="max-width:440px;">
@@ -1721,7 +1721,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalServico')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>âœ‚ï¸ ServiÃ§o</h3>
+                    <h3>✂️ Serviço</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__AGENDA.salvarServico()">Salvar</button>
@@ -1730,27 +1730,27 @@
             <div class="modal-body">
                 <input type="hidden" id="servModalId">
                 <div class="form-group">
-                    <label for="servModalNome">Nome do ServiÃ§o *</label>
+                    <label for="servModalNome">Nome do Serviço *</label>
                     <input type="text" id="servModalNome" placeholder="Ex: Corte Masculino">
                 </div>
                 <div class="form-group">
-                    <label for="servModalDesc">DescriÃ§Ã£o</label>
-                    <textarea id="servModalDesc" placeholder="Descreva o serviÃ§o..."></textarea>
+                    <label for="servModalDesc">Descrição</label>
+                    <textarea id="servModalDesc" placeholder="Descreva o serviço..."></textarea>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="servModalDuracao">DuraÃ§Ã£o (minutos)</label>
+                        <label for="servModalDuracao">Duração (minutos)</label>
                         <input type="number" id="servModalDuracao" min="5" step="5" value="30">
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="servModalPreco">PreÃ§o (R$)</label>
+                        <label for="servModalPreco">Preço (R$)</label>
                         <input type="number" id="servModalPreco" min="0" step="0.01" value="0">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="servModalIntervalo">Intervalo apÃ³s o serviÃ§o (min)</label>
+                    <label for="servModalIntervalo">Intervalo após o serviço (min)</label>
                     <input type="number" id="servModalIntervalo" min="0" step="5" placeholder="Vazio">
-                    <small style="color:var(--text-muted); font-size:0.75rem; margin-top:4px; display:block;">Deixe vazio para utilizar o intervalo padrÃ£o da agenda.</small>
+                    <small style="color:var(--text-muted); font-size:0.75rem; margin-top:4px; display:block;">Deixe vazio para utilizar o intervalo padrão da agenda.</small>
                 </div>
             </div>
         </div>
@@ -1778,13 +1778,13 @@
                     <input type="text" id="prodNome" placeholder="Ex: Lasanha Especial">
                 </div>
             <div class="form-group">
-                <label for="prodDesc">DescriÃ§Ã£o</label>
-                <textarea id="prodDesc" placeholder="DescriÃ§Ã£o detalhada do produto..."></textarea>
+                <label for="prodDesc">Descrição</label>
+                <textarea id="prodDesc" placeholder="Descrição detalhada do produto..."></textarea>
             </div>
             
             <div class="form-group config-observacao" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
                 <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                    <label for="prodPermiteObs" style="margin: 0; font-weight: 600;">Permitir ObservaÃ§Ã£o do Cliente?</label>
+                    <label for="prodPermiteObs" style="margin: 0; font-weight: 600;">Permitir Observação do Cliente?</label>
                     <label class="switch">
                         <input type="checkbox" id="prodPermiteObs" checked onchange="document.getElementById('containerProdObsPlaceholder').style.display = this.checked ? 'block' : 'none'">
                         <span class="slider round"></span>
@@ -1798,20 +1798,20 @@
             <div class="form-row" style="align-items: flex-start;">
                 <div class="form-group" style="flex:1">
                     <div style="height: 22px; display: flex; align-items: center; margin-bottom: 4px;">
-                        <label for="prodPreco" style="margin-bottom:0;">PreÃ§o Original (R$)</label>
+                        <label for="prodPreco" style="margin-bottom:0;">Preço Original (R$)</label>
                     </div>
                     <input type="number" id="prodPreco" step="0.01" min="0" placeholder="30.00">
                 </div>
                 <div class="form-group" style="flex:1">
                     <div style="height: 22px; display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
-                        <label for="prodPrecoPromo" style="color:var(--warning); margin-bottom:0;">ðŸ”¥ PromoÃ§Ã£o</label>
+                        <label for="prodPrecoPromo" style="color:var(--warning); margin-bottom:0;">🔥 Promoção</label>
                         <div class="promo-type-selector">
                             <span class="promo-type-btn active" data-type="val" onclick="setPromoType('val')">R$</span>
                             <span class="promo-type-btn" data-type="pct" onclick="setPromoType('pct')">%</span>
                         </div>
                     </div>
                     <input type="number" id="prodPrecoPromo" step="0.01" min="0" placeholder="Valor ou %">
-                    <div id="promoPreview" class="promo-preview" style="display:none;">Novo PreÃ§o: R$ 0,00</div>
+                    <div id="promoPreview" class="promo-preview" style="display:none;">Novo Preço: R$ 0,00</div>
                 </div>
             </div>
 
@@ -1823,7 +1823,7 @@
                     </select>
                 </div>
                 <div class="form-group" style="flex:1">
-                    <label for="prodEstoqueMin">Estoque MÃ­n. (Alerta)</label>
+                    <label for="prodEstoqueMin">Estoque Mín. (Alerta)</label>
                     <input type="number" id="prodEstoqueMin" min="0" placeholder="5"
                         title="Abaixo disso, gera alerta vermelho no painel">
                 </div>
@@ -1834,8 +1834,8 @@
                 <div class="form-group" style="flex:1">
                     <label for="prodControleEstoque">Tipo de Controle de Estoque</label>
                     <select id="prodControleEstoque" onchange="window._onControleEstoqueChange && window._onControleEstoqueChange(this.value)">
-                        <option value="manual">ðŸ“¦ Manual (entrada/saÃ­da no painel)</option>
-                        <option value="ficha_tecnica">ðŸ“ Por Ficha TÃ©cnica (calculado pelos insumos)</option>
+                        <option value="manual">📦 Manual (entrada/saída no painel)</option>
+                        <option value="ficha_tecnica">📐 Por Ficha Técnica (calculado pelos insumos)</option>
                     </select>
                 </div>
             </div>
@@ -1856,10 +1856,10 @@
                 <div class="inventory-body">
                     <div class="form-row" id="rowTipoMovimentacao" style="display:none;">
                         <div class="form-group" style="flex:1">
-                            <label for="prodTipoMovimentacao">Tipo de OperaÃ§Ã£o</label>
+                            <label for="prodTipoMovimentacao">Tipo de Operação</label>
                             <select id="prodTipoMovimentacao">
-                                <option value="entrada">Entrada (ReposiÃ§Ã£o)</option>
-                                <option value="saida">SaÃ­da (Perda / Avaria / Ajuste)</option>
+                                <option value="entrada">Entrada (Reposição)</option>
+                                <option value="saida">Saída (Perda / Avaria / Ajuste)</option>
                             </select>
                         </div>
                     </div>
@@ -1873,13 +1873,13 @@
 
                     <div id="containerMotivoSaida" class="inventory-reason-box" style="display:none;">
                         <div class="form-group">
-                            <label for="prodMotivoSaidaId" style="color: #ff4757; font-weight: 700;">Motivo da SaÃ­da</label>
+                            <label for="prodMotivoSaidaId" style="color: #ff4757; font-weight: 700;">Motivo da Saída</label>
                             <select id="prodMotivoSaidaId">
                                 <option value="">Selecione um motivo...</option>
                             </select>
                         </div>
                         <div class="form-group" style="margin-top: 15px;">
-                            <label for="prodObsSaida">ObservaÃ§Ã£o Complementar</label>
+                            <label for="prodObsSaida">Observação Complementar</label>
                             <textarea id="prodObsSaida" placeholder="Detalhes sobre a perda ou ajuste..." style="min-height: 60px;"></textarea>
                         </div>
                     </div>
@@ -1894,20 +1894,20 @@
             </div>
             <div class="form-group">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <label>Imagens do Produto (MÃ¡x 5)</label>
+                    <label>Imagens do Produto (Máx 5)</label>
                     <button class="btn-primary btn-sm" type="button" onclick="document.getElementById('uploadImagem').click()" id="btnAdicionarImagem">
                         + Adicionar Foto
                     </button>
                 </div>
                 
                 <div id="containerImagensProduto" class="product-images-grid">
-                    <!-- Miniaturas aparecerÃ£o aqui via JS -->
+                    <!-- Miniaturas aparecerão aqui via JS -->
                 </div>
                 
                 <input type="hidden" id="prodImagemSelecionada">
                 <input type="file" id="uploadImagem" accept="image/*" multiple style="display:none;" onchange="if(typeof handleMultipleImageUpload === 'function') handleMultipleImageUpload(this.files); else handleImageUpload(this.files[0]);">
 
-                <!-- COMENTADO: Galeria completa desativada - requer autenticaÃ§Ã£o privada do Cloudinary -->
+                <!-- COMENTADO: Galeria completa desativada - requer autenticação privada do Cloudinary -->
                 <!-- <div style="margin-top: 15px;">
                     <button class="btn-sm btn-link" type="button" onclick="abrirModalGaleriaCompleta()">Ver Galeria Completa</button>
                 </div> -->
@@ -1941,7 +1941,7 @@
                 <input type="text" id="catSlug" placeholder="Ex: massas">
             </div>
             <div class="form-group">
-                <label for="catOrdem">Ordem de ExibiÃ§Ã£o</label>
+                <label for="catOrdem">Ordem de Exibição</label>
                 <input type="number" id="catOrdem" min="0" placeholder="1">
             </div>
         </div>
@@ -1967,7 +1967,7 @@
                 <input type="hidden" id="cupomId">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="cupomCodigo">CÃ³digo</label>
+                        <label for="cupomCodigo">Código</label>
                         <input type="text" id="cupomCodigo" placeholder="Ex: POKER10" style="text-transform:uppercase;">
                     </div>
                     <div class="form-group">
@@ -1989,7 +1989,7 @@
                     </div>
                 </div>
                 <div style="margin-top: -10px; margin-bottom: 10px;">
-                    <small style="color: var(--text-muted); font-size: 0.75rem;">A contagem de usos serÃ¡ exibida na tabela principal.</small>
+                    <small style="color: var(--text-muted); font-size: 0.75rem;">A contagem de usos será exibida na tabela principal.</small>
                 </div>
             </div>
         </div>
@@ -2007,7 +2007,7 @@
 
             <div class="gallery-toolbar" style="margin-bottom: 1rem; border-radius: 8px; padding: 0;">
                 <input type="text" id="filtroGaleriaCompleta" class="gallery-search"
-                    placeholder="ðŸ” Busque pelo nome do arquivo..." style="width: 100%; border: none;">
+                    placeholder="🔍 Busque pelo nome do arquivo..." style="width: 100%; border: none;">
             </div>
 
             <div class="image-gallery-grid" id="imageGalleryGridCompleta"
@@ -2022,8 +2022,8 @@
     <!-- Custom Confirm Modal -->
     <div class="admin-modal-backdrop" id="modalConfirmacao" style="z-index: 9999;">
         <div class="admin-modal modal-confirm">
-            <div class="confirm-icon">âš ï¸</div>
-            <h3 id="confirmTitle">Confirmar AÃ§Ã£o</h3>
+            <div class="confirm-icon">⚠️</div>
+            <h3 id="confirmTitle">Confirmar Ação</h3>
             <p id="confirmMessage">Deseja realmente prosseguir?</p>
             <div class="modal-actions">
                 <button class="btn-cancel" id="btnConfirmarCancelar">Cancelar</button>
@@ -2065,8 +2065,8 @@
                 <input type="hidden" id="zonaId">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="zonaNome">IdentificaÃ§Ã£o da Zona</label>
-                        <input type="text" id="zonaNome" placeholder="Ex: Zona Norte, RegiÃ£o Central...">
+                        <label for="zonaNome">Identificação da Zona</label>
+                        <input type="text" id="zonaNome" placeholder="Ex: Zona Norte, Região Central...">
                     </div>
                     <div class="form-group">
                         <label for="zonaCidade">Cidade Atendida</label>
@@ -2074,9 +2074,9 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="zonaNeighborhoods">Bairros Atendidos (separados por vÃ­rgula)</label>
-                    <textarea id="zonaNeighborhoods" rows="3" placeholder="Ex: Centro, Savassi, FuncionÃ¡rios, Barro Preto..."></textarea>
-                    <small style="margin-top: 5px; display: block; color: var(--text-muted);">Dica: VocÃª pode copiar e colar uma lista de bairros separados por vÃ­rgula.</small>
+                    <label for="zonaNeighborhoods">Bairros Atendidos (separados por vírgula)</label>
+                    <textarea id="zonaNeighborhoods" rows="3" placeholder="Ex: Centro, Savassi, Funcionários, Barro Preto..."></textarea>
+                    <small style="margin-top: 5px; display: block; color: var(--text-muted);">Dica: Você pode copiar e colar uma lista de bairros separados por vírgula.</small>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -2098,7 +2098,7 @@
     <!-- Modal Cancelar Pedido -->
     <div class="admin-modal-backdrop" id="modalCancelarPedido">
         <div class="admin-modal modal-confirm">
-            <div class="confirm-icon" style="color: #ff4757;">âŒ</div>
+            <div class="confirm-icon" style="color: #ff4757;">❌</div>
             <h3>Cancelar Pedido</h3>
             <p style="margin-bottom: 15px; color: var(--text-muted);">Por favor, selecione o motivo do cancelamento.</p>
             
@@ -2125,7 +2125,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalListaEspera')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>Adicionar Ã  Lista de Espera</h3>
+                    <h3>Adicionar à Lista de Espera</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__AGENDA.salvarListaEspera()">Adicionar</button>
@@ -2142,7 +2142,7 @@
                     <input type="tel" id="waitlistTelefone" placeholder="(00) 00000-0000" maxlength="15">
                 </div>
                 <div class="form-group">
-                    <label>ServiÃ§o Desejado</label>
+                    <label>Serviço Desejado</label>
                     <select id="waitlistServico"></select>
                 </div>
                 <div class="form-group">
@@ -2156,18 +2156,18 @@
     <!-- Time Picker Modal -->
     <div class="admin-modal-backdrop" id="modalTimePicker">
         <div class="admin-modal" style="max-width: 340px; text-align: center; padding: 2.5rem;">
-            <h3 id="timePickerTitle" style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1.4rem;">Selecionar HorÃ¡rio</h3>
+            <h3 id="timePickerTitle" style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1.4rem;">Selecionar Horário</h3>
             <div class="time-picker-container">
                 <div class="time-picker-column">
-                    <button class="time-nav-btn" onclick="adjustTime('hour', 1)">â–²</button>
+                    <button class="time-nav-btn" onclick="adjustTime('hour', 1)">▲</button>
                     <input type="text" class="time-display" id="displayHour" value="18" maxlength="2">
-                    <button class="time-nav-btn" onclick="adjustTime('hour', -1)">â–¼</button>
+                    <button class="time-nav-btn" onclick="adjustTime('hour', -1)">▼</button>
                 </div>
                 <div class="time-separator">:</div>
                 <div class="time-picker-column">
-                    <button class="time-nav-btn" onclick="adjustTime('min', 5)">â–²</button>
+                    <button class="time-nav-btn" onclick="adjustTime('min', 5)">▲</button>
                     <input type="text" class="time-display" id="displayMin" value="00" maxlength="2">
-                    <button class="time-nav-btn" onclick="adjustTime('min', -5)">â–¼</button>
+                    <button class="time-nav-btn" onclick="adjustTime('min', -5)">▼</button>
                 </div>
             </div>
             <div style="margin-top: 2.5rem; display: flex; gap: 12px;">
@@ -2197,19 +2197,19 @@
                 <!-- Linha 1: Nome -->
                 <div class="form-group">
                     <label for="lojaProdNome">Nome do Produto *</label>
-                    <input type="text" id="lojaProdNome" placeholder="Ex: Camiseta BÃ¡sica">
+                    <input type="text" id="lojaProdNome" placeholder="Ex: Camiseta Básica">
                 </div>
 
-                <!-- Linha 2: DescriÃ§Ã£o -->
+                <!-- Linha 2: Descrição -->
                 <div class="form-group">
-                    <label for="lojaProdDescricao">DescriÃ§Ã£o</label>
-                    <textarea id="lojaProdDescricao" placeholder="DescriÃ§Ã£o do produto..." style="min-height:70px;"></textarea>
+                    <label for="lojaProdDescricao">Descrição</label>
+                    <textarea id="lojaProdDescricao" placeholder="Descrição do produto..." style="min-height:70px;"></textarea>
                 </div>
                 
-                <!-- ObservaÃ§Ã£o do Cliente -->
+                <!-- Observação do Cliente -->
                 <div class="form-group config-observacao" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 15px;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                        <label for="lojaProdPermiteObs" style="margin: 0; font-weight: 600;">Permitir ObservaÃ§Ã£o do Cliente?</label>
+                        <label for="lojaProdPermiteObs" style="margin: 0; font-weight: 600;">Permitir Observação do Cliente?</label>
                         <label class="switch">
                             <input type="checkbox" id="lojaProdPermiteObs" checked onchange="document.getElementById('containerLojaProdObsPlaceholder').style.display = this.checked ? 'block' : 'none'">
                             <span class="slider round"></span>
@@ -2238,41 +2238,41 @@
                     </div>
                 </div>
 
-                <!-- Linha 4: Galeria de Imagens (atÃ© 5) -->
+                <!-- Linha 4: Galeria de Imagens (até 5) -->
                 <div class="form-group">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <label style="margin-bottom:0;">ðŸ“· Galeria de Imagens <small style="color:var(--text-muted); font-weight:normal;">(atÃ© 5 fotos â€” arraste para reordenar)</small></label>
+                        <label style="margin-bottom:0;">📷 Galeria de Imagens <small style="color:var(--text-muted); font-weight:normal;">(até 5 fotos — arraste para reordenar)</small></label>
                         <button class="btn-primary btn-sm" type="button" onclick="document.getElementById('lojaUploadImagem').click()" id="btnLojaAdicionarImagem">+ Adicionar Foto</button>
                     </div>
                     <!-- Grade de miniaturas (preenchida por JS) -->
                     <div id="lojaGaleriaGrid" style="display:flex; gap:10px; flex-wrap:wrap; min-height:44px;"></div>
                     <input type="hidden" id="lojaProdImageUrl">
                     <input type="file" id="lojaUploadImagem" accept="image/*" multiple style="display:none;" onchange="window.__LOJA.uploadImagemMultiple(this.files)">
-                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">A 1Âª foto Ã© a imagem principal. Clique na estrela â­ para definir a favorita.</p>
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">A 1ª foto é a imagem principal. Clique na estrela ⭐ para definir a favorita.</p>
                 </div>
 
                 <hr class="modal-divider" style="margin: 1.2rem 0;">
 
-                <!-- CRIAÃ‡ÃƒO: SeleÃ§Ã£o de tamanhos e cores -->
+                <!-- CRIAÇÃO: Seleção de tamanhos e cores -->
                 <div id="lojaNovosCheckboxes">
-                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Selecione os tamanhos e cores para gerar automaticamente as variaÃ§Ãµes:</p>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Selecione os tamanhos e cores para gerar automaticamente as variações:</p>
                     <div class="form-row" style="align-items:flex-start; gap:1.5rem;">
                         <div class="loja-options-group" style="flex:1;">
-                            <label class="group-label">ðŸ“ Tamanhos *</label>
+                            <label class="group-label">📏 Tamanhos *</label>
                             <div class="loja-checkbox-grid" id="lojaTamanhosGrid"></div>
                         </div>
                         <div class="loja-options-group" style="flex:2;">
-                            <label class="group-label">ðŸŽ¨ Cores *</label>
+                            <label class="group-label">🎨 Cores *</label>
                             <div class="loja-checkbox-grid" id="lojaCoresGrid"></div>
                         </div>
                     </div>
 
-                    <!-- Tabela interativa de combinaÃ§Ãµes com estoque inicial -->
+                    <!-- Tabela interativa de combinações com estoque inicial -->
                     <div id="lojaCombPreview" style="display:none; margin-top:1.5rem;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:10px;">
-                            <label class="group-label" style="margin-bottom:0;">ðŸ“‹ VariaÃ§Ãµes geradas â€” defina o estoque inicial:</label>
+                            <label class="group-label" style="margin-bottom:0;">📋 Variações geradas — defina o estoque inicial:</label>
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                <input type="number" id="globalPreco" step="0.01" min="0" placeholder="PreÃ§o" style="width:80px; padding:4px 8px; font-size:12px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">
+                                <input type="number" id="globalPreco" step="0.01" min="0" placeholder="Preço" style="width:80px; padding:4px 8px; font-size:12px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">
                                 <input type="number" id="globalEstoque" min="0" placeholder="Estoque" style="width:75px; padding:4px 8px; font-size:12px; border-radius:6px; border:1px solid var(--border-color); background:transparent; color:var(--text-color);">
                                 <button class="btn-sm" style="font-size:0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.3);" onclick="window.__LOJA.aplicarEstoqueGlobal()">Aplicar a todos</button>
                             </div>
@@ -2283,7 +2283,7 @@
                                     <tr>
                                         <th>Cor</th>
                                         <th>Tamanho</th>
-                                        <th style="width:110px;">PreÃ§o (R$)</th>
+                                        <th style="width:110px;">Preço (R$)</th>
                                         <th style="width:90px;" id="thCombEstoque">Estoque Inicial</th>
                                         <th style="width:50px;">Foto</th>
                                     </tr>
@@ -2294,11 +2294,11 @@
                     </div>
                 </div>
 
-                <!-- EDIÃ‡ÃƒO: VariaÃ§Ãµes existentes -->
+                <!-- EDIÇÃO: Variações existentes -->
                 <div id="lojaVariacoesExistentes" style="display:none;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-                        <label class="group-label" style="margin-bottom:0;">ðŸ·ï¸ VariaÃ§Ãµes Cadastradas</label>
-                        <button class="btn-sm btn-primary" onclick="window.__LOJA.abrirModalNovaVariacao()" style="font-size:0.78rem;">+ Nova VariaÃ§Ã£o</button>
+                        <label class="group-label" style="margin-bottom:0;">🏷️ Variações Cadastradas</label>
+                        <button class="btn-sm btn-primary" onclick="window.__LOJA.abrirModalNovaVariacao()" style="font-size:0.78rem;">+ Nova Variação</button>
                     </div>
                     <div class="admin-table-wrapper" style="max-height:300px; overflow-y:auto;">
                         <table class="admin-table">
@@ -2308,9 +2308,9 @@
                                     <th>SKU</th>
                                     <th>Cor</th>
                                     <th>Tam.</th>
-                                    <th style="width:110px;">PreÃ§o (R$)</th>
+                                    <th style="width:110px;">Preço (R$)</th>
                                     <th style="width:100px;">Estoque</th>
-                                    <th style="width:60px;">AÃ§Ãµes</th>
+                                    <th style="width:60px;">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="lojaVariacoesEditBody"></tbody>
@@ -2321,7 +2321,7 @@
         </div>
     </div>
 
-    <!-- MODAL LOJA: EDITAR VARIAÃ‡ÃƒO (preÃ§o + foto) -->
+    <!-- MODAL LOJA: EDITAR VARIAÇÃO (preço + foto) -->
     <div class="admin-modal-backdrop" id="modalEditarVariacao">
         <div class="admin-modal" style="max-width:440px;">
             <div class="modal-header">
@@ -2329,7 +2329,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalEditarVariacao')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>Editar VariaÃ§Ã£o</h3>
+                    <h3>Editar Variação</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__LOJA.salvarEdicaoVariacao()">Salvar</button>
@@ -2338,29 +2338,29 @@
             <div class="modal-body">
                 <input type="hidden" id="editVarId">
                 <div style="background:rgba(255,255,255,0.04); border-radius:10px; padding:10px 14px; margin-bottom:1rem; font-size:0.85rem; color:var(--text-muted);">
-                    <span id="editVarInfo">â€”</span>
+                    <span id="editVarInfo">—</span>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="editVarPreco">PreÃ§o (R$)</label>
+                        <label for="editVarPreco">Preço (R$)</label>
                         <input type="number" id="editVarPreco" min="0" step="0.01" placeholder="">
                     </div>
                     <div class="form-group" style="flex:1" id="editVarEstoqueGroup">
                         <label>Ajustar Estoque (+/-)</label>
                         <div style="display:flex; gap:6px; align-items:center;">
                             <input type="number" id="editVarEstoqueInput" placeholder="Ex: 5 ou -2" style="flex:1;">
-                            <button type="button" class="btn-sm" onclick="window.__LOJA.abrirModalEstoqueVariacao(document.getElementById('editVarId').value)" style="white-space:nowrap; padding:4px 8px; background:transparent; border:1px solid var(--border-color); color:var(--text-color);" title="HistÃ³rico completo">ðŸ“‹ HistÃ³rico</button>
+                            <button type="button" class="btn-sm" onclick="window.__LOJA.abrirModalEstoqueVariacao(document.getElementById('editVarId').value)" style="white-space:nowrap; padding:4px 8px; background:transparent; border:1px solid var(--border-color); color:var(--text-color);" title="Histórico completo">📋 Histórico</button>
                         </div>
-                        <small style="color:var(--text-muted); font-size:0.75rem;">Deixe em branco para nÃ£o alterar</small>
+                        <small style="color:var(--text-muted); font-size:0.75rem;">Deixe em branco para não alterar</small>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label style="margin-bottom:8px; display:block;">ðŸ“· Foto desta variaÃ§Ã£o <small style="color:var(--text-muted); font-weight:normal;">(opcional)</small></label>
+                    <label style="margin-bottom:8px; display:block;">📷 Foto desta variação <small style="color:var(--text-muted); font-weight:normal;">(opcional)</small></label>
                     <div style="display:flex; align-items:center; gap:12px; background:rgba(229,178,93,0.05); padding:10px; border-radius:10px; border:1px dashed rgba(229,178,93,0.3);">
                         <div id="editVarImagePreview" style="width:72px; height:72px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; cursor:pointer;" onclick="document.getElementById('editVarUploadInput').click()">
-                            <span id="editVarImageIcon" style="font-size:1.5rem;">ðŸ–¼ï¸</span>
+                            <span id="editVarImageIcon" style="font-size:1.5rem;">🖼️</span>
                         </div>
                         <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
                             <input type="hidden" id="editVarImageUrl">
@@ -2392,11 +2392,11 @@
                 <input type="hidden" id="lojaCatId">
                 <div class="form-group">
                     <label for="lojaCatNome">Nome da Categoria *</label>
-                    <input type="text" id="lojaCatNome" placeholder="Ex: Camisetas, CalÃ§as, AcessÃ³rios">
+                    <input type="text" id="lojaCatNome" placeholder="Ex: Camisetas, Calças, Acessórios">
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="lojaCatOrdem">Ordem de exibiÃ§Ã£o</label>
+                        <label for="lojaCatOrdem">Ordem de exibição</label>
                         <input type="number" id="lojaCatOrdem" min="0" placeholder="0">
                     </div>
                     <div class="form-group" style="flex:1">
@@ -2411,7 +2411,7 @@
         </div>
     </div>
 
-    <!-- Modal: Nova VariaÃ§Ã£o (ao editar produto) -->
+    <!-- Modal: Nova Variação (ao editar produto) -->
     <div class="admin-modal-backdrop" id="modalLojaNovaVariacao">
         <div class="admin-modal" style="max-width:440px;">
             <div class="modal-header">
@@ -2419,7 +2419,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalLojaNovaVariacao')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>Nova VariaÃ§Ã£o</h3>
+                    <h3>Nova Variação</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__LOJA.salvarNovaVariacao()">Adicionar</button>
@@ -2439,7 +2439,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="novaVarPreco">PreÃ§o (R$)</label>
+                        <label for="novaVarPreco">Preço (R$)</label>
                         <input type="number" id="novaVarPreco" min="0" step="0.01" placeholder="">
                     </div>
                     <div class="form-group" style="flex:1">
@@ -2447,12 +2447,12 @@
                         <input type="number" id="novaVarEstoque" min="0" placeholder="">
                     </div>
                 </div>
-                <!-- Foto especÃ­fica desta variaÃ§Ã£o -->
+                <!-- Foto específica desta variação -->
                 <div class="form-group">
-                    <label style="margin-bottom:8px; display:block;">ðŸ“· Foto desta variaÃ§Ã£o <small style="color:var(--text-muted); font-weight:normal;">(opcional â€” substitui a principal na loja)</small></label>
+                    <label style="margin-bottom:8px; display:block;">📷 Foto desta variação <small style="color:var(--text-muted); font-weight:normal;">(opcional — substitui a principal na loja)</small></label>
                     <div style="display:flex; align-items:center; gap:12px; background:rgba(229,178,93,0.05); padding:10px; border-radius:10px; border:1px dashed rgba(229,178,93,0.3);">
                         <div id="novaVarImagePreview" style="width:60px; height:60px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
-                            <span style="font-size:1.5rem;">ðŸ–¼ï¸</span>
+                            <span style="font-size:1.5rem;">🖼️</span>
                         </div>
                         <div style="flex:1">
                             <input type="hidden" id="novaVarImageUrl">
@@ -2466,7 +2466,7 @@
         </div>
     </div>
 
-    <!-- MODAL LOJA: ESTOQUE DA VARIAÃ‡ÃƒO -->
+    <!-- MODAL LOJA: ESTOQUE DA VARIAÇÃO -->
     <div class="admin-modal-backdrop" id="modalLojaEstoque">
         <div class="admin-modal" style="max-width: 600px;">
             <div class="modal-header">
@@ -2474,7 +2474,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalLojaEstoque')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>Estoque da VariaÃ§Ã£o</h3>
+                    <h3>Estoque da Variação</h3>
                 </div>
             </div>
             <div class="modal-body">
@@ -2493,10 +2493,10 @@
                 <div class="inventory-body">
                     <div class="form-row">
                         <div class="form-group" style="flex:1">
-                            <label for="lojaVarTipoMovimentacao">Tipo de OperaÃ§Ã£o</label>
+                            <label for="lojaVarTipoMovimentacao">Tipo de Operação</label>
                             <select id="lojaVarTipoMovimentacao">
-                                <option value="entrada">Entrada (ReposiÃ§Ã£o)</option>
-                                <option value="saida">SaÃ­da (Perda / Avaria / Ajuste)</option>
+                                <option value="entrada">Entrada (Reposição)</option>
+                                <option value="saida">Saída (Perda / Avaria / Ajuste)</option>
                                 <option value="exato">Definir Quantidade Exata</option>
                             </select>
                         </div>
@@ -2515,15 +2515,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="lojaVarObsMovimentacao">ObservaÃ§Ãµes (opcional)</label>
+                        <label for="lojaVarObsMovimentacao">Observações (opcional)</label>
                         <textarea id="lojaVarObsMovimentacao" rows="2" placeholder="Detalhes do ajuste..."></textarea>
                     </div>
-                    <button class="btn-primary" onclick="window.__LOJA.salvarMovimentacaoEstoqueLoja()" style="width: 100%;">Registrar MovimentaÃ§Ã£o</button>
+                    <button class="btn-primary" onclick="window.__LOJA.salvarMovimentacaoEstoqueLoja()" style="width: 100%;">Registrar Movimentação</button>
                 </div>
 
                 <div class="inventory-history-section">
                     <div class="history-header">
-                        <h4>HistÃ³rico Recente (esta variaÃ§Ã£o)</h4>
+                        <h4>Histórico Recente (esta variação)</h4>
                     </div>
                     <div class="admin-table-wrapper" style="max-height: 200px; overflow-y: auto;">
                         <table class="admin-table">
@@ -2536,7 +2536,7 @@
                                 </tr>
                             </thead>
                             <tbody id="lojaVarEstoqueHistoryBody">
-                                <tr><td colspan="4" style="text-align:center;">Carregando histÃ³rico...</td></tr>
+                                <tr><td colspan="4" style="text-align:center;">Carregando histórico...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -2563,17 +2563,17 @@
                 <input type="hidden" id="atendenteId">
                 <div class="form-group">
                     <label for="atendenteNome">Nome Completo *</label>
-                    <input type="text" id="atendenteNome" placeholder="Ex: JoÃ£o Silva">
+                    <input type="text" id="atendenteNome" placeholder="Ex: João Silva">
                 </div>
                 <div class="form-group">
-                    <label for="atendenteCpf">CPF (Apenas nÃºmeros) *</label>
+                    <label for="atendenteCpf">CPF (Apenas números) *</label>
                     <input type="text" id="atendenteCpf" placeholder="00000000000" maxlength="11">
-                    <small style="color: var(--text-muted); font-size: 0.7rem;">Este serÃ¡ o usuÃ¡rio de login.</small>
+                    <small style="color: var(--text-muted); font-size: 0.7rem;">Este será o usuário de login.</small>
                 </div>
                 <div class="form-group">
                     <label for="atendenteSenha">Senha de Acesso *</label>
-                    <input type="password" id="atendenteSenha" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢">
-                    <small id="atendenteSenhaDica" style="color: var(--text-muted); font-size: 0.7rem;">Para novos cadastros, a senha Ã© obrigatÃ³ria.</small>
+                    <input type="password" id="atendenteSenha" placeholder="••••••">
+                    <small id="atendenteSenhaDica" style="color: var(--text-muted); font-size: 0.7rem;">Para novos cadastros, a senha é obrigatória.</small>
                 </div>
             </div>
         </div>
@@ -2587,15 +2587,15 @@
             <button id="btnCloseMobile" class="btn-close-mobile">&times;</button>
         </div>
         <nav class="sidebar-nav">
-            <button class="nav-item active" data-tab="produtos" id="side-nav-produtos">ðŸ“¦ Produtos</button>
-            <button class="nav-item" data-tab="agenda" id="side-nav-agenda" style="display:none;">ðŸ“… Agenda</button>
-            <button class="nav-item" data-tab="dashboard" id="side-nav-dashboard">ðŸ“Š Vendas & Performance</button>
-            <button class="nav-item" data-tab="loja" id="side-nav-loja" style="display:none;">ðŸ‘— Loja</button>
-            <!-- MÃ³dulo Restaurante -->
-            <button class="nav-item" data-tab="restaurante" id="side-nav-restaurante" style="display:none;">ðŸ½ï¸ Restaurante</button>
-            <button class="nav-item" data-tab="cupons" id="side-nav-cupons">ðŸŽ« Cupons</button>
-            <button class="nav-item" data-tab="configuracoes" id="side-nav-configuracoes">âš™ï¸ ConfiguraÃ§Ãµes</button>
-            <button class="nav-item nav-item--premium" data-tab="area-premium" id="side-nav-area-premium" style="display:none;">ðŸ‘‘ Ãrea Premium</button>
+            <button class="nav-item active" data-tab="produtos" id="side-nav-produtos">📦 Produtos</button>
+            <button class="nav-item" data-tab="agenda" id="side-nav-agenda" style="display:none;">📅 Agenda</button>
+            <button class="nav-item" data-tab="dashboard" id="side-nav-dashboard">📊 Vendas & Performance</button>
+            <button class="nav-item" data-tab="loja" id="side-nav-loja" style="display:none;">👗 Loja</button>
+            <!-- Módulo Restaurante -->
+            <button class="nav-item" data-tab="restaurante" id="side-nav-restaurante" style="display:none;">🍽️ Restaurante</button>
+            <button class="nav-item" data-tab="cupons" id="side-nav-cupons">🎫 Cupons</button>
+            <button class="nav-item" data-tab="configuracoes" id="side-nav-configuracoes">⚙️ Configurações</button>
+            <button class="nav-item nav-item--premium" data-tab="area-premium" id="side-nav-area-premium" style="display:none;">👑 Área Premium</button>
         </nav>
         <div class="sidebar-footer">
             <button class="btn-logout" id="btnLogoutMobile">Sair da Conta</button>
@@ -2612,7 +2612,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalClientePremium')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3 id="clientePremiumModalTitle">ðŸ‘‘ Novo Cliente Premium</h3>
+                    <h3 id="clientePremiumModalTitle">👑 Novo Cliente Premium</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" id="btnSalvarClientePremium">Salvar</button>
@@ -2638,24 +2638,24 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="cpPin">PIN de Acesso (4-6 dÃ­gitos)</label>
+                        <label for="cpPin">PIN de Acesso (4-6 dígitos)</label>
                         <input type="password" id="cpPin" placeholder="****" maxlength="6" inputmode="numeric">
-                        <small id="cpPinDica" style="color:var(--text-muted); margin-top:4px; display:block;">PIN obrigatÃ³rio para novos cadastros.</small>
+                        <small id="cpPinDica" style="color:var(--text-muted); margin-top:4px; display:block;">PIN obrigatório para novos cadastros.</small>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="cpTipo">Tipo</label>
                         <select id="cpTipo">
-                            <option value="premium">â­ Premium</option>
-                            <option value="funcionario">ðŸ‘¤ FuncionÃ¡rio</option>
-                            <option value="vip_diretoria">ðŸ‘‘ VIP Diretoria</option>
+                            <option value="premium">⭐ Premium</option>
+                            <option value="funcionario">👤 Funcionário</option>
+                            <option value="vip_diretoria">👑 VIP Diretoria</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="cpPerfil">Perfil de CardÃ¡pio</label>
+                        <label for="cpPerfil">Perfil de Cardápio</label>
                         <select id="cpPerfil">
-                            <option value="">CardÃ¡pio completo</option>
+                            <option value="">Cardápio completo</option>
                         </select>
                     </div>
                 </div>
@@ -2678,7 +2678,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalComandaPremium')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3 id="comandaModalTitle">ðŸ“‹ Comanda</h3>
+                    <h3 id="comandaModalTitle">📋 Comanda</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" id="btnFecharComanda" style="background:var(--accent-danger); border-color:var(--accent-danger);">Encerrar Comanda</button>
@@ -2702,7 +2702,7 @@
     </div>
 
     <!-- =============================================================== -->
-    <!-- MODAL: Novo/Editar Perfil de CardÃ¡pio                           -->
+    <!-- MODAL: Novo/Editar Perfil de Cardápio                           -->
     <!-- =============================================================== -->
     <div class="admin-modal-backdrop" id="modalPerfilCardapio">
         <div class="admin-modal premium-modal pc-modal-wide">
@@ -2711,7 +2711,7 @@
                     <button class="btn-modal-back" onclick="fecharModal('modalPerfilCardapio')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3 id="perfilCardapioModalTitle">ðŸ“‹ Novo Perfil de CardÃ¡pio</h3>
+                    <h3 id="perfilCardapioModalTitle">📋 Novo Perfil de Cardápio</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" id="btnSalvarPerfilCardapio">Salvar</button>
@@ -2720,24 +2720,24 @@
             <div class="modal-body">
                 <input type="hidden" id="perfilCardapioId">
 
-                <!-- Campos de nome e descriÃ§Ã£o -->
+                <!-- Campos de nome e descrição -->
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="pcNome">Nome do Perfil</label>
-                        <input type="text" id="pcNome" placeholder="Ex: VIP Diretoria, FuncionÃ¡rios">
+                        <input type="text" id="pcNome" placeholder="Ex: VIP Diretoria, Funcionários">
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="pcDescricao">DescriÃ§Ã£o</label>
-                        <input type="text" id="pcDescricao" placeholder="DescriÃ§Ã£o opcional">
+                        <label for="pcDescricao">Descrição</label>
+                        <input type="text" id="pcDescricao" placeholder="Descrição opcional">
                     </div>
                 </div>
 
-                <!-- InstruÃ§Ã£o -->
+                <!-- Instrução -->
                 <p style="font-size:0.82rem; color:var(--text-muted); margin: 0 0 1rem 0;">
-                    Ative as categorias que este perfil pode visualizar. Dentro de cada categoria, vocÃª pode liberar todos os produtos ou apenas os individuais desejados.
+                    Ative as categorias que este perfil pode visualizar. Dentro de cada categoria, você pode liberar todos os produtos ou apenas os individuais desejados.
                 </p>
 
-                <!-- Ãrvore de categorias + produtos -->
+                <!-- Árvore de categorias + produtos -->
                 <div id="pcArvoreContainer">
                     <p style="text-align:center; color:var(--text-muted); padding: 2rem;">Carregando categorias...</p>
                 </div>
@@ -2751,7 +2751,7 @@
     <!-- MODAIS: Restaurante                                             -->
     <!-- =============================================================== -->
 
-    <!-- Modal: Novo/Editar DepÃ³sito -->
+    <!-- Modal: Novo/Editar Depósito -->
     <div class="admin-modal-backdrop" id="modalRestDeposito">
         <div class="admin-modal" style="max-width:440px;">
             <div class="modal-header">
@@ -2759,7 +2759,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestDeposito').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸª Novo DepÃ³sito</h3>
+                    <h3>🏪 Novo Depósito</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.salvarDeposito()">Salvar</button>
@@ -2798,7 +2798,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestFornecedor').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸšš Novo Fornecedor</h3>
+                    <h3>🚚 Novo Fornecedor</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.salvarFornecedor()">Salvar</button>
@@ -2809,7 +2809,7 @@
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
                         <label for="restFornNome">Nome *</label>
-                        <input type="text" id="restFornNome" placeholder="RazÃ£o social ou nome">
+                        <input type="text" id="restFornNome" placeholder="Razão social ou nome">
                     </div>
                 </div>
                 <div class="form-row">
@@ -2824,13 +2824,13 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="restFornContato">Contato/ResponsÃ¡vel</label>
+                        <label for="restFornContato">Contato/Responsável</label>
                         <input type="text" id="restFornContato" placeholder="Nome do contato">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="restFornObs">ObservaÃ§Ãµes</label>
-                    <textarea id="restFornObs" rows="2" placeholder="CondiÃ§Ãµes de pagamento, prazo de entrega..."></textarea>
+                    <label for="restFornObs">Observações</label>
+                    <textarea id="restFornObs" rows="2" placeholder="Condições de pagamento, prazo de entrega..."></textarea>
                 </div>
                 <label class="rest-toggle">
                     <input type="checkbox" id="restFornAtivo" checked>
@@ -2848,7 +2848,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestCategoria').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ·ï¸ Nova Categoria</h3>
+                    <h3>🏷️ Nova Categoria</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.salvarCategoria()">Salvar</button>
@@ -2858,7 +2858,7 @@
                 <input type="hidden" id="restCatId">
                 <div class="form-group">
                     <label for="restCatNome">Nome *</label>
-                    <input type="text" id="restCatNome" placeholder="Ex: Carnes, LaticÃ­nios, Bebidas...">
+                    <input type="text" id="restCatNome" placeholder="Ex: Carnes, Laticínios, Bebidas...">
                 </div>
                 <label class="rest-toggle">
                     <input type="checkbox" id="restCatAtivo" checked>
@@ -2876,7 +2876,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestInsumo').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ§‚ Novo Insumo</h3>
+                    <h3>🧂 Novo Insumo</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.salvarInsumo()">Salvar</button>
@@ -2887,10 +2887,10 @@
                 <div class="form-row">
                     <div class="form-group" style="flex:2">
                         <label for="restInsumoNome">Nome do Insumo *</label>
-                        <input type="text" id="restInsumoNome" placeholder="Ex: HambÃºrguer Artesanal 180g">
+                        <input type="text" id="restInsumoNome" placeholder="Ex: Hambúrguer Artesanal 180g">
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="restInsumoCodigo">CÃ³digo Interno *</label>
+                        <label for="restInsumoCodigo">Código Interno *</label>
                         <input type="text" id="restInsumoCodigo" placeholder="Ex: 001">
                     </div>
                 </div>
@@ -2908,7 +2908,7 @@
                     <div class="form-group" style="flex:1">
                         <label for="restInsumoUnidade">Unidade de Uso *</label>
                         <select id="restInsumoUnidade"></select>
-                        <small style="color:var(--text-muted)">Unidade utilizada nas fichas tÃ©cnicas</small>
+                        <small style="color:var(--text-muted)">Unidade utilizada nas fichas técnicas</small>
                     </div>
                     <div class="form-group" style="flex:1">
                         <label for="restInsumoCusto">Valor Pago na Embalagem/Compra *</label>
@@ -2927,15 +2927,15 @@
                         <input type="number" id="restInsumoQtdEmbalagem" step="0.001" min="0" placeholder="Ex: 24 (unidades por caixa)">
                     </div>
                 </div>
-                <!-- Estoque Inicial e MÃ­nimo (sÃ³ em novo insumo) -->
+                <!-- Estoque Inicial e Mínimo (só em novo insumo) -->
                 <div id="restInsumoEstoqueInicialRow" class="form-row" style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.07);">
                     <div class="form-group" style="flex:1">
-                        <label for="restInsumoEstoqueInicial">ðŸ“¦ Estoque Inicial</label>
+                        <label for="restInsumoEstoqueInicial">📦 Estoque Inicial</label>
                         <input type="number" id="restInsumoEstoqueInicial" step="0.001" min="0" placeholder="0">
                         <small style="color:var(--text-muted)">Qtd na unidade de compra</small>
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="restInsumoEstoqueMinimo">âš ï¸ Estoque MÃ­nimo</label>
+                        <label for="restInsumoEstoqueMinimo">⚠️ Estoque Mínimo</label>
                         <input type="number" id="restInsumoEstoqueMinimo" step="0.001" min="0" placeholder="0">
                         <small style="color:var(--text-muted)">Qtd na unidade de uso</small>
                     </div>
@@ -2959,7 +2959,7 @@
         </div>
     </div>
 
-    <!-- Modal: Gerenciar Estoque por DepÃ³sito -->
+    <!-- Modal: Gerenciar Estoque por Depósito -->
     <div class="admin-modal-backdrop" id="modalRestEstoque">
         <div class="admin-modal" style="max-width:560px;">
             <div class="modal-header">
@@ -2967,7 +2967,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestEstoque').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ“¦ Estoque por DepÃ³sito</h3>
+                    <h3>📦 Estoque por Depósito</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.salvarEstoque()">Salvar</button>
@@ -2977,14 +2977,14 @@
                 <input type="hidden" id="restEstoqueInsumoId">
                 <p style="margin-bottom:1rem; font-weight:600;" id="restEstoqueInsumoNome"></p>
 
-                <!-- Tipo de operaÃ§Ã£o (sÃ³ visÃ­vel ao editar) -->
+                <!-- Tipo de operação (só visível ao editar) -->
                 <div id="restEstoqueRowTipo" style="display:none;">
                     <div class="form-row">
                         <div class="form-group" style="flex:1">
-                            <label for="restEstoqueTipo">Tipo de OperaÃ§Ã£o</label>
+                            <label for="restEstoqueTipo">Tipo de Operação</label>
                             <select id="restEstoqueTipo">
-                                <option value="entrada">Entrada (ReposiÃ§Ã£o)</option>
-                                <option value="saida">SaÃ­da (Perda / Avaria / Ajuste)</option>
+                                <option value="entrada">Entrada (Reposição)</option>
+                                <option value="saida">Saída (Perda / Avaria / Ajuste)</option>
                             </select>
                         </div>
                     </div>
@@ -2994,26 +2994,26 @@
                             <input type="number" id="restEstoqueQtd" step="0.001" min="0" placeholder="0">
                         </div>
                     </div>
-                    <!-- Motivo + Obs (sÃ³ em saÃ­da) -->
+                    <!-- Motivo + Obs (só em saída) -->
                     <div id="restEstoqueMotivoBox" class="inventory-reason-box" style="display:none;">
                         <div class="form-group">
-                            <label for="restEstoqueMotivoId" style="color:#ff4757; font-weight:700;">Motivo da SaÃ­da</label>
+                            <label for="restEstoqueMotivoId" style="color:#ff4757; font-weight:700;">Motivo da Saída</label>
                             <select id="restEstoqueMotivoId">
                                 <option value="">Selecione um motivo...</option>
                                 <option value="perda">Perda</option>
                                 <option value="avaria">Avaria / Vencimento</option>
-                                <option value="ajuste">Ajuste de inventÃ¡rio</option>
-                                <option value="consumo_interno">Consumo interno / DegustaÃ§Ã£o</option>
+                                <option value="ajuste">Ajuste de inventário</option>
+                                <option value="consumo_interno">Consumo interno / Degustação</option>
                                 <option value="outro">Outro</option>
                             </select>
                         </div>
                         <div class="form-group" style="margin-top:12px;">
-                            <label for="restEstoqueObs">ObservaÃ§Ã£o Complementar</label>
+                            <label for="restEstoqueObs">Observação Complementar</label>
                             <textarea id="restEstoqueObs" placeholder="Detalhes sobre a perda ou ajuste..." style="min-height:60px;"></textarea>
                         </div>
                     </div>
                     <div style="border-top:1px solid rgba(255,255,255,0.07); margin:1rem 0;"></div>
-                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Saldos atuais por depÃ³sito:</p>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Saldos atuais por depósito:</p>
                 </div>
 
                 <div id="restEstoqueDepositosLista"></div>
@@ -3021,7 +3021,7 @@
         </div>
     </div>
 
-    <!-- Modal: Nova Ficha TÃ©cnica -->
+    <!-- Modal: Nova Ficha Técnica -->
     <div class="admin-modal-backdrop" id="modalRestFicha">
         <div class="admin-modal" style="max-width:680px;">
             <div class="modal-header">
@@ -3029,7 +3029,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestFicha').classList.remove('active'); document.getElementById('restFichaProduto').disabled=false;" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ“‹ Nova Ficha TÃ©cnica</h3>
+                    <h3>📋 Nova Ficha Técnica</h3>
                 </div>
                 <div class="modal-actions">
                     <span id="restFichaVersao" style="color:var(--text-muted); font-size:0.85rem; margin-right:8px;"></span>
@@ -3040,11 +3040,11 @@
                 <input type="hidden" id="restFichaId">
                 <div class="form-row">
                     <div class="form-group" style="flex:2">
-                        <label for="restFichaProduto">Produto do CardÃ¡pio *</label>
+                        <label for="restFichaProduto">Produto do Cardápio *</label>
                         <select id="restFichaProduto"></select>
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="restFichaQtdProduzida">Rende (porÃ§Ãµes)</label>
+                        <label for="restFichaQtdProduzida">Rende (porções)</label>
                         <input type="number" id="restFichaQtdProduzida" step="0.01" min="0" placeholder="Ex: 1">
                     </div>
                     <div class="form-group" style="flex:1">
@@ -3053,8 +3053,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="restFichaObs">ObservaÃ§Ãµes</label>
-                    <textarea id="restFichaObs" rows="2" placeholder="Modo de preparo, observaÃ§Ãµes..."></textarea>
+                    <label for="restFichaObs">Observações</label>
+                    <textarea id="restFichaObs" rows="2" placeholder="Modo de preparo, observações..."></textarea>
                 </div>
                 <label class="rest-toggle" style="margin-bottom:1rem;">
                     <input type="checkbox" id="restFichaAtivo" checked>
@@ -3086,7 +3086,7 @@
                 <!-- Lista de itens -->
                 <div style="margin-top:1rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <strong>ComposiÃ§Ã£o da Receita</strong>
+                        <strong>Composição da Receita</strong>
                         <span style="color:var(--text-muted); font-size:0.85rem;">Custo total: <strong id="restFichaCustoTotal" style="color:var(--accent-gold);">R$ 0,00</strong></span>
                     </div>
                     <div id="restFichaItensLista"></div>
@@ -3095,7 +3095,7 @@
         </div>
     </div>
 
-    <!-- Modal: Novo InventÃ¡rio -->
+    <!-- Modal: Novo Inventário -->
     <div class="admin-modal-backdrop" id="modalRestNovoInventario">
         <div class="admin-modal" style="max-width:440px;">
             <div class="modal-header">
@@ -3103,7 +3103,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestNovoInventario').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ“¦ Novo InventÃ¡rio</h3>
+                    <h3>📦 Novo Inventário</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.iniciarInventario()">Iniciar</button>
@@ -3111,21 +3111,21 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="restInventarioDeposito">DepÃ³sito</label>
+                    <label for="restInventarioDeposito">Depósito</label>
                     <select id="restInventarioDeposito">
-                        <option value="">Todos os depÃ³sitos</option>
+                        <option value="">Todos os depósitos</option>
                     </select>
-                    <small style="color:var(--text-muted)">Deixe vazio para inventÃ¡rio geral.</small>
+                    <small style="color:var(--text-muted)">Deixe vazio para inventário geral.</small>
                 </div>
                 <div class="form-group">
-                    <label for="restInventarioObs">ObservaÃ§Ãµes</label>
-                    <textarea id="restInventarioObs" rows="2" placeholder="Ex: InventÃ¡rio mensal de junho..."></textarea>
+                    <label for="restInventarioObs">Observações</label>
+                    <textarea id="restInventarioObs" rows="2" placeholder="Ex: Inventário mensal de junho..."></textarea>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Visualizar/Editar InventÃ¡rio -->
+    <!-- Modal: Visualizar/Editar Inventário -->
     <div class="admin-modal-backdrop" id="modalRestInventarioVer">
         <div class="admin-modal" style="max-width:780px;">
             <div class="modal-header">
@@ -3133,17 +3133,17 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestInventarioVer').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3 id="restInventarioVerTitulo">InventÃ¡rio</h3>
+                    <h3 id="restInventarioVerTitulo">Inventário</h3>
                 </div>
                 <div class="modal-actions">
-                    <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.salvarContagemInventario()" style="margin-right:8px;">ðŸ’¾ Salvar Contagem</button>
-                    <button class="btn-save" id="btnConcluirInventarioVer" onclick="window.__RESTAURANTE.concluirInventario()">âœ… Concluir</button>
+                    <button class="btn-primary btn-sm" onclick="window.__RESTAURANTE.salvarContagemInventario()" style="margin-right:8px;">💾 Salvar Contagem</button>
+                    <button class="btn-save" id="btnConcluirInventarioVer" onclick="window.__RESTAURANTE.concluirInventario()">✅ Concluir</button>
                 </div>
             </div>
             <div class="modal-body">
                 <div style="margin-bottom:1rem; display:flex; gap:2rem;">
-                    <span>ðŸª DepÃ³sito: <strong id="restInventarioVerDeposito"></strong></span>
-                    <span>ðŸ“ Obs: <strong id="restInventarioVerObs"></strong></span>
+                    <span>🏪 Depósito: <strong id="restInventarioVerDeposito"></strong></span>
+                    <span>📝 Obs: <strong id="restInventarioVerObs"></strong></span>
                 </div>
                 <div style="overflow-x:auto;">
                     <table class="rest-table">
@@ -3152,7 +3152,7 @@
                                 <th>Insumo</th>
                                 <th>Estoque Sistema</th>
                                 <th>Contado</th>
-                                <th>DiferenÃ§a</th>
+                                <th>Diferença</th>
                                 <th>Ajuste</th>
                             </tr>
                         </thead>
@@ -3163,7 +3163,7 @@
         </div>
     </div>
 
-    <!-- Modal: Nova MovimentaÃ§Ã£o Manual -->
+    <!-- Modal: Nova Movimentação Manual -->
     <div class="admin-modal-backdrop" id="modalRestMovimento">
         <div class="admin-modal" style="max-width:560px;">
             <div class="modal-header">
@@ -3171,7 +3171,7 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestMovimento').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ”„ Nova MovimentaÃ§Ã£o</h3>
+                    <h3>🔄 Nova Movimentação</h3>
                 </div>
                 <div class="modal-actions">
                     <button class="btn-save" onclick="window.__RESTAURANTE.salvarMovimentacao()">Registrar</button>
@@ -3184,17 +3184,17 @@
                         <select id="restMovInsumo"></select>
                     </div>
                     <div class="form-group" style="flex:1">
-                        <label for="restMovDeposito">DepÃ³sito *</label>
+                        <label for="restMovDeposito">Depósito *</label>
                         <select id="restMovDeposito"></select>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="restMovTipo">Tipo da MovimentaÃ§Ã£o *</label>
+                        <label for="restMovTipo">Tipo da Movimentação *</label>
                         <select id="restMovTipo">
                             <option value="entrada">Entrada</option>
-                            <option value="saida">SaÃ­da (Ajuste)</option>
-                            <option value="perda">SaÃ­da (Perda/DesperdÃ­cio)</option>
+                            <option value="saida">Saída (Ajuste)</option>
+                            <option value="perda">Saída (Perda/Desperdício)</option>
                         </select>
                     </div>
                     <div class="form-group" style="flex:1">
@@ -3204,20 +3204,20 @@
                 </div>
                 <div class="form-row" id="restMovCustoRow">
                     <div class="form-group" style="flex:1">
-                        <label for="restMovCusto">Custo UnitÃ¡rio (opcional)</label>
+                        <label for="restMovCusto">Custo Unitário (opcional)</label>
                         <input type="number" id="restMovCusto" step="0.0001" min="0" placeholder="0.00">
-                        <small style="color:var(--text-muted)">Altera o custo mÃ©dio global do insumo se informado.</small>
+                        <small style="color:var(--text-muted)">Altera o custo médio global do insumo se informado.</small>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="restMovObs">ObservaÃ§Ã£o / Motivo</label>
+                    <label for="restMovObs">Observação / Motivo</label>
                     <textarea id="restMovObs" rows="2" placeholder="Descreva o motivo deste ajuste manual..."></textarea>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal: Ver Modo de Preparo (Ficha TÃ©cnica) -->
+    <!-- Modal: Ver Modo de Preparo (Ficha Técnica) -->
     <div class="admin-modal-backdrop" id="modalRestPreparo">
         <div class="admin-modal" style="max-width:500px;">
             <div class="modal-header">
@@ -3225,12 +3225,12 @@
                     <button class="btn-modal-back" onclick="document.getElementById('modalRestPreparo').classList.remove('active')" title="Voltar">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <h3>ðŸ“– Preparo: <span id="restPreparoNome"></span></h3>
+                    <h3>📖 Preparo: <span id="restPreparoNome"></span></h3>
                 </div>
             </div>
             <div class="modal-body">
                 <div id="restPreparoTexto" style="background:rgba(0,0,0,0.2); padding:1rem; border-radius:8px; border:1px solid rgba(255,255,255,0.05); font-size:0.95rem; line-height:1.6; white-space:pre-wrap; min-height:100px;">
-                    <!-- ConteÃºdo renderizado via JS -->
+                    <!-- Conteúdo renderizado via JS -->
                 </div>
             </div>
         </div>
@@ -3265,9 +3265,9 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Multi-Tenant Context -->
     <script src="theme-manager.js"></script>
-    <script src="tenant.js?v=2.6"></script>
+    <script src="tenant.js?v=2.5"></script>
     <script src="admin.js?v=2.5"></script>
-    <!-- MÃ³dulo Restaurante: carregado via Lazy Load pelo admin.js ao clicar na aba -->
+    <!-- Módulo Restaurante: carregado via Lazy Load pelo admin.js ao clicar na aba -->
 </body>
 
 </html>
