@@ -2293,6 +2293,7 @@ function abrirModalNovoProduto() {
     document.getElementById('prodObsSaida').value = '';
 
     document.getElementById('prodControleEstoque').value = 'manual';
+    document.getElementById('prodControleEstoque').dataset.originalValue = 'manual';
     currentProductImages = [];
     renderizarMiniaturasProduto();
     carregarGaleria('');
@@ -2355,7 +2356,10 @@ function editarProduto(id) {
     document.getElementById('prodPreco').value = p.price;
     // Popula o tipo de controle de estoque
     const controleEl = document.getElementById('prodControleEstoque');
-    if (controleEl) controleEl.value = p.controle_estoque || 'manual';
+    if (controleEl) {
+        controleEl.value = p.controle_estoque || 'manual';
+        controleEl.dataset.originalValue = p.controle_estoque || 'manual';
+    }
     const isFichaProduct = p.controle_estoque === 'ficha_tecnica';
     const estoqueAtualDisplay = isFichaProduct ? (p.estoque_calculado ?? 0) : (p.stock ?? 0);
     document.getElementById('prodEstoque').value = p.stock;
@@ -2534,6 +2538,35 @@ async function executarSalvarProduto() {
         fecharModal('modalProduto');
         carregarProdutos();
         if (typeof renderStats === 'function') renderStats();
+
+        // INTEGRAÇÃO FICHA TÉCNICA
+        if (window._isFromFichaTecnica) {
+            window._isFromFichaTecnica = false;
+            if (typeof switchTab === 'function') switchTab('restaurante');
+            if (window.__RESTAURANTE) {
+                setTimeout(() => {
+                    window.__RESTAURANTE.novaFicha();
+                    setTimeout(() => {
+                        const sel = document.getElementById('restFichaProduto');
+                        if (sel) sel.value = savedProductId;
+                    }, 300);
+                }, 300);
+            }
+        } else if (payload.controle_estoque === 'ficha_tecnica') {
+            // Pergunta se deseja ir para a ficha técnica (apenas se for novo ou acabou de trocar para ficha)
+            if (!id || (id && document.getElementById('prodControleEstoque').dataset.originalValue !== 'ficha_tecnica')) {
+                customConfirm('Ficha Técnica', 'Deseja configurar a receita (ficha técnica) deste produto agora?').then(res => {
+                    if (res) {
+                        if (typeof switchTab === 'function') switchTab('restaurante');
+                        if (window.__RESTAURANTE) {
+                            setTimeout(() => {
+                                window.__RESTAURANTE.novaVersaoFicha(savedProductId);
+                            }, 500);
+                        }
+                    }
+                });
+            }
+        }
 
     } catch (err) {
         console.error('[SAVE ERROR]', err);
