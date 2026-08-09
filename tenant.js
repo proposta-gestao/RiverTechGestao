@@ -310,17 +310,24 @@ function _aplicarWhiteLabel(data) {
         document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').forEach(el => el.remove());
 
         // Forçar navegador a recarregar adicionando time no final do url
-        const cacheBusterUrl = data.logo_url + (data.logo_url.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+        const cacheBusterUrl = data.logo_url + (data.logo_url.includes('?') ? '&' : '?') + 'v=' + new Date().getTime();
 
         const newFavicon = document.createElement('link');
         newFavicon.rel = 'icon';
+        newFavicon.type = 'image/png';
         newFavicon.href = cacheBusterUrl;
         document.head.appendChild(newFavicon);
 
         const newShortcutIcon = document.createElement('link');
         newShortcutIcon.rel = 'shortcut icon';
+        newShortcutIcon.type = 'image/png';
         newShortcutIcon.href = cacheBusterUrl;
         document.head.appendChild(newShortcutIcon);
+        
+        const appleIcon = document.createElement('link');
+        appleIcon.rel = 'apple-touch-icon';
+        appleIcon.href = cacheBusterUrl;
+        document.head.appendChild(appleIcon);
     }
 
     if (brandName) {
