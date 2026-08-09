@@ -1,10 +1,10 @@
-/* Esconde elementos cujos mÃ³dulos estÃ£o desativados */
+﻿/* Esconde elementos cujos mÃƒÂ³dulos estÃƒÂ£o desativados */
 .module-hidden {
     display: none !important;
 }
 
 /* ============================================================
-   Popup de AtivaÃ§Ã£o de Alertas Sonoros (Fullscreen Overlay)
+   Popup de AtivaÃƒÂ§ÃƒÂ£o de Alertas Sonoros (Fullscreen Overlay)
    ============================================================ */
 .sound-alert-overlay {
     position: fixed;
@@ -104,7 +104,7 @@
 }
 
 /* ============================================================
-   ConfiguraÃ§Ãµes WhatsApp â€” Toggles e FormulÃ¡rio
+   ConfiguraÃƒÂ§ÃƒÂµes WhatsApp Ã¢â‚¬â€ Toggles e FormulÃƒÂ¡rio
    ============================================================ */
 .wa-toggles-section {
     background: var(--color-surface, #1a1a1a);
@@ -315,7 +315,7 @@
     margin: 0;
 }
 
-/* Barra de variÃ¡veis */
+/* Barra de variÃƒÂ¡veis */
 .wa-vars-bar {
     background: rgba(var(--rgb-brand-500), 0.04);
     border: 1px solid rgba(var(--rgb-brand-500), 0.1);
@@ -846,7 +846,7 @@
 }
 
 :root {
-    /* === IDENTIDADE (personalizÃ¡vel pelo Admin Master) === */
+    /* === IDENTIDADE (personalizÃƒÂ¡vel pelo Admin Master) === */
     --color-primary:        #E5B25D;
     --color-primary-hover:  #d4a14c;
     --color-secondary:      #1E90FF;
@@ -854,17 +854,17 @@
     --color-primary-10:     rgba(var(--rgb-brand-500),0.10);
     --color-primary-30:     rgba(var(--rgb-brand-500),0.30);
 
-    /* === BOTÃ•ES === */
+    /* === BOTÃƒâ€¢ES === */
     --color-button:         var(--color-primary);
     --color-button-hover:   var(--color-primary-hover);
     --color-button-text:    #000000;
 
-    /* === BACKGROUNDS (personalizÃ¡vel pelo Admin Master) === */
+    /* === BACKGROUNDS (personalizÃƒÂ¡vel pelo Admin Master) === */
     --color-bg:             #0d0d0d;
     --color-surface:        #1a1a1a;
     --color-surface-hover:  #222222;
 
-    /* === TEXTO (fixo â€” nÃ£o personalizÃ¡vel pelo cliente) === */
+    /* === TEXTO (fixo Ã¢â‚¬â€ nÃƒÂ£o personalizÃƒÂ¡vel pelo cliente) === */
     --color-text:           #ffffff;
     --color-text-muted:     #a0a0a0;
 
@@ -876,7 +876,7 @@
     --color-warning:        #FDCB6E;
     --color-danger:         #FF4757;
 
-    /* === ALIASES DE COMPATIBILIDADE (para nÃ£o quebrar cÃ³digo existente) === */
+    /* === ALIASES DE COMPATIBILIDADE (para nÃƒÂ£o quebrar cÃƒÂ³digo existente) === */
     --primary:              var(--color-primary);
     --primary-hover:        var(--color-primary-hover);
     --bg-body:              var(--color-bg);
@@ -888,7 +888,7 @@
     --warning:              var(--color-warning);
     --danger:               var(--color-danger);
 
-    /* === UTILITÃRIOS === */
+    /* === UTILITÃƒÂRIOS === */
     --shadow:    0 12px 40px rgba(0,0,0,0.6);
     --radius:    16px;
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1045,7 +1045,7 @@ body {
     flex: 1;
     overflow-y: auto;
     width: 100%;
-    padding-bottom: 80px; /* Garante que o conteÃºdo final nÃ£o seja cortado */
+    padding-bottom: 80px; /* Garante que o conteÃƒÂºdo final nÃƒÂ£o seja cortado */
     -webkit-overflow-scrolling: touch;
 }
 
@@ -1077,12 +1077,12 @@ body {
     flex-shrink: 0;
 }
 
-/* Estilos base do botÃ£o de menu mobile */
+/* Estilos base do botÃƒÂ£o de menu mobile */
 .btn-mobile-toggle {
-    display: none; /* Escondido por padrÃ£o, mostrado via media query */
+    display: none; /* Escondido por padrÃƒÂ£o, mostrado via media query */
     background: none;
     border: none;
-    color: #ffffff !important; /* ForÃ§a cor branca para visibilidade */
+    color: #ffffff !important; /* ForÃƒÂ§a cor branca para visibilidade */
     font-size: 1.8rem;
     cursor: pointer;
     padding: 8px;
@@ -1292,12 +1292,12 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-/* BotÃ£o de Menu Mobile - Oculto por padrÃ£o no Desktop */
+/* BotÃƒÂ£o de Menu Mobile - Oculto por padrÃƒÂ£o no Desktop */
 
 /* 
-   LOGICA DE NAVEGAÃ‡ÃƒO RESPONSIVA
+   LOGICA DE NAVEGAÃƒâ€¡ÃƒÆ’O RESPONSIVA
    ----------------------------------------------
-   Abaixo de 1024px: Menu via BotÃ£o (Drawer)
+   Abaixo de 1024px: Menu via BotÃƒÂ£o (Drawer)
    Acima de 1024px: Menu via Sidebar (Fixo)
 */
 
@@ -1354,7 +1354,7 @@ body {
         flex-wrap: wrap;
         align-items: center;
         gap: 8px;
-        white-space: normal; /* Permite quebra para nÃ£o estourar */
+        white-space: normal; /* Permite quebra para nÃƒÂ£o estourar */
     }
 
     .admin-header-actions {
@@ -1409,7 +1409,7 @@ body {
     }
 }
 
-/* === Ãrea Premium â€” Tab Button VIP (dourado mesmo inativo) === */
+/* === ÃƒÂrea Premium Ã¢â‚¬â€ Tab Button VIP (dourado mesmo inativo) === */
 .tab-btn--premium {
     color: var(--primary) !important;
 }
@@ -1419,12 +1419,12 @@ body {
     background: rgba(var(--rgb-brand-500), 0.05);
 }
 
-/* === Ãrea Premium â€” Sidebar Mobile VIP === */
+/* === ÃƒÂrea Premium Ã¢â‚¬â€ Sidebar Mobile VIP === */
 .nav-item--premium {
     color: var(--primary) !important;
 }
 
-/* === Ãrea Premium â€” Banner Header VIP === */
+/* === ÃƒÂrea Premium Ã¢â‚¬â€ Banner Header VIP === */
 .premium-area-header {
     display: flex;
     align-items: center;
@@ -1570,7 +1570,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* Dashboard Filters â€” improved */
+/* Dashboard Filters Ã¢â‚¬â€ improved */
 
 
 .filters-header {
@@ -1829,11 +1829,11 @@ body {
     text-align: center;
 }
 
-/* OtimizaÃ§Ã£o de Colunas - Tabela de Pedidos */
+/* OtimizaÃƒÂ§ÃƒÂ£o de Colunas - Tabela de Pedidos */
 #tab-dashboard .admin-table {
     table-layout: auto;
     width: 100%;
-    min-width: 1000px; /* Garante que nÃ£o esmague em telas pequenas */
+    min-width: 1000px; /* Garante que nÃƒÂ£o esmague em telas pequenas */
 }
 
 #pedidosBody td,
@@ -1844,7 +1844,7 @@ body {
     vertical-align: middle;
 }
 
-/* OtimizaÃ§Ã£o de Colunas - Tabela de Pedidos */
+/* OtimizaÃƒÂ§ÃƒÂ£o de Colunas - Tabela de Pedidos */
 #tab-dashboard .admin-table {
     table-layout: auto;
     width: 100%;
@@ -1857,7 +1857,7 @@ body {
     white-space: normal;
     word-wrap: break-word;
     vertical-align: middle;
-    text-align: center; /* CentralizaÃ§Ã£o geral */
+    text-align: center; /* CentralizaÃƒÂ§ÃƒÂ£o geral */
 }
 
 #pedidosBody td:nth-child(1), /* Data */
@@ -1891,7 +1891,7 @@ body {
     width: 110px;
 }
 
-#pedidosBody td:nth-child(7), /* AÃ§Ãµes */
+#pedidosBody td:nth-child(7), /* AÃƒÂ§ÃƒÂµes */
 #tab-dashboard .admin-table thead th:nth-child(7) {
     width: 190px;
 }
@@ -1900,7 +1900,7 @@ body {
     display: table-cell;
 }
 
-/* OtimizaÃ§Ã£o de Colunas - Tabela de Produtos */
+/* OtimizaÃƒÂ§ÃƒÂ£o de Colunas - Tabela de Produtos */
 #tab-produtos .admin-table {
     table-layout: auto !important;
     width: 100% !important;
@@ -1920,7 +1920,7 @@ body {
     min-width: 120px;
 }
 
-#produtosBody td:nth-child(5), /* PreÃ§o */
+#produtosBody td:nth-child(5), /* PreÃƒÂ§o */
 #produtosBody td:nth-child(6) { /* Estoque */
     width: 100px;
 }
@@ -1929,7 +1929,7 @@ body {
     width: 80px;
 }
 
-#produtosBody td:nth-child(8) { /* AÃ§Ãµes */
+#produtosBody td:nth-child(8) { /* AÃƒÂ§ÃƒÂµes */
     width: 110px !important; /* Ainda mais reduzido */
 }
 
@@ -1938,7 +1938,7 @@ body {
     gap: 5px;
 }
 
-/* ===== CentralizaÃ§Ã£o e Estilo Geral de Tabelas (Desktop/Notebook) ===== */
+/* ===== CentralizaÃƒÂ§ÃƒÂ£o e Estilo Geral de Tabelas (Desktop/Notebook) ===== */
 .admin-table th,
 .admin-table td {
     text-align: center !important;
@@ -1946,16 +1946,16 @@ body {
     padding: 14px 10px !important;
 }
 
-/* Ajustes EspecÃ­ficos para Categorias */
+/* Ajustes EspecÃƒÂ­ficos para Categorias */
 #categoriasBody td:nth-child(1) { min-width: 200px; text-align: left !important; padding-left: 20px !important; } /* Nome */
 #categoriasBody td:nth-child(2) { color: var(--text-muted); font-size: 0.85rem; } /* Slug */
-#categoriasBody td:nth-child(4) { width: 120px; } /* AÃ§Ãµes */
+#categoriasBody td:nth-child(4) { width: 120px; } /* AÃƒÂ§ÃƒÂµes */
 
-/* Ajustes EspecÃ­ficos para Cupons */
-#cuponsBody td:nth-child(1) { font-family: 'Courier New', Courier, monospace; font-weight: 700; color: var(--primary); } /* CÃ³digo */
-#cuponsBody td:nth-child(4) { width: 120px; } /* AÃ§Ãµes */
+/* Ajustes EspecÃƒÂ­ficos para Cupons */
+#cuponsBody td:nth-child(1) { font-family: 'Courier New', Courier, monospace; font-weight: 700; color: var(--primary); } /* CÃƒÂ³digo */
+#cuponsBody td:nth-child(4) { width: 120px; } /* AÃƒÂ§ÃƒÂµes */
 
-/* Ajustes EspecÃ­ficos para Estoque */
+/* Ajustes EspecÃƒÂ­ficos para Estoque */
 #motivosEstoqueBody td:nth-child(1) { text-align: left !important; padding-left: 20px !important; }
 #motivosEstoqueBody td:nth-child(3) { width: 120px; }
 
@@ -2116,7 +2116,7 @@ body {
 
 @media (min-width: 1024px) {
     .admin-modal-backdrop {
-        left: 280px; /* Faz o backdrop comeÃ§ar logo apÃ³s a sidebar, centralizando o modal no espaÃ§o restante */
+        left: 280px; /* Faz o backdrop comeÃƒÂ§ar logo apÃƒÂ³s a sidebar, centralizando o modal no espaÃƒÂ§o restante */
     }
 }
 
@@ -2222,7 +2222,7 @@ body {
     flex: 1;
 }
 
-/* ===== Perfil CardÃ¡pio â€” Layout Duas Colunas ===== */
+/* ===== Perfil CardÃƒÂ¡pio Ã¢â‚¬â€ Layout Duas Colunas ===== */
 
 /* Modal largo */
 .pc-modal-wide {
@@ -2261,7 +2261,7 @@ body {
 }
 
 /* ===============================
-   Perfil CardÃ¡pio â€” Ãrvore Accordion
+   Perfil CardÃƒÂ¡pio Ã¢â‚¬â€ ÃƒÂrvore Accordion
    =============================== */
 
 #pcArvoreContainer {
@@ -2314,7 +2314,7 @@ body {
     min-width: 12px;
 }
 
-/* Switch idÃªntico ao do super admin */
+/* Switch idÃƒÂªntico ao do super admin */
 .pc-switch {
     position: relative;
     display: inline-block;
@@ -2347,7 +2347,7 @@ body {
 .pc-switch input:checked + .pc-slider { background-color: var(--primary, #e5b25d); }
 .pc-switch input:checked + .pc-slider:before { transform: translateX(16px); }
 
-/* ConteÃºdo colapsÃ¡vel do grupo */
+/* ConteÃƒÂºdo colapsÃƒÂ¡vel do grupo */
 .pc-grupo-content {
     display: flex;
     flex-direction: column;
@@ -2626,7 +2626,7 @@ body {
 }
 
 .toast::before {
-    content: 'âœ¨';
+    content: 'Ã¢Å“Â¨';
 }
 
 .toast.show {
@@ -2639,7 +2639,7 @@ body {
 }
 
 .toast.error::before {
-    content: 'âŒ';
+    content: 'Ã¢ÂÅ’';
 }
 
 .toast.success {
@@ -2648,7 +2648,7 @@ body {
 }
 
 .toast.success::before {
-    content: 'âœ…';
+    content: 'Ã¢Å“â€¦';
 }
 
 /* Image Gallery */
@@ -2700,7 +2700,7 @@ body {
 }
 
 .gallery-item.selected::after {
-    content: 'âœ“';
+    content: 'Ã¢Å“â€œ';
     position: absolute;
     top: 5px;
     right: 5px;
@@ -2797,7 +2797,7 @@ body {
 }
 
 .gallery-item.selected::after {
-    content: 'âœ“';
+    content: 'Ã¢Å“â€œ';
     position: absolute;
     top: 4px;
     right: 4px;
@@ -2833,7 +2833,7 @@ body {
         width: auto;
     }
 
-    /* Estilo mobile para os links e botÃµes do topo */
+    /* Estilo mobile para os links e botÃƒÂµes do topo */
     .btn-link-cardapio,
     .btn-logout {
         width: auto;
@@ -2899,7 +2899,7 @@ body {
         /* Garante comportamento de tabela */
     }
 
-    /* Coluna PreÃ§o (4) - 20% */
+    /* Coluna PreÃƒÂ§o (4) - 20% */
     .admin-table th:nth-child(4),
     .admin-table td:nth-child(4) {
         width: 20%;
@@ -2913,14 +2913,14 @@ body {
         text-align: center;
     }
 
-    /* Coluna AÃ§Ãµes (7) - 17% */
+    /* Coluna AÃƒÂ§ÃƒÂµes (7) - 17% */
     .admin-table th:nth-child(7),
     .admin-table td:nth-child(7) {
         width: 17%;
         text-align: right;
     }
 
-    /* Esconder botÃµes secundÃ¡rios no mobile */
+    /* Esconder botÃƒÂµes secundÃƒÂ¡rios no mobile */
     .btn-archive,
     .btn-unarchive {
         display: none !important;
@@ -2966,7 +2966,7 @@ body {
         text-align: center;
         padding: 1.2rem 0.8rem;
         display: block !important;
-        /* Garantir que todos os cards apareÃ§am */
+        /* Garantir que todos os cards apareÃƒÂ§am */
     }
 
     .stats-row .stat-card .stat-label {
@@ -3008,7 +3008,7 @@ body {
 
     /* Exibir apenas Cliente e Atendente no Mobile conforme pedido anteriormente */
     .filter-row>div:nth-child(1),
-    /* PerÃ­odo */
+    /* PerÃƒÂ­odo */
     .filter-row>div:nth-child(4),
     /* Valor */
     .filter-row>div:nth-child(5) {
@@ -3051,7 +3051,7 @@ body {
     /* Itens */
     #tab-dashboard .admin-table th:nth-child(7),
     #tab-dashboard .admin-table td:nth-child(7) {
-        /* AÃ§Ãµes */
+        /* AÃƒÂ§ÃƒÂµes */
         display: none !important;
     }
 
@@ -3076,13 +3076,13 @@ body {
 
 #subtab-lista-produtos .admin-table th:nth-child(8),
 #subtab-lista-produtos .admin-table td:nth-child(8) {
-    /* AÃ§Ãµes */
+    /* AÃƒÂ§ÃƒÂµes */
     width: 120px !important;
     text-align: center !important;
     display: table-cell !important;
 }
 /* ===== Table Mobile Refinement: Categories List ===== */
-/* 1: Nome, 2: Slug, 3: Ordem, 4: AÃ§Ãµes */
+/* 1: Nome, 2: Slug, 3: Ordem, 4: AÃƒÂ§ÃƒÂµes */
 #subtab-lista-categorias .admin-table th:nth-child(2),
 #subtab-lista-categorias .admin-table td:nth-child(2),
 #subtab-lista-categorias .admin-table th:nth-child(3),
@@ -3099,14 +3099,14 @@ body {
 
 #subtab-lista-categorias .admin-table th:nth-child(4),
 #subtab-lista-categorias .admin-table td:nth-child(4) {
-    /* AÃ§Ãµes */
+    /* AÃƒÂ§ÃƒÂµes */
     width: 30% !important;
     text-align: right !important;
     display: table-cell !important;
 }
 
 /* ===== Table Mobile Refinement: Stock Adjustments ===== */
-/* 1: Handle, 2: Nome, 3: Status, 4: AÃ§Ãµes */
+/* 1: Handle, 2: Nome, 3: Status, 4: AÃƒÂ§ÃƒÂµes */
 #subtab-lista-estoque .admin-table th:nth-child(1),
 #subtab-lista-estoque .admin-table td:nth-child(1) {
     /* Handle */
@@ -3131,7 +3131,7 @@ body {
 
 #subtab-lista-estoque .admin-table th:nth-child(4),
 #subtab-lista-estoque .admin-table td:nth-child(4) {
-    /* AÃ§Ãµes */
+    /* AÃƒÂ§ÃƒÂµes */
     display: table-cell !important;
     width: 150px !important;
     text-align: right !important;
@@ -3161,7 +3161,7 @@ body {
 
 
 
-/* ===== Config Card (ConfiguraÃ§Ãµes Tab) ===== */
+/* ===== Config Card (ConfiguraÃƒÂ§ÃƒÂµes Tab) ===== */
 .config-card {
     background: var(--bg-card);
     border-radius: var(--radius);
@@ -3196,7 +3196,7 @@ body {
     margin-bottom: 1.5rem;
     display: none;
     border: 1px solid rgba(255, 71, 87, 0.2);
-    position: relative; /* Para o botÃ£o fechar */
+    position: relative; /* Para o botÃƒÂ£o fechar */
 }
 
 .btn-close-alert {
@@ -3427,7 +3427,7 @@ input:checked+.slider:before {
     }
 }
 
-/* ===== PersonalizaÃ§Ã£o Visual â€” Preview de Imagem ===== */
+/* ===== PersonalizaÃƒÂ§ÃƒÂ£o Visual Ã¢â‚¬â€ Preview de Imagem ===== */
 .visual-upload-row {
     display: flex;
     gap: 20px;
@@ -3490,7 +3490,7 @@ input:checked+.slider:before {
     min-width: 280px;
 }
 
-/* ===== BotÃµes de Upload Destacados ===== */
+/* ===== BotÃƒÂµes de Upload Destacados ===== */
 .btn-upload-gallery.highlight {
     background: var(--color-button);
     color: var(--color-button-text, #000);
@@ -3509,7 +3509,7 @@ input:checked+.slider:before {
     transform: translateY(-3px);
 }
 
-/* BotÃ£o de URL SecundÃ¡rio mas visÃ­vel */
+/* BotÃƒÂ£o de URL SecundÃƒÂ¡rio mas visÃƒÂ­vel */
 .btn-url-toggle {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
@@ -3543,7 +3543,7 @@ input:checked+.slider:before {
     }
 }
 
-/* ===== EdiÃ§Ã£o de Taxa Inline ===== */
+/* ===== EdiÃƒÂ§ÃƒÂ£o de Taxa Inline ===== */
 .fee-editable {
     cursor: pointer;
     padding: 6px 12px;
@@ -3578,7 +3578,7 @@ input:checked+.slider:before {
 }
 
 
-/* ===== SeÃ§Ã£o de Estoque Premium ===== */
+/* ===== SeÃƒÂ§ÃƒÂ£o de Estoque Premium ===== */
 .inventory-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3681,7 +3681,7 @@ input:checked+.slider:before {
 
     /* Exibir apenas Cliente e Atendente no Mobile */
     .filter-row>div:nth-child(1),
-    /* PerÃ­odo */
+    /* PerÃƒÂ­odo */
     .filter-row>div:nth-child(4),
     /* Valor */
     .filter-row>div:nth-child(5) {
@@ -3700,13 +3700,13 @@ input:checked+.slider:before {
         gap: 15px;
     }
 
-    /* Ocultar botÃµes de excluir no mobile conforme solicitado */
+    /* Ocultar botÃƒÂµes de excluir no mobile conforme solicitado */
     .admin-table .btn-delete {
         display: none !important;
     }
 }
 
-/* Ocultar setas de aumentar/diminuir (spinners) em campos numÃ©ricos */
+/* Ocultar setas de aumentar/diminuir (spinners) em campos numÃƒÂ©ricos */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -3904,7 +3904,7 @@ input[type=number] {
         display: inline-block;
         vertical-align: middle;
     }
-    /* Fallback se data-short ainda nÃ£o foi definido */
+    /* Fallback se data-short ainda nÃƒÂ£o foi definido */
     .header-brand-name:not([data-short]) {
         max-width: 110px;
         overflow: hidden;
@@ -3933,7 +3933,7 @@ input[type=number] {
         border-radius: 18px !important;
     }
 
-    /* ---- 4. Tabela de Produtos (mÃ³dulo padrÃ£o): Imagem + PreÃ§o + AÃ§Ãµes ---- */
+    /* ---- 4. Tabela de Produtos (mÃƒÂ³dulo padrÃƒÂ£o): Imagem + PreÃƒÂ§o + AÃƒÂ§ÃƒÂµes ---- */
     /* Esconder: handle(1), nome(3), categoria(4), estoque(6), toggle(7) */
     #subtab-lista-produtos .admin-table th:nth-child(1),
     #subtab-lista-produtos .admin-table td:nth-child(1),
@@ -3954,7 +3954,7 @@ input[type=number] {
         width: 60px !important;
         text-align: center !important;
     }
-    /* PreÃ§o (5) */
+    /* PreÃƒÂ§o (5) */
     #subtab-lista-produtos .admin-table th:nth-child(5),
     #subtab-lista-produtos .admin-table td:nth-child(5) {
         display: table-cell !important;
@@ -3963,7 +3963,7 @@ input[type=number] {
         font-weight: 800 !important;
         color: var(--primary) !important;
     }
-    /* AÃ§Ãµes (8) */
+    /* AÃƒÂ§ÃƒÂµes (8) */
     #subtab-lista-produtos .admin-table th:nth-child(8),
     #subtab-lista-produtos .admin-table td:nth-child(8) {
         display: table-cell !important;
@@ -3975,8 +3975,8 @@ input[type=number] {
         width: 100% !important;
     }
 
-    /* ---- 5. Tabela Loja: Imagem + Nome + AÃ§Ãµes ---- */
-    /* Esconder: handle(1), categoria(4), variaÃ§Ãµes(5), estoque(6), status(7) */
+    /* ---- 5. Tabela Loja: Imagem + Nome + AÃƒÂ§ÃƒÂµes ---- */
+    /* Esconder: handle(1), categoria(4), variaÃƒÂ§ÃƒÂµes(5), estoque(6), status(7) */
     #subtab-loja-produtos .admin-table th:nth-child(1),
     #subtab-loja-produtos .admin-table td:nth-child(1),
     #subtab-loja-produtos .admin-table th:nth-child(4),
@@ -4004,7 +4004,7 @@ input[type=number] {
         white-space: normal !important;
         word-break: break-word;
     }
-    /* AÃ§Ãµes (8) */
+    /* AÃƒÂ§ÃƒÂµes (8) */
     #subtab-loja-produtos .admin-table th:nth-child(8),
     #subtab-loja-produtos .admin-table td:nth-child(8) {
         display: table-cell !important;
@@ -4016,7 +4016,7 @@ input[type=number] {
         width: 100% !important;
     }
 
-    /* ---- 6. BotÃ£o Salvar ConfiguraÃ§Ãµes: fixo no rodapÃ© ---- */
+    /* ---- 6. BotÃƒÂ£o Salvar ConfiguraÃƒÂ§ÃƒÂµes: fixo no rodapÃƒÂ© ---- */
     .config-card-header {
         position: sticky;
         top: 0;
@@ -4024,19 +4024,19 @@ input[type=number] {
         background: var(--bg-card);
     }
 
-    /* Adicionar espaÃ§o no final da tab de configuraÃ§Ãµes */
+    /* Adicionar espaÃƒÂ§o no final da tab de configuraÃƒÂ§ÃƒÂµes */
     #tab-configuracoes .subtab-content.active {
         padding-bottom: 90px !important;
     }
 
-    /* ---- 7. Garantia extra: BotÃ£o salvar do header dos config-cards ---- */
+    /* ---- 7. Garantia extra: BotÃƒÂ£o salvar do header dos config-cards ---- */
     #tab-configuracoes .config-card:first-of-type .config-card-header {
         top: 0;
     }
 }
 
 /* ========================================= */
-/* IMPRESSÃƒO (PDF) DASHBOARD PREMIUM         */
+/* IMPRESSÃƒÆ’O (PDF) DASHBOARD PREMIUM         */
 /* ========================================= */
 @media print {
     body * {
@@ -4098,7 +4098,7 @@ input[type=number] {
 }
 }
 
-/* ForÃ§a a ocultaÃ§Ã£o de mÃ³dulos desativados independentemente de media queries mobile ou desktop */
+/* ForÃƒÂ§a a ocultaÃƒÂ§ÃƒÂ£o de mÃƒÂ³dulos desativados independentemente de media queries mobile ou desktop */
 .sidebar .tab-btn.module-hidden,
 .sidebar .subtab-btn.module-hidden,
 .module-hidden,
@@ -4138,13 +4138,13 @@ select:focus,
 }
 
 select option {
-    background-color: #222 !important;
-    color: #fff !important;
+    background-color: var(--color-button, var(--primary)) !important;
+    color: var(--color-button-text, #000) !important;
     font-weight: 500 !important;
 }
 
 select option:checked,
 select option:hover {
-    background-color: var(--color-button, var(--primary)) !important;
+    background-color: var(--color-button-hover, var(--color-button, var(--primary-hover, var(--primary)))) !important;
     color: var(--color-button-text, #000) !important;
 }

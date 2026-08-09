@@ -657,7 +657,7 @@ window.toggleAccordionNovo = (id) => {
     
     el.classList.toggle('collapsed');
     if (icon) {
-        icon.textContent = el.classList.contains('collapsed') ? 'â–¼' : 'â–²';
+        icon.textContent = el.classList.contains('collapsed') ? '▼' : '▲';
     }
 };
 
@@ -759,9 +759,9 @@ window.copyAllUrls = () => {
     const aten = document.getElementById('urlAtendente').href;
     const agendamento = document.getElementById('urlAgendamento') ? document.getElementById('urlAgendamento').href : '';
 
-    const fullText = `ðŸš€ *Acessos da sua Loja - RiverTech Gestão*
+    const fullText = `🚀 *Acessos da sua Loja - RiverTech Gestão*
 
-ðŸ“  *Link do Cardápio (Para Clientes):*
+📍 *Link do Cardápio (Para Clientes):*
 ${menu}
 _Divulgue este link no seu Instagram e WhatsApp._
 
@@ -769,20 +769,20 @@ _Divulgue este link no seu Instagram e WhatsApp._
 ${loja}
 _Acesse sua vitrine virtual completa._
 
-ðŸ“… *Link de Agendamento Online:*
+📅 *Link de Agendamento Online:*
 ${agendamento}
 _Envie para os clientes marcarem horários._
 
-âš™ï¸ *Painel Administrativo (Gestão):*
+⚙️ *Painel Administrativo (Gestão):*
 ${admin}
 _Aqui você gerencia produtos, preços e configurações._
 
-ðŸŽ§ *Painel do Atendente (Pedidos):*
+🎧 *Painel do Atendente (Pedidos):*
 ${aten}
 _Use este painel para receber e gerenciar os pedidos em tempo real._`;
 
     navigator.clipboard.writeText(fullText);
-    showToast('Todos os links copiados com instruções! âœ…');
+    showToast('Todos os links copiados com instruções! ✅');
 };
 
 // --- TEMA ---
