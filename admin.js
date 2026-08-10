@@ -2552,11 +2552,15 @@ async function executarSalvarProduto() {
                     await window.__RESTAURANTE.carregarProdutosCardapio();
                 }
                 setTimeout(() => {
-                    window.__RESTAURANTE.novaFicha();
-                    setTimeout(() => {
-                        const sel = document.getElementById('restFichaProduto');
-                        if (sel) sel.value = savedProductId;
-                    }, 300);
+                    if (typeof window.__RESTAURANTE.atualizarSelectProdutoDaFicha === 'function') {
+                        window.__RESTAURANTE.atualizarSelectProdutoDaFicha(savedProductId);
+                    } else {
+                        window.__RESTAURANTE.novaFicha();
+                        setTimeout(() => {
+                            const sel = document.getElementById('restFichaProduto');
+                            if (sel) sel.value = savedProductId;
+                        }, 300);
+                    }
                 }, 300);
             }
         } else if (payload.controle_estoque === 'ficha_tecnica') {

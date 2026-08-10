@@ -1153,8 +1153,8 @@
 
     window.abrirNovoProdutoDaFicha = function () {
         window._isFromFichaTecnica = true;
-        // Fecha o modal atual
-        fecharModalRest('modalRestFicha');
+        // Fecha o modal atual sem limpar os dados preenchidos
+        document.getElementById('modalRestFicha').classList.remove('active');
         // Muda para a aba de produtos (opicional mas útil se ele fechar)
         if (typeof switchTab === 'function') switchTab('produtos');
         // Abre o modal de novo produto
@@ -1171,6 +1171,18 @@
                 }
             }, 300);
         }
+    };
+
+    window.__RESTAURANTE.atualizarSelectProdutoDaFicha = function (novoProdutoId) {
+        const select = document.getElementById('restFichaProduto');
+        if (select) {
+            select.innerHTML = '<option value="">Selecione o produto...</option>' +
+                state.produtosCardapio.map(p => `<option value="${p.id}">${p.name} (${fmtBRL(p.price)})</option>`).join('');
+            if (novoProdutoId) {
+                select.value = novoProdutoId;
+            }
+        }
+        abrirModal('modalRestFicha');
     };
 
     window.__RESTAURANTE.novaFicha = function () {
