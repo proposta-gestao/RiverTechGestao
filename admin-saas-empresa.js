@@ -1010,7 +1010,7 @@ window.salvarConfigPix = async () => {
         EMPRESA_DATA.cartao_parcelamento = parcelamentoAtivo;
         
         carregarStatusPix();
-        showToast('Configurações de pagamento salvas! ðŸŽ‰');
+        showToast('Configurações de pagamento salvas! 🎉');
         
     } catch (err) {
         showToast('Erro ao salvar configurações: ' + err.message, 'error');
@@ -1040,17 +1040,17 @@ window.testarConexaoPix = async () => {
         resultEl.style.display = 'block';
         resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
         resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
-        resultEl.innerHTML = 'âŒ <strong>Nenhum token para testar.</strong> Insira o Access Token primeiro.';
+        resultEl.innerHTML = '❌ <strong>Nenhum token para testar.</strong> Insira o Access Token primeiro.';
         return;
     }
     
     try {
         btn.disabled = true;
-        btn.textContent = 'ðŸ”„ Testando...';
+        btn.textContent = '🔄 Testando...';
         resultEl.style.display = 'block';
         resultEl.style.background = 'rgba(234, 179, 8, 0.1)';
         resultEl.style.border = '1px solid rgba(234, 179, 8, 0.3)';
-        resultEl.innerHTML = 'â³ Conectando Ã  API do Mercado Pago...';
+        resultEl.innerHTML = '⏳ Conectando à API do Mercado Pago...';
         
         // Chama a API do MP via Edge Function (evita CORS)
         const { data: edgeData, error: edgeErr } = await sb.functions.invoke('mercadopago-test', {
@@ -1063,7 +1063,7 @@ window.testarConexaoPix = async () => {
             resultEl.style.background = 'rgba(16, 185, 129, 0.1)';
             resultEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
             resultEl.innerHTML = `
-                âœ… <strong>Conexão bem-sucedida!</strong><br>
+                ✅ <strong>Conexão bem-sucedida!</strong><br>
                 <span style="font-size: 0.8rem; color: var(--text-secondary);">
                     Conta: <strong>${edgeData.first_name || ''} ${edgeData.last_name || ''}</strong> 
                     (${edgeData.email || 'e-mail não disponível'})<br>
@@ -1080,26 +1080,25 @@ window.testarConexaoPix = async () => {
             
             if (isUnauthorizedPolicyError) {
                 resultEl.innerHTML = `
-                    âŒ <strong>Falha na conexão:</strong> ${msg}<br><br>
+                    ❌ <strong>Falha na conexão:</strong> ${msg}<br><br>
                     <span style="font-size: 0.8rem; background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); padding: 8px 10px; border-radius: 6px; display: block; line-height: 1.6;">
-                        âš ï¸ <strong style="color: var(--accent-gold);">Causa provável:</strong> Você pode ter inserido a <strong>Public Key</strong> em vez do <strong>Access Token</strong>.<br>
+                        ⚠️ <strong style="color: var(--accent-gold);">Causa provável:</strong> Você pode ter inserido a <strong>Public Key</strong> em vez do <strong>Access Token</strong>.<br>
                         Ambas começam com <code style="background:#111; padding:1px 4px; border-radius:3px;">APP_USR-</code>, mas o <strong>Access Token</strong> tem ~70 caracteres (muito mais longo).<br>
-                        Acesse <strong>Mercado Pago Developers â†’ Seu App â†’ Credenciais de Produção</strong> e copie o campo <strong>Access Token</strong>.
+                        Acesse <strong>Mercado Pago Developers → Seu App → Credenciais de Produção</strong> e copie o campo <strong>Access Token</strong>.
                     </span>
                 `;
             } else {
-                resultEl.innerHTML = `âŒ <strong>Falha na conexão:</strong> ${msg}`;
+                resultEl.innerHTML = `❌ <strong>Falha na conexão:</strong> ${msg}`;
             }
         }
         
     } catch (err) {
         resultEl.style.background = 'rgba(239, 68, 68, 0.1)';
         resultEl.style.border = '1px solid rgba(239, 68, 68, 0.3)';
-        resultEl.innerHTML = `âŒ <strong>Erro de rede:</strong> ${err.message}`;
-        resultEl.innerHTML = `â Œ <strong>Erro de rede:</strong> ${err.message}`;
+        resultEl.innerHTML = `❌ <strong>Erro de rede:</strong> ${err.message}`;
     } finally {
         btn.disabled = false;
-        btn.textContent = 'ðŸ§ª Testar Conexão';
+        btn.textContent = '🧪 Testar Conexão';
     }
 };
 
