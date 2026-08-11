@@ -378,6 +378,7 @@ document.getElementById('btnLogin').onclick = async () => {
                 
                 document.getElementById('firstLoginScreen').style.display = 'none';
                 document.getElementById('adminLayout').style.display = 'flex';
+                setAdminGreeting(data.user);
                 await showAdmin();
             };
             return;
@@ -386,6 +387,7 @@ document.getElementById('btnLogin').onclick = async () => {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('adminLayout').style.display = 'flex';
 
+        setAdminGreeting(data.user);
         await showAdmin();
 
         btn.textContent = 'Entrar';
@@ -443,6 +445,7 @@ async function checkSession() {
         if (isAuthorized) {
             const empresaId = await initTenantAdmin(sb, userId);
             if (empresaId) {
+                setAdminGreeting(session.user);
                 showAdmin();
             } else {
                 console.warn('[Auth] Usuário autorizado mas sem empresa vinculada.');
@@ -450,6 +453,17 @@ async function checkSession() {
         }
     } catch (err) {
         console.error("Erro na verificação de sessão:", err);
+    }
+}
+
+function setAdminGreeting(user) {
+    if (!user || !user.email) return;
+    const greetingEl = document.getElementById('adminGreetingName');
+    if (greetingEl) {
+        let name = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+        name = name.charAt(0).toUpperCase() + name.slice(1);
+        greetingEl.textContent = 'Olá ' + name;
+        greetingEl.style.display = 'block';
     }
 }
 
