@@ -419,10 +419,14 @@ document.getElementById('btnLogout').onclick = async () => {
 async function checkSession() {
     try {
         const { data: { session } } = await sb.auth.getSession();
-        if (!session) return;
+        if (!session) {
+            document.getElementById('loginScreen').style.display = 'flex';
+            return;
+        }
 
         const userId = session.user.id;
         let isAuthorized = false;
+        let requiresPasswordChange = false;
 
         // 1. Verificar se é Super Admin
         const { data: isSuper } = await sb.rpc('is_super_admin', { _user_id: userId });
@@ -432,27 +436,92 @@ async function checkSession() {
             isAuthorized = true;
         } else {
             // 2. Verificar se é Admin na tabela legada
-            const { data: adminData } = await sb.from('admin_users').select('id').eq('user_id', userId).single();
+            const { data: adminData } = await sb.from('admin_users').select('id, senha_alterada').eq('user_id', userId).single();
             if (adminData) {
                 isAuthorized = true;
+                if (adminData.senha_alterada === false) requiresPasswordChange = true;
             } else {
                 // 3. Verificar se é Admin na tabela SaaS
-                const { data: saasUser } = await sb.from('usuarios').select('id').eq('id', userId).eq('role', 'admin').single();
-                if (saasUser) isAuthorized = true;
+                const { data: saasUser } = await sb.from('usuarios').select('id, senha_alterada').eq('id', userId).eq('role', 'admin').single();
+                if (saasUser) {
+                    isAuthorized = true;
+                    if (saasUser.senha_alterada === false) requiresPasswordChange = true;
+                }
             }
         }
 
         if (isAuthorized) {
+            if (requiresPasswordChange) {
+                // Bloqueia no recarregamento caso não tenha alterado a senha
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('firstLoginScreen').style.display = 'flex';
+                
+                const btnSaveNew = document.getElementById('btnSaveNewPassword');
+                btnSaveNew.onclick = async () => {
+                    const pass1 = document.getElementById('newPassword').value;
+                    const pass2 = document.getElementById('confirmNewPassword').value;
+                    const errFirst = document.getElementById('firstLoginError');
+                    
+                    if (!pass1 || !pass2) {
+                        errFirst.textContent = 'Preencha os dois campos.';
+                        errFirst.style.display = 'block';
+                        return;
+                    }
+                    if (pass1.length < 6) {
+                        errFirst.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+                        errFirst.style.display = 'block';
+                        return;
+                    }
+                    if (pass1 !== pass2) {
+                        errFirst.textContent = 'As senhas não coincidem.';
+                        errFirst.style.display = 'block';
+                        return;
+                    }
+                    
+                    btnSaveNew.disabled = true;
+                    btnSaveNew.textContent = 'Salvando...';
+                    errFirst.style.display = 'none';
+                    
+                    const { error: updateAuthErr } = await sb.auth.updateUser({ password: pass1 });
+                    if (updateAuthErr) {
+                        errFirst.textContent = 'Erro ao atualizar a senha: ' + updateAuthErr.message;
+                        errFirst.style.display = 'block';
+                        btnSaveNew.disabled = false;
+                        btnSaveNew.textContent = 'Salvar e Continuar';
+                        return;
+                    }
+                    
+                    const updatePromises = [];
+                    updatePromises.push(sb.from('usuarios').update({ senha_alterada: true }).eq('id', userId));
+                    updatePromises.push(sb.from('admin_users').update({ senha_alterada: true }).eq('user_id', userId));
+                    await Promise.all(updatePromises);
+                    
+                    document.getElementById('firstLoginScreen').style.display = 'none';
+                    document.getElementById('adminLayout').style.display = 'flex';
+                    
+                    const empresaId = await initTenantAdmin(sb, userId);
+                    if (empresaId) {
+                        setAdminGreeting(session.user);
+                        await showAdmin();
+                    }
+                };
+                return;
+            }
+
             const empresaId = await initTenantAdmin(sb, userId);
             if (empresaId) {
                 setAdminGreeting(session.user);
                 showAdmin();
             } else {
                 console.warn('[Auth] Usuário autorizado mas sem empresa vinculada.');
+                document.getElementById('loginScreen').style.display = 'flex';
             }
+        } else {
+            document.getElementById('loginScreen').style.display = 'flex';
         }
     } catch (err) {
         console.error("Erro na verificação de sessão:", err);
+        document.getElementById('loginScreen').style.display = 'flex';
     }
 }
 
