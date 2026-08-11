@@ -1087,89 +1087,115 @@ function aplicarFiltrosDeModulos() {
     const mMetricasTempo = isModuloAtivo('metricas_analise_tempo');
     const mMetricasPerf = isModuloAtivo('metricas_performance_vendas');
     const mMetricasDestaques = isModuloAtivo('metricas_destaques');
+    const mResumoOperacional = isModuloAtivo('vendas_resumo_op');
+    const mListaPedidos = isModuloAtivo('vendas_pedidos_op');
+    
+    toggleSubtab('vendas-op', mVendasHoje || mVendasOntem || mResumoOperacional || mListaPedidos);
+    toggleElement(document.getElementById('filtroHojeOp'), mVendasHoje, 'inline-block');
+    toggleElement(document.getElementById('filtroOntemOp'), mVendasOntem, 'inline-block');
+    toggleElement(document.getElementById('cardResumoVendas'), mResumoOperacional);
+    toggleElement(document.getElementById('cardListaPedidos'), mListaPedidos);
 
-    toggleElement(document.getElementById('chartMetricas')?.parentElement, mMetricasDash);
-    toggleElement(document.getElementById('insightFraseWrapper'), mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques);
-    toggleElement(document.getElementById('section-metricas-tempo'), mMetricasTempo);
-    toggleElement(document.getElementById('section-metricas-performance'), mMetricasPerf);
-    toggleElement(document.getElementById('section-metricas-destaques'), mMetricasDestaques);
+    // 3. VENDAS (Analítico)
+    const mVendasAnalitico = isModuloAtivo('vendas_graficos_analitico');
+    toggleSubtab('vendas-analitico', mVendasAnalitico);
 
-    const mQualquerMetrica = mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques;
-    toggleSubtab('dashboard-metricas', mQualquerMetrica);
-
-    const mQualquerDashboard = mQualquerVendaOp || mQualquerMetrica;
+    const mQualquerDashboard = (mVendasHoje || mVendasOntem || mResumoOperacional || mListaPedidos || mVendasAnalitico);
     const navDashboard = document.getElementById('nav-dashboard');
+    const sideNavDashboard = document.getElementById('side-nav-dashboard');
     toggleElement(navDashboard, mQualquerDashboard, 'flex');
+    toggleElement(sideNavDashboard, mQualquerDashboard, 'flex');
     if (navDashboard) navDashboard.classList.toggle('module-visible', mQualquerDashboard);
-    toggleElement(document.getElementById('side-nav-dashboard'), mQualquerDashboard, 'flex');
+    if (sideNavDashboard) sideNavDashboard.classList.toggle('module-visible', mQualquerDashboard);
 
     // 4. CONFIGURAÇÕES
-    const mConfigEnd = isModuloAtivo('config_endereco');
-    const mConfigVis = isModuloAtivo('config_personalizacao');
-    const mConfigFrete = isModuloAtivo('config_frete');
-    const mConfigCanc = isModuloAtivo('config_cancelamentos');
+    const mConfDados = isModuloAtivo('config_dados');
+    const mConfTemas = isModuloAtivo('config_temas');
+    const mConfHorarios = isModuloAtivo('config_horarios');
+    const mConfProfissionais = isModuloAtivo('config_profissionais');
+    const mConfServicos = isModuloAtivo('config_servicos');
+    const mConfMensagens = isModuloAtivo('config_mensagens');
+    const mConfPagamentos = isModuloAtivo('config_pagamento');
+    const mConfFrete = isModuloAtivo('config_frete_loja');
 
-    toggleSubtab('config-dados-empresa', mConfigEnd);
-    toggleSubtab('config-visual', mConfigVis);
-    toggleSubtab('config-frete', mConfigFrete);
-    toggleSubtab('config-cancelamento', mConfigCanc);
+    toggleSubtab('config-dados-empresa', mConfDados);
+    toggleSubtab('config-temas', mConfTemas);
+    toggleSubtab('config-horarios', mConfHorarios);
+    toggleSubtab('config-profissionais', mConfProfissionais);
+    toggleSubtab('config-servicos', mConfServicos);
+    toggleSubtab('config-mensagens', mConfMensagens);
+    toggleSubtab('config-pagamentos', mConfPagamentos);
+    toggleSubtab('config-frete', mConfFrete);
 
-    // 4b. EQUIPE / ATENDENTES
-    const mProdEquipe = isModuloAtivo('produtos_equipe');
-    toggleSubtab('config-equipe', mProdEquipe);
-
-    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc || mProdEquipe;
+    const mQualquerConfig = mConfDados || mConfTemas || mConfHorarios || mConfProfissionais || mConfServicos || mConfMensagens || mConfPagamentos || mConfFrete;
     const navConfig = document.getElementById('nav-configuracoes');
+    const sideNavConfig = document.getElementById('side-nav-configuracoes');
     toggleElement(navConfig, mQualquerConfig, 'flex');
+    toggleElement(sideNavConfig, mQualquerConfig, 'flex');
     if (navConfig) navConfig.classList.toggle('module-visible', mQualquerConfig);
-    toggleElement(document.getElementById('side-nav-configuracoes'), mQualquerConfig, 'flex');
+    if (sideNavConfig) sideNavConfig.classList.toggle('module-visible', mQualquerConfig);
 
     // 5. CUPONS
     const mCupons = isModuloAtivo('cupons');
     const navCupons = document.getElementById('nav-cupons');
+    const sideNavCupons = document.getElementById('side-nav-cupons');
     toggleElement(navCupons, mCupons, 'flex');
+    toggleElement(sideNavCupons, mCupons, 'flex');
     if (navCupons) navCupons.classList.toggle('module-visible', mCupons);
-    toggleElement(document.getElementById('side-nav-cupons'), mCupons, 'flex');
+    if (sideNavCupons) sideNavCupons.classList.toggle('module-visible', mCupons);
 
     // 6. AGENDAMENTO
     const mAgendamento = isModuloAtivo('agendamento_ativo');
     const navAgenda = document.getElementById('nav-agenda');
+    const sideNavAgenda = document.getElementById('side-nav-agenda');
     toggleElement(navAgenda, mAgendamento, 'flex');
+    toggleElement(sideNavAgenda, mAgendamento, 'flex');
     if (navAgenda) navAgenda.classList.toggle('module-visible', mAgendamento);
-    toggleElement(document.getElementById('side-nav-agenda'), mAgendamento, 'flex');
-    if (mAgendamento) {
-        const cssEl = document.getElementById('agenda-css');
-        if (cssEl) cssEl.disabled = false;
-    }
+    if (sideNavAgenda) sideNavAgenda.classList.toggle('module-visible', mAgendamento);
 
-    // 7. EXTRAS
-    const mCardapio = isModuloAtivo('cardapio');
-    const mLojaBtn = isModuloAtivo('loja_roupas');
-    const mAgendaBtn = isModuloAtivo('agendamento_ativo');
-    const btnCardapio = document.querySelector('.btn-link-cardapio');
-    if (btnCardapio) toggleElement(btnCardapio, mCardapio || mLojaBtn || mAgendaBtn);
-
-    // 8. LOJA DE ROUPAS
+    // 7. LOJA DE ROUPAS
     const mLoja = isModuloAtivo('loja_roupas');
+    toggleSubtab('loja-produtos', mLoja);
+    toggleSubtab('loja-categorias', mLoja);
+    toggleSubtab('loja-estoque', mLoja);
+    toggleSubtab('loja-motivos', mLoja);
+    
     const navLoja = document.getElementById('nav-loja');
+    const sideNavLoja = document.getElementById('side-nav-loja');
     toggleElement(navLoja, mLoja, 'flex');
+    toggleElement(sideNavLoja, mLoja, 'flex');
     if (navLoja) navLoja.classList.toggle('module-visible', mLoja);
-    toggleElement(document.getElementById('side-nav-loja'), mLoja, 'flex');
-    if (mLoja) {
-        const cssLoja = document.getElementById('loja-css');
-        if (cssLoja) cssLoja.disabled = false;
-    }
-
-    // 8b. RESTAURANTE / FICHA TÉCNICA
-    const mRestaurante = isModuloAtivo('ficha_tecnica');
+    if (sideNavLoja) sideNavLoja.classList.toggle('module-visible', mLoja);
+    
+    // 8. RESTAURANTE
+    const mRestaurante = isModuloAtivo('restaurante');
+    toggleSubtab('restaurante-insumos', mRestaurante);
+    toggleSubtab('restaurante-fichas', mRestaurante);
+    toggleSubtab('restaurante-inventarios', mRestaurante);
+    toggleSubtab('restaurante-movimentacoes', mRestaurante);
+    toggleSubtab('restaurante-cadastros', mRestaurante);
+    toggleSubtab('restaurante-configuracoes', mRestaurante);
+    
     const navRestaurante = document.getElementById('nav-restaurante');
+    const sideNavRestaurante = document.getElementById('side-nav-restaurante');
     toggleElement(navRestaurante, mRestaurante, 'flex');
+    toggleElement(sideNavRestaurante, mRestaurante, 'flex');
     if (navRestaurante) navRestaurante.classList.toggle('module-visible', mRestaurante);
-    toggleElement(document.getElementById('side-nav-restaurante'), mRestaurante, 'flex');
-    if (mRestaurante) {
-        const cssRestaurante = document.getElementById('restaurante-css');
-        if (cssRestaurante) cssRestaurante.disabled = false;
-    }
+    if (sideNavRestaurante) sideNavRestaurante.classList.toggle('module-visible', mRestaurante);
+
+    // 9. ÁREA PREMIUM
+    const mClientesPremium = isModuloAtivo('clientes_premium');
+    toggleSubtab('premium-clientes', mClientesPremium);
+    toggleSubtab('premium-perfis-cardapio', mClientesPremium);
+    toggleSubtab('premium-dashboard', mClientesPremium);
+    toggleSubtab('premium-pagamentos', mClientesPremium);
+    
+    const navAreaPremium = document.getElementById('nav-area-premium');
+    const sideNavAreaPremium = document.getElementById('side-nav-area-premium');
+    toggleElement(navAreaPremium, mClientesPremium, 'flex');
+    toggleElement(sideNavAreaPremium, mClientesPremium, 'flex');
+    if (navAreaPremium) navAreaPremium.classList.toggle('module-visible', mClientesPremium);
+    if (sideNavAreaPremium) sideNavAreaPremium.classList.toggle('module-visible', mClientesPremium);
 
     // --- Redirecionamento Automático (Segurança e UX) ---
     // NOTA: persist=false para não sobrescrever a aba salva pelo usuário

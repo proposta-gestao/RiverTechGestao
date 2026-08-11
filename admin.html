@@ -36,10 +36,12 @@
             z-index: 99999 !important;
         }
         /* Esconder TODAS as tabs dependentes de modulo por padrao para evitar flash */
-        .admin-tabs .tab-btn {
+        .admin-tabs .tab-btn,
+        .sidebar-nav .nav-item {
             display: none !important;
         }
-        .admin-tabs .tab-btn.module-visible {
+        .admin-tabs .tab-btn.module-visible,
+        .sidebar-nav .nav-item.module-visible {
             display: flex !important;
         }
     </style>
@@ -1910,10 +1912,11 @@
                 <input type="hidden" id="prodImagemSelecionada">
                 <input type="file" id="uploadImagem" accept="image/*" multiple style="display:none;" onchange="if(typeof handleMultipleImageUpload === 'function') handleMultipleImageUpload(this.files); else handleImageUpload(this.files[0]);">
 
-                <!-- COMENTADO: Galeria completa desativada - requer autenticação privada do Cloudinary -->
-                <!-- <div style="margin-top: 15px;">
+                <!-- COMENTADO: Galeria completa desativada - requer autenticação privada do Cloudinary
+                <div style="margin-top: 15px;">
                     <button class="btn-sm btn-link" type="button" onclick="abrirModalGaleriaCompleta()">Ver Galeria Completa</button>
-                </div> -->
+                </div> 
+                -->
             </div>
         </div>
     </div>
@@ -1999,8 +2002,8 @@
     </div>
 
 
-    <!-- COMENTADO: Full Gallery Modal - Galeria completa desativada -->
-    <!-- <div class="admin-modal-backdrop" id="modalGaleriaCompleta">
+    <!-- COMENTADO: Full Gallery Modal - Galeria completa desativada 
+    <div class="admin-modal-backdrop" id="modalGaleriaCompleta">
         <div class="admin-modal" style="max-width: 650px; display: flex; flex-direction: column; max-height: 90vh;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <h3 style="margin-bottom: 0;">Galeria Completa</h3>
@@ -2015,10 +2018,10 @@
 
             <div class="image-gallery-grid" id="imageGalleryGridCompleta"
                 style="max-height: none; overflow-y: auto; flex: 1; border: 1.5px solid var(--border-color); border-radius: 8px; padding: 1rem;">
-                <!-- Full list populated by JS -->
             </div>
         </div>
-    </div> -->
+    </div>
+    -->
 
 
 
