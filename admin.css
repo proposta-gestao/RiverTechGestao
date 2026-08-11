@@ -1,4 +1,4 @@
-﻿/* Esconde elementos cujos mÃƒÂ³dulos estÃƒÂ£o desativados */
+/* Esconde elementos cujos mÃƒÂ³dulos estÃƒÂ£o desativados */
 .module-hidden {
     display: none !important;
 }
@@ -2626,7 +2626,7 @@ body {
 }
 
 .toast::before {
-    content: 'Ã¢Å“Â¨';
+    content: '✨';
 }
 
 .toast.show {
@@ -2639,7 +2639,7 @@ body {
 }
 
 .toast.error::before {
-    content: 'Ã¢ÂÅ’';
+    content: '❌';
 }
 
 .toast.success {
@@ -2648,7 +2648,7 @@ body {
 }
 
 .toast.success::before {
-    content: 'Ã¢Å“â€¦';
+    content: '✅';
 }
 
 /* Image Gallery */
@@ -2700,7 +2700,7 @@ body {
 }
 
 .gallery-item.selected::after {
-    content: 'Ã¢Å“â€œ';
+    content: '✔';
     position: absolute;
     top: 5px;
     right: 5px;
@@ -2797,7 +2797,7 @@ body {
 }
 
 .gallery-item.selected::after {
-    content: 'Ã¢Å“â€œ';
+    content: '✔';
     position: absolute;
     top: 4px;
     right: 4px;
