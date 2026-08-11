@@ -1185,10 +1185,9 @@ function aplicarFiltrosDeModulos() {
 
     // 9. ÁREA PREMIUM
     const mClientesPremium = isModuloAtivo('clientes_premium');
-    toggleSubtab('premium-clientes', mClientesPremium);
-    toggleSubtab('premium-perfis-cardapio', mClientesPremium);
-    toggleSubtab('premium-dashboard', mClientesPremium);
-    toggleSubtab('premium-pagamentos', mClientesPremium);
+    toggleSubtab('config-clientes-premium', mClientesPremium);
+    toggleSubtab('config-perfis-cardapio', mClientesPremium);
+    toggleSubtab('config-premium-dashboard', mClientesPremium);
     
     const navAreaPremium = document.getElementById('nav-area-premium');
     const sideNavAreaPremium = document.getElementById('side-nav-area-premium');
@@ -1206,16 +1205,6 @@ function aplicarFiltrosDeModulos() {
     else if (abaAtiva === 'produtos' && !mQualquerProduto) { const b = document.getElementById('nav-dashboard'); if(b) switchTab('dashboard', b, false); }
     else if (abaAtiva === 'cupons' && !mCupons) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
     else if (abaAtiva === 'configuracoes' && !mQualquerConfig) { const b = document.getElementById('nav-produtos'); if(b) switchTab('produtos', b, false); }
-
-    // 9. CLIENTES PREMIUM
-    const mClientesPremium = isModuloAtivo('clientes_premium');
-    const navAreaPremium = document.getElementById('nav-area-premium');
-    const sideNavAreaPremium = document.getElementById('side-nav-area-premium');
-    toggleElement(navAreaPremium, mClientesPremium, 'flex');
-    if (navAreaPremium) navAreaPremium.classList.toggle('module-visible', mClientesPremium);
-    toggleElement(sideNavAreaPremium, mClientesPremium, 'flex');
-    toggleSubtab('config-clientes-premium', mClientesPremium);
-    toggleSubtab('config-perfis-cardapio', mClientesPremium);
 
     if (mClientesPremium && typeof initModuloClientesPremium === 'function') {
         initModuloClientesPremium();
