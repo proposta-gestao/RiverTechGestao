@@ -361,12 +361,20 @@ document.getElementById('btnLogin').onclick = async () => {
                     return;
                 }
                 
-                // Update DB to mark as changed
+                // Marcar senha como alterada em AMBAS as tabelas (admin pode existir nas duas)
+                const updatePromises = [];
                 if (adminData.role === 'admin' && adminData.id) {
-                    await sb.from('usuarios').update({ senha_alterada: true }).eq('id', adminData.id);
-                } else {
-                    await sb.from('admin_users').update({ senha_alterada: true }).eq('user_id', data.user.id);
+                    updatePromises.push(
+                        sb.from('usuarios').update({ senha_alterada: true }).eq('id', adminData.id)
+                          .then(({ error }) => { if (error) console.warn('[Auth] Erro ao atualizar senha_alterada em usuarios:', error); })
+                    );
                 }
+                // Sempre tenta atualizar admin_users também (pode existir registro lá também)
+                updatePromises.push(
+                    sb.from('admin_users').update({ senha_alterada: true }).eq('user_id', data.user.id)
+                      .then(({ error }) => { if (error) console.warn('[Auth] Erro ao atualizar senha_alterada em admin_users:', error); })
+                );
+                await Promise.all(updatePromises);
                 
                 document.getElementById('firstLoginScreen').style.display = 'none';
                 document.getElementById('adminLayout').style.display = 'flex';
