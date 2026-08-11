@@ -394,16 +394,16 @@ window.__LOJA.salvarProduto = async function() {
     }
 };
 
-window.__LOJA.excluirProduto = function(id) {
-    customConfirm('Excluir Produto', 'Tem certeza? As variações serão apagadas.', async () => {
-        const { error } = await sb.from('loja_produtos').delete().eq('id', id);
-        if (error) {
-            showToast('Erro ao excluir', 'error');
-        } else {
-            showToast('Produto excluído', 'success');
-            await carregarLojaProdutos();
-        }
-    });
+window.__LOJA.excluirProduto = async function(id) {
+    const confirmed = await customConfirm('Excluir Produto', 'Tem certeza? As variações serão apagadas.');
+    if (!confirmed) return;
+    const { error } = await sb.from('loja_produtos').delete().eq('id', id);
+    if (error) {
+        showToast('Erro ao excluir', 'error');
+    } else {
+        showToast('Produto excluído', 'success');
+        await carregarLojaProdutos();
+    }
 };
 
 function gerarSKULocal(nome, cor, tam) {
@@ -842,21 +842,21 @@ window.__LOJA.salvarEdicaoVariacao = async function() {
 };
 
 window.__LOJA.excluirVariacao = async function(id) {
-    customConfirm('Excluir Variação', 'Certeza?', async () => {
-        const { error } = await sb.from('loja_variacoes').delete().eq('id', id);
-        if (error) showToast('Erro', 'error');
-        else {
-            showToast('Apagado', 'success');
-            await carregarLojaProdutos();
-            // Atualiza modal atual
-            const pId = document.getElementById('lojaProdId').value;
-            const updated = lojaProdutos.find(p => p.id === pId);
-            if(updated) {
-                lojaCurrentVariacoes = updated.loja_variacoes || [];
-                renderVariacoesExistentes();
-            }
+    const confirmed = await customConfirm('Excluir Variação', 'Certeza?');
+    if (!confirmed) return;
+    const { error } = await sb.from('loja_variacoes').delete().eq('id', id);
+    if (error) showToast('Erro', 'error');
+    else {
+        showToast('Apagado', 'success');
+        await carregarLojaProdutos();
+        // Atualiza modal atual
+        const pId = document.getElementById('lojaProdId').value;
+        const updated = lojaProdutos.find(p => p.id === pId);
+        if(updated) {
+            lojaCurrentVariacoes = updated.loja_variacoes || [];
+            renderVariacoesExistentes();
         }
-    });
+    }
 };
 
 window.__LOJA.abrirModalNovaVariacao = function() {
@@ -1052,13 +1052,13 @@ window.__LOJA.salvarCategoria = async function() {
     }
 };
 
-window.__LOJA.excluirCategoria = function(id) {
-    customConfirm('Atenção', 'Excluir categoria? Produtos ficarão sem categoria.', async () => {
-        await sb.from('loja_categorias').delete().eq('id', id);
-        showToast('Excluída', 'success');
-        await carregarLojaCategorias();
-        await carregarLojaProdutos();
-    });
+window.__LOJA.excluirCategoria = async function(id) {
+    const confirmed = await customConfirm('Atenção', 'Excluir categoria? Produtos ficarão sem categoria.');
+    if (!confirmed) return;
+    await sb.from('loja_categorias').delete().eq('id', id);
+    showToast('Excluída', 'success');
+    await carregarLojaCategorias();
+    await carregarLojaProdutos();
 };
 
 // ------------------------------------------------------------
