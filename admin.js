@@ -1066,9 +1066,11 @@ function aplicarFiltrosDeModulos() {
 
     const mQualquerProduto = mProdGerenciar || mProdCategorias || mProdEstoque;
     const navProdutos = document.getElementById('nav-produtos');
+    const sideNavProdutos = document.getElementById('side-nav-produtos');
     toggleElement(navProdutos, mQualquerProduto, 'flex');
+    toggleElement(sideNavProdutos, mQualquerProduto, 'flex');
     if (navProdutos) navProdutos.classList.toggle('module-visible', mQualquerProduto);
-    toggleElement(document.getElementById('side-nav-produtos'), mQualquerProduto, 'flex');
+    if (sideNavProdutos) sideNavProdutos.classList.toggle('module-visible', mQualquerProduto);
 
     // 2. VENDAS (Operacional)
     const mVendasHoje = isModuloAtivo('vendas_hoje_op');
@@ -1087,20 +1089,17 @@ function aplicarFiltrosDeModulos() {
     const mMetricasTempo = isModuloAtivo('metricas_analise_tempo');
     const mMetricasPerf = isModuloAtivo('metricas_performance_vendas');
     const mMetricasDestaques = isModuloAtivo('metricas_destaques');
-    const mResumoOperacional = isModuloAtivo('vendas_resumo_op');
-    const mListaPedidos = isModuloAtivo('vendas_pedidos_op');
-    
-    toggleSubtab('vendas-op', mVendasHoje || mVendasOntem || mResumoOperacional || mListaPedidos);
-    toggleElement(document.getElementById('filtroHojeOp'), mVendasHoje, 'inline-block');
-    toggleElement(document.getElementById('filtroOntemOp'), mVendasOntem, 'inline-block');
-    toggleElement(document.getElementById('cardResumoVendas'), mResumoOperacional);
-    toggleElement(document.getElementById('cardListaPedidos'), mListaPedidos);
 
-    // 3. VENDAS (Analítico)
-    const mVendasAnalitico = isModuloAtivo('vendas_graficos_analitico');
-    toggleSubtab('vendas-analitico', mVendasAnalitico);
+    toggleElement(document.getElementById('chartMetricas')?.parentElement, mMetricasDash);
+    toggleElement(document.getElementById('insightFraseWrapper'), mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques);
+    toggleElement(document.getElementById('section-metricas-tempo'), mMetricasTempo);
+    toggleElement(document.getElementById('section-metricas-performance'), mMetricasPerf);
+    toggleElement(document.getElementById('section-metricas-destaques'), mMetricasDestaques);
 
-    const mQualquerDashboard = (mVendasHoje || mVendasOntem || mResumoOperacional || mListaPedidos || mVendasAnalitico);
+    const mQualquerMetrica = mMetricasDash || mMetricasTempo || mMetricasPerf || mMetricasDestaques;
+    toggleSubtab('dashboard-metricas', mQualquerMetrica);
+
+    const mQualquerDashboard = mQualquerVendaOp || mQualquerMetrica;
     const navDashboard = document.getElementById('nav-dashboard');
     const sideNavDashboard = document.getElementById('side-nav-dashboard');
     toggleElement(navDashboard, mQualquerDashboard, 'flex');
@@ -1109,25 +1108,19 @@ function aplicarFiltrosDeModulos() {
     if (sideNavDashboard) sideNavDashboard.classList.toggle('module-visible', mQualquerDashboard);
 
     // 4. CONFIGURAÇÕES
-    const mConfDados = isModuloAtivo('config_dados');
-    const mConfTemas = isModuloAtivo('config_temas');
-    const mConfHorarios = isModuloAtivo('config_horarios');
-    const mConfProfissionais = isModuloAtivo('config_profissionais');
-    const mConfServicos = isModuloAtivo('config_servicos');
-    const mConfMensagens = isModuloAtivo('config_mensagens');
-    const mConfPagamentos = isModuloAtivo('config_pagamento');
-    const mConfFrete = isModuloAtivo('config_frete_loja');
+    const mConfigEnd = isModuloAtivo('config_endereco');
+    const mConfigVis = isModuloAtivo('config_personalizacao');
+    const mConfigFrete = isModuloAtivo('config_frete');
+    const mConfigCanc = isModuloAtivo('config_cancelamentos');
+    const mProdEquipe = isModuloAtivo('produtos_equipe');
 
-    toggleSubtab('config-dados-empresa', mConfDados);
-    toggleSubtab('config-temas', mConfTemas);
-    toggleSubtab('config-horarios', mConfHorarios);
-    toggleSubtab('config-profissionais', mConfProfissionais);
-    toggleSubtab('config-servicos', mConfServicos);
-    toggleSubtab('config-mensagens', mConfMensagens);
-    toggleSubtab('config-pagamentos', mConfPagamentos);
-    toggleSubtab('config-frete', mConfFrete);
+    toggleSubtab('config-dados-empresa', mConfigEnd);
+    toggleSubtab('config-visual', mConfigVis);
+    toggleSubtab('config-frete', mConfigFrete);
+    toggleSubtab('config-cancelamento', mConfigCanc);
+    toggleSubtab('config-equipe', mProdEquipe);
 
-    const mQualquerConfig = mConfDados || mConfTemas || mConfHorarios || mConfProfissionais || mConfServicos || mConfMensagens || mConfPagamentos || mConfFrete;
+    const mQualquerConfig = mConfigEnd || mConfigVis || mConfigFrete || mConfigCanc || mProdEquipe;
     const navConfig = document.getElementById('nav-configuracoes');
     const sideNavConfig = document.getElementById('side-nav-configuracoes');
     toggleElement(navConfig, mQualquerConfig, 'flex');
