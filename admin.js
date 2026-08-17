@@ -1161,7 +1161,7 @@ function aplicarFiltrosDeModulos() {
     if (sideNavLoja) sideNavLoja.classList.toggle('module-visible', mLoja);
     
     // 8. RESTAURANTE
-    const mRestaurante = isModuloAtivo('restaurante');
+    const mRestaurante = isModuloAtivo('ficha_tecnica');
     toggleSubtab('restaurante-insumos', mRestaurante);
     toggleSubtab('restaurante-fichas', mRestaurante);
     toggleSubtab('restaurante-inventarios', mRestaurante);
