@@ -622,7 +622,7 @@
         const container = document.getElementById('rest-insumos-lista');
         if (!container) return;
         if (!state.insumos.length) {
-            container.innerHTML = '<p class="rest-empty">Nenhum insumo cadastrado. Clique em <strong>+ Novo Insumo</strong> para começar.</p>';
+            container.innerHTML = '<tr><td colspan="7" class="rest-empty" style="border-radius:0;">Nenhum insumo cadastrado. Clique em <strong>+ Novo Insumo</strong> para começar.</td></tr>';
             return;
         }
         const insumosFiltro = document.getElementById('restInsumoBusca')?.value?.toLowerCase() || '';
@@ -631,44 +631,65 @@
         if (insumosFiltro) lista = lista.filter(i => i.nome.toLowerCase().includes(insumosFiltro));
         if (categoriaFiltro) lista = lista.filter(i => i.categoria_id === categoriaFiltro);
 
-        container.innerHTML = lista.map(ins => {
+        if (!lista.length) {
+            container.innerHTML = '<tr><td colspan="7" class="rest-empty" style="border-radius:0;">Nenhum insumo encontrado com os filtros aplicados.</td></tr>';
+            return;
+        }
+
+        container.innerHTML = lista.map((ins, idx) => {
             const totalEstoque = (ins.estoque_insumos || []).reduce((sum, e) => sum + (parseFloat(e.estoque_atual) || 0), 0);
             const minEstoque = (ins.estoque_insumos || []).reduce((sum, e) => sum + (parseFloat(e.estoque_minimo) || 0), 0);
-            const alertaEstoque = totalEstoque <= minEstoque && minEstoque > 0;
+            const semEstoque = totalEstoque <= 0;
+            const estoqueMinimo = !semEstoque && totalEstoque <= minEstoque && minEstoque > 0;
+            const estoqueNormal = !semEstoque && !estoqueMinimo;
             const unSimbolo = ins.unidade_medida?.simbolo || '';
             const categoria = ins.categorias_insumos?.nome || '—';
-            const fornecedor = ins.fornecedores?.nome || '—';
             const totalEstoqueFormatted = totalEstoque.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+
+            // Status badge — reutilizando lógica de cores do padrão de produtos
+            let statusBadge;
+            if (!ins.ativo) {
+                statusBadge = '<span class="badge" style="background:rgba(255,255,255,0.08); color:#aaa;">Inativo</span>';
+            } else if (semEstoque) {
+                statusBadge = '<span class="badge" style="background:rgba(239,68,68,0.15); color:#f87171;">Sem Estoque</span>';
+            } else if (estoqueMinimo) {
+                statusBadge = '<span class="badge" style="background:rgba(234,179,8,0.15); color:#facc15;">⚠️ Estoque Baixo</span>';
+            } else {
+                statusBadge = '<span class="badge" style="background:rgba(34,197,94,0.15); color:#4ade80;">Normal</span>';
+            }
+
+            const estoqueColor = semEstoque ? '#f87171' : (estoqueMinimo ? '#facc15' : 'inherit');
+            const rowClass = !ins.ativo ? 'row-inactive' : (semEstoque ? 'row-archived' : '');
+
             return `
-            <div class="rest-insumo-card ${alertaEstoque ? 'alerta-minimo' : ''} ${!ins.ativo ? 'inativo' : ''}" style="display:flex; flex-direction:column; gap:10px; padding:12px;">
-                <!-- Linha 1: Nome (com Código) e Switch Ativo/Inativo -->
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="rest-insumo-nome" style="font-weight:600; font-size:0.95rem;">
-                        ${ins.codigo_interno ? `<span style="color:var(--text-muted); font-size:0.85rem; margin-right:4px;">${ins.codigo_interno} -</span> ` : ''}${ins.nome}
-                    </span>
-                    <label class="switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}" style="margin-bottom:0;">
-                        <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <!-- Linha 2: Ações (Editar, Estoque) e Badges -->
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                    <button class="btn-sm btn-edit" style="padding: 4px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">Editar</button>
-                    <button class="btn-sm" style="padding: 4px 8px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" title="Gerenciar Estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">Estoque</button>
-                    ${alertaEstoque ? '<span class="rest-badge rest-badge--alerta">⚠️ Estoque mínimo</span>' : ''}
-                    ${!ins.ativo ? '<span class="rest-badge rest-badge--off">Inativo</span>' : ''}
-                </div>
-                <!-- Linha 3: Tags de detalhes -->
-                <div class="rest-insumo-details" style="margin-top:0; border-top:none; padding-top:0; display:flex; flex-wrap:wrap; gap:8px 12px; font-size:0.8rem;">
-                    <span>🏷️ ${categoria}</span>
-                    <span>🚚 ${fornecedor}</span>
-                    <span>📏 ${unSimbolo}</span>
-                    <span>💰 Custo: ${fmtBRL(ins.custo_medio)}/${unSimbolo}</span>
-                    <span class="${alertaEstoque ? 'text-danger' : ''}">📦 Estoque: ${totalEstoqueFormatted} ${unSimbolo}</span>
-                </div>
-            </div>`;
+            <tr class="${rowClass}" data-id="${ins.id}">
+                <td style="text-align:center; color:var(--text-muted); font-size:0.85rem;">${idx + 1}</td>
+                <td>
+                    <div>
+                        <strong style="display:block;">${ins.nome}</strong>
+                        ${ins.codigo_interno ? `<span style="font-size:0.75rem; color:var(--text-muted);">${ins.codigo_interno}</span>` : ''}
+                    </div>
+                </td>
+                <td><span style="color:var(--text-muted);">${categoria}</span></td>
+                <td><strong style="color:var(--primary);">${fmtBRL(ins.custo_medio)}</strong><span style="color:var(--text-muted); font-size:0.8rem;">/${unSimbolo}</span></td>
+                <td style="color:${estoqueColor}; font-weight:${estoqueColor !== 'inherit' ? '700' : 'normal'};">
+                    ${totalEstoqueFormatted} <span style="color:var(--text-muted); font-size:0.8rem; font-weight:normal;">${unSimbolo}</span>
+                </td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="rest-icon-actions">
+                        <button class="rest-icon-btn" title="Editar insumo" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">✏️</button>
+                        <button class="rest-icon-btn" title="Gerenciar estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">📦</button>
+                        <label class="switch rest-table-switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}" style="margin:0;">
+                            <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </td>
+            </tr>`;
         }).join('');
     }
+
 
     function parseBRL(value) {
         if (!value) return 0;
@@ -1067,65 +1088,77 @@
             const container = document.getElementById('rest-fichas-lista');
             if (!container) return;
             if (!state.fichasTecnicas.length) {
-                container.innerHTML = '<p class="rest-empty">Nenhuma ficha técnica cadastrada. Selecione um produto para criar.</p>';
+                container.innerHTML = '<tr><td colspan="7" class="rest-empty" style="border-radius:0;">Nenhuma ficha técnica cadastrada. Selecione um produto para criar.</td></tr>';
                 return;
             }
+
+            // Agrupa por produto, mantém a ficha ativa ou a mais recente
             const grupos = {};
             state.fichasTecnicas.forEach(ft => {
                 const key = ft.product_id;
                 if (!grupos[key]) grupos[key] = [];
                 grupos[key].push(ft);
             });
+
             container.innerHTML = Object.keys(grupos).map(productId => {
                 const fichas = grupos[productId];
                 const fichaAtiva = fichas.find(f => f.ativo) || fichas[0];
                 const produto = fichaAtiva.products;
-                const itens = fichaAtiva.ficha_tecnica_itens || [];
                 const custo = fichaAtiva.custo_calculado || 0;
-                const margem = produto?.price ? ((produto.price - custo) / produto.price * 100).toFixed(1) : null;
+                const preco = produto?.price || 0;
+                const margem = preco > 0 ? ((preco - custo) / preco * 100) : null;
                 const estoqueCalc = produto?.estoque_calculado;
-                const estoqueLabel = estoqueCalc != null
-                    ? `<span style="color:${estoqueCalc <= 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:600;">${estoqueCalc <= 0 ? '⚠️ 0 (sem estoque)' : estoqueCalc + ' disponíveis'}</span>`
-                    : '<span style="color:var(--text-muted);">N/A</span>';
+
+                // Badge de estoque — padrão do sistema
+                let estoqueBadge;
+                if (estoqueCalc == null) {
+                    estoqueBadge = '<span style="color:var(--text-muted)">N/A</span>';
+                } else if (estoqueCalc <= 0) {
+                    estoqueBadge = `<span style="color:#f87171; font-weight:700;">0 ⚠️</span>`;
+                } else {
+                    estoqueBadge = `<span style="color:#4ade80; font-weight:600;">${estoqueCalc}</span>`;
+                }
+
+                // Badge de margem com cor progressiva
+                let margemBadge;
+                if (margem === null) {
+                    margemBadge = '<span style="color:var(--text-muted)">—</span>';
+                } else if (margem < 0) {
+                    margemBadge = `<span style="color:#f87171; font-weight:700;">${margem.toFixed(1)}%</span>`;
+                } else if (margem < 30) {
+                    margemBadge = `<span style="color:#facc15; font-weight:600;">${margem.toFixed(1)}%</span>`;
+                } else {
+                    margemBadge = `<span style="color:#4ade80; font-weight:600;">${margem.toFixed(1)}%</span>`;
+                }
+
+                const rowClass = !fichaAtiva.ativo ? 'row-inactive' : '';
+
                 return `
-                <div class="rest-ficha-card" style="display:flex; flex-direction:column; gap:10px; padding:12px;">
-                    <!-- Linha 1: Nome, versão e switch ativo/inativo -->
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span class="rest-ficha-produto" style="font-weight:600; font-size:1rem;">
-                            ${produto?.name || 'Produto removido'} <span style="color:var(--text-muted); font-size:0.8rem; margin-left:4px;">v${fichaAtiva.versao}</span>
-                        </span>
-                        <label class="switch" title="${fichaAtiva.ativo ? 'Desativar' : 'Ativar'}" style="margin-bottom:0;">
-                            <input type="checkbox" ${fichaAtiva.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleFicha('${fichaAtiva.id}', this.checked)">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <!-- Linha 2: Informações (Sessão de informações primeiro) -->
-                    <div class="rest-ficha-footer" style="margin-top:0; border-top:none; padding-top:0; padding-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; flex-wrap:wrap; gap:8px 12px; font-size:0.85rem;">
-                        <span>💰 Custo: <strong>${fmtBRL(custo)}</strong></span>
-                        ${produto?.price ? `<span>💵 Preço: <strong>${fmtBRL(produto.price)}</strong></span>` : ''}
-                        ${margem !== null ? `<span>📈 Margem: <strong>${margem}%</strong></span>` : ''}
-                        ${fichaAtiva.quantidade_produzida ? `<span>🍽️ Rende: ${fichaAtiva.quantidade_produzida} porções</span>` : ''}
-                        <span>📦 Estoque: ${estoqueLabel}</span>
-                    </div>
-
-                    <!-- Linha 3: Ingredientes -->
-                    <div class="rest-ficha-itens" style="margin-top:0; font-size:0.85rem;">
-                        <p style="margin-bottom:6px; font-weight:600; color:var(--text-muted); font-size:0.8rem; text-transform:uppercase;">Ingredientes</p>
-                        ${itens.map(it => `
-                            <span class="rest-ficha-item" style="display:inline-block; margin-right:8px; margin-bottom:6px;">
-                                ${it.insumos?.nome}: <strong>${it.quantidade} ${it.unidades_medida?.simbolo || ''}</strong>
-                                <em style="color:var(--text-muted)">(${fmtBRL(it.insumos?.custo_medio * it.quantidade)})</em>
-                            </span>`).join('')}
-                    </div>
-
-                    <!-- Linha 4: Botões de ação -->
-                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-                        <button class="btn-sm btn-edit" style="padding: 4px 10px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">Editar Ficha</button>
-                        <button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.2);" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">Nova Versão</button>
-                        ${fichaAtiva.observacoes ? `<button class="btn-sm" style="padding: 4px 10px; font-size: 0.75rem; background:rgba(46,204,113,0.1); color:#2ecc71; border:1px solid rgba(46,204,113,0.2);" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖 Modo de Preparo</button>` : ''}
-                    </div>
-                </div>`;
+                <tr class="${rowClass}" data-id="${fichaAtiva.id}">
+                    <td style="text-align:center;">
+                        <span class="badge" style="background:rgba(229,178,93,0.15); color:var(--primary); font-weight:700;">v${fichaAtiva.versao}</span>
+                        ${fichas.length > 1 ? `<br><span style="font-size:0.7rem; color:var(--text-muted);">${fichas.length} versões</span>` : ''}
+                    </td>
+                    <td>
+                        <strong style="display:block;">${produto?.name || '<em style="color:var(--text-muted);">Produto removido</em>'}</strong>
+                        ${fichaAtiva.quantidade_produzida ? `<span style="font-size:0.75rem; color:var(--text-muted);">Rende ${fichaAtiva.quantidade_produzida} porção(ões)</span>` : ''}
+                    </td>
+                    <td><strong style="color:var(--primary);">${fmtBRL(custo)}</strong></td>
+                    <td>${preco > 0 ? `<strong>${fmtBRL(preco)}</strong>` : '<span style="color:var(--text-muted)">—</span>'}</td>
+                    <td>${margemBadge}</td>
+                    <td>${estoqueBadge}</td>
+                    <td>
+                        <div class="rest-icon-actions">
+                            <button class="rest-icon-btn" title="Editar ficha técnica" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">✏️</button>
+                            <button class="rest-icon-btn" title="Criar nova versão" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">📋</button>
+                            ${fichaAtiva.observacoes ? `<button class="rest-icon-btn" title="Ver modo de preparo" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖</button>` : ''}
+                            <label class="switch rest-table-switch" title="${fichaAtiva.ativo ? 'Desativar ficha' : 'Ativar ficha'}" style="margin:0;">
+                                <input type="checkbox" ${fichaAtiva.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleFicha('${fichaAtiva.id}', this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>`;
             }).join('');
         });
     }

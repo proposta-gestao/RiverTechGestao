@@ -1499,7 +1499,7 @@
                             <h2>🧂 Insumos</h2>
                             <p class="rest-section-desc">Ingredientes, bebidas, embalagens e matérias-primas</p>
                         </div>
-                        <div style="display:flex;gap:8px;align-items:center;">
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                             <input type="text" id="restInsumoBusca" placeholder="🔍 Buscar insumo..." oninput="window.__RESTAURANTE.filtrarInsumos()" style="min-width:180px;">
                             <select id="restInsumoCategoriaFiltro" onchange="window.__RESTAURANTE.filtrarInsumos()" style="min-width:150px;">
                                 <option value="">Todas categorias</option>
@@ -1507,7 +1507,22 @@
                             <button class="btn-primary" onclick="window.__RESTAURANTE.novoInsumo()">+ Novo Insumo</button>
                         </div>
                     </div>
-                    <div id="rest-insumos-lista" class="rest-insumos-grid"></div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:44px;text-align:center;">Nº</th>
+                                    <th>Nome</th>
+                                    <th>Categoria</th>
+                                    <th>Custo / Un</th>
+                                    <th>Estoque</th>
+                                    <th>Status</th>
+                                    <th style="text-align:center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rest-insumos-lista"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- ── Fichas Técnicas ── -->
@@ -1519,7 +1534,22 @@
                         </div>
                         <button class="btn-primary" onclick="window.__RESTAURANTE.novaFicha()">+ Nova Ficha</button>
                     </div>
-                    <div id="rest-fichas-lista" class="rest-fichas-grid"></div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:64px;text-align:center;">Versão</th>
+                                    <th>Produto</th>
+                                    <th>Custo</th>
+                                    <th>Preço</th>
+                                    <th>Margem</th>
+                                    <th>Estoque</th>
+                                    <th style="text-align:center;">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rest-fichas-lista"></tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- ── Inventário ── -->

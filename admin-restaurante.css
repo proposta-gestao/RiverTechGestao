@@ -452,3 +452,91 @@
     margin-bottom: 12px;
 }
 
+/* ── Ações com Ícones (Insumos & Fichas) ── */
+.rest-icon-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.rest-icon-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    line-height: 1;
+    position: relative;
+    color: inherit;
+}
+
+.rest-icon-btn:hover {
+    background: rgba(229, 178, 93, 0.15);
+    border-color: rgba(229, 178, 93, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* Tooltip nativo via title (sem JS adicional) */
+.rest-icon-btn[title] {
+    cursor: pointer;
+}
+
+/* Switch compacto para uso dentro de tabelas */
+.rest-table-switch {
+    transform: scale(0.8);
+    transform-origin: center;
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+}
+
+/* Garantir que as tabelas admin-table funcionem dentro do módulo restaurante */
+#tab-restaurante .admin-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+}
+
+#tab-restaurante .admin-table {
+    width: 100%;
+    min-width: 600px;
+}
+
+#tab-restaurante .admin-table td {
+    vertical-align: middle;
+}
+
+/* Estado vazio em tabelas do restaurante */
+#tab-restaurante .admin-table .rest-empty {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+}
+
+/* Responsividade: ocultar colunas menos críticas em telas pequenas */
+@media (max-width: 768px) {
+    #rest-subtab-insumos .admin-table th:nth-child(1),
+    #rest-subtab-insumos .admin-table td:nth-child(1) {
+        display: none; /* Oculta Nº */
+    }
+    #rest-subtab-fichas .admin-table th:nth-child(4),
+    #rest-subtab-fichas .admin-table td:nth-child(4) {
+        display: none; /* Oculta Preço */
+    }
+}
+
+@media (max-width: 560px) {
+    #rest-subtab-insumos .admin-table th:nth-child(4),
+    #rest-subtab-insumos .admin-table td:nth-child(4) {
+        display: none; /* Oculta Custo */
+    }
+    #rest-subtab-fichas .admin-table th:nth-child(5),
+    #rest-subtab-fichas .admin-table td:nth-child(5) {
+        display: none; /* Oculta Margem */
+    }
+}
