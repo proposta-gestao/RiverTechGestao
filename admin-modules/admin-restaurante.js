@@ -1262,15 +1262,35 @@
         abrirModal('modalRestFicha');
     };
 
+    window.__RESTAURANTE.onFichaInsumoChange = function () {
+        const insumoId = document.getElementById('restFichaAddInsumo').value;
+        const unInput = document.getElementById('restFichaAddUnidade');
+        if (!insumoId) {
+            unInput.value = '';
+            return;
+        }
+        const ins = state.insumos.find(x => x.id === insumoId);
+        if (ins && ins.unidade_medida) {
+            unInput.value = ins.unidade_medida.simbolo || '';
+        } else {
+            unInput.value = '';
+        }
+    };
+
     window.__RESTAURANTE.adicionarItemFicha = function () {
         const insumoId = document.getElementById('restFichaAddInsumo').value;
         const quantidade = parseFloat(document.getElementById('restFichaAddQtd').value);
-        const unidadeId = document.getElementById('restFichaAddUnidade').value;
-        if (!insumoId || !quantidade || quantidade <= 0 || !unidadeId) {
-            toast('Preencha insumo, quantidade e unidade.', 'error'); return;
+        if (!insumoId || !quantidade || quantidade <= 0) {
+            toast('Preencha insumo e quantidade.', 'error'); return;
         }
         const ins = state.insumos.find(x => x.id === insumoId);
-        const un = state.unidades.find(x => x.id === unidadeId);
+        if (!ins) {
+            toast('Insumo inválido.', 'error'); return;
+        }
+        
+        const unidadeId = ins.unidade_medida_id;
+        const un = state.unidades.find(x => x.id === unidadeId) || ins.unidade_medida;
+        
         if (state.editingFichaItens.find(x => x.insumo_id === insumoId)) {
             toast('Este insumo já está na ficha. Edite a quantidade.', 'error'); return;
         }
@@ -1284,6 +1304,7 @@
         });
         document.getElementById('restFichaAddInsumo').value = '';
         document.getElementById('restFichaAddQtd').value = '';
+        document.getElementById('restFichaAddUnidade').value = '';
         renderItensEditorFicha();
     };
 
@@ -1301,8 +1322,9 @@
                     `<option value="${i.id}">${i.nome} (${i.unidade_medida?.simbolo || ''})</option>`
                 ).join('');
         }
-        const selUnidade = document.getElementById('restFichaAddUnidade');
-        if (selUnidade) selUnidade.innerHTML = buildUnidadeOptions();
+        
+        const unInput = document.getElementById('restFichaAddUnidade');
+        if (unInput) unInput.value = '';
 
         const container = document.getElementById('restFichaItensLista');
         if (!container) return;
