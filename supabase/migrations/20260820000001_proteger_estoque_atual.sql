@@ -1,6 +1,6 @@
 -- Migration: Proteger estoque_atual e custo_medio contra escrita direta pelo frontend
 -- As triggers SECURITY DEFINER (trg_processar_movimentacao_insumo) continuam funcionando normalmente.
--- O frontend só pode alterar estoque_minimo via UPDATE.
+-- O frontend só pode alterar estoque_minimo via UPDATE direto.
 
 -- 1. Trigger de proteção: impede que UPDATE altere estoque_atual diretamente
 -- Reverte silenciosamente qualquer tentativa de escrita direta em estoque_atual
@@ -9,9 +9,11 @@ RETURNS TRIGGER
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Se estoque_atual está sendo alterado por usuário autenticado (não por trigger SECURITY DEFINER)
+    -- Se estoque_atual está sendo alterado
     IF NEW.estoque_atual IS DISTINCT FROM OLD.estoque_atual THEN
-        IF current_setting('role', true) = 'authenticated' THEN
+        -- Verifica se é uma chamada direta (depth = 1) do frontend (role = authenticated)
+        -- Triggers do sistema (como trg_processar_movimentacao_insumo) rodam com depth > 1
+        IF current_setting('role', true) = 'authenticated' AND pg_trigger_depth() = 1 THEN
             NEW.estoque_atual := OLD.estoque_atual;
         END IF;
     END IF;
@@ -33,7 +35,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     IF NEW.custo_medio IS DISTINCT FROM OLD.custo_medio THEN
-        IF current_setting('role', true) = 'authenticated' THEN
+        IF current_setting('role', true) = 'authenticated' AND pg_trigger_depth() = 1 THEN
             NEW.custo_medio := OLD.custo_medio;
         END IF;
     END IF;
