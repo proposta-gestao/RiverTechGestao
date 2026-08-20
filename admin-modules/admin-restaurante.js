@@ -1021,7 +1021,7 @@
         if (selUCompra) {
             selUCompra.innerHTML = ''; // Limpa opções abertas
             const uCompraId = ins.unidade_compra_id || ins.unidade_medida_id;
-            const uCompraObj = state.unidades_medida?.find(u => u.id === uCompraId);
+            const uCompraObj = state.unidades?.find(u => u.id === uCompraId);
             
             if (uCompraObj) {
                 const opt = document.createElement('option');
