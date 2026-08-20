@@ -944,6 +944,45 @@
     // ============================================================
     // ESTOQUE DO INSUMO POR DEPÓSITO
     // ============================================================
+    function atualizarHintCustoEstoque() {
+        const insumoId = document.getElementById('restEstoqueInsumoId')?.value;
+        if (!insumoId) return;
+        const ins = state.insumos.find(x => x.id === insumoId);
+        if (!ins) return;
+
+        const valPagoStr = document.getElementById('restEstoqueValorPago')?.value || '';
+        const valPago = parseBRL(valPagoStr) || 0;
+        
+        let qtdEmb = parseFloat(document.getElementById('restEstoqueQtdEmbalagem')?.value) || 1;
+        if (qtdEmb <= 0) qtdEmb = 1;
+
+        const selComp = document.getElementById('restEstoqueUnidadeCompra');
+        const uCompraId = selComp?.value || ins.unidade_medida_id;
+        const uUsoId = ins.unidade_medida_id;
+
+        const fComp = getFator(uCompraId) || 1;
+        const fUso = getFator(uUsoId) || 1;
+
+        const qtdUsoPorEmbalagem = qtdEmb * (fComp / fUso);
+        
+        const qtdComprada = parseFloat(document.getElementById('restEstoqueQtd')?.value) || 0;
+        const qtdParaCalculo = qtdComprada > 0 ? qtdComprada : 1;
+        
+        const totalUsoEntrada = qtdComprada * qtdUsoPorEmbalagem;
+        const unitCost = valPago > 0 ? (valPago / (qtdParaCalculo * qtdUsoPorEmbalagem)) : 0;
+        
+        const simUso = ins.unidade_medida?.simbolo || '';
+
+        const hint = document.getElementById('restEstoqueCustoCalculadoHint');
+        const hiddenCusto = document.getElementById('restEstoqueCustoUnitario');
+
+        if (hiddenCusto) hiddenCusto.value = unitCost.toFixed(4);
+        
+        if (hint) {
+            hint.innerHTML = `Custo por <strong>${simUso}</strong>: <strong>R$ ${unitCost.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:4})}</strong> <br> <span style="font-size:0.8rem; color:var(--text-muted)">Entrada real no estoque: ${totalUsoEntrada.toLocaleString('pt-BR')} ${simUso}</span>`;
+        }
+    }
+
     window.__RESTAURANTE.gerenciarEstoque = async function (insumoId) {
         const ins = state.insumos.find(x => x.id === insumoId);
         if (!ins) return;
@@ -977,13 +1016,26 @@
             if (ativos.length === 1) selectDep.value = ativos[0].id;
         }
 
-        // Pré-preencher custo unitário com custo médio atual como sugestão
-        const custoInput = document.getElementById('restEstoqueCustoUnitario');
-        if (custoInput) custoInput.value = ins?.custo_medio || '';
+        // Popular seletor de unidade de compra
+        const selUCompra = document.getElementById('restEstoqueUnidadeCompra');
+        if (selUCompra) {
+            selUCompra.innerHTML = buildUnidadeOptions();
+            selUCompra.value = ins.unidade_compra_id || ins.unidade_medida_id;
+        }
+        
+        const qtdEmbInput = document.getElementById('restEstoqueQtdEmbalagem');
+        if (qtdEmbInput) qtdEmbInput.value = ins.quantidade_por_embalagem || 1;
+
+        const valPagoInput = document.getElementById('restEstoqueValorPago');
+        if (valPagoInput) valPagoInput.value = ''; // Reseta valor pago
+        
+        document.getElementById('restEstoqueQtdLabel').textContent = 'Qtd Comprada (Embalagens)';
 
         // Mostrar campo de custo (entrada é o padrão)
         const custoBox = document.getElementById('restEstoqueCustoBox');
         if (custoBox) custoBox.style.display = 'block';
+        
+        atualizarHintCustoEstoque();
 
         // Carrega estoque atual
         const estoqueAtual = ins.estoque_insumos || [];
@@ -1026,11 +1078,22 @@
             sel.addEventListener('change', () => {
                 const isSaida = sel.value === 'saida';
                 document.getElementById('restEstoqueMotivoBox').style.display = isSaida ? 'block' : 'none';
-                document.getElementById('restEstoqueQtdLabel').textContent = isSaida ? 'Quantidade de Saída' : 'Quantidade de Entrada';
+                document.getElementById('restEstoqueQtdLabel').textContent = isSaida ? 'Quantidade de Saída (Uso)' : 'Qtd Comprada (Embalagens)';
                 // Mostrar/ocultar campo de custo unitário: visível apenas em entrada
                 const custoBox = document.getElementById('restEstoqueCustoBox');
                 if (custoBox) custoBox.style.display = isSaida ? 'none' : 'block';
+                if (typeof atualizarHintCustoEstoque === 'function') atualizarHintCustoEstoque();
             });
+            
+            const qEst = document.getElementById('restEstoqueQtd');
+            const vPago = document.getElementById('restEstoqueValorPago');
+            const qEmb = document.getElementById('restEstoqueQtdEmbalagem');
+            const sComp = document.getElementById('restEstoqueUnidadeCompra');
+            
+            if (qEst) qEst.addEventListener('input', atualizarHintCustoEstoque);
+            if (vPago) vPago.addEventListener('input', atualizarHintCustoEstoque);
+            if (qEmb) qEmb.addEventListener('input', atualizarHintCustoEstoque);
+            if (sComp) sComp.addEventListener('change', atualizarHintCustoEstoque);
         }
     })();
 
@@ -1040,12 +1103,25 @@
         const ins = state.insumos.find(x => x.id === insumoId);
         const depositosAtivos = state.depositos.filter(d => d.ativo);
         const tipo = document.getElementById('restEstoqueTipo')?.value || 'entrada';
-        const qtdMovimento = parseFloat(document.getElementById('restEstoqueQtd')?.value) || 0;
+        let qtdMovimento = parseFloat(document.getElementById('restEstoqueQtd')?.value) || 0;
         const motivo = document.getElementById('restEstoqueMotivoId')?.value || null;
         const obs = document.getElementById('restEstoqueObs')?.value.trim() || null;
 
         // FIX: Lê depósito do seletor obrigatório (não mais auto-resolução)
         const depositoSelecionado = document.getElementById('restEstoqueDeposito')?.value;
+
+        // Conversão se for entrada (pois a QTD foi informada em embalagens):
+        if (tipo === 'entrada') {
+            let qtdEmb = parseFloat(document.getElementById('restEstoqueQtdEmbalagem')?.value) || 1;
+            if (qtdEmb <= 0) qtdEmb = 1;
+            const uCompraId = document.getElementById('restEstoqueUnidadeCompra')?.value || ins.unidade_medida_id;
+            const uUsoId = ins.unidade_medida_id;
+            const fComp = getFator(uCompraId) || 1;
+            const fUso = getFator(uUsoId) || 1;
+            const qtdUsoPorEmbalagem = qtdEmb * (fComp / fUso);
+            
+            qtdMovimento = qtdMovimento * qtdUsoPorEmbalagem;
+        }
 
         // Se foi informada quantidade de movimentação, registra na tabela de movimentações
         if (qtdMovimento > 0) {

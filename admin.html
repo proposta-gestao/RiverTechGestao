@@ -3041,11 +3041,25 @@
                     <div id="restEstoqueCustoBox" style="display:block;">
                         <div class="form-row">
                             <div class="form-group" style="flex:1">
-                                <label for="restEstoqueCustoUnitario">Custo Unitário (R$)</label>
-                                <input type="number" id="restEstoqueCustoUnitario" step="0.01" min="0" placeholder="0,00">
-                                <small style="color:var(--text-muted)">Custo por unidade de uso desta compra</small>
+                                <label for="restEstoqueUnidadeCompra">Unidade Comprada</label>
+                                <select id="restEstoqueUnidadeCompra"></select>
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label for="restEstoqueQtdEmbalagem">Qtd por Embalagem</label>
+                                <input type="number" id="restEstoqueQtdEmbalagem" step="0.001" min="0" placeholder="Ex: 24">
                             </div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-group" style="flex:1">
+                                <label for="restEstoqueValorPago">Valor Total Pago (R$)</label>
+                                <input type="text" id="restEstoqueValorPago" placeholder="Ex: 1.200,00 ou 1200">
+                                <small id="restEstoqueCustoCalculadoHint" style="color:var(--primary); font-weight:600; display:block; margin-top:4px;">
+                                    Custo unitário: R$ 0,00 | Entrada real: 0
+                                </small>
+                            </div>
+                        </div>
+                        <!-- Custo unitário real (calculado em background) -->
+                        <input type="hidden" id="restEstoqueCustoUnitario">
                     </div>
                     <!-- Motivo + Obs (só em saída) -->
                     <div id="restEstoqueMotivoBox" class="inventory-reason-box" style="display:none;">
