@@ -1016,11 +1016,22 @@
             if (ativos.length === 1) selectDep.value = ativos[0].id;
         }
 
-        // Popular seletor de unidade de compra
+        // Popular seletor de unidade de compra APENAS com a unidade registrada para o insumo
         const selUCompra = document.getElementById('restEstoqueUnidadeCompra');
         if (selUCompra) {
-            selUCompra.innerHTML = buildUnidadeOptions();
-            selUCompra.value = ins.unidade_compra_id || ins.unidade_medida_id;
+            selUCompra.innerHTML = ''; // Limpa opções abertas
+            const uCompraId = ins.unidade_compra_id || ins.unidade_medida_id;
+            const uCompraObj = state.unidades_medida?.find(u => u.id === uCompraId);
+            
+            if (uCompraObj) {
+                const opt = document.createElement('option');
+                opt.value = uCompraObj.id;
+                opt.textContent = `${uCompraObj.nome} (${uCompraObj.simbolo})`;
+                selUCompra.appendChild(opt);
+            }
+            
+            selUCompra.value = uCompraId;
+            selUCompra.setAttribute('disabled', 'true'); // Trava o campo para não ser alterado
         }
         
         const qtdEmbInput = document.getElementById('restEstoqueQtdEmbalagem');
