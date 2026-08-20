@@ -1062,6 +1062,12 @@
             // FIX: Apenas INSERT em movimentacoes_insumos — a trigger
             // trg_processar_movimentacao_insumo faz o upsert em estoque_insumos
             // e recalcula custo_medio automaticamente. NÃO escrever em estoque_insumos.
+            // Combina motivo e observação no campo observacao (tabela não tem coluna motivo)
+            const obsCompleta = [
+                tipo === 'saida' && motivo ? `Motivo: ${motivo}` : null,
+                obs || null,
+            ].filter(Boolean).join(' | ') || null;
+
             const { error: errMov } = await sb.from('movimentacoes_insumos').insert({
                 empresa_id: tenantId,
                 insumo_id: insumoId,
@@ -1069,8 +1075,7 @@
                 tipo,
                 quantidade: qtdMovimento,
                 custo_unitario: custoUnitario,
-                motivo: tipo === 'saida' ? (motivo || null) : null,
-                observacao: obs || null,
+                observacao: obsCompleta,
             });
             if (errMov) { toast('Erro ao registrar movimentação: ' + errMov.message, 'error'); return; }
         }
