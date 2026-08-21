@@ -776,6 +776,9 @@
         const hintEl = document.getElementById('restInsumoCustoCalculadoHint');
         if (hintEl) hintEl.innerHTML = 'Custo por unidade de uso: R$ 0,00';
         
+        const btnExcluir = document.getElementById('btnExcluirInsumo');
+        if (btnExcluir) btnExcluir.style.display = 'none';
+
         abrirModal('modalRestInsumo');
     };
 
@@ -818,7 +821,33 @@
         // Atualiza o hint de custo calculado
         atualizarHintCustoInsumo();
         
+        const btnExcluir = document.getElementById('btnExcluirInsumo');
+        if (btnExcluir) btnExcluir.style.display = 'block';
+
         abrirModal('modalRestInsumo');
+    };
+
+    window.__RESTAURANTE.excluirInsumo = async function () {
+        const id = state.editingInsumoId;
+        if (!id) return;
+        const confirmacao = confirm('ATENÇÃO: Deseja realmente excluir este insumo?\\n\\nIsso apagará TODO o histórico de movimentações, saldo de estoque e removerá o item de qualquer Ficha Técnica em que ele esteja.\\n\\nTem certeza absoluta?');
+        if (!confirmacao) return;
+
+        showLoading();
+        try {
+            const { error } = await sb.rpc('excluir_insumo_teste', { p_insumo_id: id });
+            if (error) throw error;
+            toast('Insumo excluído com sucesso (histórico limpo).', 'success');
+            window.__RESTAURANTE.fecharModalInsumo();
+            await carregarInsumos();
+            if (typeof carregarFichasTecnicas === 'function') await carregarFichasTecnicas();
+            if (typeof carregarMovimentacoes === 'function') await carregarMovimentacoes();
+        } catch (err) {
+            console.error('[Restaurante] Erro exclusao insumo:', err);
+            toast('Erro ao excluir: ' + err.message, 'error');
+        } finally {
+            hideLoading();
+        }
     };
 
     window.__RESTAURANTE.salvarInsumo = async function () {
@@ -1377,6 +1406,10 @@
         document.getElementById('restFichaUnidProduzida').innerHTML = buildUnidadeOptions();
         renderItensEditorFicha();
         document.getElementById('modalRestFicha').querySelector('h3').textContent = '📋 Nova Ficha Técnica';
+        
+        const btnExcluir = document.getElementById('btnExcluirFicha');
+        if (btnExcluir) btnExcluir.style.display = 'none';
+
         abrirModal('modalRestFicha');
     };
 
@@ -1406,6 +1439,10 @@
         document.getElementById('restFichaUnidProduzida').innerHTML = buildUnidadeOptions(ft.unidade_produzida_id);
         renderItensEditorFicha();
         document.getElementById('modalRestFicha').querySelector('h3').textContent = '✏️ Editar Ficha Técnica';
+        
+        const btnExcluir = document.getElementById('btnExcluirFicha');
+        if (btnExcluir) btnExcluir.style.display = 'block';
+
         abrirModal('modalRestFicha');
     };
 
@@ -1527,6 +1564,27 @@
         const el = document.getElementById('restFichaCustoTotal');
         if (el) el.textContent = fmtBRL(total);
     }
+
+    window.__RESTAURANTE.excluirFichaTecnica = async function (id) {
+        const fichaId = id || state.editingFichaId;
+        if (!fichaId) return;
+        
+        if (!confirm('Tem certeza que deseja excluir esta ficha técnica? Os itens serão apagados.')) return;
+        
+        showLoading();
+        try {
+            const { error } = await sb.from('ficha_tecnica').delete().eq('id', fichaId);
+            if (error) throw error;
+            toast('Ficha técnica excluída com sucesso.', 'success');
+            window.__RESTAURANTE.fecharModalFicha();
+            await carregarFichasTecnicas();
+        } catch (err) {
+            console.error('[Restaurante] Erro exclusao ficha:', err);
+            toast('Erro ao excluir: ' + err.message, 'error');
+        } finally {
+            hideLoading();
+        }
+    };
 
     window.__RESTAURANTE.salvarFicha = async function () {
         const tenantId = getTenantId();
