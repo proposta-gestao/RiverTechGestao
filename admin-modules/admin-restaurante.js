@@ -87,11 +87,20 @@
     // ============================================================
     function abrirModal(id) {
         const el = document.getElementById(id);
-        if (el) el.classList.add('active');
+        if (el) {
+            el.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
     }
     function fecharModalRest(id) {
         const el = document.getElementById(id);
-        if (el) el.classList.remove('active');
+        if (el) {
+            el.classList.remove('active');
+            // Restaura scroll apenas se não houver outro modal aberto
+            if (!document.querySelector('.admin-modal-backdrop.active')) {
+                document.body.style.overflow = '';
+            }
+        }
     }
 
     // ============================================================
@@ -678,8 +687,8 @@
                 <td>${statusBadge}</td>
                 <td>
                     <div class="rest-icon-actions">
-                        <button class="rest-icon-btn" title="Editar insumo" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">✏️</button>
-                        <button class="rest-icon-btn" title="Gerenciar estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">📦</button>
+                        <button class="rest-icon-btn" title="Editar insumo" aria-label="Editar insumo" onclick="window.__RESTAURANTE.editarInsumo('${ins.id}')">✏️</button>
+                        <button class="rest-icon-btn" title="Gerenciar estoque" aria-label="Gerenciar estoque" onclick="window.__RESTAURANTE.gerenciarEstoque('${ins.id}')">📦</button>
                         <label class="switch rest-table-switch" title="${ins.ativo ? 'Desativar' : 'Ativar'}" style="margin:0;">
                             <input type="checkbox" ${ins.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleInsumo('${ins.id}', this.checked)">
                             <span class="slider"></span>
@@ -1322,9 +1331,9 @@
                     <td>${estoqueBadge}</td>
                     <td>
                         <div class="rest-icon-actions">
-                            <button class="rest-icon-btn" title="Editar ficha técnica" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">✏️</button>
-                            <button class="rest-icon-btn" title="Criar nova versão" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">📋</button>
-                            ${fichaAtiva.observacoes ? `<button class="rest-icon-btn" title="Ver modo de preparo" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖</button>` : ''}
+                            <button class="rest-icon-btn" title="Editar ficha técnica" aria-label="Editar ficha" onclick="window.__RESTAURANTE.editarFicha('${fichaAtiva.id}')">✏️</button>
+                            <button class="rest-icon-btn" title="Criar nova versão" aria-label="Nova versão" onclick="window.__RESTAURANTE.novaVersaoFicha('${productId}')">📋</button>
+                            ${fichaAtiva.observacoes ? `<button class="rest-icon-btn" title="Ver modo de preparo" aria-label="Ver modo de preparo" onclick="window.__RESTAURANTE.verPreparo('${fichaAtiva.id}')">📖</button>` : ''}
                             <label class="switch rest-table-switch" title="${fichaAtiva.ativo ? 'Desativar ficha' : 'Ativar ficha'}" style="margin:0;">
                                 <input type="checkbox" ${fichaAtiva.ativo ? 'checked' : ''} onchange="window.__RESTAURANTE.toggleFicha('${fichaAtiva.id}', this.checked)">
                                 <span class="slider"></span>
@@ -1554,7 +1563,7 @@
                     <span class="rest-ficha-item-qtd">${item.quantidade} ${item.unidade_simbolo}</span>
                     <span style="color:var(--text-muted)">${fmtBRL(item.custo_medio * item.quantidade)}</span>
                 </div>
-                <button class="btn-cancel btn-sm" title="Remover" onclick="window.__RESTAURANTE.removerItemFicha('${item.insumo_id}')">🗑️</button>
+                <button class="btn-cancel btn-sm" title="Remover" aria-label="Remover insumo" onclick="window.__RESTAURANTE.removerItemFicha('${item.insumo_id}')">🗑️</button>
             </div>`).join('');
         updateCustoFicha();
     }
@@ -1696,13 +1705,13 @@
                     <span class="rest-badge">${statusLabel[inv.status] || inv.status}</span>
                     <span style="color:var(--text-muted); font-size:0.78rem">${data}</span>
                 </div>
-                <div class="rest-list-actions" style="align-items: center; gap: 8px;">
+                <div class="rest-list-actions" style="align-items: center;">
                     ${inv.status === 'aberto' ? `
-                        <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">Contar</button>
-                        <button class="btn-sm" style="padding: 5px 8px; font-size: 0.75rem; background:rgba(0,184,148,0.1); color:var(--success); border:1px solid rgba(0,184,148,0.2);" onclick="window.__RESTAURANTE.concluirInventario('${inv.id}')">Concluir</button>
-                        <button class="btn-sm btn-delete" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.cancelarInventario('${inv.id}')">Cancelar</button>
+                        <button class="rest-inv-btn rest-inv-btn--primary" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">Contar</button>
+                        <button class="rest-inv-btn rest-inv-btn--success" onclick="window.__RESTAURANTE.concluirInventario('${inv.id}')">Concluir</button>
+                        <button class="rest-inv-btn rest-inv-btn--danger" onclick="window.__RESTAURANTE.cancelarInventario('${inv.id}')">Cancelar</button>
                     ` : `
-                        <button class="btn-sm btn-edit" style="padding: 5px 8px; font-size: 0.75rem;" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">Visualizar</button>
+                        <button class="rest-inv-btn rest-inv-btn--primary" onclick="window.__RESTAURANTE.abrirInventario('${inv.id}')">Visualizar</button>
                     `}
                 </div>
             </div>`;
@@ -1803,8 +1812,7 @@
                     ${readonly
                         ? `<span>${contadoVal} ${item.insumos?.unidade_medida?.simbolo || ''}</span>`
                         : `<input type="number" step="0.001" min="0" class="inv-contado-input"
-                            data-item-id="${item.id}" value="${item.estoque_contado}"
-                            style="width:90px; padding:4px 8px;">`
+                            data-item-id="${item.id}" value="${item.estoque_contado}">`
                     }
                 </td>
                 <td class="${difClass}">${diffVal > 0 ? '+' : ''}${dif}</td>

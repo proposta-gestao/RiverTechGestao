@@ -1482,6 +1482,7 @@
             <!-- =============================================================== -->
             <div class="tab-content" id="tab-restaurante">
                 <!-- Sub-navegação -->
+                <div class="rest-subtabs-wrapper">
                 <div class="rest-subtabs">
                     <button class="rest-subtab-btn" onclick="switchTab('produtos', document.getElementById('nav-produtos'))">🍔 Produtos</button>
                     <button class="rest-subtab-btn active" data-subtab="insumos">🧂 Insumos</button>
@@ -1490,6 +1491,7 @@
                     <button class="rest-subtab-btn" data-subtab="movimentos">🔄 Movimentações</button>
                     <button class="rest-subtab-btn" data-subtab="cadastros">🗃️ Cadastros</button>
                     <button class="rest-subtab-btn" data-subtab="config">⚙️ Configurações</button>
+                </div>
                 </div>
 
                 <!-- ── Insumos ── -->
@@ -1573,8 +1575,8 @@
                         </div>
                         <button class="btn-primary" onclick="window.__RESTAURANTE.novaMovimentacao()">+ Nova Movimentação</button>
                     </div>
-                    <div style="overflow-x:auto;">
-                        <table class="rest-table">
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
                             <thead>
                                 <tr>
                                     <th>Data</th>
@@ -1593,7 +1595,7 @@
 
                 <!-- ── Cadastros ── -->
                 <div class="rest-subtab-content" id="rest-subtab-cadastros">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1.5rem;">
+                    <div class="rest-cadastros-grid">
                         <!-- Depósitos -->
                         <div class="rest-card">
                             <div class="rest-card-header">
@@ -3216,8 +3218,8 @@
                     <span>🏪 Depósito: <strong id="restInventarioVerDeposito"></strong></span>
                     <span>📝 Obs: <strong id="restInventarioVerObs"></strong></span>
                 </div>
-                <div style="overflow-x:auto;">
-                    <table class="rest-table">
+                <div class="rest-inventario-table-wrapper">
+                    <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>Insumo</th>

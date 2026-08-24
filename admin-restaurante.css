@@ -12,6 +12,7 @@
     border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
     border-radius: 14px;
     width: fit-content;
+    max-width: 100%;
     margin: 0 auto 1.8rem auto;
     overflow-x: auto;
 }
@@ -265,6 +266,8 @@
     display: flex;
     gap: 16px;
     align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
 }
 
 .rest-ficha-item-qtd {
@@ -279,6 +282,8 @@
     align-items: center;
     padding: 12px;
     border-bottom: 1px solid var(--border-default, rgba(229, 178, 93, 0.15));
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .rest-list-item:last-child {
@@ -504,7 +509,7 @@
 
 #tab-restaurante .admin-table {
     width: 100%;
-    min-width: 600px;
+    min-width: 500px;
 }
 
 #tab-restaurante .admin-table td {
@@ -518,25 +523,341 @@
     background: transparent;
 }
 
-/* Responsividade: ocultar colunas menos críticas em telas pequenas */
+/* ============================================================
+   RESPONSIVIDADE — MÓDULO RESTAURANTE
+   Breakpoints: 768px (tablet), 560px (mobile large), 480px (mobile), 375px (mobile small)
+============================================================ */
+
+/* ── Grid Cadastros responsivo ── */
+.rest-cadastros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ── Subtabs: indicador de scroll ── */
+.rest-subtabs-wrapper {
+    position: relative;
+}
+
+.rest-subtabs-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, transparent, var(--bg-main, #0d0d0d));
+    pointer-events: none;
+    opacity: 0.8;
+    border-radius: 0 14px 14px 0;
+    z-index: 1;
+}
+
+/* ── Tabelas: indicador de scroll horizontal ── */
+#tab-restaurante .admin-table-wrapper {
+    position: relative;
+}
+
+/* ── Inventário botões ── */
+.rest-inv-btn {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: inherit;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.rest-inv-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.rest-inv-btn--success {
+    background: rgba(0, 184, 148, 0.1);
+    color: var(--success, #00b894);
+    border-color: rgba(0, 184, 148, 0.2);
+}
+
+.rest-inv-btn--danger {
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--danger, #ff4757);
+    border-color: rgba(255, 71, 87, 0.2);
+}
+
+.rest-inv-btn--primary {
+    background: rgba(229, 178, 93, 0.1);
+    color: var(--accent-gold, #E5B25D);
+    border-color: rgba(229, 178, 93, 0.2);
+}
+
+/* ── Inventário modal: tabela interna ── */
+.rest-inventario-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.rest-inventario-table-wrapper input[type="number"] {
+    width: 100%;
+    max-width: 100px;
+    min-height: 38px;
+    padding: 6px 8px;
+}
+
+/* ── Movimentações: padronizar como admin-table ── */
+#rest-subtab-movimentos .admin-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+}
+
+#rest-subtab-movimentos .admin-table {
+    width: 100%;
+    min-width: 500px;
+}
+
+/* ── Ficha editor: form de adição ── */
+.rest-ficha-add-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.rest-ficha-add-row .form-group {
+    flex: 1;
+    min-width: 120px;
+}
+
+/* ============================================================
+   @media 768px — TABLET
+============================================================ */
 @media (max-width: 768px) {
+    /* Sub-tabs */
+    .rest-subtabs {
+        margin-bottom: 1.2rem;
+    }
+    .rest-subtab-btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+    }
+
+    /* Form-row empilhar no restaurante */
+    #tab-restaurante .form-row,
+    #tab-restaurante .modal-body .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    /* Tabela Insumos: ocultar Nº (col 1) */
     #rest-subtab-insumos .admin-table th:nth-child(1),
     #rest-subtab-insumos .admin-table td:nth-child(1) {
-        display: none; /* Oculta Nº */
+        display: none;
     }
+    /* Tabela Fichas: ocultar Preço (col 4) e Estoque Calc (col 6) */
     #rest-subtab-fichas .admin-table th:nth-child(4),
-    #rest-subtab-fichas .admin-table td:nth-child(4) {
-        display: none; /* Oculta Preço */
+    #rest-subtab-fichas .admin-table td:nth-child(4),
+    #rest-subtab-fichas .admin-table th:nth-child(6),
+    #rest-subtab-fichas .admin-table td:nth-child(6) {
+        display: none;
+    }
+    /* Tabela Movimentações: ocultar Depósito (col 3), Custo Un (col 6), Obs (col 7) */
+    #rest-subtab-movimentos .admin-table th:nth-child(3),
+    #rest-subtab-movimentos .admin-table td:nth-child(3),
+    #rest-subtab-movimentos .admin-table th:nth-child(6),
+    #rest-subtab-movimentos .admin-table td:nth-child(6),
+    #rest-subtab-movimentos .admin-table th:nth-child(7),
+    #rest-subtab-movimentos .admin-table td:nth-child(7) {
+        display: none;
+    }
+
+    /* Botões de ação: touch target maior */
+    .rest-icon-btn {
+        padding: 10px 12px;
+        font-size: 1.1rem;
+    }
+    .rest-icon-actions {
+        gap: 8px;
+    }
+
+    /* Switch: tamanho normal em mobile */
+    .rest-table-switch {
+        transform: scale(1);
+    }
+
+    /* Inventário botões */
+    .rest-inv-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+
+    /* List items wrap */
+    .rest-list-item {
+        gap: 10px;
+    }
+    .rest-list-actions {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Ficha editor */
+    .rest-ficha-item-info {
+        gap: 10px;
+    }
+    .rest-ficha-item-editor {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Estoque depósito items */
+    .rest-estoque-deposito-item .form-row {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Min-width tabela reduzida */
+    #tab-restaurante .admin-table {
+        min-width: 400px;
+    }
+    #rest-subtab-movimentos .admin-table {
+        min-width: 350px;
+    }
+
+    /* Inputs: min-height para touch */
+    #tab-restaurante input[type="text"],
+    #tab-restaurante input[type="number"],
+    #tab-restaurante select {
+        min-height: 44px;
     }
 }
 
+/* ============================================================
+   @media 560px — MOBILE LARGE
+============================================================ */
 @media (max-width: 560px) {
+    /* Tabela Insumos: ocultar Custo (col 4), Categoria (col 3), Status (col 6) */
+    #rest-subtab-insumos .admin-table th:nth-child(3),
+    #rest-subtab-insumos .admin-table td:nth-child(3),
     #rest-subtab-insumos .admin-table th:nth-child(4),
-    #rest-subtab-insumos .admin-table td:nth-child(4) {
-        display: none; /* Oculta Custo */
+    #rest-subtab-insumos .admin-table td:nth-child(4),
+    #rest-subtab-insumos .admin-table th:nth-child(6),
+    #rest-subtab-insumos .admin-table td:nth-child(6) {
+        display: none;
     }
+    /* Tabela Fichas: ocultar Margem (col 5) e Versão (col 1) */
+    #rest-subtab-fichas .admin-table th:nth-child(1),
+    #rest-subtab-fichas .admin-table td:nth-child(1),
     #rest-subtab-fichas .admin-table th:nth-child(5),
     #rest-subtab-fichas .admin-table td:nth-child(5) {
-        display: none; /* Oculta Margem */
+        display: none;
+    }
+    /* Tabela Movimentações: ocultar também Tipo (col 4) */
+    #rest-subtab-movimentos .admin-table th:nth-child(4),
+    #rest-subtab-movimentos .admin-table td:nth-child(4) {
+        display: none;
+    }
+
+    /* Inventário modal tabela: ocultar Ajuste (col 5) */
+    .rest-inventario-table-wrapper th:nth-child(5),
+    .rest-inventario-table-wrapper td:nth-child(5) {
+        display: none;
+    }
+
+    /* Cadastros section header */
+    .rest-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .rest-section-header .btn-primary {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Tabela min-width ainda menor */
+    #tab-restaurante .admin-table {
+        min-width: 300px;
+    }
+    #rest-subtab-movimentos .admin-table {
+        min-width: 280px;
+    }
+
+    /* Ficha add row */
+    .rest-ficha-add-row {
+        flex-direction: column;
+    }
+    .rest-ficha-add-row .form-group {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+/* ============================================================
+   @media 480px — MOBILE
+============================================================ */
+@media (max-width: 480px) {
+    .rest-subtab-btn {
+        padding: 7px 10px;
+        font-size: 0.75rem;
+    }
+
+    .rest-section-header h2 {
+        font-size: 1.2rem;
+    }
+
+    /* Botões ação: compactar mas manter touch target */
+    .rest-icon-btn {
+        padding: 8px 10px;
+    }
+
+    /* Badge menor */
+    .rest-badge {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+
+    /* Modal body padding */
+    .admin-modal .modal-body {
+        padding: 0 1rem 1rem 1rem;
+    }
+    .admin-modal .modal-header {
+        padding: 1rem;
+    }
+}
+
+/* ============================================================
+   @media 375px — MOBILE SMALL
+============================================================ */
+@media (max-width: 375px) {
+    .rest-subtabs {
+        gap: 4px;
+        padding: 4px;
+    }
+    .rest-subtab-btn {
+        padding: 6px 8px;
+        font-size: 0.72rem;
+    }
+
+    .rest-icon-btn {
+        padding: 7px 8px;
+        font-size: 0.95rem;
+    }
+    .rest-icon-actions {
+        gap: 5px;
+    }
+
+    .rest-list-item {
+        padding: 10px 8px;
+    }
+
+    /* Card body menor */
+    .rest-card-body {
+        padding: 12px;
+    }
+    .rest-card-header {
+        padding: 10px 14px;
     }
 }
