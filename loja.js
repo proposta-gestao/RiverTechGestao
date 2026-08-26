@@ -31,7 +31,7 @@ const CORES_MAP = {
     'nude': '#d4a89a'
 };
 
-const TAMANHOS_ORDEM = ['PP', 'P', 'M', 'G', 'GG', 'XG', 'XXG', 'UN'];
+let lojaTamanhos = [];
 
 function getCorHex(nome) {
     return CORES_MAP[nome.toLowerCase()] || '#888888';
@@ -67,7 +67,8 @@ async function init() {
 
         await Promise.all([
             carregarCategorias(empresaId),
-            carregarProdutos(empresaId)
+            carregarProdutos(empresaId),
+            carregarLojaTamanhos(empresaId)
         ]);
 
         popularFiltros();
@@ -110,6 +111,18 @@ async function carregarProdutos(empresaId) {
     produtos = data || [];
 }
 
+async function carregarLojaTamanhos(empresaId) {
+    const { data, error } = await sb
+        .from('loja_tamanhos')
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .eq('ativo', true)
+        .order('ordem');
+    if (!error && data) {
+        lojaTamanhos = data;
+    }
+}
+
 // ================================================================
 // FILTROS
 // ================================================================
@@ -126,7 +139,16 @@ function popularFiltros() {
     // Tamanhos (extrair dos produtos carregados)
     const tamanhos = new Set();
     produtos.forEach(p => (p.loja_variacoes || []).forEach(v => tamanhos.add(v.tamanho)));
-    const tamOrdenados = TAMANHOS_ORDEM.filter(t => tamanhos.has(t));
+    
+    const tamOrdenados = [];
+    lojaTamanhos.forEach(t => {
+        if (tamanhos.has(t.nome)) {
+            tamOrdenados.push(t.nome);
+            tamanhos.delete(t.nome);
+        }
+    });
+    const restantes = Array.from(tamanhos).sort();
+    tamOrdenados.push(...restantes);
 
     const selTam = document.getElementById('filtroTamanho');
     if (selTam) {
@@ -188,8 +210,15 @@ function renderProdutos() {
         const estoqueTotal = variacoes.reduce((s, v) => s + (v.estoque || 0), 0);
 
         // Tamanhos únicos
-        const tams = [...new Set(variacoes.map(v => v.tamanho))];
-        const tamsOrdenados = TAMANHOS_ORDEM.filter(t => tams.includes(t));
+        let tams = [...new Set(variacoes.map(v => v.tamanho))];
+        const tamsOrdenados = [];
+        lojaTamanhos.forEach(t => {
+            if (tams.includes(t.nome)) {
+                tamsOrdenados.push(t.nome);
+                tams = tams.filter(x => x !== t.nome);
+            }
+        });
+        tamsOrdenados.push(...tams.sort());
 
         return `
             <div class="loja-pub-card" onclick="abrirDetalhes('${p.id}')">

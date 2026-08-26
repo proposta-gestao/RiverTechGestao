@@ -615,6 +615,7 @@
                     <div class="admin-subtabs">
                         <button class="subtab-btn active" data-subtab="loja-produtos">👕 Gerenciar Produtos</button>
                         <button class="subtab-btn" data-subtab="loja-categorias">🏷️ Categorias</button>
+                        <button class="subtab-btn" data-subtab="loja-tamanhos">📏 Tamanhos</button>
                         <button class="subtab-btn" data-subtab="loja-estoque">📦 Estoque</button>
                         <button class="subtab-btn" data-subtab="loja-motivos">📋 Motivos</button>
                     </div>
@@ -670,6 +671,29 @@
                                 </tr>
                             </thead>
                             <tbody id="lojaCategoriasBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Subtab: Tamanhos -->
+                <div class="subtab-content" id="subtab-loja-tamanhos">
+                    <div class="admin-toolbar">
+                        <h2>Tamanhos de Produtos</h2>
+                        <button class="btn-primary" onclick="window.__LOJA.novoTamanho()">+ Novo Tamanho</button>
+                    </div>
+                    <div class="admin-table-wrapper">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome do Tamanho</th>
+                                    <th style="text-align:center;">Ordem</th>
+                                    <th style="text-align:center;">Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lojaTamanhosAdminBody">
+                                <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando tamanhos...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -2296,7 +2320,10 @@
                     <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Selecione os tamanhos e cores para gerar automaticamente as variações:</p>
                     <div class="form-row" style="align-items:flex-start; gap:1.5rem;">
                         <div class="loja-options-group" style="flex:1;">
-                            <label class="group-label">📏 Tamanhos *</label>
+                            <label class="group-label" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>📏 Tamanhos *</span>
+                                <button type="button" class="btn-sm btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.__LOJA.novoTamanhoRapido()">+ Novo</button>
+                            </label>
                             <div class="loja-checkbox-grid" id="lojaTamanhosGrid"></div>
                         </div>
                         <div class="loja-options-group" style="flex:2;">
@@ -2467,7 +2494,10 @@
                 <input type="hidden" id="novaVarProdutoId">
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="novaVarTamanho">Tamanho *</label>
+                        <label for="novaVarTamanho" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>Tamanho *</span>
+                            <button type="button" class="btn-sm btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.__LOJA.novoTamanhoRapido()">+ Novo</button>
+                        </label>
                         <select id="novaVarTamanho"></select>
                     </div>
                     <div class="form-group" style="flex:1">
