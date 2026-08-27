@@ -605,13 +605,19 @@ function atualizarPreviewImagemLoja(url) {
 function renderizarCheckboxesTamCor() {
     const tGrid = document.getElementById('lojaTamanhosGrid');
     const cGrid = document.getElementById('lojaCoresGrid');
+    if (!tGrid || !cGrid) return;
     
-    tGrid.innerHTML = lojaTamanhos.filter(t => t.ativo).map(t => `
-        <label style="display:flex; align-items:center; gap:5px; background:var(--bg-card); padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
-            <input type="checkbox" value="${t.nome}" class="chk-tam" onchange="atualizarPreviewCombinacoes()">
-            <span style="font-weight:600;">${t.nome}</span>
-        </label>
-    `).join('');
+    const ativos = lojaTamanhos.filter(t => t.ativo);
+    if (ativos.length === 0) {
+        tGrid.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted); padding:4px;">Nenhum tamanho ativo. Clique em "+ Novo" acima para adicionar.</span>';
+    } else {
+        tGrid.innerHTML = ativos.map(t => `
+            <label style="display:flex; align-items:center; gap:5px; background:var(--bg-card); padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
+                <input type="checkbox" value="${t.nome}" class="chk-tam" onchange="atualizarPreviewCombinacoes()">
+                <span style="font-weight:600;">${t.nome}</span>
+            </label>
+        `).join('');
+    }
 
     cGrid.innerHTML = CORES_PADRAO.map(c => `
         <label style="display:flex; align-items:center; gap:5px; background:var(--bg-card); padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
@@ -864,7 +870,12 @@ window.__LOJA.abrirModalNovaVariacao = function() {
     document.getElementById('novaVarProdutoId').value = pId;
     
     const selTam = document.getElementById('novaVarTamanho');
-    selTam.innerHTML = lojaTamanhos.filter(t => t.ativo).map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
+    const ativos = lojaTamanhos.filter(t => t.ativo);
+    if (ativos.length === 0) {
+        selTam.innerHTML = '<option value="">Nenhum tamanho (clique + Novo)</option>';
+    } else {
+        selTam.innerHTML = ativos.map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
+    }
     
     const selCor = document.getElementById('novaVarCor');
     selCor.innerHTML = CORES_PADRAO.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
@@ -1354,14 +1365,15 @@ function renderLojaTamanhosAdmin() {
     if (!tbody) return;
 
     if (lojaTamanhos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum tamanho cadastrado.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhum tamanho cadastrado.</td></tr>';
         return;
     }
 
     tbody.innerHTML = lojaTamanhos.map(t => `
         <tr data-id="${t.id}">
+            <td class="drag-handle" style="cursor:grab; color:var(--text-muted); font-size:1.2rem; text-align:center;">≡</td>
             <td><strong>${t.nome}</strong></td>
-            <td style="text-align:center;">${t.ordem}</td>
+            <td style="text-align:center;">${t.ordem ?? 0}</td>
             <td style="text-align:center;"><span class="badge ${t.ativo ? 'badge-active' : 'badge-inactive'}">${t.ativo ? 'Ativo' : 'Inativo'}</span></td>
             <td>
                 <div class="actions-cell">
@@ -1371,61 +1383,155 @@ function renderLojaTamanhosAdmin() {
             </td>
         </tr>
     `).join('');
+
+    initSortableLojaTamanhos();
 }
 
-window.__LOJA.novoTamanhoRapido = async function() {
-    const { value: nome } = await Swal.fire({
-        title: 'Novo Tamanho',
-        input: 'text',
-        inputLabel: 'Qual o nome/medida do tamanho? (Ex: P, 38, Único)',
-        showCancelButton: true,
-        confirmButtonText: 'Salvar',
-        cancelButtonText: 'Cancelar'
+function initSortableLojaTamanhos() {
+    const el = document.getElementById('lojaTamanhosAdminBody');
+    if (!el) return;
+
+    if (el.sortable) el.sortable.destroy();
+    
+    el.sortable = new Sortable(el, {
+        animation: 150,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        onEnd: async (evt) => {
+            if (evt.oldIndex === evt.newIndex) return;
+            const newOrderIds = Array.from(el.querySelectorAll('tr')).map(tr => tr.dataset.id);
+            
+            const reordered = newOrderIds.map(id => lojaTamanhos.find(t => t.id === id)).filter(Boolean);
+            lojaTamanhos = reordered;
+
+            const updates = lojaTamanhos.map((t, i) => 
+                sb.from('loja_tamanhos').update({ ordem: i }).eq('id', t.id)
+            );
+            await Promise.all(updates);
+            showToast('Ordem dos tamanhos atualizada!', 'success');
+            renderLojaTamanhosAdmin();
+            renderizarCheckboxesTamCor();
+        }
     });
+}
 
-    if (nome) {
-        await window.__LOJA.salvarNovoTamanho(nome);
+window.__LOJA.novoTamanho = function() {
+    const maxOrdem = lojaTamanhos.reduce((max, t) => Math.max(max, t.ordem || 0), -1);
+    const inId = document.getElementById('lojaTamId');
+    const inNome = document.getElementById('lojaTamNome');
+    const inOrdem = document.getElementById('lojaTamOrdem');
+    const inAtivo = document.getElementById('lojaTamAtivo');
+    const title = document.getElementById('lojaTamModalTitle');
+
+    if (inId) inId.value = '';
+    if (inNome) inNome.value = '';
+    if (inOrdem) inOrdem.value = (maxOrdem + 1);
+    if (inAtivo) inAtivo.value = 'true';
+    if (title) title.innerText = 'Novo Tamanho';
+
+    abrirModal('modalLojaTamanho');
+};
+
+window.__LOJA.editarTamanho = function(id) {
+    const t = lojaTamanhos.find(x => x.id === id);
+    if (!t) return;
+
+    const inId = document.getElementById('lojaTamId');
+    const inNome = document.getElementById('lojaTamNome');
+    const inOrdem = document.getElementById('lojaTamOrdem');
+    const inAtivo = document.getElementById('lojaTamAtivo');
+    const title = document.getElementById('lojaTamModalTitle');
+
+    if (inId) inId.value = t.id;
+    if (inNome) inNome.value = t.nome;
+    if (inOrdem) inOrdem.value = t.ordem ?? 0;
+    if (inAtivo) inAtivo.value = t.ativo ? 'true' : 'false';
+    if (title) title.innerText = 'Editar Tamanho';
+
+    abrirModal('modalLojaTamanho');
+};
+
+window.__LOJA.salvarTamanhoModal = async function() {
+    const id = document.getElementById('lojaTamId')?.value;
+    const nome = document.getElementById('lojaTamNome')?.value?.trim();
+    const ordem = parseInt(document.getElementById('lojaTamOrdem')?.value) || 0;
+    const ativo = document.getElementById('lojaTamAtivo')?.value === 'true';
+
+    if (!nome) {
+        showToast('Nome do tamanho é obrigatório', 'warning');
+        return;
+    }
+
+    // Verifica se já existe outro tamanho com mesmo nome
+    const duplicado = lojaTamanhos.find(t => t.nome.toLowerCase() === nome.toLowerCase() && t.id !== id);
+    if (duplicado) {
+        showToast('Já existe um tamanho cadastrado com este nome!', 'warning');
+        return;
+    }
+
+    try {
+        if (id) {
+            const { error } = await sb.from('loja_tamanhos').update({
+                nome,
+                ordem,
+                ativo
+            }).eq('id', id);
+
+            if (error) throw error;
+            showToast('Tamanho atualizado!', 'success');
+        } else {
+            const { error } = await sb.from('loja_tamanhos').insert([{
+                empresa_id: getTenantId(),
+                nome,
+                ordem,
+                ativo
+            }]);
+
+            if (error) throw error;
+            showToast('Tamanho criado!', 'success');
+        }
+
+        fecharModal('modalLojaTamanho');
+        await carregarLojaTamanhos();
         renderizarCheckboxesTamCor();
-        
-        // Se estivermos no select de Nova Variação, também atualizar lá
-        const selTam = document.getElementById('novaVarTamanho');
-        if (selTam) {
-            selTam.innerHTML = lojaTamanhos.filter(t => t.ativo).map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
-            selTam.value = nome; // Deixa selecionado
-        }
-
-        // Deixa marcado no grid se ele existir
-        const checkbox = document.querySelector(`.chk-tam[value="${nome}"]`);
-        if(checkbox) {
-            checkbox.checked = true;
-            atualizarPreviewCombinacoes();
-        }
+    } catch (err) {
+        console.error('Erro ao salvar tamanho:', err);
+        showToast('Erro ao salvar tamanho', 'error');
     }
 };
 
-window.__LOJA.novoTamanho = async function() {
-    const { value: nome } = await Swal.fire({
-        title: 'Novo Tamanho',
-        input: 'text',
-        inputLabel: 'Qual o nome/medida do tamanho? (Ex: P, 38, Único)',
-        showCancelButton: true,
-        confirmButtonText: 'Salvar',
-        cancelButtonText: 'Cancelar'
-    });
+window.__LOJA.novoTamanhoRapido = async function() {
+    const nome = await customPrompt('Novo Tamanho', 'Qual o nome/medida do tamanho? (Ex: P, 38, Único)');
+    if (nome && nome.trim()) {
+        const salvo = await window.__LOJA.salvarNovoTamanho(nome.trim());
+        if (salvo) {
+            renderizarCheckboxesTamCor();
+            
+            // Se estivermos no select de Nova Variação, também atualizar lá
+            const selTam = document.getElementById('novaVarTamanho');
+            if (selTam) {
+                selTam.innerHTML = lojaTamanhos.filter(t => t.ativo).map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
+                selTam.value = nome.trim(); // Deixa selecionado
+            }
 
-    if (nome) {
-        await window.__LOJA.salvarNovoTamanho(nome);
+            // Deixa marcado no grid se ele existir
+            const checkbox = document.querySelector(`.chk-tam[value="${nome.trim()}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+                atualizarPreviewCombinacoes();
+            }
+        }
     }
 };
 
 window.__LOJA.salvarNovoTamanho = async function(nome) {
-    if (!nome || nome.trim() === '') return;
+    if (!nome || nome.trim() === '') return false;
     nome = nome.trim();
     
     // Verifica se já existe localmente (ignorando case)
     if (lojaTamanhos.find(t => t.nome.toLowerCase() === nome.toLowerCase())) {
         showToast('Tamanho já existe!', 'warning');
-        return;
+        return false;
     }
 
     const maxOrdem = lojaTamanhos.reduce((max, t) => Math.max(max, t.ordem || 0), -1);
@@ -1440,52 +1546,11 @@ window.__LOJA.salvarNovoTamanho = async function(nome) {
     if (error) {
         console.error('Erro novo tamanho', error);
         showToast('Erro ao criar tamanho', 'error');
+        return false;
     } else {
         showToast('Tamanho salvo!', 'success');
         await carregarLojaTamanhos();
-    }
-};
-
-window.__LOJA.editarTamanho = async function(id) {
-    const t = lojaTamanhos.find(x => x.id === id);
-    if (!t) return;
-
-    const { value: formValues } = await Swal.fire({
-        title: 'Editar Tamanho',
-        html: `
-            <input id="swal-input-nome" class="swal2-input" placeholder="Nome" value="${t.nome}">
-            <input id="swal-input-ordem" type="number" class="swal2-input" placeholder="Ordem" value="${t.ordem}">
-            <div style="margin-top: 10px;">
-                <label>
-                    <input type="checkbox" id="swal-input-ativo" ${t.ativo ? 'checked' : ''}>
-                    Tamanho Ativo
-                </label>
-            </div>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        preConfirm: () => {
-            return {
-                nome: document.getElementById('swal-input-nome').value,
-                ordem: parseInt(document.getElementById('swal-input-ordem').value) || 0,
-                ativo: document.getElementById('swal-input-ativo').checked
-            }
-        }
-    });
-
-    if (formValues) {
-        const { error } = await sb.from('loja_tamanhos').update({
-            nome: formValues.nome,
-            ordem: formValues.ordem,
-            ativo: formValues.ativo
-        }).eq('id', id);
-
-        if (error) {
-            showToast('Erro ao atualizar', 'error');
-        } else {
-            showToast('Atualizado com sucesso!', 'success');
-            await carregarLojaTamanhos();
-        }
+        return true;
     }
 };
 
@@ -1495,10 +1560,12 @@ window.__LOJA.excluirTamanho = async function(id) {
 
     const { error } = await sb.from('loja_tamanhos').delete().eq('id', id);
     if (error) {
+        console.error('Erro excluir tamanho:', error);
         showToast('Erro ao excluir', 'error');
     } else {
         showToast('Tamanho excluído', 'success');
         await carregarLojaTamanhos();
+        renderizarCheckboxesTamCor();
     }
 };
 
