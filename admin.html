@@ -615,7 +615,7 @@
                     <div class="admin-subtabs">
                         <button class="subtab-btn active" data-subtab="loja-produtos">👕 Gerenciar Produtos</button>
                         <button class="subtab-btn" data-subtab="loja-categorias">🏷️ Categorias</button>
-                        <button class="subtab-btn" data-subtab="loja-tamanhos">📏 Tamanhos</button>
+                        <button class="subtab-btn" data-subtab="loja-tamanhos">📏 Tamanhos/Cores</button>
                         <button class="subtab-btn" data-subtab="loja-estoque">📦 Estoque</button>
                         <button class="subtab-btn" data-subtab="loja-motivos">📋 Motivos</button>
                     </div>
@@ -675,27 +675,59 @@
                     </div>
                 </div>
 
-                <!-- Subtab: Tamanhos -->
+                <!-- Subtab: Tamanhos/Cores -->
                 <div class="subtab-content" id="subtab-loja-tamanhos">
-                    <div class="admin-toolbar">
-                        <h2>Tamanhos de Produtos</h2>
-                        <button class="btn-primary" onclick="window.__LOJA.novoTamanho()">+ Novo Tamanho</button>
-                    </div>
-                    <div class="admin-table-wrapper">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:30px;"></th>
-                                    <th>Nome do Tamanho</th>
-                                    <th style="text-align:center;">Ordem</th>
-                                    <th style="text-align:center;">Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="lojaTamanhosAdminBody">
-                                <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando tamanhos...</td></tr>
-                            </tbody>
-                        </table>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:4px;">
+
+                        <!-- ── Coluna Tamanhos ── -->
+                        <div>
+                            <div class="admin-toolbar" style="margin-bottom:12px;">
+                                <h2 style="font-size:1rem;">📏 Tamanhos</h2>
+                                <button class="btn-primary" onclick="window.__LOJA.novoTamanho()">+ Novo Tamanho</button>
+                            </div>
+                            <div class="admin-table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:30px;"></th>
+                                            <th>Nome</th>
+                                            <th style="text-align:center;">Ordem</th>
+                                            <th style="text-align:center;">Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lojaTamanhosAdminBody">
+                                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ── Coluna Cores ── -->
+                        <div>
+                            <div class="admin-toolbar" style="margin-bottom:12px;">
+                                <h2 style="font-size:1rem;">🎨 Cores</h2>
+                                <button class="btn-primary" onclick="window.__LOJA.novaCor()">+ Nova Cor</button>
+                            </div>
+                            <div class="admin-table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:30px;"></th>
+                                            <th>Cor</th>
+                                            <th style="text-align:center;">Amostra</th>
+                                            <th style="text-align:center;">Ordem</th>
+                                            <th style="text-align:center;">Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="lojaCoresAdminBody">
+                                        <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -2391,7 +2423,7 @@
                             <!-- Cor -->
                             <div style="flex:1.2; min-width:120px;">
                                 <label for="novaVarCor" style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Cor *</label>
-                                <select id="novaVarCor" style="width:100%; height:38px; font-size:0.85rem; padding:4px 8px;"></select>
+                                <select id="novaVarCor" style="width:100%; height:38px; font-size:0.85rem; padding:4px 8px;" onchange="window.__LOJA.onSelectCorVariacao(this)"></select>
                             </div>
 
                             <!-- Preço -->
@@ -2556,6 +2588,50 @@
                         <select id="lojaTamAtivo">
                             <option value="true">Ativo</option>
                             <option value="false">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LOJA: NOVA/EDITAR COR -->
+    <div class="admin-modal-backdrop" id="modalLojaCor">
+        <div class="admin-modal" style="max-width:420px;">
+            <div class="modal-header">
+                <div class="modal-header-left">
+                    <button class="btn-modal-back" onclick="fecharModal('modalLojaCor')" title="Voltar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <h3 id="lojaCorModalTitle">Nova Cor</h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-save" onclick="window.__LOJA.salvarCorModal()">Salvar</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="lojaCorId">
+                <div class="form-group">
+                    <label for="lojaCorNome">Nome da Cor *</label>
+                    <input type="text" id="lojaCorNome" placeholder="Ex: Azul Marinho, Rosa Bebê, Vermelho">
+                </div>
+                <div class="form-group">
+                    <label for="lojaCorHex">Cor (amostra visual)</label>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <input type="color" id="lojaCorHex" value="#808080" style="width:48px; height:38px; padding:2px; border:1px solid var(--border-color); border-radius:6px; cursor:pointer; background:transparent;">
+                        <span id="lojaCorHexLabel" style="font-size:0.85rem; color:var(--text-muted);">#808080</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex:1">
+                        <label for="lojaCorOrdem">Ordem de exibição</label>
+                        <input type="number" id="lojaCorOrdem" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group" style="flex:1">
+                        <label for="lojaCorAtivo">Status</label>
+                        <select id="lojaCorAtivo">
+                            <option value="true">Ativa</option>
+                            <option value="false">Inativa</option>
                         </select>
                     </div>
                 </div>

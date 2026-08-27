@@ -22,14 +22,20 @@ let lojaEstoque = [];
 let lojaCurrentProdImages = []; // [{url, id, ordem, produto_id}]
 let lojaCurrentVariacoes = [];
 let lojaTamanhos = [];
-const CORES_PADRAO = [
+let lojaCores = [];
+
+// Cores padrão para inicializar empresas novas (usadas ao popular o banco na primeira vez)
+const CORES_PADRAO_INICIAL = [
     { nome: 'Preto', hex: '#000000' },
     { nome: 'Branco', hex: '#FFFFFF' },
     { nome: 'Cinza', hex: '#808080' },
-    { nome: 'Azul', hex: '#0000FF' },
-    { nome: 'Vermelho', hex: '#FF0000' },
+    { nome: 'Azul', hex: '#0066CC' },
+    { nome: 'Vermelho', hex: '#CC0000' },
     { nome: 'Verde', hex: '#008000' },
-    { nome: 'Amarelo', hex: '#FFFF00' }
+    { nome: 'Amarelo', hex: '#FFCC00' },
+    { nome: 'Rosa', hex: '#FF69B4' },
+    { nome: 'Laranja', hex: '#FF6600' },
+    { nome: 'Roxo', hex: '#6600CC' },
 ];
 
 // ------------------------------------------------------------
@@ -40,6 +46,7 @@ window.__LOJA.init = async function() {
     setupLojaSubtabs();
     await carregarLojaCategorias();
     await carregarLojaTamanhos();
+    await carregarLojaCores();
     await carregarLojaProdutos();
 };
 
@@ -608,11 +615,11 @@ function renderizarCheckboxesTamCor() {
     const cGrid = document.getElementById('lojaCoresGrid');
     if (!tGrid || !cGrid) return;
     
-    const ativos = lojaTamanhos.filter(t => t.ativo);
-    if (ativos.length === 0) {
-        tGrid.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted); padding:4px;">Nenhum tamanho ativo. Clique em "+ Novo" acima para adicionar.</span>';
+    const tamAtivos = lojaTamanhos.filter(t => t.ativo);
+    if (tamAtivos.length === 0) {
+        tGrid.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted); padding:4px;">Nenhum tamanho ativo. Cadastre na aba Tamanhos/Cores.</span>';
     } else {
-        tGrid.innerHTML = ativos.map(t => `
+        tGrid.innerHTML = tamAtivos.map(t => `
             <label style="display:flex; align-items:center; gap:5px; background:var(--bg-card); padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
                 <input type="checkbox" value="${t.nome}" class="chk-tam" onchange="atualizarPreviewCombinacoes()">
                 <span style="font-weight:600;">${t.nome}</span>
@@ -620,13 +627,18 @@ function renderizarCheckboxesTamCor() {
         `).join('');
     }
 
-    cGrid.innerHTML = CORES_PADRAO.map(c => `
-        <label style="display:flex; align-items:center; gap:5px; background:var(--bg-card); padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
-            <input type="checkbox" value="${c.nome}" class="chk-cor" onchange="atualizarPreviewCombinacoes()">
-            <div style="width:14px; height:14px; border-radius:50%; background:${c.hex}; border:1px solid #ccc;"></div>
-            <span>${c.nome}</span>
-        </label>
-    `).join('');
+    const corAtivas = lojaCores.filter(c => c.ativo);
+    if (corAtivas.length === 0) {
+        cGrid.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted); padding:4px;">Nenhuma cor ativa. Cadastre na aba Tamanhos/Cores.</span>';
+    } else {
+        cGrid.innerHTML = corAtivas.map(c => `
+            <label style="display:flex; align-items:center; gap:5px; background:var(--bg-card); padding:8px; border-radius:6px; border:1px solid var(--border-color); cursor:pointer;">
+                <input type="checkbox" value="${c.nome}" class="chk-cor" onchange="atualizarPreviewCombinacoes()">
+                <div style="width:14px; height:14px; border-radius:50%; background:${c.hex}; border:1px solid rgba(255,255,255,0.3); flex-shrink:0;"></div>
+                <span>${c.nome}</span>
+            </label>
+        `).join('');
+    }
 }
 
 window.atualizarPreviewCombinacoes = function() {
@@ -906,11 +918,7 @@ window.__LOJA.onSelectTamanhoVariacao = async function(selectEl) {
 
 function prepararLinhaNovaVariacao() {
     popularSelectTamanhosVariacao();
-    
-    const selCor = document.getElementById('novaVarCor');
-    if (selCor) {
-        selCor.innerHTML = CORES_PADRAO.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
-    }
+    popularSelectCoresVariacao();
 
     const inPreco = document.getElementById('novaVarPreco');
     if (inPreco) inPreco.value = '';
@@ -1677,6 +1685,306 @@ window.__LOJA.excluirTamanho = async function(id) {
         await carregarLojaTamanhos();
         renderizarCheckboxesTamCor();
         popularSelectTamanhosVariacao();
+    }
+};
+
+
+// ------------------------------------------------------------
+// CORES (Gestão)
+// ------------------------------------------------------------
+async function carregarLojaCores() {
+    const tenantId = getTenantId();
+    if (!tenantId) return;
+
+    const { data, error } = await sb.from('loja_cores')
+        .select('*')
+        .eq('empresa_id', tenantId)
+        .order('ordem', { ascending: true })
+        .order('nome', { ascending: true });
+
+    if (error) {
+        // Tabela pode não existir ainda — silencioso na primeira vez
+        console.warn('loja_cores não encontrada ou erro:', error.message);
+        lojaCores = [];
+        renderLojaCoresAdmin();
+        return;
+    }
+
+    lojaCores = data || [];
+
+    // Se empresa não tem nenhuma cor ainda, popular com as padrões
+    if (lojaCores.length === 0) {
+        const insertsPromises = CORES_PADRAO_INICIAL.map((c, i) =>
+            sb.from('loja_cores').insert({
+                empresa_id: tenantId,
+                nome: c.nome,
+                hex: c.hex,
+                ordem: i,
+                ativo: true
+            })
+        );
+        const results = await Promise.all(insertsPromises);
+        const hasError = results.some(r => r.error);
+        if (!hasError) {
+            // Recarregar após popular
+            const { data: d2 } = await sb.from('loja_cores')
+                .select('*')
+                .eq('empresa_id', tenantId)
+                .order('ordem', { ascending: true });
+            lojaCores = d2 || [];
+        }
+    }
+
+    renderLojaCoresAdmin();
+    popularSelectCoresVariacao();
+    renderizarCheckboxesTamCor();
+}
+
+function renderLojaCoresAdmin() {
+    const tbody = document.getElementById('lojaCoresAdminBody');
+    if (!tbody) return;
+
+    if (lojaCores.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhuma cor cadastrada.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = lojaCores.map(c => `
+        <tr data-id="${c.id}">
+            <td class="drag-handle-cor" style="cursor:grab; color:var(--text-muted); font-size:1.2rem; text-align:center;">≡</td>
+            <td><strong>${c.nome}</strong></td>
+            <td style="text-align:center;">
+                <div style="width:28px; height:28px; border-radius:50%; background:${c.hex}; border:2px solid rgba(255,255,255,0.2); margin:0 auto; cursor:pointer;" title="${c.hex}" onclick="window.__LOJA.editarCor('${c.id}')"></div>
+            </td>
+            <td style="text-align:center;">${c.ordem ?? 0}</td>
+            <td style="text-align:center;"><span class="badge ${c.ativo ? 'badge-active' : 'badge-inactive'}">${c.ativo ? 'Ativa' : 'Inativa'}</span></td>
+            <td>
+                <div class="actions-cell">
+                    <button class="btn-sm btn-edit" onclick="window.__LOJA.editarCor('${c.id}')">Editar</button>
+                    <button class="btn-sm btn-delete" onclick="window.__LOJA.excluirCor('${c.id}')">Excluir</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+
+    initSortableLojaCores();
+}
+
+function initSortableLojaCores() {
+    const el = document.getElementById('lojaCoresAdminBody');
+    if (!el) return;
+
+    if (el.sortable) el.sortable.destroy();
+
+    el.sortable = new Sortable(el, {
+        animation: 150,
+        handle: '.drag-handle-cor',
+        ghostClass: 'sortable-ghost',
+        onEnd: async (evt) => {
+            if (evt.oldIndex === evt.newIndex) return;
+            const newOrderIds = Array.from(el.querySelectorAll('tr')).map(tr => tr.dataset.id);
+            const reordered = newOrderIds.map(id => lojaCores.find(c => c.id === id)).filter(Boolean);
+            lojaCores = reordered;
+
+            const updates = lojaCores.map((c, i) =>
+                sb.from('loja_cores').update({ ordem: i }).eq('id', c.id).eq('empresa_id', getTenantId())
+            );
+            await Promise.all(updates);
+            showToast('Ordem das cores atualizada!', 'success');
+            renderLojaCoresAdmin();
+            renderizarCheckboxesTamCor();
+            popularSelectCoresVariacao();
+        }
+    });
+}
+
+function popularSelectCoresVariacao(selectedVal = null) {
+    const selCor = document.getElementById('novaVarCor');
+    if (!selCor) return;
+
+    const ativas = lojaCores.filter(c => c.ativo);
+    let optionsHtml = '<option value="__nova_cor__">+ Nova Cor...</option>';
+    optionsHtml += ativas.map(c =>
+        `<option value="${c.nome}">${c.nome}</option>`
+    ).join('');
+    selCor.innerHTML = optionsHtml;
+
+    if (selectedVal && ativas.some(c => c.nome.toLowerCase() === selectedVal.toLowerCase())) {
+        const found = ativas.find(c => c.nome.toLowerCase() === selectedVal.toLowerCase());
+        selCor.value = found ? found.nome : selectedVal;
+    } else if (ativas.length > 0) {
+        selCor.value = ativas[0].nome;
+    } else {
+        selCor.value = '__nova_cor__';
+    }
+}
+window.__LOJA.popularSelectCoresVariacao = popularSelectCoresVariacao;
+
+window.__LOJA.onSelectCorVariacao = async function(selectEl) {
+    if (!selectEl) return;
+    if (selectEl.value === '__nova_cor__') {
+        const nome = await customPrompt('Nova Cor', 'Qual o nome da cor? (Ex: Azul Marinho, Rosa, Bege)');
+        if (nome && nome.trim()) {
+            const salvo = await window.__LOJA.salvarNovaCorRapida(nome.trim());
+            if (salvo) {
+                popularSelectCoresVariacao(nome.trim());
+                renderizarCheckboxesTamCor();
+                return;
+            }
+        }
+        const ativas = lojaCores.filter(c => c.ativo);
+        selectEl.value = ativas.length > 0 ? ativas[0].nome : '__nova_cor__';
+    }
+};
+
+window.__LOJA.salvarNovaCorRapida = async function(nome) {
+    const tenantId = getTenantId();
+    if (!tenantId) { showToast('Empresa não identificada.', 'error'); return false; }
+    if (!nome || !nome.trim()) { showToast('Nome da cor é obrigatório.', 'warning'); return false; }
+    nome = nome.trim();
+
+    if (lojaCores.some(c => c.nome.trim().toLowerCase() === nome.toLowerCase())) {
+        showToast('Cor já existe!', 'warning');
+        return false;
+    }
+
+    const maxOrdem = lojaCores.reduce((max, c) => Math.max(max, c.ordem || 0), -1);
+    const { error } = await sb.from('loja_cores').insert([{
+        empresa_id: tenantId,
+        nome,
+        hex: '#808080',
+        ordem: maxOrdem + 1,
+        ativo: true
+    }]);
+
+    if (error) {
+        console.error('Erro nova cor:', error);
+        if (error.code === '23505' || error.message?.includes('duplicate key') || error.message?.includes('unique')) {
+            showToast('Já existe uma cor com este nome!', 'warning');
+        } else {
+            showToast('Erro ao criar cor', 'error');
+        }
+        return false;
+    }
+
+    showToast('Cor criada! Você pode editar a amostra de cor na aba Tamanhos/Cores.', 'success');
+    await carregarLojaCores();
+    return true;
+};
+
+window.__LOJA.novaCor = function() {
+    const maxOrdem = lojaCores.reduce((max, c) => Math.max(max, c.ordem || 0), -1);
+    const inId = document.getElementById('lojaCorId');
+    const inNome = document.getElementById('lojaCorNome');
+    const inHex = document.getElementById('lojaCorHex');
+    const inHexLabel = document.getElementById('lojaCorHexLabel');
+    const inOrdem = document.getElementById('lojaCorOrdem');
+    const inAtivo = document.getElementById('lojaCorAtivo');
+    const title = document.getElementById('lojaCorModalTitle');
+
+    if (inId) inId.value = '';
+    if (inNome) inNome.value = '';
+    if (inHex) inHex.value = '#808080';
+    if (inHexLabel) inHexLabel.textContent = '#808080';
+    if (inOrdem) inOrdem.value = maxOrdem + 1;
+    if (inAtivo) inAtivo.value = 'true';
+    if (title) title.innerText = 'Nova Cor';
+
+    // Listener para atualizar label ao escolher cor
+    if (inHex) {
+        inHex.oninput = () => { if (inHexLabel) inHexLabel.textContent = inHex.value; };
+    }
+
+    abrirModal('modalLojaCor');
+};
+
+window.__LOJA.editarCor = function(id) {
+    const c = lojaCores.find(x => x.id === id);
+    if (!c) return;
+
+    const inId = document.getElementById('lojaCorId');
+    const inNome = document.getElementById('lojaCorNome');
+    const inHex = document.getElementById('lojaCorHex');
+    const inHexLabel = document.getElementById('lojaCorHexLabel');
+    const inOrdem = document.getElementById('lojaCorOrdem');
+    const inAtivo = document.getElementById('lojaCorAtivo');
+    const title = document.getElementById('lojaCorModalTitle');
+
+    if (inId) inId.value = c.id;
+    if (inNome) inNome.value = c.nome;
+    if (inHex) { inHex.value = c.hex || '#808080'; }
+    if (inHexLabel) inHexLabel.textContent = c.hex || '#808080';
+    if (inOrdem) inOrdem.value = c.ordem ?? 0;
+    if (inAtivo) inAtivo.value = c.ativo ? 'true' : 'false';
+    if (title) title.innerText = 'Editar Cor';
+
+    if (inHex) {
+        inHex.oninput = () => { if (inHexLabel) inHexLabel.textContent = inHex.value; };
+    }
+
+    abrirModal('modalLojaCor');
+};
+
+window.__LOJA.salvarCorModal = async function() {
+    const tenantId = getTenantId();
+    if (!tenantId) { showToast('Empresa não identificada.', 'error'); return; }
+
+    const id = document.getElementById('lojaCorId')?.value;
+    const nome = document.getElementById('lojaCorNome')?.value?.trim();
+    const hex = document.getElementById('lojaCorHex')?.value || '#808080';
+    const ordem = parseInt(document.getElementById('lojaCorOrdem')?.value) || 0;
+    const ativo = document.getElementById('lojaCorAtivo')?.value === 'true';
+
+    if (!nome) { showToast('Nome da cor é obrigatório', 'warning'); return; }
+
+    const duplicado = lojaCores.find(c => c.nome.trim().toLowerCase() === nome.toLowerCase() && c.id !== id);
+    if (duplicado) { showToast('Já existe uma cor com este nome!', 'warning'); return; }
+
+    try {
+        if (id) {
+            const { error } = await sb.from('loja_cores').update({ nome, hex, ordem, ativo })
+                .eq('id', id).eq('empresa_id', tenantId);
+            if (error) throw error;
+            showToast('Cor atualizada!', 'success');
+        } else {
+            // Verificar duplicidade no banco antes de inserir
+            if (lojaCores.some(c => c.nome.trim().toLowerCase() === nome.toLowerCase())) {
+                showToast('Já existe uma cor com este nome!', 'warning');
+                return;
+            }
+            const { error } = await sb.from('loja_cores').insert([{ empresa_id: tenantId, nome, hex, ordem, ativo }]);
+            if (error) throw error;
+            showToast('Cor criada!', 'success');
+        }
+
+        fecharModal('modalLojaCor');
+        await carregarLojaCores();
+        renderizarCheckboxesTamCor();
+        popularSelectCoresVariacao(nome);
+    } catch (err) {
+        console.error('Erro ao salvar cor:', err);
+        if (err.code === '23505' || err.message?.includes('duplicate key') || err.message?.includes('unique')) {
+            showToast('Já existe uma cor com este nome!', 'warning');
+        } else {
+            showToast('Erro ao salvar cor', 'error');
+        }
+    }
+};
+
+window.__LOJA.excluirCor = async function(id) {
+    const tenantId = getTenantId();
+    const confirmed = await customConfirm('Excluir Cor', 'Tem certeza? Variações já cadastradas manterão o texto salvo, mas a cor sumirá da lista.');
+    if (!confirmed) return;
+
+    const { error } = await sb.from('loja_cores').delete().eq('id', id).eq('empresa_id', tenantId);
+    if (error) {
+        console.error('Erro excluir cor:', error);
+        showToast('Erro ao excluir', 'error');
+    } else {
+        showToast('Cor excluída', 'success');
+        await carregarLojaCores();
+        renderizarCheckboxesTamCor();
+        popularSelectCoresVariacao();
     }
 };
 
