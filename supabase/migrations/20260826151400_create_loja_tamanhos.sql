@@ -17,14 +17,21 @@ CREATE TABLE IF NOT EXISTS public.loja_tamanhos (
 ALTER TABLE public.loja_tamanhos ENABLE ROW LEVEL SECURITY;
 
 -- Políticas de RLS
-CREATE POLICY "Leitura publica de tamanhos" 
+CREATE POLICY "loja_tamanhos_public_read" 
   ON public.loja_tamanhos FOR SELECT 
   USING (true);
 
-CREATE POLICY "Admin gerencia tamanhos da sua empresa" 
-  ON public.loja_tamanhos FOR ALL TO authenticated 
-  USING (empresa_id = public.get_empresa_id() AND public.is_admin(auth.uid()))
-  WITH CHECK (empresa_id = public.get_empresa_id() AND public.is_admin(auth.uid()));
+CREATE POLICY "loja_tamanhos_admin_insert" 
+  ON public.loja_tamanhos FOR INSERT TO authenticated 
+  WITH CHECK (empresa_id = public.get_empresa_id() OR public.is_super_admin(auth.uid()));
+
+CREATE POLICY "loja_tamanhos_admin_update" 
+  ON public.loja_tamanhos FOR UPDATE TO authenticated 
+  USING (empresa_id = public.get_empresa_id() OR public.is_super_admin(auth.uid()));
+
+CREATE POLICY "loja_tamanhos_admin_delete" 
+  ON public.loja_tamanhos FOR DELETE TO authenticated 
+  USING (empresa_id = public.get_empresa_id() OR public.is_super_admin(auth.uid()));
 
 -- Índices
 CREATE INDEX IF NOT EXISTS idx_loja_tamanhos_empresa_id ON public.loja_tamanhos(empresa_id);
