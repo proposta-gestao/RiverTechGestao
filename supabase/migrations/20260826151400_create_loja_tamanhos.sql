@@ -36,3 +36,4 @@ CREATE POLICY "loja_tamanhos_admin_delete"
 -- Índices
 CREATE INDEX IF NOT EXISTS idx_loja_tamanhos_empresa_id ON public.loja_tamanhos(empresa_id);
 CREATE INDEX IF NOT EXISTS idx_loja_tamanhos_empresa_ordem ON public.loja_tamanhos(empresa_id, ordem);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_loja_tamanhos_empresa_nome_unique ON public.loja_tamanhos(empresa_id, lower(trim(nome)));

@@ -865,17 +865,49 @@ window.__LOJA.excluirVariacao = async function(id) {
     }
 };
 
+function popularSelectTamanhosVariacao(selectedVal = null) {
+    const selTam = document.getElementById('novaVarTamanho');
+    if (!selTam) return;
+
+    const ativos = lojaTamanhos.filter(t => t.ativo);
+    let optionsHtml = '<option value="__novo__">+ Novo Tamanho...</option>';
+    optionsHtml += ativos.map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
+    selTam.innerHTML = optionsHtml;
+
+    if (selectedVal && ativos.some(t => t.nome.toLowerCase() === selectedVal.toLowerCase())) {
+        const found = ativos.find(t => t.nome.toLowerCase() === selectedVal.toLowerCase());
+        selTam.value = found ? found.nome : selectedVal;
+    } else if (ativos.length > 0) {
+        selTam.value = ativos[0].nome;
+    } else {
+        selTam.value = '__novo__';
+    }
+}
+window.__LOJA.popularSelectTamanhosVariacao = popularSelectTamanhosVariacao;
+
+window.__LOJA.onSelectTamanhoVariacao = async function(selectEl) {
+    if (!selectEl) return;
+    if (selectEl.value === '__novo__') {
+        const nome = await customPrompt('Novo Tamanho', 'Qual o nome/medida do tamanho? (Ex: P, 38, Único)');
+        if (nome && nome.trim()) {
+            const salvo = await window.__LOJA.salvarNovoTamanho(nome.trim());
+            if (salvo) {
+                popularSelectTamanhosVariacao(nome.trim());
+                renderizarCheckboxesTamCor();
+                return;
+            }
+        }
+        // Se cancelou ou falhou, restaura para o primeiro tamanho disponível ou __novo__
+        const ativos = lojaTamanhos.filter(t => t.ativo);
+        selectEl.value = ativos.length > 0 ? ativos[0].nome : '__novo__';
+    }
+};
+
 window.__LOJA.abrirModalNovaVariacao = function() {
     const pId = document.getElementById('lojaProdId').value;
     document.getElementById('novaVarProdutoId').value = pId;
     
-    const selTam = document.getElementById('novaVarTamanho');
-    const ativos = lojaTamanhos.filter(t => t.ativo);
-    if (ativos.length === 0) {
-        selTam.innerHTML = '<option value="">Nenhum tamanho (clique + Novo)</option>';
-    } else {
-        selTam.innerHTML = ativos.map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
-    }
+    popularSelectTamanhosVariacao();
     
     const selCor = document.getElementById('novaVarCor');
     selCor.innerHTML = CORES_PADRAO.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
@@ -884,7 +916,7 @@ window.__LOJA.abrirModalNovaVariacao = function() {
     document.getElementById('novaVarEstoque').value = '0';
     // Limpar foto da variação
     document.getElementById('novaVarImageUrl').value = '';
-    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">\uD83D\uDDBC\uFE0F</span>';
+    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">🖼️</span>';
     document.getElementById('lojaUploadVarImagem').value = '';
 
     abrirModal('modalLojaNovaVariacao');
@@ -910,7 +942,7 @@ window.__LOJA.uploadImagemVariacao = async function(file) {
 
 window.__LOJA.removerImagemVariacao = function() {
     document.getElementById('novaVarImageUrl').value = '';
-    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">\uD83D\uDDBC\uFE0F</span>';
+    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">🖼️</span>';
 };
 
 window.__LOJA.salvarNovaVariacao = async function() {
@@ -920,6 +952,15 @@ window.__LOJA.salvarNovaVariacao = async function() {
     const preco = parseFloat(document.getElementById('novaVarPreco').value) || 0;
     const estoque = parseInt(document.getElementById('novaVarEstoque').value) || 0;
     const imagem_url = document.getElementById('novaVarImageUrl').value || null;
+
+    if (!tam || tam === '__novo__') {
+        showToast('Selecione ou crie um tamanho válido para a variação!', 'warning');
+        return;
+    }
+    if (!cor) {
+        showToast('Selecione uma cor para a variação!', 'warning');
+        return;
+    }
 
     const { data: prod } = await sb.from('loja_produtos').select('nome').eq('id', pId).single();
 
@@ -1346,9 +1387,12 @@ window.__LOJA.novoMotivoEstoqueLoja = async function() {
 // TAMANHOS (Gestão)
 // ------------------------------------------------------------
 async function carregarLojaTamanhos() {
+    const tenantId = getTenantId();
+    if (!tenantId) return;
+
     const { data, error } = await sb.from('loja_tamanhos')
         .select('*')
-        .eq('empresa_id', getTenantId())
+        .eq('empresa_id', tenantId)
         .order('ordem', { ascending: true })
         .order('nome', { ascending: true });
     
@@ -1358,6 +1402,7 @@ async function carregarLojaTamanhos() {
     }
     lojaTamanhos = data || [];
     renderLojaTamanhosAdmin();
+    popularSelectTamanhosVariacao();
 }
 
 function renderLojaTamanhosAdmin() {
@@ -1405,12 +1450,13 @@ function initSortableLojaTamanhos() {
             lojaTamanhos = reordered;
 
             const updates = lojaTamanhos.map((t, i) => 
-                sb.from('loja_tamanhos').update({ ordem: i }).eq('id', t.id)
+                sb.from('loja_tamanhos').update({ ordem: i }).eq('id', t.id).eq('empresa_id', getTenantId())
             );
             await Promise.all(updates);
             showToast('Ordem dos tamanhos atualizada!', 'success');
             renderLojaTamanhosAdmin();
             renderizarCheckboxesTamCor();
+            popularSelectTamanhosVariacao();
         }
     });
 }
@@ -1452,6 +1498,12 @@ window.__LOJA.editarTamanho = function(id) {
 };
 
 window.__LOJA.salvarTamanhoModal = async function() {
+    const tenantId = getTenantId();
+    if (!tenantId) {
+        showToast('Empresa não identificada.', 'error');
+        return;
+    }
+
     const id = document.getElementById('lojaTamId')?.value;
     const nome = document.getElementById('lojaTamNome')?.value?.trim();
     const ordem = parseInt(document.getElementById('lojaTamOrdem')?.value) || 0;
@@ -1462,8 +1514,8 @@ window.__LOJA.salvarTamanhoModal = async function() {
         return;
     }
 
-    // Verifica se já existe outro tamanho com mesmo nome
-    const duplicado = lojaTamanhos.find(t => t.nome.toLowerCase() === nome.toLowerCase() && t.id !== id);
+    // Verifica se já existe outro tamanho com mesmo nome para esta empresa (case-insensitive)
+    const duplicado = lojaTamanhos.find(t => t.nome.trim().toLowerCase() === nome.toLowerCase() && t.id !== id);
     if (duplicado) {
         showToast('Já existe um tamanho cadastrado com este nome!', 'warning');
         return;
@@ -1475,13 +1527,13 @@ window.__LOJA.salvarTamanhoModal = async function() {
                 nome,
                 ordem,
                 ativo
-            }).eq('id', id);
+            }).eq('id', id).eq('empresa_id', tenantId);
 
             if (error) throw error;
             showToast('Tamanho atualizado!', 'success');
         } else {
             const { error } = await sb.from('loja_tamanhos').insert([{
-                empresa_id: getTenantId(),
+                empresa_id: tenantId,
                 nome,
                 ordem,
                 ativo
@@ -1494,9 +1546,14 @@ window.__LOJA.salvarTamanhoModal = async function() {
         fecharModal('modalLojaTamanho');
         await carregarLojaTamanhos();
         renderizarCheckboxesTamCor();
+        popularSelectTamanhosVariacao(nome);
     } catch (err) {
         console.error('Erro ao salvar tamanho:', err);
-        showToast('Erro ao salvar tamanho', 'error');
+        if (err.code === '23505' || err.message?.includes('duplicate key') || err.message?.includes('unique')) {
+            showToast('Já existe um tamanho cadastrado com este nome!', 'warning');
+        } else {
+            showToast('Erro ao salvar tamanho', 'error');
+        }
     }
 };
 
@@ -1506,15 +1563,9 @@ window.__LOJA.novoTamanhoRapido = async function() {
         const salvo = await window.__LOJA.salvarNovoTamanho(nome.trim());
         if (salvo) {
             renderizarCheckboxesTamCor();
-            
-            // Se estivermos no select de Nova Variação, também atualizar lá
-            const selTam = document.getElementById('novaVarTamanho');
-            if (selTam) {
-                selTam.innerHTML = lojaTamanhos.filter(t => t.ativo).map(t => `<option value="${t.nome}">${t.nome}</option>`).join('');
-                selTam.value = nome.trim(); // Deixa selecionado
-            }
+            popularSelectTamanhosVariacao(nome.trim());
 
-            // Deixa marcado no grid se ele existir
+            // Deixa marcado no grid de criação se ele existir
             const checkbox = document.querySelector(`.chk-tam[value="${nome.trim()}"]`);
             if (checkbox) {
                 checkbox.checked = true;
@@ -1525,11 +1576,20 @@ window.__LOJA.novoTamanhoRapido = async function() {
 };
 
 window.__LOJA.salvarNovoTamanho = async function(nome) {
-    if (!nome || nome.trim() === '') return false;
+    const tenantId = getTenantId();
+    if (!tenantId) {
+        showToast('Empresa não identificada.', 'error');
+        return false;
+    }
+
+    if (!nome || nome.trim() === '') {
+        showToast('Nome do tamanho é obrigatório.', 'warning');
+        return false;
+    }
     nome = nome.trim();
     
-    // Verifica se já existe localmente (ignorando case)
-    if (lojaTamanhos.find(t => t.nome.toLowerCase() === nome.toLowerCase())) {
+    // Verifica se já existe localmente para esta empresa (case-insensitive)
+    if (lojaTamanhos.some(t => t.nome.trim().toLowerCase() === nome.toLowerCase())) {
         showToast('Tamanho já existe!', 'warning');
         return false;
     }
@@ -1537,28 +1597,34 @@ window.__LOJA.salvarNovoTamanho = async function(nome) {
     const maxOrdem = lojaTamanhos.reduce((max, t) => Math.max(max, t.ordem || 0), -1);
     
     const { data, error } = await sb.from('loja_tamanhos').insert([{
-        empresa_id: getTenantId(),
+        empresa_id: tenantId,
         nome: nome,
         ordem: maxOrdem + 1,
         ativo: true
     }]).select();
 
     if (error) {
-        console.error('Erro novo tamanho', error);
-        showToast('Erro ao criar tamanho', 'error');
+        console.error('Erro novo tamanho:', error);
+        if (error.code === '23505' || error.message?.includes('duplicate key') || error.message?.includes('unique')) {
+            showToast('Já existe um tamanho cadastrado com este nome!', 'warning');
+        } else {
+            showToast('Erro ao criar tamanho', 'error');
+        }
         return false;
     } else {
         showToast('Tamanho salvo!', 'success');
         await carregarLojaTamanhos();
+        popularSelectTamanhosVariacao(nome);
         return true;
     }
 };
 
 window.__LOJA.excluirTamanho = async function(id) {
+    const tenantId = getTenantId();
     const confirmed = await customConfirm('Excluir Tamanho', 'Tem certeza? Produtos já cadastrados manterão o texto salvo, mas o botão sumirá da lista.');
     if (!confirmed) return;
 
-    const { error } = await sb.from('loja_tamanhos').delete().eq('id', id);
+    const { error } = await sb.from('loja_tamanhos').delete().eq('id', id).eq('empresa_id', tenantId);
     if (error) {
         console.error('Erro excluir tamanho:', error);
         showToast('Erro ao excluir', 'error');
@@ -1566,6 +1632,7 @@ window.__LOJA.excluirTamanho = async function(id) {
         showToast('Tamanho excluído', 'success');
         await carregarLojaTamanhos();
         renderizarCheckboxesTamCor();
+        popularSelectTamanhosVariacao();
     }
 };
 

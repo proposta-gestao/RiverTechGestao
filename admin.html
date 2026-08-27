@@ -2532,11 +2532,8 @@
                 <input type="hidden" id="novaVarProdutoId">
                 <div class="form-row">
                     <div class="form-group" style="flex:1">
-                        <label for="novaVarTamanho" style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>Tamanho *</span>
-                            <button type="button" class="btn-sm btn-outline" style="padding:2px 8px; font-size:0.75rem;" onclick="window.__LOJA.novoTamanhoRapido()">+ Novo</button>
-                        </label>
-                        <select id="novaVarTamanho"></select>
+                        <label for="novaVarTamanho">Tamanho *</label>
+                        <select id="novaVarTamanho" onchange="window.__LOJA.onSelectTamanhoVariacao(this)"></select>
                     </div>
                     <div class="form-group" style="flex:1">
                         <label for="novaVarCor">Cor *</label>
