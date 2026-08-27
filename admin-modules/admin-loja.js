@@ -307,6 +307,7 @@ window.__LOJA.editarProduto = async function(id) {
 
     lojaCurrentVariacoes = [...(prod.loja_variacoes || [])];
     renderVariacoesExistentes();
+    prepararLinhaNovaVariacao();
 
     document.getElementById('lojaModalTitle').innerText = 'Editar Produto';
     abrirModal('modalLojaProduto');
@@ -903,28 +904,34 @@ window.__LOJA.onSelectTamanhoVariacao = async function(selectEl) {
     }
 };
 
-window.__LOJA.abrirModalNovaVariacao = function() {
-    const pId = document.getElementById('lojaProdId').value;
-    document.getElementById('novaVarProdutoId').value = pId;
-    
+function prepararLinhaNovaVariacao() {
     popularSelectTamanhosVariacao();
     
     const selCor = document.getElementById('novaVarCor');
-    selCor.innerHTML = CORES_PADRAO.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+    if (selCor) {
+        selCor.innerHTML = CORES_PADRAO.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+    }
 
-    document.getElementById('novaVarPreco').value = '0';
-    document.getElementById('novaVarEstoque').value = '0';
-    // Limpar foto da variação
-    document.getElementById('novaVarImageUrl').value = '';
-    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">🖼️</span>';
-    document.getElementById('lojaUploadVarImagem').value = '';
+    const inPreco = document.getElementById('novaVarPreco');
+    if (inPreco) inPreco.value = '';
 
-    abrirModal('modalLojaNovaVariacao');
-};
+    const inEstoque = document.getElementById('novaVarEstoque');
+    if (inEstoque) inEstoque.value = '0';
+
+    const inImg = document.getElementById('novaVarImageUrl');
+    if (inImg) inImg.value = '';
+
+    const prev = document.getElementById('novaVarImagePreview');
+    if (prev) prev.innerHTML = '<span style="font-size:1.1rem;">📷</span>';
+
+    const uploadInput = document.getElementById('lojaUploadVarImagem');
+    if (uploadInput) uploadInput.value = '';
+}
+window.__LOJA.prepararLinhaNovaVariacao = prepararLinhaNovaVariacao;
 
 window.__LOJA.uploadImagemVariacao = async function(file) {
     if (!file) return;
-    showToast('Enviando foto...', 'success');
+    showToast('Enviando foto da variação...', 'info');
     try {
         const url = await window.handleCloudinaryUpload(file, 'loja');
         if (url) {
@@ -934,24 +941,33 @@ window.__LOJA.uploadImagemVariacao = async function(file) {
             showToast('Foto da variação carregada!', 'success');
         }
     } catch(e) {
+        console.error('Erro ao enviar foto da variação:', e);
         showToast('Erro ao enviar foto', 'error');
     } finally {
-        document.getElementById('lojaUploadVarImagem').value = '';
+        const uploadInput = document.getElementById('lojaUploadVarImagem');
+        if (uploadInput) uploadInput.value = '';
     }
 };
 
 window.__LOJA.removerImagemVariacao = function() {
-    document.getElementById('novaVarImageUrl').value = '';
-    document.getElementById('novaVarImagePreview').innerHTML = '<span style="font-size:1.5rem;">🖼️</span>';
+    const inImg = document.getElementById('novaVarImageUrl');
+    if (inImg) inImg.value = '';
+    const prev = document.getElementById('novaVarImagePreview');
+    if (prev) prev.innerHTML = '<span style="font-size:1.1rem;">📷</span>';
 };
 
 window.__LOJA.salvarNovaVariacao = async function() {
-    const pId = document.getElementById('novaVarProdutoId').value;
-    const tam = document.getElementById('novaVarTamanho').value;
-    const cor = document.getElementById('novaVarCor').value;
-    const preco = parseFloat(document.getElementById('novaVarPreco').value) || 0;
-    const estoque = parseInt(document.getElementById('novaVarEstoque').value) || 0;
-    const imagem_url = document.getElementById('novaVarImageUrl').value || null;
+    const pId = document.getElementById('lojaProdId')?.value;
+    if (!pId) {
+        showToast('Produto não identificado', 'error');
+        return;
+    }
+
+    const tam = document.getElementById('novaVarTamanho')?.value;
+    const cor = document.getElementById('novaVarCor')?.value;
+    const preco = parseFloat(document.getElementById('novaVarPreco')?.value) || 0;
+    const estoque = parseInt(document.getElementById('novaVarEstoque')?.value) || 0;
+    const imagem_url = document.getElementById('novaVarImageUrl')?.value || null;
 
     if (!tam || tam === '__novo__') {
         showToast('Selecione ou crie um tamanho válido para a variação!', 'warning');
@@ -959,6 +975,15 @@ window.__LOJA.salvarNovaVariacao = async function() {
     }
     if (!cor) {
         showToast('Selecione uma cor para a variação!', 'warning');
+        return;
+    }
+
+    // Validação de duplicidade na mesma peça
+    const jaExiste = (lojaCurrentVariacoes || []).some(
+        v => v.tamanho?.toLowerCase() === tam.toLowerCase() && v.cor?.toLowerCase() === cor.toLowerCase()
+    );
+    if (jaExiste) {
+        showToast(`Já existe uma variação ${tam} / ${cor} para este produto!`, 'warning');
         return;
     }
 
@@ -971,19 +996,38 @@ window.__LOJA.salvarNovaVariacao = async function() {
         cor: cor,
         sku: gerarSKULocal(prod?.nome || 'PROD', cor, tam),
         preco,
-        estoque,
+        estoque: Math.max(0, estoque),
         imagem_url
     };
 
-    const { error } = await sb.from('loja_variacoes').insert([vData]);
+    showToast('Adicionando variação...', 'info');
+    const { data: novaVar, error } = await sb.from('loja_variacoes').insert([vData]).select().single();
     if (error) {
-        showToast('Erro ao criar variação', 'error');
+        console.error('Erro ao criar variação:', error);
+        if (error.code === '23505' || error.message?.includes('duplicate key')) {
+            showToast('Já existe uma variação cadastrada com este SKU!', 'warning');
+        } else {
+            showToast('Erro ao criar variação: ' + (error.message || ''), 'error');
+        }
     } else {
-        showToast('Variação criada!', 'success');
-        fecharModal('modalLojaNovaVariacao');
+        // Se informado estoque inicial > 0, registra em stock_movements
+        if (estoque > 0 && novaVar?.id) {
+            const { error: errLog } = await sb.from('stock_movements').insert({
+                loja_variacao_id: novaVar.id,
+                empresa_id: getTenantId(),
+                type: 'entrada',
+                quantity: estoque,
+                notes: 'Estoque inicial da variação'
+            });
+            if (errLog) console.warn('Aviso log estoque:', errLog);
+        }
+
+        showToast('Variação adicionada com sucesso!', 'success');
+        prepararLinhaNovaVariacao();
+
         await carregarLojaProdutos();
         const updated = lojaProdutos.find(p => p.id === pId);
-        if(updated) {
+        if (updated) {
             lojaCurrentVariacoes = updated.loja_variacoes || [];
             renderVariacoesExistentes();
         }

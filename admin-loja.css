@@ -92,10 +92,39 @@
     border-color: var(--primary, #E5B25D);
 }
 
+/* ── Linha Rápida de Adição de Variação (Inline) ── */
+.loja-inline-add-var {
+    background: var(--bg-card, #1a1a1a);
+    border: 1px solid var(--border-color, rgba(229, 178, 93, 0.2));
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 1rem;
+}
+
+.loja-inline-add-var .inline-fields-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
 /* ── Responsive ── */
 @media (max-width: 600px) {
     .loja-checkbox-grid label {
         padding: 8px 12px;
         font-size: 0.9rem;
     }
+    .loja-inline-add-var .inline-fields-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .loja-inline-add-var .inline-fields-row > div {
+        width: 100%;
+        min-width: 100% !important;
+    }
+    .loja-inline-add-var .btn-inline-add {
+        width: 100%;
+        justify-content: center;
+    }
 }
+

@@ -2362,10 +2362,59 @@
 
                 <!-- EDIÇÃO: Variações existentes -->
                 <div id="lojaVariacoesExistentes" style="display:none;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                    <div style="margin-bottom:0.75rem;">
                         <label class="group-label" style="margin-bottom:0;">🏷️ Variações Cadastradas</label>
-                        <button class="btn-sm btn-primary" onclick="window.__LOJA.abrirModalNovaVariacao()" style="font-size:0.78rem;">+ Nova Variação</button>
                     </div>
+
+                    <!-- Linha Rápida para Nova Variação -->
+                    <div class="loja-inline-add-var">
+                        <div style="font-size:0.8rem; font-weight:600; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                            <span>➕ Nova Variação</span>
+                        </div>
+                        <div class="inline-fields-row">
+                            <!-- Foto Upload Mini -->
+                            <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                                <label style="font-size:0.75rem; color:var(--text-muted);">Foto</label>
+                                <div id="novaVarImagePreview" style="width:38px; height:38px; border-radius:6px; border:1px dashed var(--border-color); display:flex; align-items:center; justify-content:center; cursor:pointer; background:rgba(255,255,255,0.03); overflow:hidden;" onclick="document.getElementById('lojaUploadVarImagem').click()" title="Clique para enviar foto da variação">
+                                    <span style="font-size:1.1rem;">📷</span>
+                                </div>
+                                <input type="hidden" id="novaVarImageUrl">
+                                <input type="file" id="lojaUploadVarImagem" accept="image/*" style="display:none;" onchange="window.__LOJA.uploadImagemVariacao(this.files[0])">
+                            </div>
+
+                            <!-- Tamanho -->
+                            <div style="flex:1.2; min-width:130px;">
+                                <label for="novaVarTamanho" style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Tamanho *</label>
+                                <select id="novaVarTamanho" onchange="window.__LOJA.onSelectTamanhoVariacao(this)" style="width:100%; height:38px; font-size:0.85rem; padding:4px 8px;"></select>
+                            </div>
+
+                            <!-- Cor -->
+                            <div style="flex:1.2; min-width:120px;">
+                                <label for="novaVarCor" style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Cor *</label>
+                                <select id="novaVarCor" style="width:100%; height:38px; font-size:0.85rem; padding:4px 8px;"></select>
+                            </div>
+
+                            <!-- Preço -->
+                            <div style="flex:1; min-width:90px;">
+                                <label for="novaVarPreco" style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Preço (R$)</label>
+                                <input type="number" id="novaVarPreco" min="0" step="0.01" placeholder="0.00" style="width:100%; height:38px; font-size:0.85rem; padding:4px 8px;">
+                            </div>
+
+                            <!-- Estoque Inicial -->
+                            <div style="flex:1; min-width:80px;">
+                                <label for="novaVarEstoque" style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Estoque</label>
+                                <input type="number" id="novaVarEstoque" min="0" placeholder="0" style="width:100%; height:38px; font-size:0.85rem; padding:4px 8px;">
+                            </div>
+
+                            <!-- Botão Adicionar -->
+                            <div>
+                                <button type="button" class="btn-primary btn-inline-add" onclick="window.__LOJA.salvarNovaVariacao()" style="height:38px; padding:0 14px; font-size:0.85rem; white-space:nowrap; display:flex; align-items:center; gap:4px;">
+                                    <span>+ Adicionar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="admin-table-wrapper" style="max-height:300px; overflow-y:auto;">
                         <table class="admin-table">
                             <thead>
@@ -2508,61 +2557,6 @@
                             <option value="true">Ativo</option>
                             <option value="false">Inativo</option>
                         </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal: Nova Variação (ao editar produto) -->
-    <div class="admin-modal-backdrop" id="modalLojaNovaVariacao">
-        <div class="admin-modal" style="max-width:440px;">
-            <div class="modal-header">
-                <div class="modal-header-left">
-                    <button class="btn-modal-back" onclick="fecharModal('modalLojaNovaVariacao')" title="Voltar">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                    </button>
-                    <h3>Nova Variação</h3>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-save" onclick="window.__LOJA.salvarNovaVariacao()">Adicionar</button>
-                </div>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="novaVarProdutoId">
-                <div class="form-row">
-                    <div class="form-group" style="flex:1">
-                        <label for="novaVarTamanho">Tamanho *</label>
-                        <select id="novaVarTamanho" onchange="window.__LOJA.onSelectTamanhoVariacao(this)"></select>
-                    </div>
-                    <div class="form-group" style="flex:1">
-                        <label for="novaVarCor">Cor *</label>
-                        <select id="novaVarCor"></select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group" style="flex:1">
-                        <label for="novaVarPreco">Preço (R$)</label>
-                        <input type="number" id="novaVarPreco" min="0" step="0.01" placeholder="">
-                    </div>
-                    <div class="form-group" style="flex:1">
-                        <label for="novaVarEstoque">Estoque Inicial</label>
-                        <input type="number" id="novaVarEstoque" min="0" placeholder="">
-                    </div>
-                </div>
-                <!-- Foto específica desta variação -->
-                <div class="form-group">
-                    <label style="margin-bottom:8px; display:block;">📷 Foto desta variação <small style="color:var(--text-muted); font-weight:normal;">(opcional — substitui a principal na loja)</small></label>
-                    <div style="display:flex; align-items:center; gap:12px; background:rgba(229,178,93,0.05); padding:10px; border-radius:10px; border:1px dashed rgba(229,178,93,0.3);">
-                        <div id="novaVarImagePreview" style="width:60px; height:60px; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
-                            <span style="font-size:1.5rem;">🖼️</span>
-                        </div>
-                        <div style="flex:1">
-                            <input type="hidden" id="novaVarImageUrl">
-                            <button class="btn-sm" type="button" onclick="document.getElementById('lojaUploadVarImagem').click()" style="background:rgba(229,178,93,0.1); color:var(--primary); border:1px solid rgba(229,178,93,0.3);">Subir Foto</button>
-                            <button class="btn-sm" type="button" onclick="window.__LOJA.removerImagemVariacao()" style="background:transparent; color:var(--danger); border:1px solid var(--danger); margin-left:6px;">Remover</button>
-                            <input type="file" id="lojaUploadVarImagem" accept="image/*" style="display:none;" onchange="window.__LOJA.uploadImagemVariacao(this.files[0])">
-                        </div>
                     </div>
                 </div>
             </div>
