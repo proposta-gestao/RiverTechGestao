@@ -1901,6 +1901,8 @@ function renderProdutos() {
             ? `<button class="btn-sm btn-unarchive" onclick="desarquivarProduto('${p.id}')">Desarquivar</button>`
             : `<button class="btn-sm btn-archive" onclick="arquivarProduto('${p.id}')">Arquivar</button>`;
 
+        const deleteButton = `<button class="btn-sm btn-delete" onclick="excluirProduto('${p.id}', '${p.name.replace(/'/g, "\\'")}')">Excluir</button>`;
+
         let primeiraImagem = '';
         if (p.image_url) {
             if (Array.isArray(p.image_url) && p.image_url.length > 0) {
@@ -1945,6 +1947,7 @@ function renderProdutos() {
                         <div class="actions-cell">
                             <button class="btn-sm btn-edit" onclick="editarProduto('${p.id}')">Editar</button>
                             ${actionButton}
+                            ${deleteButton}
                         </div>
                     </td>
                 </tr>
@@ -2686,6 +2689,31 @@ async function executarSalvarProduto() {
         btn.textContent = id ? 'Salvar Alterações' : 'Salvar Produto';
     }
 }
+
+window.excluirProduto = async (id, nome) => {
+    const confirmed = await customConfirm('Excluir Produto', `Tem certeza de que deseja excluir "${nome}"? Esta ação não pode ser desfeita.`);
+    if (!confirmed) return;
+
+    // Verificar dependências - exclusão permitida apenas se não houver pedidos vinculados
+    const { count, error: errDep } = await sb.from('order_items').select('*', { count: 'exact', head: true }).eq('product_id', id);
+    if (count > 0) {
+        showToast('Este produto não pode ser excluído pois possui pedidos vinculados.', 'error');
+        return;
+    }
+
+    const { error } = await sb.from('products').delete().eq('id', id);
+    if (error) {
+        console.error('[excluirProduto] Erro ao excluir:', error);
+        if (error.code === '23503') {
+            showToast('Produto possui dependências sistêmicas e não pode ser excluído.', 'error');
+        } else {
+            showToast('Erro ao excluir produto.', 'error');
+        }
+    } else {
+        showToast('Produto excluído com sucesso!', 'success');
+        carregarProdutos();
+    }
+};
 
 window.arquivarProduto = async (id) => {
     if (!await customConfirm('Arquivar Produto', 'Deseja arquivar este produto? Ele não aparecerá mais no cardápio nem no sistema.')) return;
