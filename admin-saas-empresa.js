@@ -582,6 +582,89 @@ if (btnExcluir) {
     });
 }
  
+// ==========================================
+// Limpar Vendas da Empresa (Super Admin)
+// ==========================================
+window.limparVendasEmpresa = async () => {
+    if (!EMPRESA_ID) return;
+
+    const nomeEmpresa = (typeof EMPRESA_DATA !== 'undefined' && EMPRESA_DATA.nome) ? EMPRESA_DATA.nome : 'esta empresa';
+    const confirmacao = prompt(`⚠️ AÇÃO IRREVERSÍVEL!\n\nVocê está prestes a apagar TODOS os pedidos, itens de pedidos e agendamentos da empresa "${nomeEmpresa}".\nProdutos e configurações permanecerão.\n\nPara confirmar, digite a palavra: APAGAR`);
+
+    if (confirmacao !== 'APAGAR') {
+        if (confirmacao !== null) {
+            showToast('Palavra de segurança incorreta. Operação cancelada.', 'error');
+        }
+        return;
+    }
+
+    try {
+        const btn = document.getElementById('btnLimparVendasEmpresa');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = 'Apagando...';
+        }
+        showToast('Iniciando limpeza das vendas...', 'warning');
+
+        // 1. Limpar Itens de Pedidos
+        const { data: tenantOrders, error: errFetchOrders } = await sb
+            .from('orders')
+            .select('id')
+            .eq('empresa_id', EMPRESA_ID);
+
+        if (errFetchOrders) throw errFetchOrders;
+
+        if (tenantOrders && tenantOrders.length > 0) {
+            const orderIds = tenantOrders.map(o => o.id);
+            const lotes = [];
+            for (let i = 0; i < orderIds.length; i += 100) {
+                lotes.push(orderIds.slice(i, i + 100));
+            }
+
+            for (const lote of lotes) {
+                 const { error: errItems } = await sb
+                    .from('order_items')
+                    .delete()
+                    .in('order_id', lote);
+                 if (errItems) throw errItems;
+            }
+        }
+
+        // 2. Limpar Pedidos
+        const { error: errOrders } = await sb
+            .from('orders')
+            .delete()
+            .eq('empresa_id', EMPRESA_ID);
+
+        if (errOrders) throw errOrders;
+
+        // 3. Limpar Agendamentos (se existirem)
+        const { error: errAgendamentos } = await sb
+            .from('agendamentos')
+            .delete()
+            .eq('empresa_id', EMPRESA_ID);
+            
+        if (errAgendamentos && errAgendamentos.code !== '42P01') { 
+            throw errAgendamentos;
+        }
+
+        showToast('Todas as vendas foram excluídas com sucesso!', 'success');
+        
+        // Recarregar métricas para refletir a exclusão
+        if (typeof carregarMetricas === 'function') carregarMetricas();
+
+    } catch (err) {
+        console.error('[Limpeza de Vendas]', err);
+        showToast('Erro ao limpar vendas: ' + (err.message || 'Tente novamente'), 'error');
+    } finally {
+        const btn = document.getElementById('btnLimparVendasEmpresa');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '🗑️ Limpar Vendas';
+        }
+    }
+};
+
 // Salvamento automático de módulos
 // Salvamento automático de módulos individuais
 window.atualizarModulo = async (modulo, checked) => {
