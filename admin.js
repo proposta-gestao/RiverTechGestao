@@ -1249,13 +1249,20 @@ function aplicarFiltrosDeModulos() {
 /**
  * Valida se um módulo está ativo antes de permitir uma ação.
  * Bloqueio funcional além do visual.
+ * Exceção: se for o módulo 'produtos_gerenciar' e o módulo restaurante (ficha_tecnica)
+ * estiver ativo, o acesso é liberado — o restaurante depende de produtos.
  */
 function validarAcessoModulo(modulo) {
-    if (!isModuloAtivo(modulo)) {
-        showToast('Módulo desativado. Contrate para liberar acesso.', 'error');
-        return false;
+    if (isModuloAtivo(modulo)) return true;
+
+    // Se for o módulo de produtos e o restaurante estiver ativo, libera acesso
+    const modulosProdutos = ['produtos_gerenciar', 'produtos_categorias', 'produtos_estoque'];
+    if (modulosProdutos.includes(modulo) && isModuloAtivo('ficha_tecnica')) {
+        return true;
     }
-    return true;
+
+    showToast('Módulo desativado. Contrate para liberar acesso.', 'error');
+    return false;
 }
 
 /**
