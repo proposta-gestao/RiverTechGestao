@@ -1178,6 +1178,23 @@
         </div>
     </div>
 
+    <!-- Modal: Prompt Customizado -->
+    <div id="modalPrompt" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10001; align-items:center; justify-content:center;">
+        <div class="section-card" style="width: 100%; max-width: 400px; position:relative;">
+            <h3 id="promptTitle" style="color: var(--accent-gold); margin-bottom: 0.5rem;">Título</h3>
+            <p id="promptMessage" style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1.5rem; line-height:1.4;">Mensagem...</p>
+            
+            <div class="form-group">
+                <input type="text" id="promptInput" placeholder="" style="width:100%; padding:12px; background:#000; border:1px solid var(--border-color); color:#fff; border-radius:6px; font-size: 1rem; text-transform: uppercase;">
+            </div>
+            
+            <div style="margin-top:2rem; display:flex; gap:10px;">
+                <button class="btn-outline" id="btnPromptCancelar" style="flex:1; padding: 12px;">Cancelar</button>
+                <button class="btn-primary" id="btnPromptOk" style="flex:1; padding: 12px;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
     <script src="admin-saas-empresa.js?v=1.1"></script>
 </body>
 </html>

@@ -554,7 +554,11 @@ const btnExcluir = document.getElementById('btnExcluirEmpresa');
 if (btnExcluir) {
     btnExcluir.addEventListener('click', async () => {
         const nomeEmpresa = (typeof EMPRESA_DATA !== 'undefined' && EMPRESA_DATA.nome) ? EMPRESA_DATA.nome : 'esta empresa';
-        const confirmacao = prompt(`⚠️ AÇÃO IRREVERSÍVEL!\n\nVocê está prestes a excluir permanentemente a empresa "${nomeEmpresa}" e TODOS os seus dados associados (produtos, agendamentos, clientes, vendas, etc).\n\nPara confirmar a exclusão, digite a palavra de segurança: EXCLUIR`);
+        
+        const confirmacao = await customPrompt(
+            '⚠️ AÇÃO IRREVERSÍVEL!', 
+            `Você está prestes a excluir permanentemente a empresa "${nomeEmpresa}" e TODOS os seus dados associados (produtos, agendamentos, clientes, vendas, etc).\n\nPara confirmar a exclusão, digite a palavra de segurança: EXCLUIR`
+        );
         
         if (confirmacao !== 'EXCLUIR') {
             if (confirmacao !== null) {
@@ -589,7 +593,11 @@ window.limparVendasEmpresa = async () => {
     if (!EMPRESA_ID) return;
 
     const nomeEmpresa = (typeof EMPRESA_DATA !== 'undefined' && EMPRESA_DATA.nome) ? EMPRESA_DATA.nome : 'esta empresa';
-    const confirmacao = prompt(`⚠️ AÇÃO IRREVERSÍVEL!\n\nVocê está prestes a apagar TODOS os pedidos, itens de pedidos e agendamentos da empresa "${nomeEmpresa}".\nProdutos e configurações permanecerão.\n\nPara confirmar, digite a palavra: APAGAR`);
+    
+    const confirmacao = await customPrompt(
+        '⚠️ AÇÃO IRREVERSÍVEL!', 
+        `Você está prestes a apagar TODOS os pedidos, itens de pedidos e agendamentos da empresa "${nomeEmpresa}".\nProdutos e configurações permanecerão.\n\nPara confirmar, digite a palavra: APAGAR`
+    );
 
     if (confirmacao !== 'APAGAR') {
         if (confirmacao !== null) {
@@ -735,6 +743,46 @@ window.abrirModal = (id) => {
 window.fecharModal = (id) => {
     document.getElementById(id).style.display = 'none';
 };
+
+function customPrompt(title, message, defaultValue = '') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('modalPrompt');
+        const input = document.getElementById('promptInput');
+        const btnOk = document.getElementById('btnPromptOk');
+        const btnCancel = document.getElementById('btnPromptCancelar');
+
+        document.getElementById('promptTitle').textContent = title;
+        // Permite quebras de linha na mensagem usando \n
+        document.getElementById('promptMessage').innerHTML = message.replace(/\n/g, '<br>');
+        input.value = defaultValue;
+
+        modal.style.display = 'flex';
+        setTimeout(() => input.focus(), 100);
+
+        const handleOk = () => {
+            const val = input.value;
+            modal.style.display = 'none';
+            btnOk.removeEventListener('click', handleOk);
+            btnCancel.removeEventListener('click', handleCancel);
+            resolve(val);
+        };
+
+        const handleCancel = () => {
+            modal.style.display = 'none';
+            btnOk.removeEventListener('click', handleOk);
+            btnCancel.removeEventListener('click', handleCancel);
+            resolve(null);
+        };
+
+        btnOk.addEventListener('click', handleOk);
+        btnCancel.addEventListener('click', handleCancel);
+
+        input.onkeydown = (e) => {
+            if (e.key === 'Enter') handleOk();
+            if (e.key === 'Escape') handleCancel();
+        };
+    });
+}
 
 // Adicionar Admin
 document.getElementById('btnConfirmarNovoAdmin').addEventListener('click', async () => {
