@@ -1073,7 +1073,8 @@ function aplicarFiltrosDeModulos() {
     document.querySelectorAll('.col-estoque').forEach(el => toggleElement(el, mProdEstoque, 'table-cell'));
     toggleElement(document.getElementById('prodEstoqueMin')?.closest('.form-group'), mProdEstoque);
 
-    const mQualquerProduto = mProdGerenciar || mProdCategorias || mProdEstoque;
+    // A aba principal PRODUTOS só fica visível se "Gerenciar Produtos" estiver ativo.
+    const mQualquerProduto = mProdGerenciar;
     const navProdutos = document.getElementById('nav-produtos');
     const sideNavProdutos = document.getElementById('side-nav-produtos');
     toggleElement(navProdutos, mQualquerProduto, 'flex');
