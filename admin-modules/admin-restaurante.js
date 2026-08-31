@@ -183,11 +183,22 @@
         const contents = document.querySelectorAll('#tab-restaurante .rest-subtab-content');
         btns.forEach(btn => {
             btn.addEventListener('click', () => {
+                if (!btn.dataset.subtab) return;
                 btns.forEach(b => b.classList.remove('active'));
                 contents.forEach(c => c.classList.remove('active'));
                 btn.classList.add('active');
+                
                 const targetId = 'rest-subtab-' + btn.dataset.subtab;
                 const target = document.getElementById(targetId);
+                
+                // Mover conteúdo de produtos se for a aba
+                if (btn.dataset.subtab === 'produtos') {
+                    const wrapper = document.getElementById('produtos-shared-wrapper');
+                    if (wrapper && target) {
+                        target.appendChild(wrapper);
+                    }
+                }
+                
                 if (target) target.classList.add('active');
             });
         });

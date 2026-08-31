@@ -620,6 +620,14 @@ function switchTab(tabId, btn, persist = true) {
     const content = document.getElementById('tab-' + tabId);
     if (content) content.classList.add('active');
 
+    if (tabId === 'produtos') {
+        const wrapper = document.getElementById('produtos-shared-wrapper');
+        const tabProdutos = document.getElementById('tab-produtos');
+        if (wrapper && tabProdutos) {
+            tabProdutos.appendChild(wrapper);
+        }
+    }
+
     // Atualiza o link de visualização no topo
     const btnLink = document.getElementById('btnVisualizarLink');
     if (btnLink) {
@@ -1054,12 +1062,13 @@ function aplicarFiltrosDeModulos() {
     const mProdGerenciar = isModuloAtivo('produtos_gerenciar');
     const mProdCategorias = isModuloAtivo('produtos_categorias');
     const mProdEstoque = isModuloAtivo('produtos_estoque');
+    const mRestauranteActive = isModuloAtivo('ficha_tecnica');
     
-    toggleSubtab('lista-produtos', mProdGerenciar);
-    toggleSubtab('lista-categorias', mProdCategorias);
-    toggleSubtab('lista-estoque', mProdEstoque);
+    toggleSubtab('lista-produtos', mProdGerenciar || mRestauranteActive);
+    toggleSubtab('lista-categorias', mProdCategorias || mRestauranteActive);
+    toggleSubtab('lista-estoque', mProdEstoque || mRestauranteActive);
     
-    toggleElement(document.getElementById('stockAlertPanel'), mProdEstoque);
+    toggleElement(document.getElementById('stockAlertPanel'), mProdEstoque || mRestauranteActive);
     toggleElement(document.getElementById('groupEstoqueCard'), mProdEstoque);
     document.querySelectorAll('.col-estoque').forEach(el => toggleElement(el, mProdEstoque, 'table-cell'));
     toggleElement(document.getElementById('prodEstoqueMin')?.closest('.form-group'), mProdEstoque);

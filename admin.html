@@ -503,101 +503,103 @@
 
             <!-- Products & Categories Tab -->
             <div class="tab-content active" id="tab-produtos">
-                <div class="admin-toolbar" style="margin-bottom: 1rem; justify-content: center;">
-                    <h2>Gerenciamento de Produtos</h2>
-                </div>
-
-                <!-- Stats row -->
-                <div class="stats-row" id="statsRow" style="display: none;"></div>
-
-                <!-- Painel de Alerta de Baixo Estoque -->
-                <div class="stock-alert-panel" id="stockAlertPanel">
-                    <button type="button" class="btn-close-alert" onclick="this.parentElement.style.display='none'" title="Fechar alerta">✕</button>
-                    <h3>⚠️ Alerta de Baixo Estoque</h3>
-                    <ul class="stock-alert-list" id="stockAlertList"></ul>
-                </div>
-
-                <!-- Sub-tabs centered -->
-                <div class="produtos-toolbar">
-                    <div class="admin-subtabs">
-                        <button class="subtab-btn active" data-subtab="lista-produtos">Gerenciar Produtos</button>
-                        <button class="subtab-btn" data-subtab="lista-categorias">Gerenciar Categorias</button>
-                        <button class="subtab-btn" data-subtab="lista-estoque" id="nav-sub-estoque">Ajustes de Estoque</button>
+                <div id="produtos-shared-wrapper">
+                    <div class="admin-toolbar" style="margin-bottom: 1rem; justify-content: center;">
+                        <h2>Gerenciamento de Produtos</h2>
                     </div>
-                </div>
 
-                <!-- Subtab: Gerenciar Produtos -->
-                <div class="subtab-content active" id="subtab-lista-produtos">
-                    <div class="admin-toolbar">
-                        <h2>Produtos <span style="font-size: 0.8rem;">(Arraste para ordenar no cardápio)</span></h2>
-                        <button class="btn-primary" id="btnNovoProduto" onclick="abrirModalNovoProduto()">+ Novo Produto</button>
-                    </div>
-                    <div class="admin-table-wrapper">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 40px;"></th>
-                                    <th>Imagem</th>
-                                    <th>Nome</th>
-                                    <th>Categoria</th>
-                                    <th>Preço</th>
-                                    <th class="col-estoque">Estoque</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="produtosBody"></tbody>
-                        </table>
-                    </div>
-                </div>
+                    <!-- Stats row -->
+                    <div class="stats-row" id="statsRow" style="display: none;"></div>
 
-                <!-- Subtab: Gerenciar Categorias -->
-                <div class="subtab-content" id="subtab-lista-categorias">
-                    <div class="admin-toolbar">
-                        <h2>Categorias</h2>
-                        <button class="btn-primary" id="btnNovaCategoria">+ Nova Categoria</button>
+                    <!-- Painel de Alerta de Baixo Estoque -->
+                    <div class="stock-alert-panel" id="stockAlertPanel">
+                        <button type="button" class="btn-close-alert" onclick="this.parentElement.style.display='none'" title="Fechar alerta">✕</button>
+                        <h3>⚠️ Alerta de Baixo Estoque</h3>
+                        <ul class="stock-alert-list" id="stockAlertList"></ul>
                     </div>
-                    <div class="admin-table-wrapper">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Slug</th>
-                                    <th>Ordem</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="categoriasBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Subtab: Ajustes de Estoque -->
-                <div class="subtab-content" id="subtab-lista-estoque">
-                    <div class="config-card" style="margin-top: 1rem;">
-                        <div class="config-card-header">
-                            <h2>📦 Ajustes de Estoque</h2>
-                            <button class="btn-primary btn-sm" id="btnNovoMotivoEstoque">+ Novo Motivo</button>
+
+                    <!-- Sub-tabs centered -->
+                    <div class="produtos-toolbar">
+                        <div class="admin-subtabs">
+                            <button class="subtab-btn active" data-subtab="lista-produtos">Gerenciar Produtos</button>
+                            <button class="subtab-btn" data-subtab="lista-categorias">Gerenciar Categorias</button>
+                            <button class="subtab-btn" data-subtab="lista-estoque" id="nav-sub-estoque">Ajustes de Estoque</button>
                         </div>
-                        <div class="config-card-body">
-                            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1rem;">
-                                Cadastre os motivos para entradas e saídas manuais de estoque (Ex: Avaria, Vencimento).
-                            </p>
-                            
-                            <div class="admin-table-wrapper">
-                                <table class="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 40px;"></th>
-                                            <th>Nome do Motivo</th>
-                                            <th style="text-align: center; width: 100px;">Status</th>
-                                            <th style="width: 150px; text-align: center;">Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="motivosEstoqueBody">
-                                        <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando motivos...</td></tr>
-                                    </tbody>
-                                </table>
+                    </div>
+
+                    <!-- Subtab: Gerenciar Produtos -->
+                    <div class="subtab-content active" id="subtab-lista-produtos">
+                        <div class="admin-toolbar">
+                            <h2>Produtos <span style="font-size: 0.8rem;">(Arraste para ordenar no cardápio)</span></h2>
+                            <button class="btn-primary" id="btnNovoProduto" onclick="abrirModalNovoProduto()">+ Novo Produto</button>
+                        </div>
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;"></th>
+                                        <th>Imagem</th>
+                                        <th>Nome</th>
+                                        <th>Categoria</th>
+                                        <th>Preço</th>
+                                        <th class="col-estoque">Estoque</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="produtosBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Subtab: Gerenciar Categorias -->
+                    <div class="subtab-content" id="subtab-lista-categorias">
+                        <div class="admin-toolbar">
+                            <h2>Categorias</h2>
+                            <button class="btn-primary" id="btnNovaCategoria">+ Nova Categoria</button>
+                        </div>
+                        <div class="admin-table-wrapper">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Slug</th>
+                                        <th>Ordem</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="categoriasBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Subtab: Ajustes de Estoque -->
+                    <div class="subtab-content" id="subtab-lista-estoque">
+                        <div class="config-card" style="margin-top: 1rem;">
+                            <div class="config-card-header">
+                                <h2>📦 Ajustes de Estoque</h2>
+                                <button class="btn-primary btn-sm" id="btnNovoMotivoEstoque">+ Novo Motivo</button>
+                            </div>
+                            <div class="config-card-body">
+                                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 1rem;">
+                                    Cadastre os motivos para entradas e saídas manuais de estoque (Ex: Avaria, Vencimento).
+                                </p>
+                                
+                                <div class="admin-table-wrapper">
+                                    <table class="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 40px;"></th>
+                                                <th>Nome do Motivo</th>
+                                                <th style="text-align: center; width: 100px;">Status</th>
+                                                <th style="width: 150px; text-align: center;">Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="motivosEstoqueBody">
+                                            <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:1rem;">Carregando motivos...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1541,7 +1543,7 @@
                 <!-- Sub-navegação -->
                 <div class="rest-subtabs-wrapper">
                 <div class="rest-subtabs">
-                    <button class="rest-subtab-btn" onclick="switchTab('produtos', document.getElementById('nav-produtos'))">🍔 Produtos</button>
+                    <button class="rest-subtab-btn" data-subtab="produtos">🍔 Produtos</button>
                     <button class="rest-subtab-btn active" data-subtab="insumos">🧂 Insumos</button>
                     <button class="rest-subtab-btn" data-subtab="fichas">📋 Fichas Técnicas</button>
                     <button class="rest-subtab-btn" data-subtab="inventario">📦 Inventário</button>
@@ -1549,6 +1551,11 @@
                     <button class="rest-subtab-btn" data-subtab="cadastros">🗃️ Cadastros</button>
                     <button class="rest-subtab-btn" data-subtab="config">⚙️ Configurações</button>
                 </div>
+                </div>
+
+                <!-- ── Produtos ── -->
+                <div class="rest-subtab-content" id="rest-subtab-produtos">
+                    <!-- Conteúdo movido via JS (produtos-shared-wrapper) -->
                 </div>
 
                 <!-- ── Insumos ── -->
