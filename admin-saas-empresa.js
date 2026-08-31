@@ -737,11 +737,11 @@ window.switchPageTab = (tabId) => {
 };
 
 window.abrirModal = (id) => {
-    document.getElementById(id).style.display = 'flex';
+    document.getElementById(id).classList.add('show');
 };
 
 window.fecharModal = (id) => {
-    document.getElementById(id).style.display = 'none';
+    document.getElementById(id).classList.remove('show');
 };
 
 function customPrompt(title, message, defaultValue = '') {
@@ -756,26 +756,31 @@ function customPrompt(title, message, defaultValue = '') {
         document.getElementById('promptMessage').innerHTML = message.replace(/\n/g, '<br>');
         input.value = defaultValue;
 
-        modal.style.display = 'flex';
+        modal.classList.add('show');
         setTimeout(() => input.focus(), 100);
 
         const handleOk = () => {
             const val = input.value;
-            modal.style.display = 'none';
+            modal.classList.remove('show');
             btnOk.removeEventListener('click', handleOk);
             btnCancel.removeEventListener('click', handleCancel);
+            btnClose.removeEventListener('click', handleCancel);
             resolve(val);
         };
 
         const handleCancel = () => {
-            modal.style.display = 'none';
+            modal.classList.remove('show');
             btnOk.removeEventListener('click', handleOk);
             btnCancel.removeEventListener('click', handleCancel);
+            btnClose.removeEventListener('click', handleCancel);
             resolve(null);
         };
 
+        const btnClose = document.getElementById('btnPromptClose');
+        
         btnOk.addEventListener('click', handleOk);
         btnCancel.addEventListener('click', handleCancel);
+        if(btnClose) btnClose.addEventListener('click', handleCancel);
 
         input.onkeydown = (e) => {
             if (e.key === 'Enter') handleOk();
